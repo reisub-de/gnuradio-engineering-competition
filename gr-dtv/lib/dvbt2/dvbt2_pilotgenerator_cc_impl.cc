@@ -1112,14 +1112,23 @@ namespace gr {
           break;
       }
       fstep = fs / vlength;
-      for (int i = 0; i < vlength / 2; i++) {
-        x = M_PI * f / fs;
-        if (i == 0) {
-          sinc = 1.0;
-        }
-        else {
-          sinc = sin(x) / x;
-        }
+	//** marker **
+	// this loop can totally be refactored
+      	//for (int i = 0; i < vlength / 2; i++) {
+        //x = M_PI * f / fs;
+        //if (i == 0) {
+        //  sinc = 1.0;
+        //}
+        //else {
+        //  sinc = sin(x) / x;
+        //}
+      //beginning of my changes; -dfbarth 4/9/17
+      sinc = 1.0;
+      x = M_PI * f/fs;
+      for (int i = 1; i<vlength/2;i++){
+	sinc = sin(x) / x;
+      }
+      //end of my changes; -dfbarth 4/9/17
         sincrms += sinc * sinc;
         inverse_sinc[i + (vlength / 2)] = gr_complex(1.0 / sinc, 0.0);
         inverse_sinc[(vlength / 2) - i - 1] = gr_complex(1.0 / sinc, 0.0);
