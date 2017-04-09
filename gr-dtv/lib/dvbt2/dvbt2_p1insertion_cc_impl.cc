@@ -105,12 +105,16 @@ namespace gr {
       for (int i = 0; i < 8; i++) {
         for (int j = 7; j >= 0; j--) {
           modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
-	  modulation_sequence[index+32] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
         }
       }
       for (int i = 0; i < 32; i++) {
         for (int j = 7; j >= 0; j--) {
           modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> j) & 0x1;
+        }
+      }
+      for (int i = 0; i < 8; i++) {
+        for (int j = 7; j >= 0; j--) {
+          modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
         }
       }
       dbpsk_modulation_sequence[0] = 1;
