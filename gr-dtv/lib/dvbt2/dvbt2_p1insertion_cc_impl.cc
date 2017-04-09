@@ -105,16 +105,12 @@ namespace gr {
       for (int i = 0; i < 8; i++) {
         for (int j = 7; j >= 0; j--) {
           modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
+	  modulation_sequence[index+32] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
         }
       }
       for (int i = 0; i < 32; i++) {
         for (int j = 7; j >= 0; j--) {
           modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> j) & 0x1;
-        }
-      }
-      for (int i = 0; i < 8; i++) {
-        for (int j = 7; j >= 0; j--) {
-          modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
         }
       }
       dbpsk_modulation_sequence[0] = 1;
@@ -143,8 +139,9 @@ namespace gr {
       memcpy(&dst[0], &in[p1_fft_size / 2], sizeof(gr_complex) * p1_fft_size / 2);
       p1_fft->execute();
       memcpy(out, p1_fft->get_outbuf(), sizeof(gr_complex) * p1_fft_size);
+      double rs_time_shift = std::sqrt(384.0);
       for (int i = 0; i < 1024; i++) {
-        p1_time[i] /= std::sqrt(384.0);
+        p1_time[i] /= rs_time_shift;
       }
       for (int i = 0; i < 1023; i++) {
         p1_freqshft[i + 1] = p1_freq[i];
@@ -158,7 +155,7 @@ namespace gr {
       p1_fft->execute();
       memcpy(out, p1_fft->get_outbuf(), sizeof(gr_complex) * p1_fft_size);
       for (int i = 0; i < 1024; i++) {
-        p1_timeshft[i] /= std::sqrt(384.0);
+        p1_timeshft[i] /= rs_time_shift;
       }
       frame_items = ((numdatasyms + N_P2) * fft_size) + ((numdatasyms + N_P2) * guard_interval);
       insertion_items = frame_items + 2048;
