@@ -710,6 +710,9 @@ namespace gr {
         p2_carrier_map[C_PS - K_EXT - 2] = P2PILOT_CARRIER;
         p2_carrier_map[C_PS - K_EXT - 3] = P2PILOT_CARRIER;
       }
+
+double MYROOT2 = 1.4142135624;
+
       switch (fftsize) {
         case FFTSIZE_1K:
           for (int i = 0; i < 10; i++) {
@@ -808,10 +811,15 @@ namespace gr {
               }
             }
           }
-          cp_bpsk[0] = gr_complex((4.0 * std::sqrt(2.0)) / 3.0, 0.0);
-          cp_bpsk[1] = gr_complex(-(4.0 * std::sqrt(2.0)) / 3.0, 0.0);
-          cp_bpsk_inverted[0] = gr_complex(-(4.0 * std::sqrt(2.0)) / 3.0, 0.0);
-          cp_bpsk_inverted[1] = gr_complex((4.0 * std::sqrt(2.0)) / 3.0, 0.0);
+          //cp_bpsk[0] = gr_complex((4.0 * std::sqrt(2.0)) / 3.0, 0.0);
+          //cp_bpsk[1] = gr_complex(-(4.0 * std::sqrt(2.0)) / 3.0, 0.0);
+          //cp_bpsk_inverted[0] = gr_complex(-(4.0 * std::sqrt(2.0)) / 3.0, 0.0);
+          //cp_bpsk_inverted[1] = gr_complex((4.0 * std::sqrt(2.0)) / 3.0, 0.0);
+          cp_bpsk[0] = gr_complex((4.0 * MYROOT2) / 3.0, 0.0);
+          cp_bpsk[1] = gr_complex(-(4.0 * MYROOT2) / 3.0, 0.0);
+          cp_bpsk_inverted[0] = gr_complex(-(4.0 * MYROOT2) / 3.0, 0.0);
+          cp_bpsk_inverted[1] = gr_complex((4.0 * MYROOT2) / 3.0, 0.0);
+
           break;
         case FFTSIZE_8K:
         case FFTSIZE_8K_T2GI:
