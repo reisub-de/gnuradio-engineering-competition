@@ -139,8 +139,8 @@ namespace gr {
             break;
         }
       }
-      for (int i = 0; i < max_states; i++) {
-        if (i == 0 || i == 1) {
+      for (int i = 0; i < max_states; ++i) {
+        if (i < 2) {
           lfsr = 0;
         }
         else if (i == 2) {
@@ -148,7 +148,7 @@ namespace gr {
         }
         else {
           result = 0;
-          for (int k = 0; k < xor_size; k++) {
+          for (int k = 0; k < xor_size; ++k) {
             result ^= (lfsr >> logic[k]) & 1;
           }
           lfsr &= pn_mask;
@@ -157,7 +157,7 @@ namespace gr {
         }
         lfsr |= (i % 2) << (pn_degree - 1);
         if (lfsr < cell_size) {
-          permutations[q++] = lfsr;
+          permutations[++q] = lfsr;
         }
       }
       if (tiblocks == 0) {
@@ -209,7 +209,7 @@ namespace gr {
 
       for (int i = 0; i < noutput_items; i += interleaved_items) {
         index = 0;
-        for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; s++) {
+        for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; ++s) {
           n = 0;
           if (s < numSmallTIBlocks) {
             FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
@@ -217,27 +217,27 @@ namespace gr {
           else {
             FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
           }
-          for (int r = 0; r < FECBlocksPerTIBlock; r++) {
+          for (int r = 0; r < FECBlocksPerTIBlock; ++r) {
             shift = cell_size;
             while (shift >= cell_size) {
               temp = n;
               shift = 0;
-              for (int p = 0; p < pn_degree; p++) {
+              for (int p = 0; p < pn_degree; ++p) {
                 shift |= temp & 1;
                 shift <<= 1;
                 temp >>= 1;
               }
-              n++;
+              ++n;
             }
-            for (int w = 0; w < cell_size; w++) {
-              time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
+            for (int w = 0; w < cell_size; ++w) {
+              time_interleave[((permutations[w] + shift) % cell_size) + index] = *++in;
             }
             index += cell_size;
           }
         }
         if (ti_blocks != 0) {
           ti_index = 0;
-          for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; s++) {
+          for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; ++s) {
             if (s < numSmallTIBlocks) {
               FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
             }
@@ -246,23 +246,23 @@ namespace gr {
             }
             numCols = 5 * FECBlocksPerTIBlock;
             rows = cell_size / 5;
-            for (int j = 0; j < numCols; j++) {
+            for (int j = 0; j < numCols; ++j) {
               cols[j] = &time_interleave[(rows * j) + ti_index];
             }
             index = 0;
-            for (int k = 0; k < rows; k++) {
-              for (int w = 0; w < numCols; w++) {
-                *out++ = *(cols[w] + index);
+            for (int k = 0; k < rows; ++k) {
+              for (int w = 0; w < numCols; ++w) {
+                *++out = *(cols[w] + index);
               }
-              index++;
+              ++index;
             }
             ti_index += rows * numCols;
           }
         }
         else {
           index = 0;
-          for (int w = 0; w < fec_blocks * cell_size; w++) {
-            *out++ = time_interleave[index++];
+          for (int w = 0; w < fec_blocks * cell_size; ++w) {
+            *++out = time_interleave[++index];
           }
         }
       }
