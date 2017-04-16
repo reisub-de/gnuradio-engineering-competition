@@ -157,7 +157,7 @@ namespace gr {
         }
         lfsr |= (i % 2) << (pn_degree - 1);
         if (lfsr < cell_size) {
-          permutations[++q] = lfsr;
+          permutations[q++] = lfsr;
         }
       }
       if (tiblocks == 0) {
@@ -262,7 +262,7 @@ namespace gr {
         else {
           index = 0;
           for (int w = 0; w < fec_blocks * cell_size; ++w) {
-            *out++ = time_interleave[++index];
+            *out++ = time_interleave[index++];
           }
         }
       }
