@@ -24,10 +24,6 @@
 
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
-#include <fstream>
-
-//#include <fstream>
-//#include "performancetimer.h"
 
 namespace gr {
   namespace dtv {
@@ -43,9 +39,7 @@ namespace gr {
      * The private constructor
      */
     dvb_ldpc_bb_impl::dvb_ldpc_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate, dvb_constellation_t constellation)
-      : //m_timer(new PerformanceTimer),
-        //m_totalTime(0),
-        gr::block("dvb_ldpc_bb",
+      : gr::block("dvb_ldpc_bb",
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(1, 1, sizeof(unsigned char))),
       Xs(0),
@@ -370,16 +364,6 @@ namespace gr {
      */
     dvb_ldpc_bb_impl::~dvb_ldpc_bb_impl()
     {
-        /*
-        if (!PerformanceTimer::DISABLED)
-        {
-            std::fstream file("/home/rabih9780/Desktop/ldpc_speed.txt", std::fstream::out);
-            file << m_totalTime << std::endl
-                ;
-            file.close();
-        }
-        delete m_timer;
-        */
     }
 
     void
@@ -612,18 +596,12 @@ for (int row = 0; row < ROWS; row++) { \
       ldpc_encode.table_length = index;
     }
 
-    // frame_size = FRAME_SIZE_NORMAL;
-    // frame_size_real = FRAME_SIZE_NORMAL;
-    // nbch = 38880;
-    // q_val = 72;
     int
     dvb_ldpc_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
-      // m_timer->Start();
-
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       const unsigned char *d;
@@ -632,42 +610,32 @@ for (int row = 0; row < ROWS; row++) { \
       unsigned char *s;
       // Calculate the number of parity bits
       int plen = (frame_size_real + Xp) - nbch;
-      int sizeofp = sizeof(unsigned char) * plen; 
-      int stop = (int)nbch; 
       d = in;
-      p = &out[nbch];  // nbch = 38880, qval = 72
+      p = &out[nbch];
       int consumed = 0;
       int puncture, index;
 
-      int pCheckStop = ldpc_encode.table_length; 
-      
       for (int i = 0; i < noutput_items; i += frame_size) {
-        // Xs == 0 for our case 
         if (Xs != 0) {
           s = &shortening_buffer[0];
           memset(s, 0, sizeof(unsigned char) * Xs);
           memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
           d = s;
         }
-        // P == 0 for our case 
         if (P != 0) {
           p = &puncturing_buffer[nbch];
           b = &out[i + nbch];
         }
-        
-        
         // First zero all the parity bits
-        memset(p, 0, sizeofp);
-        for (int j = 0; j < stop; j++) {
+        memset(p, 0, sizeof(unsigned char) * plen);
+        for (int j = 0; j < (int)nbch; j++) {
           out[i + j] = in[consumed];
           consumed++;
         }
         // now do the parity checking
-        for (int j = 0; j < pCheckStop; ++j) {
+        for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
         }
-        
-        // doesn't run because P == 0 for our case 
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
@@ -677,7 +645,6 @@ for (int row = 0; row < ROWS; row++) { \
               break;
             }
           }
-          
           index = 0;
           for (int j = 0; j < plen; j++) {
             if (p[j] != 0x55) {
@@ -686,7 +653,6 @@ for (int row = 0; row < ROWS; row++) { \
           }
           p = &out[nbch];
         }
-        
         for (int j = 1; j < (plen - Xp); j++) {
           p[j] ^= p[j-1];
         }
@@ -698,9 +664,6 @@ for (int row = 0; row < ROWS; row++) { \
         d += nbch;
         p += frame_size;
       }
-
-      // m_timer->Stop();
-      // m_totalTime += m_timer->GetElapsed();
 
       // Tell runtime system how many input items we consumed on
       // each input stream.

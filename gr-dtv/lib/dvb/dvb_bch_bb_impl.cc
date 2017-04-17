@@ -25,8 +25,6 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_bch_bb_impl.h"
 
-#include <strings.h>
-
 namespace gr {
   namespace dtv {
 
@@ -596,28 +594,16 @@ namespace gr {
       unsigned int shift[6];
       int consumed = 0;
 
-
-      
-      // kbch = 38688
-      // nbch = 38880
-      // bch_code = BCH_CODE_N12
-			int stop = (int)kbch;
-			int shiftSize = sizeof(unsigned int) * 6;
-      
       switch (bch_code) {
-        // This is our case         
-        case BCH_CODE_N12:  
+        case BCH_CODE_N12:
           for (int i = 0; i < noutput_items; i += nbch) {
-            // Zero the shift register
-            memset(shift, 0, shiftSize); 
-            //bzero(shift, shiftSize);
+            //Zero the shift register
+            memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            // kbch = 38688
-            // we don't need to convert kbch to int every time here
-            for (int j = 0; j < stop; j++) {
+            for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
-              ++consumed;
+              consumed++;
               b = (temp ^ (shift[5] & 1));
               reg_6_shift(shift);
               if (b) {
@@ -636,7 +622,6 @@ namespace gr {
             }
           }
           break;
-        // end of code we need to worry about 
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
@@ -668,7 +653,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 4);
             // MSB of the codeword first
-            for (int j = 0; j < stop; j++) {
+            for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
@@ -693,7 +678,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = 0; j < stop; j++) {
+            for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
@@ -720,7 +705,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = 0; j < stop; j++) {
+            for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
