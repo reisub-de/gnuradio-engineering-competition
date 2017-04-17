@@ -361,12 +361,10 @@ namespace gr {
             }
           }
           break;
-        
-        
         case MOD_256QAM:
           if (frame_size == FRAME_SIZE_NORMAL) {
             if (code_rate == C3_5) {
-              mux = &mux256_35[0]; // set the value of mux to the fist adress of mux256_35
+              mux = &mux256_35[0];
             }
             else if (code_rate == C2_3) {
               mux = &mux256_23[0];
@@ -374,65 +372,37 @@ namespace gr {
             else {
               mux = &mux256[0];
             }
-            
-            
-            rows = frame_size / (mod * 2); // get the number of rows needed to do operations 
-                                           // mod=8, and frame_size=FRAME_SIZE_NORMAL
-                                           // rows must be 4050 at least???
-            // set c1 to c16 to point to the addresses of tempv at intervals of the value of row * n where n = c[m-1]
-            const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-            const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-            c1 = &tempv[0];
-            c2 = &tempv[rows];
-            c3 = &tempv[rows * 2];
-            c4 = &tempv[rows * 3];
-            c5 = &tempv[rows * 4];
-            c6 = &tempv[rows * 5];
-            c7 = &tempv[rows * 6];
-            c8 = &tempv[rows * 7];
-            c9 = &tempv[rows * 8];  // equivalent to "tempv + (rows*8)"
-            c10 = &tempv[rows * 9];
-            c11 = &tempv[rows * 10];
-            c12 = &tempv[rows * 11];
-            c13 = &tempv[rows * 12];
-            c14 = &tempv[rows * 13];
-            c15 = &tempv[rows * 14];
-            c16 = &tempv[rows * 15];
-            
-            const int MOD = mod*2;
-            
-            // packed_items = frame_size / mod 
-            // mod = 8 
             for (int i = 0; i < noutput_items; i += packed_items) {
-              
-              // populate the first 38880 values of tempu with the first 38880 values of input 
-              // nbch = 38880 
-              // write to tempu
+              rows = frame_size / (mod * 2);
+              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+              const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
+              c1 = &tempv[0];
+              c2 = &tempv[rows];
+              c3 = &tempv[rows * 2];
+              c4 = &tempv[rows * 3];
+              c5 = &tempv[rows * 4];
+              c6 = &tempv[rows * 5];
+              c7 = &tempv[rows * 6];
+              c8 = &tempv[rows * 7];
+              c9 = &tempv[rows * 8];
+              c10 = &tempv[rows * 9];
+              c11 = &tempv[rows * 10];
+              c12 = &tempv[rows * 11];
+              c13 = &tempv[rows * 12];
+              c14 = &tempv[rows * 13];
+              c15 = &tempv[rows * 14];
+              c16 = &tempv[rows * 15];
               for (int k = 0; k < nbch; k++) {
                 tempu[k] = *in++;
               }
-              // in == &input_items[38880] at this point
-              
-              // populate the values of tempu starting at 38880 going up by (360 * t) + s each iteration with input values at intervals of 72 * s + t 
-              // qval = 72 
-              // 38880 + (360*71) + 359 = 64799max
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
-                  // input 72s + t -> tempu[38880+ 360*t + s] (where interleaving happens)
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
               }
-          	
-              // update the value of the pointer by 25920 
               in = in + (q_val * 360);
-              // now in == &input_items[64800]
-              
               index = 0;
-              // mod = 8
-              // so 16 columns
-              // loops 16*row times which must be at least 64800 (if rows==4050)
-              for (int col = 0; col < MOD; col++) {
-                // get offset from predefined array 
+              for (int col = 0; col < (mod * 2); col++) {
                 offset = twist256n[col];
                 for (int row = 0; row < rows; row++) {
                   tempv[offset + (rows * col)] = tempu[index++];
@@ -462,11 +432,11 @@ namespace gr {
                 tempu[index++] = c16[j];
               }
               index = 0;
-              for (int d = 0; d < rows; d++) {
+              for (int d = 0; d < frame_size / (mod * 2); d++) {
                 pack = 0;
-                for (int e = 0; e < MOD; e++) {
+                for (int e = 0; e < (mod * 2); e++) {
                   offset = mux[e];
-                  pack |= tempu[index++] << ((MOD - 1) - offset);
+                  pack |= tempu[index++] << (((mod * 2) - 1) - offset);
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
@@ -474,8 +444,6 @@ namespace gr {
               }
             }
           }
-        
-        
           else {
             if (code_rate == C1_3) {
               mux = &mux256s_13[0];
