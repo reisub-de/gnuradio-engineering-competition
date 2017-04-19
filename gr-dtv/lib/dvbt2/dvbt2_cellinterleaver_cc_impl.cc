@@ -140,7 +140,7 @@ namespace gr {
         }
       }
       for (int i = 0; i < max_states; ++i) {
-        if (i < 2) {
+        if (i == 0 || i == 1) {
           lfsr = 0;
         }
         else if (i == 2) {
@@ -230,7 +230,7 @@ namespace gr {
               ++n;
             }
             for (int w = 0; w < cell_size; ++w) {
-              time_interleave[((permutations[w] + shift) % cell_size) + index] = *++in;
+              time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
             }
             index += cell_size;
           }
@@ -252,7 +252,7 @@ namespace gr {
             index = 0;
             for (int k = 0; k < rows; ++k) {
               for (int w = 0; w < numCols; ++w) {
-                *++out = *(cols[w] + index);
+                *out++ = *(cols[w] + index);
               }
               ++index;
             }
@@ -262,7 +262,7 @@ namespace gr {
         else {
           index = 0;
           for (int w = 0; w < fec_blocks * cell_size; ++w) {
-            *++out = time_interleave[++index];
+            *out++ = time_interleave[++index];
           }
         }
       }
