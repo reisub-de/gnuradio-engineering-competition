@@ -153,9 +153,7 @@ namespace gr {
       const static int pp6_32k[4];
       const static int pp7_32k[2];
       const static int pp8_32k[6];
-      
-      void data_carrier_work(const int*, int);
-      void data_carrier_work2(const int*, int, int);
+
 
      public:
       dvbt2_pilotgenerator_cc_impl(dvbt2_extended_carrier_t carriermode, dvbt2_fftsize_t fftsize, dvbt2_pilotpattern_t pilotpattern, dvb_guardinterval_t guardinterval, int numdatasyms, dvbt2_papr_t paprmode, dvbt2_version_t version, dvbt2_preamble_t preamble, dvbt2_misogroup_t misogroup, dvbt2_equalization_t equalization, dvbt2_bandwidth_t bandwidth, int vlength);
