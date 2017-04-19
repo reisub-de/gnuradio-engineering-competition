@@ -642,19 +642,7 @@ namespace gr {
           break;
       }
       if (miso == FALSE) {
-        if (guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2) {
+        if ((guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) || (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) || (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2) || (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2)) {
           N_FC = 0;
           C_FC = 0;
         }
@@ -736,10 +724,10 @@ namespace gr {
               }
             }
           }
-          cp_bpsk[0] = gr_complex(4.0 / 3.0, 0.0);
-          cp_bpsk[1] = gr_complex(-4.0 / 3.0, 0.0);
-          cp_bpsk_inverted[0] = gr_complex(-4.0 / 3.0, 0.0);
-          cp_bpsk_inverted[1] = gr_complex(4.0 / 3.0, 0.0);
+          cp_bpsk[0] = gr_complex(1.3333333333, 0.0);
+          cp_bpsk[1] = gr_complex(-1.3333333333, 0.0);
+          cp_bpsk_inverted[0] = gr_complex(-1.3333333333, 0.0);
+          cp_bpsk_inverted[1] = gr_complex(1.3333333333, 0.0);
           break;
         case FFTSIZE_2K:
           for (int i = 0; i < 18; ++i) {
@@ -770,10 +758,10 @@ namespace gr {
               }
             }
           }
-          cp_bpsk[0] = gr_complex(4.0 / 3.0, 0.0);
-          cp_bpsk[1] = gr_complex(-4.0 / 3.0, 0.0);
-          cp_bpsk_inverted[0] = gr_complex(-4.0 / 3.0, 0.0);
-          cp_bpsk_inverted[1] = gr_complex(4.0 / 3.0, 0.0);
+          cp_bpsk[0] = gr_complex(1.3333333333, 0.0);
+          cp_bpsk[1] = gr_complex(-1.3333333333, 0.0);
+          cp_bpsk_inverted[0] = gr_complex(-1.3333333333, 0.0);
+          cp_bpsk_inverted[1] = gr_complex(1.3333333333, 0.0);
           break;
         case FFTSIZE_4K:
           
@@ -805,10 +793,10 @@ namespace gr {
               }
             }
           }
-          cp_bpsk[0] = gr_complex((4.0 * std::sqrt(2.0)) / 3.0, 0.0);
-          cp_bpsk[1] = gr_complex(-(4.0 * std::sqrt(2.0)) / 3.0, 0.0);
-          cp_bpsk_inverted[0] = gr_complex(-(4.0 * std::sqrt(2.0)) / 3.0, 0.0);
-          cp_bpsk_inverted[1] = gr_complex((4.0 * std::sqrt(2.0)) / 3.0, 0.0);
+          cp_bpsk[0] = gr_complex(1.885618083, 0.0);
+          cp_bpsk[1] = gr_complex(-1.885618083, 0.0);
+          cp_bpsk_inverted[0] = gr_complex(-1.885618083, 0.0);
+          cp_bpsk_inverted[1] = gr_complex(1.885618083, 0.0);
           break;
         case FFTSIZE_8K:
         case FFTSIZE_8K_T2GI:
@@ -832,10 +820,10 @@ namespace gr {
               }
             }
           }
-          cp_bpsk[0] = gr_complex(8.0 / 3.0, 0.0);
-          cp_bpsk[1] = gr_complex(-8.0 / 3.0, 0.0);
-          cp_bpsk_inverted[0] = gr_complex(-8.0 / 3.0, 0.0);
-          cp_bpsk_inverted[1] = gr_complex(8.0 / 3.0, 0.0);
+          cp_bpsk[0] = gr_complex(2.66666666, 0.0);
+          cp_bpsk[1] = gr_complex(-2.66666666, 0.0);
+          cp_bpsk_inverted[0] = gr_complex(-2.66666666, 0.0);
+          cp_bpsk_inverted[1] = gr_complex(2.66666666, 0.0);
           break;
         case FFTSIZE_16K:
         case FFTSIZE_16K_T2GI:
@@ -859,10 +847,10 @@ namespace gr {
               }
             }
           }
-          cp_bpsk[0] = gr_complex(8.0 / 3.0, 0.0);
-          cp_bpsk[1] = gr_complex(-8.0 / 3.0, 0.0);
-          cp_bpsk_inverted[0] = gr_complex(-8.0 / 3.0, 0.0);
-          cp_bpsk_inverted[1] = gr_complex(8.0 / 3.0, 0.0);
+          cp_bpsk[0] = gr_complex(2.66666666, 0.0);
+          cp_bpsk[1] = gr_complex(-2.66666666, 0.0);
+          cp_bpsk_inverted[0] = gr_complex(-2.66666666, 0.0);
+          cp_bpsk_inverted[1] = gr_complex(2.66666666, 0.0);
           break;
         case FFTSIZE_32K:
         case FFTSIZE_32K_T2GI:
@@ -886,74 +874,74 @@ namespace gr {
               }
             }
           }
-          cp_bpsk[0] = gr_complex(8.0 / 3.0, 0.0);
-          cp_bpsk[1] = gr_complex(-8.0 / 3.0, 0.0);
-          cp_bpsk_inverted[0] = gr_complex(-8.0 / 3.0, 0.0);
-          cp_bpsk_inverted[1] = gr_complex(8.0 / 3.0, 0.0);
+          cp_bpsk[0] = gr_complex(2.66666666, 0.0);
+          cp_bpsk[1] = gr_complex(-2.66666666, 0.0);
+          cp_bpsk_inverted[0] = gr_complex(-2.66666666, 0.0);
+          cp_bpsk_inverted[1] = gr_complex(2.66666666, 0.0);
           break;
       }
       switch (pilotpattern) {
         case PILOT_PP1:
-          sp_bpsk[0] = gr_complex(4.0 / 3.0, 0.0);
-          sp_bpsk[1] = gr_complex(-4.0 / 3.0, 0.0);
-          sp_bpsk_inverted[0] = gr_complex(-4.0 / 3.0, 0.0);
-          sp_bpsk_inverted[1] = gr_complex(4.0 / 3.0, 0.0);
+          sp_bpsk[0] = gr_complex(1.33333333, 0.0);
+          sp_bpsk[1] = gr_complex(-1.33333333, 0.0);
+          sp_bpsk_inverted[0] = gr_complex(-1.33333333, 0.0);
+          sp_bpsk_inverted[1] = gr_complex(1.33333333, 0.0);
           dx = 3;
           dy = 4;
           break;
         case PILOT_PP2:
-          sp_bpsk[0] = gr_complex(4.0 / 3.0, 0.0);
-          sp_bpsk[1] = gr_complex(-4.0 / 3.0, 0.0);
-          sp_bpsk_inverted[0] = gr_complex(-4.0 / 3.0, 0.0);
-          sp_bpsk_inverted[1] = gr_complex(4.0 / 3.0, 0.0);
+          sp_bpsk[0] = gr_complex(1.33333333, 0.0);
+          sp_bpsk[1] = gr_complex(-1.33333333, 0.0);
+          sp_bpsk_inverted[0] = gr_complex(-1.33333333, 0.0);
+          sp_bpsk_inverted[1] = gr_complex(1.33333333, 0.0);
           dx = 6;
           dy = 2;
           break;
         case PILOT_PP3:
-          sp_bpsk[0] = gr_complex(7.0 / 4.0, 0.0);
-          sp_bpsk[1] = gr_complex(-7.0 / 4.0, 0.0);
-          sp_bpsk_inverted[0] = gr_complex(-7.0 / 4.0, 0.0);
-          sp_bpsk_inverted[1] = gr_complex(7.0 / 4.0, 0.0);
+          sp_bpsk[0] = gr_complex(1.75, 0.0);
+          sp_bpsk[1] = gr_complex(-1.75, 0.0);
+          sp_bpsk_inverted[0] = gr_complex(-1.75, 0.0);
+          sp_bpsk_inverted[1] = gr_complex(1.75, 0.0);
           dx = 6;
           dy = 4;
           break;
         case PILOT_PP4:
-          sp_bpsk[0] = gr_complex(7.0 / 4.0, 0.0);
-          sp_bpsk[1] = gr_complex(-7.0 / 4.0, 0.0);
-          sp_bpsk_inverted[0] = gr_complex(-7.0 / 4.0, 0.0);
-          sp_bpsk_inverted[1] = gr_complex(7.0 / 4.0, 0.0);
+          sp_bpsk[0] = gr_complex(1.75, 0.0);
+          sp_bpsk[1] = gr_complex(-1.75, 0.0);
+          sp_bpsk_inverted[0] = gr_complex(-1.75, 0.0);
+          sp_bpsk_inverted[1] = gr_complex(1.75, 0.0);
           dx = 12;
           dy = 2;
           break;
         case PILOT_PP5:
-          sp_bpsk[0] = gr_complex(7.0 / 3.0, 0.0);
-          sp_bpsk[1] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[0] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[1] = gr_complex(7.0 / 3.0, 0.0);
+          sp_bpsk[0] = gr_complex(2.33333333, 0.0);
+          sp_bpsk[1] = gr_complex(-2.33333333, 0.0);
+          sp_bpsk_inverted[0] = gr_complex(-2.33333333, 0.0);
+          sp_bpsk_inverted[1] = gr_complex(2.33333333, 0.0);
           dx = 12;
           dy = 4;
           break;
         case PILOT_PP6:
-          sp_bpsk[0] = gr_complex(7.0 / 3.0, 0.0);
-          sp_bpsk[1] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[0] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[1] = gr_complex(7.0 / 3.0, 0.0);
+          sp_bpsk[0] = gr_complex(2.33333333, 0.0);
+          sp_bpsk[1] = gr_complex(-2.33333333, 0.0);
+          sp_bpsk_inverted[0] = gr_complex(-2.33333333, 0.0);
+          sp_bpsk_inverted[1] = gr_complex(2.33333333, 0.0);
           dx = 24;
           dy = 2;
           break;
         case PILOT_PP7:
-          sp_bpsk[0] = gr_complex(7.0 / 3.0, 0.0);
-          sp_bpsk[1] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[0] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[1] = gr_complex(7.0 / 3.0, 0.0);
+          sp_bpsk[0] = gr_complex(2.33333333, 0.0);
+          sp_bpsk[1] = gr_complex(-2.33333333, 0.0);
+          sp_bpsk_inverted[0] = gr_complex(-2.33333333, 0.0);
+          sp_bpsk_inverted[1] = gr_complex(2.33333333, 0.0);
           dx = 24;
           dy = 4;
           break;
         case PILOT_PP8:
-          sp_bpsk[0] = gr_complex(7.0 / 3.0, 0.0);
-          sp_bpsk[1] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[0] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[1] = gr_complex(7.0 / 3.0, 0.0);
+          sp_bpsk[0] = gr_complex(2.33333333, 0.0);
+          sp_bpsk[1] = gr_complex(-2.333333330, 0.0);
+          sp_bpsk_inverted[0] = gr_complex(-2.33333333, 0.0);
+          sp_bpsk_inverted[1] = gr_complex(2.33333333, 0.0);
           dx = 6;
           dy = 16;
           break;
@@ -971,13 +959,7 @@ namespace gr {
           }
         }
       }
-      if (fftsize == FFTSIZE_1K && pilotpattern == PILOT_PP4) {
-        fc_carrier_map[C_PS - 2] = SCATTERED_CARRIER;
-      }
-      else if (fftsize == FFTSIZE_1K && pilotpattern == PILOT_PP5) {
-        fc_carrier_map[C_PS - 2] = SCATTERED_CARRIER;
-      }
-      else if (fftsize == FFTSIZE_2K && pilotpattern == PILOT_PP7) {
+      if ((fftsize == FFTSIZE_1K && pilotpattern == PILOT_PP4) || (fftsize == FFTSIZE_1K && pilotpattern == PILOT_PP5) || (fftsize == FFTSIZE_2K && pilotpattern == PILOT_PP7)) {
         fc_carrier_map[C_PS - 2] = SCATTERED_CARRIER;
       }
       if ((miso == TRUE && miso_group == MISO_TX2) && ((numdatasyms + N_P2 - 1) % 2)) {
@@ -1038,36 +1020,36 @@ namespace gr {
       left_nulls = ((vlength - C_PS) / 2) + 1;
       right_nulls = (vlength - C_PS) / 2;
       if ((fftsize == FFTSIZE_32K || fftsize == FFTSIZE_32K_T2GI) && (miso == FALSE)) {
-        p2_bpsk[0] = gr_complex(std::sqrt(37.0) / 5.0, 0.0);
-        p2_bpsk[1] = gr_complex(-(std::sqrt(37.0) / 5.0), 0.0);
-        p2_bpsk_inverted[0] = gr_complex(-(std::sqrt(37.0) / 5.0), 0.0);
-        p2_bpsk_inverted[1] = gr_complex(std::sqrt(37.0) / 5.0, 0.0);
+        p2_bpsk[0] = gr_complex(1.2165525, 0.0);
+        p2_bpsk[1] = gr_complex(-1.2165525, 0.0);
+        p2_bpsk_inverted[0] = gr_complex(-1.2165525, 0.0);
+        p2_bpsk_inverted[1] = gr_complex(1.2165525, 0.0);
       }
       else {
-        p2_bpsk[0] = gr_complex(std::sqrt(31.0) / 5.0, 0.0);
-        p2_bpsk[1] = gr_complex(-(std::sqrt(31.0) / 5.0), 0.0);
-        p2_bpsk_inverted[0] = gr_complex(-(std::sqrt(31.0) / 5.0), 0.0);
-        p2_bpsk_inverted[1] = gr_complex(std::sqrt(31.0) / 5.0, 0.0);
+        p2_bpsk[0] = gr_complex(1.11355287, 0.0);
+        p2_bpsk[1] = gr_complex(-1.11355287, 0.0);
+        p2_bpsk_inverted[0] = gr_complex(-1.11355287, 0.0);
+        p2_bpsk_inverted[1] = gr_complex(1.11355287, 0.0);
       }
       normalization = 5.0 / std::sqrt(27.0 * C_PS);
       switch (bandwidth) {
         case BANDWIDTH_1_7_MHZ:
-          fs = 131.0 * 1000000.0 / 71.0;
+          fs = 1845070.423;
           break;
         case BANDWIDTH_5_0_MHZ:
-          fs = 5.0 * 8000000.0 / 7.0;
+          fs = 5714285.714;
           break;
         case BANDWIDTH_6_0_MHZ:
-          fs = 6.0 * 8000000.0 / 7.0;
+          fs = 6857142.857;
           break;
         case BANDWIDTH_7_0_MHZ:
-          fs = 7.0 * 8000000.0 / 7.0;
+          fs = 8000000.0;
           break;
         case BANDWIDTH_8_0_MHZ:
-          fs = 8.0 * 8000000.0 / 7.0;
+          fs = 9142857.143;
           break;
         case BANDWIDTH_10_0_MHZ:
-          fs = 10.0 * 8000000.0 / 7.0;
+          fs = 11428571.43;
           break;
         default:
           fs = 1.0;
@@ -2272,7 +2254,27 @@ namespace gr {
               *out++ = zero;
             }
             for (int n = 0; n < C_PS; ++n) {
-              if (data_carrier_map[n] == SCATTERED_CARRIER) {
+              switch(data_carrier_map[n]) {
+                case SCATTERED_CARRIER:
+                  *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case SCATTERED_CARRIER_INVERTED:
+                  *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case CONTINUAL_CARRIER:
+                  *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case CONTINUAL_CARRIER_INVERTED:
+                  *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case TRPAPR_CARRIER:
+                  *out++ = zero;
+                  break;
+                default:
+                  *out++ = *in++;
+                  break;
+              }
+              /*if (data_carrier_map[n] == SCATTERED_CARRIER) {
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
@@ -2289,7 +2291,7 @@ namespace gr {
               }
               else {
                 *out++ = *in++;
-              }
+              }*/
             }
             for (int n = 0; n < right_nulls; ++n) {
               *out++ = zero;
