@@ -139,22 +139,23 @@ namespace gr {
             break;
         }
       }
-      for (int i = 0; i < max_states; i++) {
-        if (i == 0 || i == 1) {
-          lfsr = 0;
-        }
-        else if (i == 2) {
-          lfsr = 1;
-        }
-        else {
-          result = 0;
-          for (int k = 0; k < xor_size; k++) {
-            result ^= (lfsr >> logic[k]) & 1;
+      for(int i = 0; i < 3; i++)
+      {
+          lfsr = (i==2) | (i % 2) << (pn_degree - 1);
+          if(lfsr < cell_size)
+          {
+              permutations[q++] = lfsr;
           }
-          lfsr &= pn_mask;
-          lfsr >>= 1;
-          lfsr |= result << (pn_degree - 2);
+      }
+
+      for (int i = 3; i < max_states; i++) {
+        result = 0;
+        for (int k = 0; k < xor_size; k++) {
+          result ^= (lfsr >> logic[k]) & 1;
         }
+        lfsr &= pn_mask;
+        lfsr >>= 1;
+        lfsr |= result << (pn_degree - 2);
         lfsr |= (i % 2) << (pn_degree - 1);
         if (lfsr < cell_size) {
           permutations[q++] = lfsr;
