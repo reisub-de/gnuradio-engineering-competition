@@ -26,6 +26,10 @@
 #include "dvbt2_pilotgenerator_cc_impl.h"
 #include <volk/volk.h>
 
+#ifndef UNROLL_LOOPS
+#define UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
+#endif
+
 namespace gr {
   namespace dtv {
 
@@ -39,6 +43,7 @@ namespace gr {
     /*
      * The private constructor
      */
+    UNROLL_LOOPS
     dvbt2_pilotgenerator_cc_impl::dvbt2_pilotgenerator_cc_impl(dvbt2_extended_carrier_t carriermode, dvbt2_fftsize_t fftsize, dvbt2_pilotpattern_t pilotpattern, dvb_guardinterval_t guardinterval, int numdatasyms, dvbt2_papr_t paprmode, dvbt2_version_t version, dvbt2_preamble_t preamble, dvbt2_misogroup_t misogroup, dvbt2_equalization_t equalization, dvbt2_bandwidth_t bandwidth, int vlength)
       : gr::block("dvbt2_pilotgenerator_cc",
               gr::io_signature::make(1, 1, sizeof(gr_complex)),
@@ -1177,6 +1182,7 @@ namespace gr {
       }
     }
 
+    UNROLL_LOOPS
     void
     dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
     {
@@ -2676,6 +2682,7 @@ namespace gr {
       }
     }
 
+    UNROLL_LOOPS
     int
     dvbt2_pilotgenerator_cc_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
