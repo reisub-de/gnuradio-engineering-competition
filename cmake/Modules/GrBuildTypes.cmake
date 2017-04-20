@@ -141,9 +141,9 @@ endif(NOT WIN32)
 ########################################################################
 
 if(NOT WIN32)
-  SET(CMAKE_CXX_FLAGS_O3WITHASM "-Wall -save-temps -g -Ofast -mtune=native -march=native -funroll-loops" CACHE STRING
+  SET(CMAKE_CXX_FLAGS_O3WITHASM "-Wall -save-temps -g -O3 -mtune=native -march=native -funroll-loops" CACHE STRING
     "Flags used by the C++ compiler during O3WithASM builds." FORCE)
-  SET(CMAKE_C_FLAGS_O3WITHASM "-Wall -save-temps -g -Ofast -mtune=native -march=native -funroll-loops" CACHE STRING
+  SET(CMAKE_C_FLAGS_O3WITHASM "-Wall -save-temps -g -O3 -mtune=native -march=native -funroll-loops" CACHE STRING
     "Flags used by the C compiler during O3WithASM builds." FORCE)
   SET(CMAKE_EXE_LINKER_FLAGS_O3WITHASM
     "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
