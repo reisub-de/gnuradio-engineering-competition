@@ -276,9 +276,9 @@ namespace gr {
           {
               const double normalization = sqrt(42);
               const double n_1 = 1.0 / normalization;
-              const double n_3 = 1.0 / normalization;
-              const double n_5 = 1.0 / normalization;
-              const double n_7 = 1.0 / normalization;
+              const double n_3 = 3.0 / normalization;
+              const double n_5 = 5.0 / normalization;
+              const double n_7 = 7.0 / normalization;
               m_64qam[0] = gr_complex(  n_7,   n_7);
               m_64qam[1] = gr_complex(  n_7,   n_5);
               m_64qam[2] = gr_complex(  n_5,   n_7);
