@@ -25,6 +25,10 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_bch_bb_impl.h"
 
+#ifndef UNROLL_LOOPS
+#define UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
+#endif
+
 namespace gr {
   namespace dtv {
 
@@ -38,6 +42,7 @@ namespace gr {
     /*
      * The private constructor
      */
+	UNROLL_LOOPS
     dvb_bch_bb_impl::dvb_bch_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate)
       : gr::block("dvb_bch_bb",
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
@@ -392,6 +397,7 @@ namespace gr {
      * Polynomial calculation routines
      * multiply polynomials
      */
+	UNROLL_LOOPS
     int
     dvb_bch_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
     {
@@ -418,6 +424,7 @@ namespace gr {
     /*
      * Pack the polynomial into a 32 bit array
      */
+	UNROLL_LOOPS
     void
     dvb_bch_bb_impl::poly_pack(const int *pin, unsigned int* pout, int len)
     {
@@ -440,6 +447,7 @@ namespace gr {
       }
     }
 
+	UNROLL_LOOPS
     void
     dvb_bch_bb_impl::poly_reverse(int *pin, int *pout, int len)
     {
@@ -582,6 +590,7 @@ namespace gr {
       poly_pack(polyout[0], m_poly_m_12, 180);
     }
 
+	UNROLL_LOOPS
     int
     dvb_bch_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,

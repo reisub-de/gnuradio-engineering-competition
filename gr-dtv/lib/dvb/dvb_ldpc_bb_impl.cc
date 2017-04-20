@@ -25,6 +25,10 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
 
+#ifndef UNROLL_LOOPS
+#define UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
+#endif
+
 namespace gr {
   namespace dtv {
 
@@ -384,6 +388,7 @@ for (int row = 0; row < ROWS; row++) { \
   } \
 } 
 
+	UNROLL_LOOPS
     void
     dvb_ldpc_bb_impl::ldpc_lookup_generate(void)
     {
@@ -596,6 +601,7 @@ for (int row = 0; row < ROWS; row++) { \
       ldpc_encode.table_length = index;
     }
 
+	UNROLL_LOOPS
     int
     dvb_ldpc_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,

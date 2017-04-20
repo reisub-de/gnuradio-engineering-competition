@@ -25,6 +25,10 @@
 #include <gnuradio/io_signature.h>
 #include "dvbt2_framemapper_cc_impl.h"
 
+#ifndef UNROLL_LOOPS
+#define UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
+#endif
+
 namespace gr {
   namespace dtv {
 
@@ -957,7 +961,7 @@ namespace gr {
     }
 
 #define CRC_POLY 0x04C11DB7
-
+	UNROLL_LOOPS
     int
     dvbt2_framemapper_cc_impl::add_crc32_bits(unsigned char *in, int length)
     {
@@ -978,7 +982,7 @@ namespace gr {
       }
       return 32;
     }
-
+	UNROLL_LOOPS
     int
     dvbt2_framemapper_cc_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
     {
@@ -999,7 +1003,7 @@ namespace gr {
       // return the size of array to house the result.
       return max + 1;
     }
-
+	UNROLL_LOOPS
     void
     dvbt2_framemapper_cc_impl::poly_pack(const int *pin, unsigned int* pout, int len)
     {
@@ -1067,6 +1071,7 @@ namespace gr {
       sr[0] = (sr[0] >> 1);
     }
 
+	UNROLL_LOOPS
     void
     dvbt2_framemapper_cc_impl::l1pre_ldpc_lookup_generate(void)
     {
@@ -1093,6 +1098,7 @@ namespace gr {
       l1pre_ldpc_encode.table_length = index;
     }
 
+	UNROLL_LOOPS
     void
     dvbt2_framemapper_cc_impl::l1post_ldpc_lookup_generate(void)
     {
@@ -1119,6 +1125,7 @@ namespace gr {
       l1post_ldpc_encode.table_length = index;
     }
 
+	UNROLL_LOOPS
     void
     dvbt2_framemapper_cc_impl::add_l1pre(gr_complex *out)
     {
@@ -1289,6 +1296,7 @@ namespace gr {
       }
     }
 
+	UNROLL_LOOPS
     void
     dvbt2_framemapper_cc_impl::add_l1post(gr_complex *out, int t2_frame_num)
     {
@@ -1665,6 +1673,7 @@ namespace gr {
       }
     }
 
+	UNROLL_LOOPS
     void
     dvbt2_framemapper_cc_impl::init_dummy_randomizer(void)
     {
@@ -1681,6 +1690,7 @@ namespace gr {
       }
     }
 
+	UNROLL_LOOPS
     void
     dvbt2_framemapper_cc_impl::init_l1_randomizer(void)
     {

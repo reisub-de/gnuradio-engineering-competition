@@ -1,5 +1,8 @@
 *~
 *.pyc
 *.pyo
+*.swp
+*.swo
+*~
 build/
 check_output.py
