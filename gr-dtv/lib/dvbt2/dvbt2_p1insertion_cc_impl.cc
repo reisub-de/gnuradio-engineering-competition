@@ -118,7 +118,8 @@ namespace gr {
         }
       }
       dbpsk_modulation_sequence[0] = 1;
-      /*for (int i = 1; i < 385; ++i) {
+      /*
+      for (int i = 1; i < 385; ++i) {
         dbpsk_modulation_sequence[i] = 0;
       }*/
       for (int i = 1; i < 385; ++i) {
