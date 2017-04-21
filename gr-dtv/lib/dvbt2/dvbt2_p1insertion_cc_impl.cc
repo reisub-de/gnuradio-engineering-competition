@@ -103,17 +103,17 @@ namespace gr {
       init_p1_randomizer();
       s2 = (fftsize & 0x7) << 1;
       for (int i = 0; i < 8; ++i) {
-        for (int j = 7; j >= 0; j--) {
+        for (int j = 7; j >= 0; --j) {
           modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
         }
       }
       for (int i = 0; i < 32; ++i) {
-        for (int j = 7; j >= 0; j--) {
+        for (int j = 7; j >= 0; --j) {
           modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> j) & 0x1;
         }
       }
       for (int i = 0; i < 8; ++i) {
-        for (int j = 7; j >= 0; j--) {
+        for (int j = 7; j >= 0; --j) {
           modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
         }
       }
