@@ -1186,7 +1186,8 @@ namespace gr {
 	}
 
 /* original (w/o) bitsets */
-#ifdef 0
+#define OLDCODE 0
+#ifdef OLDCODE
       temp = l1preinit->type;
       for (int n = 7; n >= 0; n--) {
         l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
