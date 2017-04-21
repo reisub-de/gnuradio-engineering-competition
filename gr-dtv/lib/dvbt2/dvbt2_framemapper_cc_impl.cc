@@ -1186,6 +1186,7 @@ namespace gr {
 	}
 
 /* original (w/o) bitsets */
+#ifdef 0
       temp = l1preinit->type;
       for (int n = 7; n >= 0; n--) {
         l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
@@ -1280,6 +1281,7 @@ namespace gr {
       for (int n = 3; n >= 0; n--) {
         l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
+#endif
 /* End restructure with bitsets */
       offset_bits += add_crc32_bits(l1pre, offset_bits);
       /* Padding */
