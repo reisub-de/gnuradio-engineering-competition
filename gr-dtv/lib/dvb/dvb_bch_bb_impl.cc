@@ -609,7 +609,7 @@ namespace gr {
         case BCH_CODE_N12:  
           for (int i = 0; i < noutput_items; i += nbch) {
             // Zero the shift register
-            memset(shift, 0, shiftSize); 
+            memset(shift, 0, shiftSize);  //old code
             //bzero(shift, shiftSize);
             // MSB of the codeword first
             // kbch = 38688
