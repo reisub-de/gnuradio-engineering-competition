@@ -328,10 +328,10 @@ namespace gr {
     {
       int r, crc;
 
-      for (int i = 0; i < 256; ++i) {
+      for (int i = 0; i < 256; i++) {
         r = i;
         crc = 0;
-        for (int j = 7; j >= 0; --j) {
+        for (int j = 7; j >= 0; j--) {
           if ((r & (1 << j) ? 1 : 0) ^ ((crc & 0x80) ? 1 : 0)) {
             crc = (crc << 1) ^ CRC_POLYR;
           }
@@ -355,7 +355,7 @@ namespace gr {
       int b;
       int i = 0;
 
-      for (int n = 0; n < length; ++n) {
+      for (int n = 0; n < length; n++) {
         b = in[i++] ^ (crc & 0x01);
         crc >>= 1;
         if (b) {
@@ -429,11 +429,11 @@ namespace gr {
         m_frame[m_frame_offset_bits++] = 0;
       }
       temp = h->upl;
-      for (int n = 15; n >= 0; --n) {
+      for (int n = 15; n >= 0; n--) {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       temp = h->dfl - padding;
-      for (int n = 15; n >= 0; --n) {
+      for (int n = 15; n >= 0; n--) {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       temp = h->sync;
@@ -457,7 +457,7 @@ namespace gr {
       if (nibble == FALSE) {
         temp += 4;
       }
-      for (int n = 15; n >= 0; --n) {
+      for (int n = 15; n >= 0; n--) {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       // Add CRC to BB header, at end
@@ -517,17 +517,17 @@ namespace gr {
                 if (*in != 0x47) {
                   GR_LOG_WARN(d_logger, "Transport Stream sync error!");
                 }
-                --j;
-                ++in;
+                j--;
+                in++;
               }
               else {
                 b = *in++;
-                for (int n = 7; n >= 0; --n) {
+                for (int n = 7; n >= 0; n--) {
                   out[offset++] = b & (1 << n) ? 1 : 0;
                 }
               }
               count = (count + 1) % 188;
-              ++consumed;
+              consumed++;
             }
             if (fec_block == 0 && inband_type_b == TRUE) {
               add_inband_type_b(&out[offset], ts_rate);
@@ -540,7 +540,7 @@ namespace gr {
                 if (*in != 0x47) {
                   GR_LOG_WARN(d_logger, "Transport Stream sync error!");
                 }
-                ++in;
+                in++;
                 b = crc;
                 crc = 0;
               }
@@ -549,8 +549,8 @@ namespace gr {
                 crc = crc_tab[b ^ crc];
               }
               count = (count + 1) % 188;
-              ++consumed;
-              for (int n = 7; n >= 0; --n) {
+              consumed++;
+              for (int n = 7; n >= 0; n--) {
                 out[offset++] = b & (1 << n) ? 1 : 0;
               }
             }
@@ -567,13 +567,13 @@ namespace gr {
           padding = 0;
           add_bbheader(&out[offset], count, padding, nibble);
           offset = offset + 80;
-          for (int j = 0; j < (int)((kbch - 80) / 4); ++j) {
+          for (int j = 0; j < (int)((kbch - 80) / 4); j++) {
             if (nibble == TRUE) {
               if (count == 0) {
                 if (*in != 0x47) {
                   GR_LOG_WARN(d_logger, "Transport Stream sync error!");
                 }
-                ++in;
+                in++;
                 b = crc;
                 crc = 0;
               }
@@ -583,8 +583,8 @@ namespace gr {
               }
               bsave = b;
               count = (count + 1) % 188;
-              ++consumed;
-              for (int n = 7; n >= 4; --n) {
+              consumed++;
+              for (int n = 7; n >= 4; n--) {
                 out[offset++] = b & (1 << n) ? 1 : 0;
               }
               nibble = FALSE;
@@ -610,4 +610,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-

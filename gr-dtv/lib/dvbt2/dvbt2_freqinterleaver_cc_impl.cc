@@ -664,24 +664,12 @@ namespace gr {
           break;
       }
       if ((preamble == PREAMBLE_T2_SISO) || (preamble == PREAMBLE_T2_LITE_SISO)) {
-        if (guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2) {
+        if ((guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) || (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) || (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2) || (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2)) {
           N_FC = 0;
           C_FC = 0;
         }
       }
-      for (int i = 0; i < max_states; i++) {
+      for (int i = 0; i < max_states; ++i) {
         if (i == 0 || i == 1) {
           lfsr = 0;
         }
@@ -690,7 +678,7 @@ namespace gr {
         }
         else {
           result = 0;
-          for (int k = 0; k < xor_size; k++) {
+          for (int k = 0; k < xor_size; ++k) {
             result ^= (lfsr >> logic[k]) & 1;
           }
           lfsr &= pn_mask;
@@ -699,10 +687,10 @@ namespace gr {
         }
         even = 0;
         odd = 0;
-        for (int n = 0; n < pn_degree; n++) {
+        for (int n = 0; n < pn_degree; ++n) {
           even |= ((lfsr >> n) & 0x1) << bitpermeven[n];
         }
-        for (int n = 0; n < pn_degree; n++) {
+        for (int n = 0; n < pn_degree; ++n) {
           odd |= ((lfsr >> n) & 0x1) << bitpermodd[n];
         }
         even = even + ((i % 2) * (max_states / 2));
@@ -727,18 +715,16 @@ namespace gr {
         }
       }
       if (fftsize == FFTSIZE_32K || fftsize == FFTSIZE_32K_T2GI) {
-        for (int j = 0; j < q_odd; j++) {
-          int a;
+        int a, j;
+        for (j = 0; j < q_odd; ++j) {
           a = Hodd[j];
           Heven[a] = j;
         }
-        for (int j = 0; j < q_oddP2; j++) {
-          int a;
+        for (j = 0; j < q_oddP2; ++j) {
           a = HoddP2[j];
           HevenP2[a] = j;
         }
-        for (int j = 0; j < q_oddFC; j++) {
-          int a;
+        for (j = 0; j < q_oddFC; ++j) {
           a = HoddFC[j];
           HevenFC[a] = j;
         }
@@ -771,45 +757,46 @@ namespace gr {
       gr_complex *out = (gr_complex *) output_items[0];
       int symbol = 0;
       int *H;
+      int i, j, k;
 
-      for (int i = 0; i < noutput_items; i += interleaved_items) {
-        for (int j = 0; j < N_P2; j++) {
+      for (i = 0; i < noutput_items; i += interleaved_items) {
+        for (j = 0; j < N_P2; ++j) {
           if ((symbol % 2) == 0) {
             H = HevenP2;
           }
           else {
             H = HoddP2;
           }
-          for (int j = 0; j < C_P2; j++) {
-            *out++ = in[H[j]];
+          for (k = 0; k < C_P2; ++k) {
+            *out++ = in[H[k]];
           }
-          symbol++;
+          ++symbol;
           in += C_P2;
         }
-        for (int j = 0; j < num_data_symbols; j++) {
+        for (j = 0; j < num_data_symbols; ++j) {
           if ((symbol % 2) == 0) {
             H = Heven;
           }
           else {
             H = Hodd;
           }
-          for (int j = 0; j < C_DATA; j++) {
-            *out++ = in[H[j]];
+          for (k = 0; k < C_DATA; ++k) {
+            *out++ = in[H[k]];
           }
-          symbol++;
+          ++symbol;
           in += C_DATA;
         }
-        if (N_FC != 0) {
+        if (N_FC) {
           if ((symbol % 2) == 0) {
             H = HevenFC;
           }
           else {
             H = HoddFC;
           }
-          for (int j = 0; j < N_FC; j++) {
+          for (j = 0; j < N_FC; ++j) {
             *out++ = in[H[j]];
           }
-          symbol++;
+          ++symbol;
           in += N_FC;
         }
       }
