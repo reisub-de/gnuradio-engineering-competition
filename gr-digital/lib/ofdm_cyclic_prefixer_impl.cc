@@ -63,7 +63,7 @@ namespace gr {
 	}
 	// The actual flanks are one sample shorter than d_rolloff_len, because the
 	// first sample of the up- and down flank is always zero and one, respectively
-	for (int i = 1; i < d_rolloff_len; i++) {
+	for (int i = 1; i < d_rolloff_len; ++i) {
 	  d_up_flank[i-1]   = 0.5 * (1 + cos(M_PI * i/rolloff_len - M_PI));
 	  d_down_flank[i-1] = 0.5 * (1 + cos(M_PI * (rolloff_len-i)/rolloff_len - M_PI));
 	}
@@ -117,11 +117,11 @@ namespace gr {
       }
 
       // 2) Do the cyclic prefixing and, optionally, the pulse shaping
-      for (int sym_idx = 0; sym_idx < symbols_to_read; sym_idx++) {
+      for (int sym_idx = 0; sym_idx < symbols_to_read; ++sym_idx) {
 	memcpy((void *)(out + d_cp_size), (void *) in, d_fft_len * sizeof(gr_complex));
 	memcpy((void *) out, (void *) (in + d_fft_len - d_cp_size), d_cp_size * sizeof(gr_complex));
 	if (d_rolloff_len) {
-	  for (int i = 0; i < d_rolloff_len-1; i++) {
+	  for (int i = 0; i < d_rolloff_len-1; ++i) {
 	    out[i] = out[i] * d_up_flank[i] + d_delay_line[i];
 	    d_delay_line[i] = in[i] * d_down_flank[i];
 	  }
@@ -135,7 +135,7 @@ namespace gr {
       //    - Propagate tags
       if (!d_length_tag_key_str.empty()) {
 	if (d_rolloff_len) {
-	  for (unsigned i = 0; i < d_delay_line.size(); i++) {
+	  for (unsigned i = 0; i < d_delay_line.size(); ++i) {
 	    *out++ = d_delay_line[i];
 	  }
 	  d_delay_line.assign(d_delay_line.size(), 0);
@@ -145,7 +145,7 @@ namespace gr {
 	    tags, 0,
 	    nitems_read(0), nitems_read(0)+symbols_to_read
 	);
-	for (unsigned i = 0; i < tags.size(); i++) {
+	for (unsigned i = 0; i < tags.size(); ++i) {
 	  tags[i].offset = ((tags[i].offset - nitems_read(0)) * d_output_size) + nitems_written(0);
 	  add_item_tag(0,
 	      tags[i].offset,
