@@ -647,27 +647,27 @@ for (int row = 0; row < ROWS; ++row) { \
         }
         if (P != 0) {
           puncture = 0;
-          for (int j = 0; j < plen; j += P) {
-            p[j] = 0x55;
+          for (unsigned char*jptr = p; jptr < p+plen; jptr += P) {
+            *jptr = 0x55;
             ++puncture;
             if (puncture == Xp) {
               break;
             }
           }
           index = 0;
-          for (int j = 0; j < plen; ++j) {
-            if (p[j] != 0x55) {
-              b[index++] = p[j];
+          for (unsigned char*jptr = p; jptr < p+plen; ++jptr) {
+            if (*jptr != 0x55) {
+              b[index++] = *jptr;
             }
           }
           p = &out[nbch];
         }
-        for (int j = 1; j < (plen - Xp); ++j) {
-          p[j] ^= p[j-1];
+        for (unsigned char*jptr = p+1; jptr < p+(plen - Xp); ++jptr) {
+          *jptr ^= *(jptr-1);
         }
         if (signal_constellation == MOD_128APSK) {
-          for (int j = 0; j < 6; ++j) {
-            p[j + plen] = 0;
+          for (unsigned char*jptr = p; jptr < p+6; ++jptr) {
+            *(jptr+plen) = 0;
           }
         }
         d += nbch;
