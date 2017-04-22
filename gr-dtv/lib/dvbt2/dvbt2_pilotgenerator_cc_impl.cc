@@ -1073,6 +1073,9 @@ namespace gr {
       pilot_pattern = pilotpattern;
       carrier_mode = carriermode;
       papr_mode = paprmode;
+            // C_PS = 13921;
+            // K_EXT = 144;
+            // K_OFFSET = 0;
       left_nulls = ((vlength - C_PS) / 2) + 1;
       right_nulls = (vlength - C_PS) / 2;
       if ((fftsize == FFTSIZE_32K || fftsize == FFTSIZE_32K_T2GI) && (miso == FALSE)) {
@@ -1136,6 +1139,11 @@ namespace gr {
         GR_LOG_FATAL(d_logger, "Pilot Generator and IFFT, cannot allocate memory for ofdm_fft.");
         throw std::bad_alloc();
       }
+        
+      // numdatasyms == 59 (set in flowgraph)
+      // N_P2 = 1;
+      // C_P2 = 8944;
+      // num_symbols = 60
       num_symbols = numdatasyms + N_P2;
       set_output_multiple(num_symbols);
     }
@@ -2687,7 +2695,18 @@ namespace gr {
       gr_complex zero;
       gr_complex *dst;
       int L_FC = 0;
-
+      int controlVariableOne = ofdm_fft_size / 2; 
+      size_t controlVariableTwo = sizeof(gr_complex) * ofdm_fft_size / 2;
+      
+      // fftsize = FFTSIZE_32K_T2GI
+      // pilotpattern = PILOT_PP7
+      // N_P2 = 1;
+      // C_P2 = 8944;
+      // num_symbols = 60
+			// miso = FALSE;
+      // C_DATA = 13698;
+      // N_FC = 13340; Gets set to 0 later on
+      // C_FC = 11406; Gets set to 0 later on 
       zero = gr_complex(0.0, 0.0);
       if (N_FC != 0) {
         L_FC = 1;
@@ -2695,6 +2714,7 @@ namespace gr {
       for (int i = 0; i < noutput_items; i += num_symbols) {
         for (int j = 0; j < num_symbols; j++) {
           init_pilots(j);
+          // N_P2==1, so this only runs once
           if (j < N_P2) {
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
@@ -2716,7 +2736,7 @@ namespace gr {
             for (int n = 0; n < right_nulls; n++) {
               *out++ = zero;
             }
-          }
+          } // (if j < N_P2)
           else if (j == (num_symbols - L_FC)) {
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
@@ -2772,8 +2792,8 @@ namespace gr {
             volk_32fc_x2_multiply_32fc(out, out, inverse_sinc, ofdm_fft_size);
           }
           dst = ofdm_fft->get_inbuf();
-          memcpy(&dst[ofdm_fft_size / 2], &out[0], sizeof(gr_complex) * ofdm_fft_size / 2);
-          memcpy(&dst[0], &out[ofdm_fft_size / 2], sizeof(gr_complex) * ofdm_fft_size / 2);
+          memcpy(&dst[controlVariableOne], &out[0], controlVariableTwo);
+          memcpy(&dst[0], &out[controlVariableOne], controlVariableTwo);
           ofdm_fft->execute();
           volk_32fc_s32fc_multiply_32fc(out, ofdm_fft->get_outbuf(), normalization, ofdm_fft_size);
           out += ofdm_fft_size;
