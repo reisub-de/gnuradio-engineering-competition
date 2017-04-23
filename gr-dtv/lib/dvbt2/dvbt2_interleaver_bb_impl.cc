@@ -445,23 +445,85 @@ namespace gr {
               }
               index = 0;
               for (int j = 0; j < rows; j++) {
-                tempu[index++] = c1[j];
-                tempu[index++] = c2[j];
-                tempu[index++] = c3[j];
-                tempu[index++] = c4[j];
-                tempu[index++] = c5[j];
-                tempu[index++] = c6[j];
-                tempu[index++] = c7[j];
-                tempu[index++] = c8[j];
-                tempu[index++] = c9[j];
-                tempu[index++] = c10[j];
-                tempu[index++] = c11[j];
-                tempu[index++] = c12[j];
-                tempu[index++] = c13[j];
-                tempu[index++] = c14[j];
-                tempu[index++] = c15[j];
-                tempu[index++] = c16[j];
+                tempu[index] = c1[j];
+                index += 16;
               }
+              index = 1;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c2[j];
+                index += 16;
+              }
+              index = 2;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c3[j];
+                index += 16;
+              }
+              index = 3;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c4[j];
+                index += 16;
+              }
+              index = 4;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c5[j];
+                index += 16;
+              }
+              index = 5;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c6[j];
+                index += 16;
+              }
+              index = 6;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c7[j];
+                index += 16;
+              }
+              index = 7;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c8[j];
+                index += 16;
+              }
+              index = 8;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c9[j];
+                index += 16;
+              }
+              index = 9;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c10[j];
+                index += 16;
+              }
+              index = 10;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c11[j];
+                index += 16;
+              }
+              index = 11;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c12[j];
+                index += 16;
+              }
+              index = 12;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c13[j];
+                index += 16;
+              }
+              index = 13;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c14[j];
+                index += 16;
+              }
+              index = 14;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c15[j];
+                index += 16;
+              }
+              index = 15;
+              for (int j = 0; j < rows; j++) {
+                tempu[index] = c16[j];
+                index += 16;
+              }
+              
               index = 0;
               for (int d = 0; d < rows; d++) {
                 pack = 0;
