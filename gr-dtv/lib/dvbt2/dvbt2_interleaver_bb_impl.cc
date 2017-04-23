@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -122,13 +122,13 @@ namespace gr {
       switch (constellation) {
         case MOD_QPSK:
           mod = 2;
-          set_output_multiple(frame_size / mod);
-          packed_items = frame_size / mod;
+          set_output_multiple(frame_size >> 1);
+          packed_items = frame_size >> 1;
           break;
         case MOD_16QAM:
           mod = 4;
-          set_output_multiple(frame_size / mod);
-          packed_items = frame_size / mod;
+          set_output_multiple(frame_size >> 2);
+          packed_items = frame_size >> 2;
           break;
         case MOD_64QAM:
           mod = 6;
@@ -137,13 +137,13 @@ namespace gr {
           break;
         case MOD_256QAM:
           mod = 8;
-          set_output_multiple(frame_size / mod);
-          packed_items = frame_size / mod;
+          set_output_multiple(frame_size >> 3);
+          packed_items = frame_size >> 3;
           break;
         default:
           mod = 1;
-          set_output_multiple(frame_size / mod);
-          packed_items = frame_size / mod;
+          set_output_multiple(frame_size);
+          packed_items = frame_size;
           break;
       }
     }
