@@ -706,7 +706,7 @@ namespace gr {
         for (int n = 0; n < pn_degree; n++) {
           odd |= ((lfsr >> n) & 0x1) << bitpermodd[n];
         }
-        holder = (( i & 3 ) * (max_states >> 1));
+        holder = (( i & 1 ) * (max_states >> 1));
         even = even + holder; //quicker equivalent to even + ( (i%2) * (max_states/2))
         odd = odd + holder; //quicker equivalent to odd + ( (i%2) * (max_states/2))
         if (even < C_DATA) {
