@@ -33,8 +33,8 @@ cmakeopts+=(
     '-DENABLE_GR_CTRLPORT=OFF'
 )
 
-#export CXXFLAGS="-march=skylake -mtune=skylake -funroll-loops"
-export CXXFLAGS="-O0"
+export CXXFLAGS="-march=skylake -mtune=skylake -funroll-loops"
+#export CXXFLAGS="-O0"
 
 cmake ${cmakeopts[@]} $SRC
 
