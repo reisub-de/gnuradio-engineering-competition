@@ -22,6 +22,7 @@
 #include "config.h"
 #endif
 
+//#include <iostream>
 #include <gnuradio/io_signature.h>
 #include "dvb_bch_bb_impl.h"
 
@@ -431,7 +432,7 @@ namespace gr {
       for (unsigned int*iptr = pout; iptr < pout+lw; ++iptr) {
         temp = 0x80000000;
         *iptr = 0;
-        for (int j = 0; j < 32; ++j) {
+        for (int j = 32; j--; ) {
           if (pin[ptr++]) {
             *iptr |= temp;
           }
@@ -446,8 +447,8 @@ namespace gr {
       int c;
       c = len - 1;
 
-      for (int*iptr = pin; iptr < pin+len; ++iptr) {
-        pout[c--] = *iptr;
+      for (int i = len; i--; ) {
+        pout[c--] = pin[i];
       }
     }
 
@@ -538,24 +539,40 @@ namespace gr {
       int len;
       int polyout[2][200];
 
-      len = poly_mult(polyn01, 17, polyn02,    17,  polyout[0]);
+      /*len = poly_mult(polyn01, 17, polyn02,    17,  polyout[0]);
       len = poly_mult(polyn03, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn04, 17, polyout[1], len, polyout[0]);
       len = poly_mult(polyn05, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn06, 17, polyout[1], len, polyout[0]);
       len = poly_mult(polyn07, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn08, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_8, 128);
+      poly_pack(polyout[0], m_poly_n_8, 128);*/
+      m_poly_n_8[0] = 3563495200;
+      m_poly_n_8[1] = 2931179416;
+      m_poly_n_8[2] = 3186222222;
+      m_poly_n_8[3] = 4205109304;
 
-      len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
+      /*len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn10, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_10, 160);
+      poly_pack(polyout[0], m_poly_n_10, 160);*/
+      m_poly_n_10[0] = 2309414173;
+      m_poly_n_10[1] = 2160364535;
+      m_poly_n_10[2] = 3236568662;
+      m_poly_n_10[3] = 4174140479;
+      m_poly_n_10[4] = 3073419270;
 
-      len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
+      /*len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_12, 192);
+      poly_pack(polyout[0], m_poly_n_12, 192);*/
+      m_poly_n_12[0] = 3886694502;
+      m_poly_n_12[1] = 4020363968;
+      m_poly_n_12[2] = 2433788987;
+      m_poly_n_12[3] = 456454922;
+      m_poly_n_12[4] = 948582945;
+      m_poly_n_12[5] = 3245368434;
 
-      len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
+
+      /*len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
       len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
       len = poly_mult(polys04, 15, polyout[1], len, polyout[0]);
       len = poly_mult(polys05, 15, polyout[0], len, polyout[1]);
@@ -566,9 +583,16 @@ namespace gr {
       len = poly_mult(polys10, 15, polyout[1], len, polyout[0]);
       len = poly_mult(polys11, 15, polyout[0], len, polyout[1]);
       len = poly_mult(polys12, 15, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_s_12, 168);
+      poly_pack(polyout[0], m_poly_s_12, 168);*/
+      m_poly_s_12[0] = 2778765451;
+      m_poly_s_12[1] = 3957846346;
+      m_poly_s_12[2] = 2517222852;
+      m_poly_s_12[3] = 3007729046;
+      m_poly_s_12[4] = 425188166;
+      m_poly_s_12[5] = 45114482;
 
-      len = poly_mult(polym01, 16, polym02,    16,  polyout[0]);
+
+      /*len = poly_mult(polym01, 16, polym02,    16,  polyout[0]);
       len = poly_mult(polym03, 16, polyout[0], len, polyout[1]);
       len = poly_mult(polym04, 16, polyout[1], len, polyout[0]);
       len = poly_mult(polym05, 16, polyout[0], len, polyout[1]);
@@ -579,7 +603,14 @@ namespace gr {
       len = poly_mult(polym10, 16, polyout[1], len, polyout[0]);
       len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
       len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_m_12, 180);
+      poly_pack(polyout[0], m_poly_m_12, 180); */
+      m_poly_m_12[0] = 3498187715;
+      m_poly_m_12[1] = 4096699498;
+      m_poly_m_12[2] = 3433104751;
+      m_poly_m_12[3] = 3653255568;
+      m_poly_m_12[4] = 2977959358;
+      m_poly_m_12[5] = 3709950066;
+
     }
 
     int
@@ -601,8 +632,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            j = (int)kbch;
-            while (j--) {
+            for (j = (int)kbch; j--; ) {
               temp = *in++;
               *out++ = temp;
               ++consumed;
@@ -618,8 +648,7 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            n = 192;
-            while (n--) {
+            for (n = 192; n--; ) {
               *out++ = (shift[5] & 1);
               reg_6_shift(shift);
             }
@@ -630,8 +659,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 5);
             // MSB of the codeword first
-            j = (int)kbch;
-            while (j--) {
+            for (j = (int)kbch; j--; ) {
               temp = *in++;
               *out++ = temp;
               ++consumed;
@@ -646,8 +674,7 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            n = 160;
-            while (n--) {
+            for (n = 160; n--; ) {
               *out++ = (shift[4] & 1);
               reg_5_shift(shift);
             }
@@ -658,8 +685,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 4);
             // MSB of the codeword first
-            j = (int)kbch;
-            while (j--) {
+            for (j = (int)kbch; j--; ) {
               temp = *in++;
               *out++ = temp;
               ++consumed;
@@ -673,8 +699,7 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            n = 128;
-            while (n--) {
+            for (n = 128; n--; ) {
               *out++ = shift[3] & 1;
               reg_4_shift(shift);
             }
@@ -685,8 +710,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            j = (int)kbch;
-            while (j--) {
+            for (j = (int)kbch; j--; ) {
               temp = *in++;
               *out++ = temp;
               ++consumed;
@@ -702,8 +726,7 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            n = 168;
-            while (n--) {
+            for (n = 168; n--; ) {
               *out++ = (shift[5] & 0x01000000) ? 1 : 0;
               reg_6_shift(shift);
             }
@@ -714,8 +737,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            j = (int)kbch;
-            while (j--) {
+            for (j = (int)kbch; j--; ) {
               temp = *in++;
               *out++ = temp;
               ++consumed;
@@ -731,8 +753,7 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            n = 180;
-            while (n--) {
+            for (n = 180; n--; ) {
               *out++ = (shift[5] & 0x00001000) ? 1 : 0;
               reg_6_shift(shift);
             }
