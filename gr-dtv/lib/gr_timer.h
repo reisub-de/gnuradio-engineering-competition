@@ -9,18 +9,12 @@ class gr_timer
     private:
         clock_t start;
         std::string id;
-    public:
+        static std::ofstream log;
+        static gr_timer* log_owner;
 
-        gr_timer(const char* id):
-            start(clock()),
-            id(id)
-    {
-        std::cout << "started timer <" << id << ">" << std::endl;
-    }
-        ~gr_timer()
-        {
-            std::cout << "timer <" << id << "> lasted " << (clock() - start) << " cycles." << std::endl;
-        } 
+    public:
+        gr_timer(const char* id);
+        ~gr_timer();
 };
 
 #endif

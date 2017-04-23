@@ -395,6 +395,7 @@ for (int row = 0; row < ROWS; row++) { \
     void
     dvb_ldpc_bb_impl::ldpc_lookup_generate(void)
     {
+        gr_timer t0("ldpc_lookup_generate");
       int im;
       int index;
       int pbits;
@@ -611,6 +612,7 @@ for (int row = 0; row < ROWS; row++) { \
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
+        gr_timer t0("ldpc general_work");
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       const unsigned char *d;
