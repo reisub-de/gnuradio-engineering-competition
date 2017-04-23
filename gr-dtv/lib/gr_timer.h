@@ -7,7 +7,7 @@
 class gr_timer
 {
     private:
-        unsigned long start;
+        clock_t start;
         std::string id;
     public:
 
