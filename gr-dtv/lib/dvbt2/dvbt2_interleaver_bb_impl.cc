@@ -365,16 +365,6 @@ namespace gr {
         
         case MOD_256QAM:
           if (frame_size == FRAME_SIZE_NORMAL) {
-            if (code_rate == C3_5) {
-              mux = &mux256_35[0]; // set the value of mux to the fist adress of mux256_35
-            }
-            else if (code_rate == C2_3) {
-              mux = &mux256_23[0];
-            }
-            else {
-              mux = &mux256[0];
-            }
-            
             const int MOD = mod*2;
             
             rows = frame_size / MOD; // get the number of rows needed to do operations 
@@ -527,9 +517,59 @@ namespace gr {
               index = 0;
               for (int d = 0; d < rows; d++) {
                 pack = 0;
-                for (int e = 0; e < MOD; e++) {
-                  offset = mux[e];
-                  pack |= tempu[index++] << ((MOD - 1) - offset);
+                if (code_rate == C3_5) {
+                  pack |= tempu[index++] << ((MOD - 1) - 2); 
+                  pack |= tempu[index++] << ((MOD - 1) - 11);
+                  pack |= tempu[index++] << ((MOD - 1) - 3); 
+                  pack |= tempu[index++] << ((MOD - 1) - 4); 
+                  pack |= tempu[index++] << ((MOD - 1) - 0); 
+                  pack |= tempu[index++] << ((MOD - 1) - 9); 
+                  pack |= tempu[index++] << ((MOD - 1) - 1); 
+                  pack |= tempu[index++] << ((MOD - 1) - 8); 
+                  pack |= tempu[index++] << ((MOD - 1) - 10);
+                  pack |= tempu[index++] << ((MOD - 1) - 13);
+                  pack |= tempu[index++] << ((MOD - 1) - 7); 
+                  pack |= tempu[index++] << ((MOD - 1) - 14);
+                  pack |= tempu[index++] << ((MOD - 1) - 6); 
+                  pack |= tempu[index++] << ((MOD - 1) - 15);
+                  pack |= tempu[index++] << ((MOD - 1) - 5); 
+                  pack |= tempu[index++] << ((MOD - 1) - 12);
+                }   
+                else if (code_rate == C2_3) {
+                  pack |= tempu[index++] << ((MOD - 1) - 7); 
+                  pack |= tempu[index++] << ((MOD - 1) - 2); 
+                  pack |= tempu[index++] << ((MOD - 1) - 9); 
+                  pack |= tempu[index++] << ((MOD - 1) - 0); 
+                  pack |= tempu[index++] << ((MOD - 1) - 4); 
+                  pack |= tempu[index++] << ((MOD - 1) - 6); 
+                  pack |= tempu[index++] << ((MOD - 1) - 13);
+                  pack |= tempu[index++] << ((MOD - 1) - 3); 
+                  pack |= tempu[index++] << ((MOD - 1) - 14);
+                  pack |= tempu[index++] << ((MOD - 1) - 10);
+                  pack |= tempu[index++] << ((MOD - 1) - 15);
+                  pack |= tempu[index++] << ((MOD - 1) - 5); 
+                  pack |= tempu[index++] << ((MOD - 1) - 8); 
+                  pack |= tempu[index++] << ((MOD - 1) - 12);
+                  pack |= tempu[index++] << ((MOD - 1) - 11);
+                  pack |= tempu[index++] << ((MOD - 1) - 1); 
+                }
+                else {
+                  pack |= tempu[index++] << ((MOD - 1) - 15);
+                  pack |= tempu[index++] << ((MOD - 1) - 1);
+                  pack |= tempu[index++] << ((MOD - 1) - 13);
+                  pack |= tempu[index++] << ((MOD - 1) - 3);
+                  pack |= tempu[index++] << ((MOD - 1) - 8);
+                  pack |= tempu[index++] << ((MOD - 1) - 11);
+                  pack |= tempu[index++] << ((MOD - 1) - 9);
+                  pack |= tempu[index++] << ((MOD - 1) - 5);
+                  pack |= tempu[index++] << ((MOD - 1) - 10);
+                  pack |= tempu[index++] << ((MOD - 1) - 6);
+                  pack |= tempu[index++] << ((MOD - 1) - 4);
+                  pack |= tempu[index++] << ((MOD - 1) - 7);
+                  pack |= tempu[index++] << ((MOD - 1) - 12);
+                  pack |= tempu[index++] << ((MOD - 1) - 2);
+                  pack |= tempu[index++] << ((MOD - 1) - 14);
+                  pack |= tempu[index++] << ((MOD - 1) - 0);
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
