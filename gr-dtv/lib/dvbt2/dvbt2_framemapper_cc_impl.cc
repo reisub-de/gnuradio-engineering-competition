@@ -1132,6 +1132,62 @@ namespace gr {
       L1Pre *l1preinit = &L1_Signalling[0].l1pre_data;
       int g, o, index;
 
+/* Begin restructure with bitsets */
+	std::bitset<168> bv; //bitvec
+	int intvar[] = {
+		 l1preinit->type
+		,l1preinit->bwt_ext
+		,l1preinit->s1
+		,l1preinit->s2
+		,0
+	      	,l1preinit->l1_repetition_flag
+	      	,l1preinit->guard_interval
+	        ,l1preinit->papr
+		,l1preinit->l1_mod
+		,l1preinit->l1_cod
+  	      	,l1preinit->l1_fec_type
+  	      	,l1preinit->l1_post_size
+  	        ,l1preinit->l1_post_info_size
+  	        ,l1preinit->pilot_pattern
+  	        ,l1preinit->tx_id_availability
+  	        ,l1preinit->cell_id
+  	        ,l1preinit->network_id
+  	        ,l1preinit->t2_system_id
+  	        ,l1preinit->num_t2_frames
+  	        ,l1preinit->num_data_symbols
+  	        ,l1preinit->regen_flag
+  	        ,l1preinit->l1_post_extension
+  	        ,l1preinit->num_rf
+  	        ,l1preinit->current_rf_index
+  	        ,l1preinit->t2_version
+  	        ,l1preinit->l1_post_scrambled
+  	        ,l1preinit->t2_base_lite
+  	        ,l1preinit->reserved
+	};
+
+	int reps[28] = {
+		8,  1,  3, 3, 1,  1,  3,  4, 4,  2, 
+		2, 18, 18, 4, 8, 16, 16, 16, 8, 12, 
+		3,  1,  3, 3, 4,  1,  1,  4
+	};
+
+	int n;
+	for (int i=0;i<28;i++)
+	{
+		n = reps[i];
+		temp = intvar[i];
+		bv <<= n;
+		bv &= (temp & ((1<<n) - 1));
+	}
+
+	for (int i=0;i<168;i++)
+	{
+		l1pre[i] = bv[i];
+	}
+
+/* original (w/o) bitsets */
+#define OLDCODE 0
+#ifdef OLDCODE
       temp = l1preinit->type;
       for (int n = 7; n >= 0; n--) {
         l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
@@ -1226,6 +1282,8 @@ namespace gr {
       for (int n = 3; n >= 0; n--) {
         l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
+#endif
+/* End restructure with bitsets */
       offset_bits += add_crc32_bits(l1pre, offset_bits);
       /* Padding */
       for (int n = KBCH_1_4 - offset_bits - 1; n >= 0; n--) {
