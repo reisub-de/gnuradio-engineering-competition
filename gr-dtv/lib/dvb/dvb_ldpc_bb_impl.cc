@@ -29,6 +29,8 @@
 #define UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
 #endif
 
+#include "../gr_timer.h"
+
 namespace gr {
   namespace dtv {
 
@@ -50,6 +52,7 @@ namespace gr {
       P(0),
       Xp(0)
     {
+        gr_timer t0("private ctor LDPC");
       frame_size_type = framesize;
       if (framesize == FECFRAME_NORMAL) {
         frame_size = FRAME_SIZE_NORMAL;
