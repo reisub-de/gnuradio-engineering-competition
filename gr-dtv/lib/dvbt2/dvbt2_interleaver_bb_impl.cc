@@ -408,9 +408,9 @@ namespace gr {
               // populate the first 38880 values of tempu with the first 38880 values of input 
               // nbch = 38880 
               // write to tempu
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
-              }
+              
+              memcpy(tempu, in, nbch);
+              in += nbch;
               // in == &input_items[38880] at this point
               
               // populate the values of tempu starting at 38880 going up by (360 * t) + s each iteration with input values at intervals of 72 * s + t 
