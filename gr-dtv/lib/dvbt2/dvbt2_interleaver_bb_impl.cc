@@ -375,8 +375,9 @@ namespace gr {
               mux = &mux256[0];
             }
             
+            const int MOD = mod*2;
             
-            rows = frame_size / (mod * 2); // get the number of rows needed to do operations 
+            rows = frame_size / MOD; // get the number of rows needed to do operations 
                                            // mod=8, and frame_size=FRAME_SIZE_NORMAL
                                            // rows must be 4050 at least???
             // set c1 to c16 to point to the addresses of tempv at intervals of the value of row * n where n = c[m-1]
@@ -399,7 +400,6 @@ namespace gr {
             c15 = &tempv[rows * 14];
             c16 = &tempv[rows * 15];
             
-            const int MOD = mod*2;
             
             // packed_items = frame_size / mod 
             // mod = 8 
@@ -434,8 +434,9 @@ namespace gr {
               for (int col = 0; col < MOD; col++) {
                 // get offset from predefined array 
                 offset = twist256n[col];
+                int calc = (rows * col);
                 for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
+                  tempv[offset + calc] = tempu[index++];
                   offset++;
                   if (offset == rows) {
                     offset = 0;
@@ -470,7 +471,7 @@ namespace gr {
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
-                consumed += (mod * 2);
+                consumed += MOD;
               }
             }
           }
