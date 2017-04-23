@@ -239,8 +239,8 @@ namespace gr {
           break;
         case L1_MOD_QPSK:
           {
-              const double normalization = sqrt(2);
-              const double n_1 = 1.0 / normalization;
+              const float normalization = sqrt(2);
+              const float n_1 = 1.0 / normalization;
               m_qpsk[0] = gr_complex( n_1,  n_1);
               m_qpsk[1] = gr_complex( n_1, -n_1);
               m_qpsk[2] = gr_complex(-n_1,  n_1);
@@ -250,9 +250,9 @@ namespace gr {
           break;
         case L1_MOD_16QAM:
           {
-              const double normalization = sqrt(10);
-              const double n_1 = 1.0 / normalization;
-              const double n_3 = 3.0 / normalization; 
+              const float normalization = sqrt(10);
+              const float n_1 = 1.0 / normalization;
+              const float n_3 = 3.0 / normalization; 
               m_16qam[0] = gr_complex( n_3,  n_3);
               m_16qam[1] = gr_complex( n_3,  n_1);
               m_16qam[2] = gr_complex( n_1,  n_3);
@@ -274,11 +274,11 @@ namespace gr {
           break;
         case L1_MOD_64QAM:
           {
-              const double normalization = sqrt(42);
-              const double n_1 = 1.0 / normalization;
-              const double n_3 = 3.0 / normalization;
-              const double n_5 = 5.0 / normalization;
-              const double n_7 = 7.0 / normalization;
+              const float normalization = sqrt(42);
+              const float n_1 = 1.0 / normalization;
+              const float n_3 = 3.0 / normalization;
+              const float n_5 = 5.0 / normalization;
+              const float n_7 = 7.0 / normalization;
               m_64qam[0] = gr_complex(  n_7,   n_7);
               m_64qam[1] = gr_complex(  n_7,   n_5);
               m_64qam[2] = gr_complex(  n_5,   n_7);
