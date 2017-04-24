@@ -24,6 +24,8 @@
 #include <gnuradio/dtv/dvb_bch_bb.h>
 #include "dvb_defines.h"
 
+typedef unsigned long my_vec2 __attribute__ ((vector_size(16)));
+
 namespace gr {
   namespace dtv {
 
@@ -45,6 +47,7 @@ namespace gr {
       inline void reg_5_shift(unsigned int*);
       inline void reg_6_shift(unsigned int*);
       inline void reg_6_wshift(uint64_t *sr);
+      inline void reg_6_sseshift(my_vec2 *sr);
       void bch_poly_build_tables(void);
 
      public:

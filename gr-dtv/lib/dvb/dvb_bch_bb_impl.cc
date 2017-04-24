@@ -31,6 +31,7 @@
 
 #include "gr_timer.h"
 
+
 namespace gr {
   namespace dtv {
 
@@ -498,6 +499,14 @@ namespace gr {
       sr[0] = (sr[0] >> 1);
     }
 
+    inline void
+    dvb_bch_bb_impl::reg_6_sseshift(my_vec2 *sr)
+    {
+      static my_vec2 carries = {sr[0][1] << 63, sr[1][0] << 63};
+      sr[1] = sr[1] >> 1 | carries;
+      sr[0] = sr[0] >> 1;
+    }
+
     /*
      * Shift 192 bits
      */
@@ -617,7 +626,8 @@ namespace gr {
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
       unsigned int shift[6];
-      uint64_t wshift[3]; //TODO: SSE vector?
+      //uint64_t wshift[3]; //TODO: SSE vector?
+      my_vec2 sseshift[2]; //{_,A},{B,C}
       int consumed = 0;
 
       switch (bch_code) {
@@ -627,29 +637,37 @@ namespace gr {
                 poly0 = (uint64_t)m_poly_n_12[0] << 32 | m_poly_n_12[1],
                 poly1 = (uint64_t)m_poly_n_12[2] << 32 | m_poly_n_12[3],
                 poly2 = (uint64_t)m_poly_n_12[4] << 32 | m_poly_n_12[5];
+                const my_vec2 
+                  s_poly0 = {0, poly0},
+                  s_poly1 = {poly1, poly2};
 
               gr_timer tsw("BCH N12 switch block");
               for (int i = 0; i < noutput_items; i += nbch) {
                 //Zero the shift register
-                memset(wshift, 0, sizeof(uint64_t) * 3);
+                memset(sseshift, 0, sizeof(uint64_t) * 4);
                 // MSB of the codeword first
                 for (int j = 0; j < (int)kbch; j++) {
                   temp = *out = *in;
                   in++;
                   out++;
                   consumed++;
-                  b = (temp ^ (wshift[2] & 1));
-                  reg_6_wshift(wshift);
+                  b = (temp ^ (sseshift[1][1] & 1));
+                  reg_6_sseshift(sseshift);
                   if (b) {
-                    wshift[0] ^= poly0;
-                    wshift[1] ^= poly1;
-                    wshift[2] ^= poly2;
+                    sseshift[0] ^= s_poly0;
+                    sseshift[1] ^= s_poly1;
                   }
                 }
-                // Now add the parity bits to the output
-                for (int r = 2; r >=0; r--) {
+                {
+                  const uint64_t wshift[3] = {
+                    sseshift[0][1], sseshift[1][0], sseshift[1][1]
+                  };
+
+                  // Now add the parity bits to the output
+                  for (int r = 2; r >=0; r--) {
                     for(uint64_t b = 1; b; b <<=1)
-                        *out++ = !!(wshift[r] & b);
+                      *out++ = !!(wshift[r] & b);
+                  }
                 }
                 //for (int n = 0; n < 192; n++) {
                 //  *out++ = (shift[5] & 1);
