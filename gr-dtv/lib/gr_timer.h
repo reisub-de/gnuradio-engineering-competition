@@ -11,8 +11,10 @@ class gr_timer
 #ifdef USE_GR_TIMERS
         clock_t start;
         std::string id;
+        int m_indent;
         static std::ofstream log;
         static gr_timer* log_owner;
+        static int indent;
 #endif
     public:
         gr_timer(const char* id);
