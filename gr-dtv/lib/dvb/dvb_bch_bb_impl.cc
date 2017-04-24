@@ -487,6 +487,9 @@ namespace gr {
       sr[0] = (sr[0] >> 1);
     }
 
+    /*
+     * Shift 192 bits right (using 3x64-bit register)
+     */
     inline void
     dvb_bch_bb_impl::reg_6_wshift(uint64_t *sr)
     {
