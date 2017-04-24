@@ -1189,6 +1189,8 @@ namespace gr {
     void
     dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
     {
+        gr_timer t0("pilot generator init_pilots");
+        
       //int remainder, shift;
       int shift;
       for (int i = 0; i < C_PS; i++) {
@@ -2727,6 +2729,7 @@ namespace gr {
         for (int j = 0; j < num_symbols; j++) {
           init_pilots(j);
           if (j < N_P2) {
+              gr_timer tj0("pilot generator j<N_P2");
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
@@ -2749,6 +2752,7 @@ namespace gr {
             }
           }
           else if (j == (num_symbols - L_FC)) {
+              gr_timer tj0("pilot generator j == n-lfc");
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
@@ -2771,27 +2775,19 @@ namespace gr {
             }
           }
           else {
+              gr_timer tj0("pilot generator else");
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
             for (int n = 0; n < C_PS; n++) {
-              if (data_carrier_map[n] == SCATTERED_CARRIER) {
-                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
-                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (data_carrier_map[n] == CONTINUAL_CARRIER) {
-                *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
-                *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (data_carrier_map[n] == TRPAPR_CARRIER) {
-                *out++ = zero;
-              }
-              else {
-                *out++ = *in++;
+              const int prbs_n = prbs[n + K_OFFSET] ^ pn_sequence[j];
+              switch(data_carrier_map[n]) {
+                case SCATTERED_CARRIER:          *out++ = sp_bpsk[prbs_n];          break;
+                case SCATTERED_CARRIER_INVERTED: *out++ = sp_bpsk_inverted[prbs_n]; break;
+                case CONTINUAL_CARRIER:          *out++ = cp_bpsk[prbs_n];          break;
+                case CONTINUAL_CARRIER_INVERTED: *out++ = cp_bpsk_inverted[prbs_n]; break;
+                case TRPAPR_CARRIER:             *out++ = zero; break;
+                default: *out++ = *in++;
               }
             }
             for (int n = 0; n < right_nulls; n++) {

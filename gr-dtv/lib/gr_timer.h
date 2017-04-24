@@ -4,11 +4,14 @@
 #include <time.h>
 #include <iostream>
 
-//#define USE_GR_TIMERS
+#ifndef USE_GR_TIMERS
+#define USE_GR_TIMERS 1
+#endif
+
 class gr_timer
 {
     private:
-#ifdef USE_GR_TIMERS
+#if USE_GR_TIMERS == 1
         clock_t start;
         std::string id;
         int m_indent;

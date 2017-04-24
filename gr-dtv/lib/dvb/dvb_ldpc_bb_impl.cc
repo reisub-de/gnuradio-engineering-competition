@@ -507,6 +507,7 @@ for (int row = 0; row < ROWS; row++) { \
       int puncture, index;
 
       for (int i = 0; i < noutput_items; i += frame_size) {
+        gr_timer t0("LDPC general_work loop body");
         if (Xs != 0) {
           s = &shortening_buffer[0];
           memset(s, 0, sizeof(unsigned char) * Xs);
