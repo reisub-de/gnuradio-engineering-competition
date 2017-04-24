@@ -502,7 +502,7 @@ namespace gr {
     inline void
     dvb_bch_bb_impl::reg_6_sseshift(my_vec2 *sr)
     {
-      static my_vec2 carries = {sr[0][1] << 63, sr[1][0] << 63};
+      const my_vec2 carries = (my_vec2 {sr[0][1], sr[1][0]}) << 63;
       sr[1] = sr[1] >> 1 | carries;
       sr[0] = sr[0] >> 1;
     }
