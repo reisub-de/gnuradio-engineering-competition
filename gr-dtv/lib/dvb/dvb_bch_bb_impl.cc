@@ -487,6 +487,14 @@ namespace gr {
       sr[0] = (sr[0] >> 1);
     }
 
+    inline void
+    dvb_bch_bb_impl::reg_6_wshift(uint64_t *sr)
+    {
+      sr[2] = (sr[2] >> 1) | (sr[1] << 63);
+      sr[1] = (sr[1] >> 1) | (sr[0] << 63);
+      sr[0] = (sr[0] >> 1);
+    }
+
     /*
      * Shift 192 bits
      */
@@ -606,6 +614,7 @@ namespace gr {
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
       unsigned int shift[6];
+      uint64_t wshift[3];
       int consumed = 0;
 
       switch (bch_code) {
@@ -614,27 +623,26 @@ namespace gr {
                 gr_timer tsw("BCH N12 switch block");
               for (int i = 0; i < noutput_items; i += nbch) {
                 //Zero the shift register
-                memset(shift, 0, sizeof(unsigned int) * 6);
+                memset(wshift, 0, sizeof(uint64_t) * 3);
+                {gr_timer tfor("BCH N12 inner for loop");
                 // MSB of the codeword first
                 for (int j = 0; j < (int)kbch; j++) {
-                  temp = *in++;
-                  *out++ = temp;
+                  temp = *out = *in;
+                  in++;
+                  out++;
                   consumed++;
-                  b = (temp ^ (shift[5] & 1));
-                  reg_6_shift(shift);
+                  b = (temp ^ (wshift[2] & 1));
+                  reg_6_wshift(wshift);
                   if (b) {
-                    shift[0] ^= m_poly_n_12[0];
-                    shift[1] ^= m_poly_n_12[1];
-                    shift[2] ^= m_poly_n_12[2];
-                    shift[3] ^= m_poly_n_12[3];
-                    shift[4] ^= m_poly_n_12[4];
-                    shift[5] ^= m_poly_n_12[5];
+                    wshift[0] ^= ((uint64_t)m_poly_n_12[0] << 32 | m_poly_n_12[1]);
+                    wshift[1] ^= ((uint64_t)m_poly_n_12[2] << 32 | m_poly_n_12[3]);
+                    wshift[2] ^= ((uint64_t)m_poly_n_12[4] << 32 | m_poly_n_12[5]);
                   }
-                }
+                }}
                 // Now add the parity bits to the output
-                for (int r = 5; r >=0; r--) {
-                    for(uint32_t b = 1; b; b <<=1)
-                        *out++ = !!(shift[r] & b);
+                for (int r = 2; r >=0; r--) {
+                    for(uint64_t b = 1; b; b <<=1)
+                        *out++ = !!(wshift[r] & b);
                 }
                 //for (int n = 0; n < 192; n++) {
                 //  *out++ = (shift[5] & 1);

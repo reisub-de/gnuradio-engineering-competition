@@ -44,6 +44,7 @@ namespace gr {
       inline void reg_4_shift(unsigned int*);
       inline void reg_5_shift(unsigned int*);
       inline void reg_6_shift(unsigned int*);
+      inline void reg_6_wshift(uint64_t *sr);
       void bch_poly_build_tables(void);
 
      public:
