@@ -4,6 +4,7 @@
 #include <time.h>
 #include <iostream>
 
+//#define USE_GR_TIMERS
 class gr_timer
 {
     private:

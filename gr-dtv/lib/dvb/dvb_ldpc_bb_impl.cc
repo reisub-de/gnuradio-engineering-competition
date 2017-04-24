@@ -110,98 +110,29 @@ namespace gr {
             P = 15;
             Xp = NORMAL_PUNCTURING;
             break;
-          case C13_45:
-            nbch = 18720;
-            q_val = 128;
-            break;
-          case C9_20:
-            nbch = 29160;
-            q_val = 99;
-            break;
-          case C90_180:
-            nbch = 32400;
-            q_val = 90;
-            break;
-          case C96_180:
-            nbch = 34560;
-            q_val = 84;
-            break;
-          case C11_20:
-            nbch = 35640;
-            q_val = 81;
-            break;
-          case C100_180:
-            nbch = 36000;
-            q_val = 80;
-            break;
-          case C104_180:
-            nbch = 37440;
-            q_val = 76;
-            break;
-          case C26_45:
-            nbch = 37440;
-            q_val = 76;
-            break;
-          case C18_30:
-            nbch = 38880;
-            q_val = 72;
-            break;
-          case C28_45:
-            nbch = 40320;
-            q_val = 68;
-            break;
-          case C23_36:
-            nbch = 41400;
-            q_val = 65;
-            break;
-          case C116_180:
-            nbch = 41760;
-            q_val = 64;
-            break;
-          case C20_30:
-            nbch = 43200;
-            q_val = 60;
-            break;
-          case C124_180:
-            nbch = 44640;
-            q_val = 56;
-            break;
-          case C25_36:
-            nbch = 45000;
-            q_val = 55;
-            break;
-          case C128_180:
-            nbch = 46080;
-            q_val = 52;
-            break;
-          case C13_18:
-            nbch = 46800;
-            q_val = 50;
-            break;
-          case C132_180:
-            nbch = 47520;
-            q_val = 48;
-            break;
-          case C22_30:
-            nbch = 47520;
-            q_val = 48;
-            break;
-          case C135_180:
-            nbch = 48600;
-            q_val = 45;
-            break;
-          case C140_180:
-            nbch = 50400;
-            q_val = 40;
-            break;
-          case C7_9:
-            nbch = 50400;
-            q_val = 40;
-            break;
-          case C154_180:
-            nbch = 55440;
-            q_val = 26;
-            break;
+          case C13_45:   nbch = 18720; q_val = 128; break;
+          case C9_20:    nbch = 29160; q_val = 99; break;
+          case C90_180:  nbch = 32400; q_val = 90; break;
+          case C96_180:  nbch = 34560; q_val = 84; break;
+          case C11_20:   nbch = 35640; q_val = 81; break;
+          case C100_180: nbch = 36000; q_val = 80; break;
+          case C104_180: nbch = 37440; q_val = 76; break;
+          case C26_45:   nbch = 37440; q_val = 76; break;
+          case C18_30:   nbch = 38880; q_val = 72; break;
+          case C28_45:   nbch = 40320; q_val = 68; break;
+          case C23_36:   nbch = 41400; q_val = 65; break;
+          case C116_180: nbch = 41760; q_val = 64; break;
+          case C20_30:   nbch = 43200; q_val = 60; break;
+          case C124_180: nbch = 44640; q_val = 56; break;
+          case C25_36:   nbch = 45000; q_val = 55; break;
+          case C128_180: nbch = 46080; q_val = 52; break;
+          case C13_18:   nbch = 46800; q_val = 50; break;
+          case C132_180: nbch = 47520; q_val = 48; break;
+          case C22_30:   nbch = 47520; q_val = 48; break;
+          case C135_180: nbch = 48600; q_val = 45; break;
+          case C140_180: nbch = 50400; q_val = 40; break;
+          case C7_9:     nbch = 50400; q_val = 40; break;
+          case C154_180: nbch = 55440; q_val = 26; break;
           default:
             nbch = 0;
             q_val = 0;
@@ -212,75 +143,24 @@ namespace gr {
         frame_size = FRAME_SIZE_SHORT;
         frame_size_real = FRAME_SIZE_SHORT;
         switch (rate) {
-          case C1_4:
-            nbch = 3240;
-            q_val = 36;
-            break;
-          case C1_3:
-            nbch = 5400;
-            q_val = 30;
-            break;
-          case C2_5:
-            nbch = 6480;
-            q_val = 27;
-            break;
-          case C1_2:
-            nbch = 7200;
-            q_val = 25;
-            break;
-          case C3_5:
-            nbch = 9720;
-            q_val = 18;
-            break;
-          case C2_3:
-            nbch = 10800;
-            q_val = 15;
-            break;
-          case C3_4:
-            nbch = 11880;
-            q_val = 12;
-            break;
-          case C4_5:
-            nbch = 12600;
-            q_val = 10;
-            break;
-          case C5_6:
-            nbch = 13320;
-            q_val = 8;
-            break;
-          case C8_9:
-            nbch = 14400;
-            q_val = 5;
-            break;
-          case C11_45:
-            nbch = 3960;
-            q_val = 34;
-            break;
-          case C4_15:
-            nbch = 4320;
-            q_val = 33;
-            break;
-          case C14_45:
-            nbch = 5040;
-            q_val = 31;
-            break;
-          case C7_15:
-            nbch = 7560;
-            q_val = 24;
-            break;
-          case C8_15:
-            nbch = 8640;
-            q_val = 21;
-            break;
-          case C26_45:
-            nbch = 9360;
-            q_val = 19;
-            break;
-          case C32_45:
-            nbch = 11520;
-            q_val = 13;
-            break;
-          case C1_5_VLSNR_SF2:
+          case C1_4:   nbch = 3240;  q_val = 36; break;
+          case C1_3:   nbch = 5400;  q_val = 30; break;
+          case C2_5:   nbch = 6480;  q_val = 27; break;
+          case C1_2:   nbch = 7200;  q_val = 25; break;
+          case C3_5:   nbch = 9720;  q_val = 18; break;
+          case C2_3:   nbch = 10800; q_val = 15; break;
+          case C3_4:   nbch = 11880; q_val = 12; break;
+          case C4_5:   nbch = 12600; q_val = 10; break;
+          case C5_6:   nbch = 13320; q_val = 8;  break;
+          case C8_9:   nbch = 14400; q_val = 5;  break;
+          case C11_45: nbch = 3960;  q_val = 34; break;
+          case C4_15:  nbch = 4320;  q_val = 33; break;
+          case C14_45: nbch = 5040;  q_val = 31; break;
+          case C7_15:  nbch = 7560;  q_val = 24; break;
+          case C8_15:  nbch = 8640;  q_val = 21; break;
+          case C26_45: nbch = 9360;  q_val = 19; break;
+          case C32_45: nbch = 11520; q_val = 13; break;
+          case C1_5_VLSNR_SF2:     
             nbch = 2680;
             q_val = 135;
             frame_size -= SHORT_PUNCTURING_SET1;

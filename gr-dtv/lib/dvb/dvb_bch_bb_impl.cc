@@ -504,6 +504,7 @@ namespace gr {
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
     {
+        gr_timer t0("BCH poly build tables");
       // Normal polynomials
       const int polyn01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1};
       const int polyn02[]={1,1,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1};
@@ -609,31 +610,38 @@ namespace gr {
 
       switch (bch_code) {
         case BCH_CODE_N12:
-          for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
-            // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              *out++ = temp;
-              consumed++;
-              b = (temp ^ (shift[5] & 1));
-              reg_6_shift(shift);
-              if (b) {
-                shift[0] ^= m_poly_n_12[0];
-                shift[1] ^= m_poly_n_12[1];
-                shift[2] ^= m_poly_n_12[2];
-                shift[3] ^= m_poly_n_12[3];
-                shift[4] ^= m_poly_n_12[4];
-                shift[5] ^= m_poly_n_12[5];
+            {
+                gr_timer tsw("BCH N12 switch block");
+              for (int i = 0; i < noutput_items; i += nbch) {
+                //Zero the shift register
+                memset(shift, 0, sizeof(unsigned int) * 6);
+                // MSB of the codeword first
+                for (int j = 0; j < (int)kbch; j++) {
+                  temp = *in++;
+                  *out++ = temp;
+                  consumed++;
+                  b = (temp ^ (shift[5] & 1));
+                  reg_6_shift(shift);
+                  if (b) {
+                    shift[0] ^= m_poly_n_12[0];
+                    shift[1] ^= m_poly_n_12[1];
+                    shift[2] ^= m_poly_n_12[2];
+                    shift[3] ^= m_poly_n_12[3];
+                    shift[4] ^= m_poly_n_12[4];
+                    shift[5] ^= m_poly_n_12[5];
+                  }
+                }
+                // Now add the parity bits to the output
+                for (int r = 5; r >=0; r--) {
+                    for(uint32_t b = 1; b; b <<=1)
+                        *out++ = !!(shift[r] & b);
+                }
+                //for (int n = 0; n < 192; n++) {
+                //  *out++ = (shift[5] & 1);
+                //  reg_6_shift(shift);
+                //}
               }
             }
-            // Now add the parity bits to the output
-            for (int n = 0; n < 192; n++) {
-              *out++ = (shift[5] & 1);
-              reg_6_shift(shift);
-            }
-          }
           break;
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
