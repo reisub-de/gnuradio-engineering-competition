@@ -630,7 +630,7 @@ namespace gr {
                 //Zero the shift register
                 memset(wshift, 0, sizeof(uint64_t) * 3);
                 memcpy(out, in, kbch);
-                consumed = kbch;
+                consumed += kbch;
                 // MSB of the codeword first
                 for (int j = 0; j < (int)kbch; j++) {
                   temp = *in++;
