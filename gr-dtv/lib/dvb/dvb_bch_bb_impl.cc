@@ -29,6 +29,8 @@
 #define UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
 #endif
 
+#include "gr_timer.h"
+
 namespace gr {
   namespace dtv {
 
@@ -48,6 +50,7 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(1, 1, sizeof(unsigned char)))
     {
+        gr_timer t0("BCH private ctor");
       if (framesize == FECFRAME_NORMAL) {
         switch (rate) {
           case C1_4:
@@ -597,6 +600,7 @@ namespace gr {
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
+        gr_timer t0("BCH general_work");
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;

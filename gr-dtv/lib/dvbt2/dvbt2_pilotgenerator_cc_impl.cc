@@ -30,6 +30,8 @@
 #define UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
 #endif
 
+#include "gr_timer.h"
+
 namespace gr {
   namespace dtv {
 
@@ -49,6 +51,7 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(gr_complex)),
               gr::io_signature::make(1, 1, sizeof(gr_complex) * vlength))
     {
+        gr_timer t0("pilot generator ctor");
       int step, ki;
       double x, sinc, sincrms = 0.0;
       double fs, fstep, f = 0.0;
@@ -1162,6 +1165,7 @@ namespace gr {
     void
     dvbt2_pilotgenerator_cc_impl::init_prbs(void)
     {
+        gr_timer t0("pilot generator init_prbs");
       int sr = 0x7ff;
       int j = 0;
 
@@ -1186,10 +1190,13 @@ namespace gr {
     void
     dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
     {
-      int remainder, shift;
+        gr_timer t0("pilot generator init pilots");
+      //int remainder, shift;
+      int shift;
       for (int i = 0; i < C_PS; i++) {
         data_carrier_map[i] = DATA_CARRIER;
       }
+
       switch (fft_size) {
         case FFTSIZE_1K:
           switch (pilot_pattern) {
@@ -2604,12 +2611,30 @@ namespace gr {
           }
           break;
       }
-      for (int i = 0; i < C_PS; i++) {
-        remainder = (i - K_EXT) % (dx * dy);
-        if (remainder < 0) {
-          remainder += (dx * dy);
-        }
-        if (remainder == (dx * (symbol % dy))) {
+      {
+      gr_timer t_sdep("pilot symbol-dependent");
+      //for (int i = 0; i < C_PS; i++) {
+      //  remainder = (i - K_EXT) % (dx * dy);
+      //  if (remainder < 0) {
+      //    remainder += (dx * dy);
+      //  }
+      //  if (remainder == (dx * (symbol % dy))) {
+      //    if (miso == TRUE && miso_group == MISO_TX2) {
+      //      if ((i / dx) % 2) {
+      //        data_carrier_map[i] = SCATTERED_CARRIER_INVERTED;
+      //      }
+      //      else {
+      //        data_carrier_map[i] = SCATTERED_CARRIER;
+      //      }
+      //    }
+      //    else {
+      //      data_carrier_map[i] = SCATTERED_CARRIER;
+      //    }
+      //  }
+      //}
+      const int dxdy = dx * dy;
+      for(int r = 0; r <= C_PS / dxdy; r++) {
+          const int i = r * dxdy + (symbol % dy) * dx;
           if (miso == TRUE && miso_group == MISO_TX2) {
             if ((i / dx) % 2) {
               data_carrier_map[i] = SCATTERED_CARRIER_INVERTED;
@@ -2621,7 +2646,8 @@ namespace gr {
           else {
             data_carrier_map[i] = SCATTERED_CARRIER;
           }
-        }
+      }
+
       }
       if (miso == TRUE && miso_group == MISO_TX2) {
         if (symbol % 2) {
@@ -2689,6 +2715,7 @@ namespace gr {
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
+        gr_timer t0("pilot generator general_work");
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
       gr_complex zero;
