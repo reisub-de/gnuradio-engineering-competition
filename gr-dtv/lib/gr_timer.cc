@@ -1,6 +1,6 @@
 #include "gr_timer.h"
 
-#ifdef USE_GR_TIMERS
+#if USE_GR_TIMERS == 1
 
 #include <time.h>
 #include <fstream>
