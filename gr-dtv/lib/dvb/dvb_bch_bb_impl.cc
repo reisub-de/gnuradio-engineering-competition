@@ -620,20 +620,21 @@ namespace gr {
       switch (bch_code) {
         case BCH_CODE_N12:
             {
-              gr_timer t_bch12("BCH N12 switch");
               const uint64_t 
                 poly0 = (uint64_t)m_poly_n_12[0] << 32 | m_poly_n_12[1],
                 poly1 = (uint64_t)m_poly_n_12[2] << 32 | m_poly_n_12[3],
                 poly2 = (uint64_t)m_poly_n_12[4] << 32 | m_poly_n_12[5];
 
+              gr_timer tsw("BCH N12 switch block");
               for (int i = 0; i < noutput_items; i += nbch) {
                 //Zero the shift register
                 memset(wshift, 0, sizeof(uint64_t) * 3);
-                memcpy(out, in, kbch);
-                consumed += kbch;
                 // MSB of the codeword first
                 for (int j = 0; j < (int)kbch; j++) {
-                  temp = *in++;
+                  temp = *out = *in;
+                  in++;
+                  out++;
+                  consumed++;
                   b = (temp ^ (wshift[2] & 1));
                   reg_6_wshift(wshift);
                   if (b) {
@@ -658,13 +659,11 @@ namespace gr {
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 5);
-            memcpy(out, in, kbch);
-            consumed = kbch;
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
-              //*out++ = temp;
-              //consumed++;
+              *out++ = temp;
+              consumed++;
               b = (temp ^ (shift[4] & 1));
               reg_5_shift(shift);
               if (b) {
