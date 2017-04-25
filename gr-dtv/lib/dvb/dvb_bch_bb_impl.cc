@@ -678,7 +678,6 @@ namespace gr {
                 //}
               }
             }
-
           break;
 
         case BCH_CODE_N10:

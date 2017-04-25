@@ -426,11 +426,15 @@ namespace gr {
                 tempu[index++] = c2[j];
                 tempu[index++] = c3[j];
                 tempu[index++] = c4[j];
+                index+=12;
+              }
+              index = 4;
+              for (int j = 0; j < rows; j++) {
                 tempu[index++] = c5[j];
                 tempu[index++] = c6[j];
                 tempu[index++] = c7[j];
                 tempu[index++] = c8[j];
-                index+=8;
+                index+=12;
               }
               index = 8;
               for (int j = 0; j < rows; j++) {
@@ -438,11 +442,15 @@ namespace gr {
                 tempu[index++] = c10[j];
                 tempu[index++] = c11[j];
                 tempu[index++] = c12[j];
+                index+=12;
+              }
+              index = 12;
+              for (int j = 0; j < rows; j++) {
                 tempu[index++] = c13[j];
                 tempu[index++] = c14[j];
                 tempu[index++] = c15[j];
                 tempu[index++] = c16[j];
-                index+=8;
+                index+=12;
               }
 
               index = 0;
