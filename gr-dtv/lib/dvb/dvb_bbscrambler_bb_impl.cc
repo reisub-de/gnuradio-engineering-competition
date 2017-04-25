@@ -25,6 +25,8 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_bbscrambler_bb_impl.h"
 
+#include "gr_timer.h"
+
 namespace gr {
   namespace dtv {
 
@@ -275,14 +277,18 @@ namespace gr {
                           gr_vector_const_void_star &input_items,
                           gr_vector_void_star &output_items)
     {
+      gr_timer t0("bbscrambler work");
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
 
       for (int i = 0; i < noutput_items; i += kbch) {
         for (int j = 0; j < (int)kbch; ++j) {
-          out[i + j] = in[i + j] ^ bb_randomise[j];
+          *out++ = *in++ ^ bb_randomise[j];
         }
       }
+
+    
+
 
       // Tell runtime system how many output items we produced.
       return noutput_items;

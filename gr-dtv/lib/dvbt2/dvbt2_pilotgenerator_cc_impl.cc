@@ -2717,7 +2717,7 @@ namespace gr {
                        gr_vector_void_star &output_items)
     {
       //omp_set_num_threads(4);
-      gr_timer t0("pilot generator general_work");
+      //gr_timer t0("pilot generator general_work");
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
       gr_complex zero;
@@ -2732,6 +2732,10 @@ namespace gr {
         for (int j = 0; j < num_symbols; j++) {
           init_pilots(j);
           if (j < N_P2) {
+<<<<<<< HEAD
+=======
+              //gr_timer tj0("pilot generator j<N_P2");
+>>>>>>> 422e392a1a3a1aeb4c69e135c377795ca4d7acfb
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
@@ -2754,6 +2758,10 @@ namespace gr {
             }
           }
           else if (j == (num_symbols - L_FC)) {
+<<<<<<< HEAD
+=======
+              //gr_timer tj0("pilot generator j == n-lfc");
+>>>>>>> 422e392a1a3a1aeb4c69e135c377795ca4d7acfb
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
@@ -2776,6 +2784,10 @@ namespace gr {
             }
           }
           else {
+<<<<<<< HEAD
+=======
+              //gr_timer tj0("pilot generator else");
+>>>>>>> 422e392a1a3a1aeb4c69e135c377795ca4d7acfb
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
