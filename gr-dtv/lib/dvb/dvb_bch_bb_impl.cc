@@ -651,11 +651,78 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            for (int n = 0; n < 192; ++n) {
+            //for (int n = 0; n < 192; ++n) {
+            for (int n = 0; n < 3; ++n) {
               //*out++ = (shift[5] & 1);
               //reg_6_shift(shift);
-              *out++ = (newshift[2] & 1);
-              reg_3_shift(newshift);
+              *out++ = (newshift[2] & ((unsigned long long)1 << 0)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 1)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 2)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 3)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 4)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 5)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 6)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 7)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 8)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 9)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 10)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 11)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 12)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 13)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 14)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 15)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 16)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 17)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 18)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 19)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 20)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 21)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 22)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 23)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 24)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 25)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 26)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 27)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 28)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 29)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 30)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 31)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 32)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 33)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 34)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 35)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 36)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 37)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 38)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 39)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 40)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 41)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 42)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 43)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 44)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 45)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 46)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 47)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 48)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 49)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 50)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 51)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 52)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 53)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 54)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 55)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 56)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 57)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 58)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 59)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 60)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 61)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 62)) != 0 ? 1 : 0;
+              *out++ = (newshift[2] & ((unsigned long long)1 << 63)) != 0 ? 1 : 0;
+              if (n < 2) {
+                newshift[2] = newshift[1 - n];
+              }
+              //reg_3_shift(newshift);
             } 
           }
           break;
@@ -777,4 +844,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-
