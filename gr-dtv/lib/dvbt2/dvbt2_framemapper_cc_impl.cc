@@ -29,6 +29,8 @@
 #define UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
 #endif
 
+#include "gr_timer.h"
+
 namespace gr {
   namespace dtv {
 
@@ -1723,6 +1725,7 @@ namespace gr {
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
+      gr_timer t0("framemapper general_work");
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
       int index = 0;
