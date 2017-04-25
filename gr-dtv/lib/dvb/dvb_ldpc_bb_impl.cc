@@ -527,9 +527,13 @@ for (int row = 0; row < ROWS; row++) { \
           out[i + j] = in[consumed];
           consumed++;
         }
-        // now do the parity checking
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+        {
+          // now do the parity checking
+          const int* a = ldpc_encode.p;
+          const int* b = ldpc_encode.d;
+          for (int j = 0; j < ldpc_encode.table_length; j++) {
+            p[a[j]] ^= d[b[j]];
+          }
         }
         if (P != 0) {
           puncture = 0;
@@ -552,8 +556,8 @@ for (int row = 0; row < ROWS; row++) { \
           p[j] ^= p[j-1];
         }
         if (signal_constellation == MOD_128APSK) {
-          for (int j = 0; j < 6; j++) {
-            p[j + plen] = 0;
+          for (int j = plen; j < plen+6; j++) {
+            p[j] = 0;
           }
         }
         d += nbch;
