@@ -280,9 +280,12 @@ namespace gr {
 
       for (int i = 0; i < noutput_items; i += kbch) {
         for (int j = 0; j < (int)kbch; ++j) {
-          out[i + j] = in[i + j] ^ bb_randomise[j];
+          *out++ = *in++ ^ bb_randomise[j];
         }
       }
+
+    
+
 
       // Tell runtime system how many output items we produced.
       return noutput_items;
