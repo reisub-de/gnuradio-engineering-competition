@@ -528,11 +528,7 @@ for (int row = 0; row < ROWS; row++) { \
         {
         gr_timer t1("LDPC assigment loop 1");
         //#pragma omp parallel for private(consumed)
-<<<<<<< HEAD
         for (int i=0;  i < (int)nbch ; i++, consumed++) {
-=======
-        for (int i=0;  i < (int)nbch ; i++) {
->>>>>>> 39849fa10d8db0382408c9bba2ec9eebaf9c3866
           out[i] = in[consumed];
           
         }}
@@ -543,11 +539,7 @@ for (int row = 0; row < ROWS; row++) { \
         const int* ldpc_enc_d = ldpc_encode.d;
 
         {gr_timer t2("LDPC xor loop 1 (l535)");
-<<<<<<< HEAD
-#pragma omp parallel for 
-=======
         #pragma omp parallel for default(none)
->>>>>>> 39849fa10d8db0382408c9bba2ec9eebaf9c3866
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_enc_p[j]] ^= d[ldpc_enc_d[j]];
         }}
