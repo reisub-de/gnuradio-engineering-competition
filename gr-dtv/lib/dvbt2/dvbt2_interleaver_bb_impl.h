@@ -24,6 +24,8 @@
 #include <gnuradio/dtv/dvbt2_interleaver_bb.h>
 #include "dvb/dvb_defines.h"
 
+typedef unsigned char byte16 __attribute__((vector_size(16)));
+
 namespace gr {
   namespace dtv {
 

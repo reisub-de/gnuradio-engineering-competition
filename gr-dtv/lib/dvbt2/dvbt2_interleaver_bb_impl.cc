@@ -200,8 +200,8 @@ namespace gr {
               for (int j = 0; j < rows; j++) {
                 out[produced] = tempu[index++] << 1;
                 out[produced++] |= tempu[index++];
-                consumed += 2;
               }
+              consumed += 2 * rows;
             }
             else {
               for (int j = 0; j < rows; j++) {
@@ -446,8 +446,9 @@ namespace gr {
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
-                consumed += (mod * 2);
+                //consumed += (mod * 2);
               }
+              consumed += frame_size;
             }
           }
           else {
