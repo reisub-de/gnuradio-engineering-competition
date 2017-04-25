@@ -23,10 +23,16 @@
 
 #include <gnuradio/dtv/dvbt2_interleaver_bb.h>
 #include "dvb/dvb_defines.h"
+#include <pthread.h>
 
 namespace gr {
   namespace dtv {
 
+  struct args{
+    unsigned char *tempu;
+    int rows;
+    const unsigned char *c;
+  };
     class dvbt2_interleaver_bb_impl : public dvbt2_interleaver_bb
     {
      private:
@@ -64,6 +70,7 @@ namespace gr {
       const static int mux256s[8];
       const static int mux256s_13[8];
       const static int mux256s_25[8];
+      static void *load_tempu(void *args);
 
      public:
       dvbt2_interleaver_bb_impl(dvb_framesize_t framesize, dvb_code_rate_t rate, dvb_constellation_t constellation);

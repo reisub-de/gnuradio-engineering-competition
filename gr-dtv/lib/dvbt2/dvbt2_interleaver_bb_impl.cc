@@ -433,7 +433,82 @@ namespace gr {
                   }
                 }
               }
-              index = 0;
+              
+
+                pthread_t threads[8];
+                struct args arguments[16];
+		arguments[0].tempu = tempu;
+                arguments[0].rows = rows;
+                arguments[0].c = c1;
+                
+                arguments[1].tempu = tempu+1;
+                arguments[1].rows = rows;
+                arguments[1].c = c2;
+                
+                arguments[2].tempu = tempu+2;
+                arguments[2].rows = rows;
+                arguments[2].c = c3;
+                
+                arguments[3].tempu = tempu+3;
+                arguments[3].rows = rows;
+                arguments[3].c = c4;
+                
+                arguments[4].tempu = tempu+4;
+                arguments[4].rows = rows;
+                arguments[4].c = c5;
+                
+                arguments[5].tempu = tempu+5;
+                arguments[5].rows = rows;
+                arguments[5].c = c6;
+                
+                arguments[6].tempu = tempu+6;
+                arguments[6].rows = rows;
+                arguments[6].c = c7;
+                
+                arguments[7].tempu = tempu+7;
+                arguments[7].rows = rows;
+                arguments[7].c = c8;
+                
+                arguments[8].tempu = tempu+8;
+                arguments[8].rows = rows;
+                arguments[8].c = c9;
+                
+                arguments[9].tempu = tempu+9;
+                arguments[9].rows = rows;
+                arguments[9].c = c10;
+                
+                arguments[10].tempu = tempu+10;
+                arguments[10].rows = rows;
+                arguments[10].c = c11;
+                
+                arguments[11].tempu = tempu+11;
+                arguments[11].rows = rows;
+                arguments[11].c = c12;
+                
+                arguments[12].tempu = tempu+12;
+                arguments[12].rows = rows;
+                arguments[12].c = c13;
+                
+                arguments[13].tempu = tempu+13;
+                arguments[13].rows = rows;
+                arguments[13].c = c14;
+                
+                arguments[14].tempu = tempu+14;
+                arguments[14].rows = rows;
+                arguments[14].c = c15;
+                
+                arguments[15].tempu = tempu+15;
+                arguments[15].rows = rows;
+                arguments[15].c = c16;
+
+                for (int i = 0; i < 8; i++) {
+									pthread_create(&threads[i], NULL, load_tempu, (void *)&arguments[i*2]);
+                }
+                for (int i = 0; i < 8; i++) {
+									pthread_join(threads[i], NULL);
+                }
+
+	      /*index = 0;
               for (int j = 0; j < rows; j++) {
                 tempu[index] = c1[j];
                 index += 16;
@@ -512,7 +587,7 @@ namespace gr {
               for (int j = 0; j < rows; j++) {
                 tempu[index] = c16[j];
                 index += 16;
-              }
+              }*/
               
               index = 0;
               for (int d = 0; d < rows; d++) {
@@ -652,6 +727,28 @@ namespace gr {
 
       // Tell runtime system how many output items we produced.
       return noutput_items;
+    }
+    
+    // args is an array of two struct args
+    void *dvbt2_interleaver_bb_impl::load_tempu(void *args) {
+			struct args *arguments = (struct args *)args;
+	      unsigned char *tempu = arguments[0].tempu;
+	      int rows = arguments[0].rows;
+	      const unsigned char *c = arguments[0].c;
+	      int index = 0;
+	      for (int j = 0; j < rows; j++) {
+	        tempu[index] = c[j];
+	        index += 16;
+	      }
+	      tempu = arguments[1].tempu;
+	      rows = arguments[1].rows;
+	      c = arguments[1].c;
+	      index = 0;
+	      for (int j = 0; j < rows; j++) {
+	        tempu[index] = c[j];
+	        index += 16;
+	      }
+	      return 0;
     }
 
     const int dvbt2_interleaver_bb_impl::twist16n[8] =
