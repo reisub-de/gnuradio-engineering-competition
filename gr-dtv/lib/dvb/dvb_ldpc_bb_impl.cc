@@ -523,8 +523,9 @@ for (int row = 0; row < ROWS; row++) { \
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
-        for (int j = 0; j < (int)nbch; j++) {
-          out[i + j] = in[consumed];
+        uint8_t* outi = out + i;
+        for (; outi < (int)nbch + (out+i); outi++) {
+          *outi = in[consumed];
           consumed++;
         }
         

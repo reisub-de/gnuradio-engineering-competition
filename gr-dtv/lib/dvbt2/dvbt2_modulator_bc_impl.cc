@@ -25,6 +25,8 @@
 #include <gnuradio/io_signature.h>
 #include "dvbt2_modulator_bc_impl.h"
 
+#include "gr_timer.h"
+
 namespace gr {
   namespace dtv {
 
@@ -192,6 +194,7 @@ namespace gr {
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
+      gr_timer t0("modulator general_work");
       const unsigned char *in = (const unsigned char *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
       const unsigned char *in_delay;
