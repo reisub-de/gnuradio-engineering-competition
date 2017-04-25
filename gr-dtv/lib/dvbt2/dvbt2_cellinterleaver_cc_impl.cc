@@ -221,7 +221,7 @@ namespace gr {
           else {
             FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
           }
-          for (int r = 0; r < FECBlocksPerTIBlock; r++) {
+          for (int r = FECBlocksPerTIBlock; r; r--) {
             shift = cell_size;
             while (shift >= cell_size) {
               temp = n;
