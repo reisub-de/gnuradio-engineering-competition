@@ -651,9 +651,6 @@ namespace gr {
                 poly1 = (uint64_t)m_poly_n_12[2] << 32 | m_poly_n_12[3],
                 poly2 = (uint64_t)m_poly_n_12[4] << 32 | m_poly_n_12[5];
 
-              const my_vec2 
-                s_poly0 = {poly0, poly1},
-                s_poly1 = {poly2, 0};
 
               gr_timer tsw("BCH N12 switch block");
               for (int i = 0; i < noutput_items; i += nbch) {
