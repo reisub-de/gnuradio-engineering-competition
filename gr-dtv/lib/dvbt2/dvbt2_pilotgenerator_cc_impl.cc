@@ -31,6 +31,8 @@
 #endif
 
 #include "gr_timer.h"
+#include <omp.h>
+#define OMP_PROC_BIND TRUE
 
 namespace gr {
   namespace dtv {
@@ -2707,14 +2709,15 @@ namespace gr {
       }
     }
 
-    UNROLL_LOOPS
+    
     int
     dvbt2_pilotgenerator_cc_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
-        gr_timer t0("pilot generator general_work");
+      omp_set_num_threads(4);
+      gr_timer t0("pilot generator general_work");
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
       gr_complex zero;
