@@ -185,9 +185,15 @@ namespace gr {
           for (int i = 0; i < noutput_items; i += packed_items) {
             rows = frame_size / 2;
             if (code_rate == C1_3 || code_rate == C2_5) {
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
-              }
+             // for (int k = 0; k < nbch; k++) {
+             //   tempu[k] = *in++;
+             // }
+
+             for (uint8_t* k = tempu; k < tempu+nbch; k++){
+                   *k = *in++;
+             }
+             
+
 
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
@@ -241,9 +247,12 @@ namespace gr {
             c6 = &tempv[rows * 5];
             c7 = &tempv[rows * 6];
             c8 = &tempv[rows * 7];
-            for (int k = 0; k < nbch; k++) {
-              tempu[k] = *in++;
-            }
+            //for (int k = 0; k < nbch; k++) {
+            //  tempu[k] = *in++;
+            //}
+             for (uint8_t* k = tempu; k < tempu+nbch; k++){
+                   *k = *in++;
+             }
             for (int t = 0; t < q_val; t++) {
               for (int s = 0; s < 360; s++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -424,15 +433,11 @@ namespace gr {
                 tempu[index++] = c2[j];
                 tempu[index++] = c3[j];
                 tempu[index++] = c4[j];
-                index+=12;
-              }
-              index = 4;
-              for (int j = 0; j < rows; j++) {
                 tempu[index++] = c5[j];
                 tempu[index++] = c6[j];
                 tempu[index++] = c7[j];
                 tempu[index++] = c8[j];
-                index+=12;
+                index+=8;
               }
               index = 8;
               for (int j = 0; j < rows; j++) {
@@ -440,15 +445,11 @@ namespace gr {
                 tempu[index++] = c10[j];
                 tempu[index++] = c11[j];
                 tempu[index++] = c12[j];
-                index+=12;
-              }
-              index = 12;
-              for (int j = 0; j < rows; j++) {
                 tempu[index++] = c13[j];
                 tempu[index++] = c14[j];
                 tempu[index++] = c15[j];
                 tempu[index++] = c16[j];
-                index+=12;
+                index+=8;
               }
 
               index = 0;
