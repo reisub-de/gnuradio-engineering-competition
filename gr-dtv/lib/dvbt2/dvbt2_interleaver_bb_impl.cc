@@ -505,12 +505,15 @@ namespace gr {
               for (int k = 0; k < nbch; k++) {
                 tempu[k] = *in++;
               }
-
-              for (int t = 0; t < q_val; t++) {
-                for (int s = 0; s < 360; s++) {
-                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
+              int r=0;
+              int d=0;
+              for (int t = 0; t < q_val; t++, r+=360) {
+                d=0;
+                for (int s = 0; s < 360; s++, d+=q_val) {
+                  tempu[nbch + r + s] = in[d + t];
                 }
               }
+              
               in = in + (q_val * 360);
               index = 0;
               for (int col = 0; col < mod; col++) {

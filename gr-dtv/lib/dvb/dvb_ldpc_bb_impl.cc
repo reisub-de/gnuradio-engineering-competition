@@ -524,17 +524,24 @@ for (int row = 0; row < ROWS; row++) { \
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
         uint8_t* outi = out + i;
+        {
+        gr_timer t1("LDPC assigment loop 1");
         for (; outi < (int)nbch + (out+i); outi++) {
           *outi = in[consumed];
           consumed++;
-        }
+        }}
         
-          // now do the parity checking
+        // now do the parity checking
 
-          for (int j = 0; j < ldpc_encode.table_length; j++) {
-            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
-          }
-        
+        const int* ldpc_enc_p = ldpc_encode.p;
+        const int* ldpc_enc_d = ldpc_encode.d;
+        {gr_timer t2("LDPC xor loop 1 (l535)");
+        for (int j = 0; j < ldpc_encode.table_length; j++) {
+          p[ldpc_enc_p[j]] ^= d[ldpc_enc_d[j]];
+        }}
+
+        gr_timer t3("LDPC puncture");
+        {
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
@@ -551,6 +558,7 @@ for (int row = 0; row < ROWS; row++) { \
             }
           }
           p = &out[nbch];
+        }
         }
         for (int j = 1; j < (plen - Xp); j++) {
           p[j] ^= p[j-1];

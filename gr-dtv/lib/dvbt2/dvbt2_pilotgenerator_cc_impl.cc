@@ -2717,7 +2717,7 @@ namespace gr {
                        gr_vector_void_star &output_items)
     {
       //omp_set_num_threads(4);
-      //gr_timer t0("pilot generator general_work");
+      gr_timer t0("pilot generator general_work");
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
       gr_complex zero;
@@ -2737,17 +2737,12 @@ namespace gr {
               *out++ = zero;
             }
             for (int n = 0; n < C_PS; n++) {
-              if (p2_carrier_map[n] == P2PILOT_CARRIER) {
-                *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (p2_carrier_map[n] == P2PILOT_CARRIER_INVERTED) {
-                *out++ = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (p2_carrier_map[n] == P2PAPR_CARRIER) {
-                *out++ = zero;
-              }
-              else {
-                *out++ = *in++;
+              const int prbs_n = prbs[n + K_OFFSET] ^ pn_sequence[j];
+              switch(p2_carrier_map[n]) {
+                case P2PILOT_CARRIER:          *out++ = p2_bpsk[prbs_n];          break;
+                case P2PILOT_CARRIER_INVERTED: *out++ = p2_bpsk_inverted[prbs_n]; break;
+                case P2PAPR_CARRIER:            *out++ = zero; break;
+                default: *out++ = *in++;
               }
             }
             for (int n = 0; n < right_nulls; n++) {
