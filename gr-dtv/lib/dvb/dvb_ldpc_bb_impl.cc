@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -160,7 +160,7 @@ namespace gr {
           case C8_15:  nbch = 8640;  q_val = 21; break;
           case C26_45: nbch = 9360;  q_val = 19; break;
           case C32_45: nbch = 11520; q_val = 13; break;
-          case C1_5_VLSNR_SF2:     
+          case C1_5_VLSNR_SF2:
             nbch = 2680;
             q_val = 135;
             frame_size -= SHORT_PUNCTURING_SET1;
@@ -270,7 +270,7 @@ for (int row = 0; row < ROWS; row++) { \
     } \
     im++; \
   } \
-} 
+}
 
 	UNROLL_LOOPS
     void
@@ -289,7 +289,7 @@ for (int row = 0; row < ROWS; row++) { \
 
       if (frame_size_type == FECFRAME_NORMAL) {
         switch(code_rate){
-          case C1_4: 
+          case C1_4:
             LDPC_BF(ldpc_tab_1_4N,  45); break;
 
           case C1_3:
@@ -298,7 +298,7 @@ for (int row = 0; row < ROWS; row++) { \
           case C2_5:
             LDPC_BF(ldpc_tab_2_5N,  72); break;
 
-          case C1_2: 
+          case C1_2:
             LDPC_BF(ldpc_tab_1_2N,  90); break;
 
           case C3_5:
@@ -315,7 +315,7 @@ for (int row = 0; row < ROWS; row++) { \
           case C3_4:
             LDPC_BF(ldpc_tab_3_4N,  135); break;
 
-          case C4_5: 
+          case C4_5:
             LDPC_BF(ldpc_tab_4_5N,  144); break;
 
           case C5_6:
@@ -398,10 +398,10 @@ for (int row = 0; row < ROWS; row++) { \
 
           case C154_180:
             LDPC_BF(ldpc_tab_154_180N, 154); break;
-        }	
+        }
       }
       else if (frame_size_type == FECFRAME_SHORT) {
-        switch(code_rate) { 
+        switch(code_rate) {
           case C1_4:
             LDPC_BF(ldpc_tab_1_4S, 9); break;
 
@@ -478,10 +478,10 @@ for (int row = 0; row < ROWS; row++) { \
 	switch(code_rate) {
         case C1_5_MEDIUM:
           LDPC_BF(ldpc_tab_1_5M,   18); break;
-    
+
         case C11_45_MEDIUM:
           LDPC_BF(ldpc_tab_11_45M, 22); break;
-       
+
         case C1_3_MEDIUM:
           LDPC_BF(ldpc_tab_1_3M,   30); break;
         }
@@ -528,18 +528,26 @@ for (int row = 0; row < ROWS; row++) { \
         {
         gr_timer t1("LDPC assigment loop 1");
         //#pragma omp parallel for private(consumed)
+<<<<<<< HEAD
         for (int i=0;  i < (int)nbch ; i++, consumed++) {
+=======
+        for (int i=0;  i < (int)nbch ; i++) {
+>>>>>>> 39849fa10d8db0382408c9bba2ec9eebaf9c3866
           out[i] = in[consumed];
           
         }}
-        
+
         // now do the parity checking
 
         const int* ldpc_enc_p = ldpc_encode.p;
         const int* ldpc_enc_d = ldpc_encode.d;
 
         {gr_timer t2("LDPC xor loop 1 (l535)");
+<<<<<<< HEAD
 #pragma omp parallel for 
+=======
+        #pragma omp parallel for default(none)
+>>>>>>> 39849fa10d8db0382408c9bba2ec9eebaf9c3866
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_enc_p[j]] ^= d[ldpc_enc_d[j]];
         }}
