@@ -514,7 +514,7 @@ namespace gr {
     //dvb_bch_bb_impl::reg_6_sseshift(my_vec2 *sr)
     //{
     //  const my_vec2 carries = (my_vec2 {sr[0][1], sr[1][0]}) << 63;
-    //  sr[1] = sr[1] >> 1 | carries;
+    //  sr[1] = sr[1] >> 1 | (my_vec2{sr[0][1], sr[1][0]}) << 63;
     //  sr[0] = sr[0] >> 1;
     //}
 
@@ -662,6 +662,7 @@ namespace gr {
                 for (int j = kbch ; j ; j--) {
                   temp = *out++ = *in++;
                   b = (temp ^ (wshift[2] & 1));
+
                   reg_6_wshift(wshift);
                   if (b) {
                     sseshift[0] ^= s_poly0;
@@ -725,7 +726,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 4);
             // MSB of the codeword first
-            for (int j = kbch + 1; j ; j--) {
+            for (int j = kbch; j ; j--) {
               temp = *in++;
               *out++ = temp;
               consumed++;
@@ -750,7 +751,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = kbch + 1; j ; j--) {
+            for (int j = kbch ; j ; j--) {
               temp = *in++;
               *out++ = temp;
               consumed++;
@@ -777,7 +778,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = kbch + 1; j ; j--) {
+            for (int j = kbch ; j ; j--) {
               temp = *in++;
               *out++ = temp;
               consumed++;
