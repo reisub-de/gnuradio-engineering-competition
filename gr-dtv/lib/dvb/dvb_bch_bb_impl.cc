@@ -636,8 +636,9 @@ namespace gr {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
+      my_vec2 sseshift[2]; 
       //unsigned int shift[6];
-      uint64_t wshift[3]; //TODO: SSE vector?
+      uint64_t* wshift = (uint64_t*)sseshift; 
       unsigned int *shift = (uint32_t*)wshift;
       int consumed = 0;
 
@@ -649,23 +650,27 @@ namespace gr {
                 poly1 = (uint64_t)m_poly_n_12[2] << 32 | m_poly_n_12[3],
                 poly2 = (uint64_t)m_poly_n_12[4] << 32 | m_poly_n_12[5];
 
+              const my_vec2 
+                s_poly0 = {poly0, poly1},
+                s_poly1 = {poly2, 0};
+
               gr_timer tsw("BCH N12 switch block");
               for (int i = 0; i < noutput_items; i += nbch) {
                 //Zero the shift register
                 memset(wshift, 0, sizeof(uint64_t) * 3);
                 // MSB of the codeword first
-                for (int j = -kbch ; j ; j++) {
+                for (int j = kbch ; j ; j--) {
                   temp = *out++ = *in++;
-                  consumed++;
                   b = (temp ^ (wshift[2] & 1));
                   reg_6_wshift(wshift);
                   if (b) {
-                    wshift[0] ^= poly0;
-                    wshift[1] ^= poly1;
-                    wshift[2] ^= poly2;
+                    sseshift[0] ^= s_poly0;
+                    sseshift[1] ^= s_poly1;
+                    //wshift[2] ^= poly2;
 
                   }
                 }
+                consumed += kbch;
 
                 // Now add the parity bits to the output
                 for (int r = 2; r >=0; r--) {
