@@ -185,13 +185,13 @@ namespace gr {
           for (int i = 0; i < noutput_items; i += packed_items) {
             rows = frame_size / 2;
             if (code_rate == C1_3 || code_rate == C2_5) {
-             // for (int k = 0; k < nbch; k++) {
-             //   tempu[k] = *in++;
-             // }
+              for (int k = 0; k < nbch; k++) {
+                tempu[k] = *in++;
+              }
 
-             for (uint8_t* k = tempu; k < tempu+nbch; k++){
-                   *k = *in++;
-             }
+             //for (uint8_t* k = tempu; k < tempu+nbch; k++){
+             //      *k = *in++;
+             //}
              
 
 
@@ -247,12 +247,12 @@ namespace gr {
             c6 = &tempv[rows * 5];
             c7 = &tempv[rows * 6];
             c8 = &tempv[rows * 7];
-            //for (int k = 0; k < nbch; k++) {
-            //  tempu[k] = *in++;
+            for (int k = 0; k < nbch; k++) {
+              tempu[k] = *in++;
+            }
+            //for (uint8_t* k = tempu; k < tempu+nbch; k++){
+            //  *k = *in++;
             //}
-             for (uint8_t* k = tempu; k < tempu+nbch; k++){
-                   *k = *in++;
-             }
             for (int t = 0; t < q_val; t++) {
               for (int s = 0; s < 360; s++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -328,13 +328,13 @@ namespace gr {
             c10 = &tempv[rows * 9];
             c11 = &tempv[rows * 10];
             c12 = &tempv[rows * 11];
-            /*for (int k = 0; k < nbch; k++) {
+            for (int k = 0; k < nbch; k++) {
               tempu[k] = *in++;
-            }*/
-
-            for (uint8_t* k = tempu; k < tempu+nbch; k++){
-              *k = *in++;
             }
+
+            //for (uint8_t* k = tempu; k < tempu+nbch; k++){
+            //  *k = *in++;
+            //}
             for (int t = 0; t < q_val; t++) {
               for (int s = 0; s < 360; s++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -368,7 +368,7 @@ namespace gr {
               tempu[index++] = c12[j];
             }
             index = 0;
-            for (int d = 0; d < frame_size / (mod * 2); d++) {
+            for (int d = frame / (mod*2); d ; d--) {
               pack = 0;
               for (int e = 0; e < (mod * 2); e++) {
                 offset = mux[e];
@@ -411,13 +411,13 @@ namespace gr {
               c14 = &tempv[rows * 13];
               c15 = &tempv[rows * 14];
               c16 = &tempv[rows * 15];
-              /*for (int k = 0; k < nbch; k++) {
+              for (int k = 0; k < nbch; k++) {
                 tempu[k] = *in++;
-              }*/
-
-              for (uint8_t* k = tempu; k < tempu+nbch; k++){
-                *k = *in++;
               }
+
+              //for (uint8_t* k = tempu; k < tempu+nbch; k++){
+              //  *k = *in++;
+              //}
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -495,13 +495,13 @@ namespace gr {
               c6 = &tempv[rows * 5];
               c7 = &tempv[rows * 6];
               c8 = &tempv[rows * 7];
-              /*for (int k = 0; k < nbch; k++) {
+              for (int k = 0; k < nbch; k++) {
                 tempu[k] = *in++;
-              }*/
-
-              for (uint8_t* k = tempu; k < tempu+nbch; k++){
-                *k = *in++;
               }
+
+              //for (uint8_t* k = tempu; k < tempu+nbch; k++){
+              //  *k = *in++;
+              //}
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
