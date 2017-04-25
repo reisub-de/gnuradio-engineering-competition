@@ -197,14 +197,14 @@ namespace gr {
               in = in + (q_val * 360);
               index = 0;
 
-              for (int j = 0; j < rows; j++) {
+              for (int j = rows; j ; j--) {
                 out[produced] = tempu[index++] << 1;
                 out[produced++] |= tempu[index++];
               }
               consumed += 2 * rows;
             }
             else {
-              for (int j = 0; j < rows; j++) {
+              for (int j = rows; j ; j--) {
                 out[produced] = in[consumed++] << 1;
                 out[produced++] |= in[consumed++];
               }
@@ -273,7 +273,7 @@ namespace gr {
               tempu[index++] = c8[j];
             }
             index = 0;
-            for (int d = 0; d < frame_size / (mod * 2); d++) {
+            for (int d = frame_size / (mod*2); d ; d--) {
               pack = 0;
               for (int e = 0; e < (mod * 2); e++) {
                 offset = mux[e];
@@ -446,7 +446,7 @@ namespace gr {
               }
 
               index = 0;
-              for (int d = 0; d < frame_size / (mod * 2); d++) {
+              for (int d = frame_size / (mod*2); d ; d--) {
                 pack = 0;
                 for (int e = 0; e < (mod * 2); e++) {
                   offset = mux[e];
@@ -513,7 +513,7 @@ namespace gr {
                 tempu[index++] = c8[j];
               }
               index = 0;
-              for (int d = 0; d < frame_size / mod; d++) {
+              for (int d = frame_size/mod; d ; d--) {
                 pack = 0;
                 for (int e = 0; e < mod; e++) {
                   offset = mux[e];
