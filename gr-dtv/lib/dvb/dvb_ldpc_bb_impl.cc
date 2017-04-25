@@ -24,6 +24,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
+#include <omp.h>
 
 #ifndef UNROLL_LOOPS
 #define UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
