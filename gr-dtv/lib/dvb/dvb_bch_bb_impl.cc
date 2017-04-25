@@ -492,6 +492,15 @@ namespace gr {
       sr[0] = (sr[0] >> 1);
     }
 
+    // shift 192 bits with 64-bit ints
+    inline void
+    dvb_bch_bb_impl::reg_3_shift(unsigned long long *sr)
+    {
+      sr[2] = (sr[2] >> 1) | (sr[1] << 63);
+      sr[1] = (sr[1] >> 1) | (sr[0] << 63);
+      sr[0] = (sr[0] >> 1);
+    }
+
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
     {
@@ -594,6 +603,10 @@ namespace gr {
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
       unsigned int shift[6];
+      unsigned long long newshift[3];
+      const unsigned long long poly0 = ((unsigned long long)m_poly_n_12[0] << 32) + m_poly_n_12[1];
+      const unsigned long long poly1 = ((unsigned long long)m_poly_n_12[2] << 32) + m_poly_n_12[3];
+      const unsigned long long poly2 = ((unsigned long long)m_poly_n_12[4] << 32) + m_poly_n_12[5];
       int consumed = 0;
 
 
@@ -602,15 +615,18 @@ namespace gr {
       // nbch = 38880
       // bch_code = BCH_CODE_N12
 			int stop = (int)kbch;
-			int shiftSize = sizeof(unsigned int) * 6;
+			//int shiftSize = sizeof(unsigned int) * 6;
       
       switch (bch_code) {
         // This is our case         
-        case BCH_CODE_N12:  
+        case BCH_CODE_N12:
           for (int i = 0; i < noutput_items; i += nbch) {
-            // Zero the shift register
-            memset(shift, 0, shiftSize);  //old code
-            //bzero(shift, shiftSize);
+            //Zero the shift register
+            //memset(shift, 0, sizeof(unsigned int) * 6);
+            //memset(newshift, 0, sizeof(unsigned int) * 3);
+            newshift[0] = 0;
+            newshift[1] = 0;
+            newshift[2] = 0;
             // MSB of the codeword first
             // kbch = 38688
             // we don't need to convert kbch to int every time here
@@ -618,22 +634,29 @@ namespace gr {
               temp = *in++;
               *out++ = temp;
               ++consumed;
-              b = (temp ^ (shift[5] & 1));
-              reg_6_shift(shift);
+              //b = (temp ^ (shift[5] & 1));
+              b = (temp ^ (newshift[2] & 1));
+              //reg_6_shift(shift);
+              reg_3_shift(newshift);
               if (b) {
-                shift[0] ^= m_poly_n_12[0];
-                shift[1] ^= m_poly_n_12[1];
-                shift[2] ^= m_poly_n_12[2];
-                shift[3] ^= m_poly_n_12[3];
-                shift[4] ^= m_poly_n_12[4];
-                shift[5] ^= m_poly_n_12[5];
+                //shift[0] ^= m_poly_n_12[0];
+                //shift[1] ^= m_poly_n_12[1];
+                //shift[2] ^= m_poly_n_12[2];
+                //shift[3] ^= m_poly_n_12[3];
+                //shift[4] ^= m_poly_n_12[4];
+                //shift[5] ^= m_poly_n_12[5];
+                newshift[0] ^= poly0;
+                newshift[1] ^= poly1;
+                newshift[2] ^= poly2;
               }
             }
             // Now add the parity bits to the output
-            for (int n = 0; n < 192; n++) {
-              *out++ = (shift[5] & 1);
-              reg_6_shift(shift);
-            }
+            for (int n = 0; n < 192; ++n) {
+              //*out++ = (shift[5] & 1);
+              //reg_6_shift(shift);
+              *out++ = (newshift[2] & 1);
+              reg_3_shift(newshift);
+            } 
           }
           break;
         // end of code we need to worry about 
@@ -668,7 +691,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 4);
             // MSB of the codeword first
-            for (int j = 0; j < stop; j++) {
+            for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
@@ -693,7 +716,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = 0; j < stop; j++) {
+            for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
@@ -720,7 +743,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = 0; j < stop; j++) {
+            for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;

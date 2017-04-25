@@ -41,6 +41,7 @@ namespace gr {
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
       void poly_reverse(int*, int*, int);
+      inline void reg_3_shift(unsigned long long*);
       inline void reg_4_shift(unsigned int*);
       inline void reg_5_shift(unsigned int*);
       inline void reg_6_shift(unsigned int*);
