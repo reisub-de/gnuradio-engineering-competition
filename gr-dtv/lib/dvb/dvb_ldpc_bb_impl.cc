@@ -527,13 +527,13 @@ for (int row = 0; row < ROWS; row++) { \
           out[i + j] = in[consumed];
           consumed++;
         }
-        {
+        
           // now do the parity checking
 
           for (int j = 0; j < ldpc_encode.table_length; j++) {
             p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
           }
-        }
+        
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {

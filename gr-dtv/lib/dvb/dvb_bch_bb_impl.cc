@@ -643,10 +643,8 @@ namespace gr {
                 //Zero the shift register
                 memset(wshift, 0, sizeof(uint64_t) * 3);
                 // MSB of the codeword first
-                for (int j = 0; j < (int)kbch; j++) {
-                  temp = *out = *in;
-                  in++;
-                  out++;
+                for (int j = kbch + 1; j ; j--) {
+                  temp = *out++ = *in++;
                   consumed++;
                   b = (temp ^ (wshift[2] & 1));
                   reg_6_wshift(wshift);
@@ -675,7 +673,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 5);
             // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
+            for (int j = kbch + 1; j ; j--) {
               temp = *in++;
               *out++ = temp;
               consumed++;
@@ -701,7 +699,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 4);
             // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
+            for (int j = kbch + 1; j ; j--) {
               temp = *in++;
               *out++ = temp;
               consumed++;
@@ -726,7 +724,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
+            for (int j = kbch + 1; j ; j--) {
               temp = *in++;
               *out++ = temp;
               consumed++;
@@ -753,7 +751,7 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
+            for (int j = kbch + 1; j ; j--) {
               temp = *in++;
               *out++ = temp;
               consumed++;
