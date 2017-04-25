@@ -391,6 +391,7 @@ namespace gr {
     {
     }
 
+
     void
     dvb_bch_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
