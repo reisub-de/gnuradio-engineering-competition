@@ -535,9 +535,10 @@ for (int row = 0; row < ROWS; row++) { \
 
         const int* ldpc_enc_p = ldpc_encode.p;
         const int* ldpc_enc_d = ldpc_encode.d;
+
         {gr_timer t2("LDPC xor loop 1 (l535)");
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_enc_p[j]] ^= d[ldpc_enc_d[j]];
+        for (; ldpc_enc_p < ldpc_encode.table_length + ldpc_encode.p; ldpc_enc_d++, ldpc_enc_p++) {
+          p[*ldpc_enc_p] ^= d[*ldpc_enc_d];
         }}
 
         gr_timer t3("LDPC puncture");
