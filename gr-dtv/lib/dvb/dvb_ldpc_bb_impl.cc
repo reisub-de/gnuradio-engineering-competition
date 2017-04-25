@@ -538,12 +538,26 @@ for (int row = 0; row < ROWS; row++) { \
         const int* ldpc_enc_p = ldpc_encode.p;
         const int* ldpc_enc_d = ldpc_encode.d;
 
+        const int* A = new int[ldpc_encode.table_length];
+        const int* B = new int[ldpc_encode.table_length];
+
         {gr_timer t2("LDPC xor loop 1 (l535)");
 //#pragma omp simd
-        #pragma omp parallel for simd
+        
+        for (int j = 0; j<ldpc_encode.table_length; j++){
+            A[j]=p[ldpc_enc_p[j]];
+            B[j]=d[ldpc_enc_d[j]];
+        }
+          
         for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_enc_p[j]] ^= d[ldpc_enc_d[j]];
+          A[j] ^= B[j];
         }}
+
+        for (int j = 0; j<ldpc_encode.table_length; j++){
+            p[ldpc_enc_p[j]]=A[j];
+            d[ldpc_enc_d[j]]=B[j];
+        }
+        
 
         gr_timer t3("LDPC puncture");
         {
