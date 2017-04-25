@@ -5,7 +5,7 @@
 #include <iostream>
 
 #ifndef USE_GR_TIMERS
-#define USE_GR_TIMERS 1
+#define USE_GR_TIMERS 0
 #endif
 
 class gr_timer

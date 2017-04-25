@@ -1191,7 +1191,7 @@ namespace gr {
     void
     dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
     {
-        gr_timer t0("pilot generator init_pilots");
+        //gr_timer t0("pilot generator init_pilots");
         
       //int remainder, shift;
       int shift;
@@ -2717,7 +2717,7 @@ namespace gr {
                        gr_vector_void_star &output_items)
     {
       //omp_set_num_threads(4);
-      gr_timer t0("pilot generator general_work");
+      //gr_timer t0("pilot generator general_work");
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
       gr_complex zero;
@@ -2732,7 +2732,7 @@ namespace gr {
         for (int j = 0; j < num_symbols; j++) {
           init_pilots(j);
           if (j < N_P2) {
-              gr_timer tj0("pilot generator j<N_P2");
+              //gr_timer tj0("pilot generator j<N_P2");
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
@@ -2755,7 +2755,7 @@ namespace gr {
             }
           }
           else if (j == (num_symbols - L_FC)) {
-              gr_timer tj0("pilot generator j == n-lfc");
+              //gr_timer tj0("pilot generator j == n-lfc");
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
@@ -2778,7 +2778,7 @@ namespace gr {
             }
           }
           else {
-              gr_timer tj0("pilot generator else");
+              //gr_timer tj0("pilot generator else");
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
