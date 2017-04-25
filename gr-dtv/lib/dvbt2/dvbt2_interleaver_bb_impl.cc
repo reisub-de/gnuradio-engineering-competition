@@ -179,6 +179,7 @@ namespace gr {
       unsigned int pack;
       const int *twist;
       const int *mux;
+      int mod2 = mod * 2;
       switch (signal_constellation) {
         case MOD_QPSK:
           for (int i = 0; i < noutput_items; i += packed_items) {
@@ -234,7 +235,7 @@ namespace gr {
             mux = &mux16[0];
           }
           for (int i = 0; i < noutput_items; i += packed_items) {
-            rows = frame_size / (mod * 2);
+            rows = frame_size / (mod2);
             const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
             c1 = &tempv[0];
             c2 = &tempv[rows];
@@ -255,7 +256,7 @@ namespace gr {
             in = in + (q_val * 360);
             index = 0;
             int rows_col = 0;
-            for (int col = 0; col < (mod * 2); col++) {
+            for (int col = 0; col < (mod2); col++) {
               offset = twist[col];
               rows_col = 0;
               for (int row = 0; row < rows; row++, rows_col+=col) {
@@ -279,15 +280,15 @@ namespace gr {
               index+=8;
             }
             index = 0;
-            for (int d = frame_size / (mod*2); d ; d--) {
+            for (int d = frame_size / (mod2); d ; d--) {
               pack = 0;
-              for (int e = 0; e < (mod * 2); e++) {
+              for (int e = 0; e < (mod2); e++) {
                 offset = mux[e];
-                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+                pack |= tempu[index++] << (((mod2) - 1) - offset);
               }
               out[produced++] = pack >> 4;
               out[produced++] = pack & 0xf;
-              consumed += (mod * 2);
+              consumed += (mod2);
             }
           }
           break;
@@ -311,7 +312,7 @@ namespace gr {
             mux = &mux64[0];
           }
           for (int i = 0; i < noutput_items; i += packed_items) {
-            rows = frame_size / (mod * 2);
+            rows = frame_size / (mod2);
             const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
             c1 = &tempv[0];
             c2 = &tempv[rows];
@@ -340,7 +341,7 @@ namespace gr {
             in = in + (q_val * 360);
             index = 0;
             int rows_col = 0;
-            for (int col = 0; col < (mod * 2); col++) {
+            for (int col = 0; col < (mod2); col++) {
               offset = twist[col];
               rows_col = 0;
               for (int row = 0; row < rows; row++, rows_col+=col) {
@@ -368,15 +369,15 @@ namespace gr {
               index+=12;
             }
             index = 0;
-            for (int d = frame_size / (mod*2); d ; d--) {
+            for (int d = frame_size / (mod2); d ; d--) {
               pack = 0;
-              for (int e = 0; e < (mod * 2); e++) {
+              for (int e = 0; e < (mod2); e++) {
                 offset = mux[e];
-                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+                pack |= tempu[index++] << (((mod2) - 1) - offset);
               }
               out[produced++] = pack >> 6;
               out[produced++] = pack & 0x3f;
-              consumed += (mod * 2);
+              consumed += (mod2);
             }
           }
           break;
@@ -424,7 +425,7 @@ namespace gr {
               }
               in = in + (q_val * 360);
               index = 0;
-              for (int col = 0; col < (mod * 2); col++) {
+              for (int col = 0; col < (mod2); col++) {
                 offset = twist256n[col];
                 for (int row = 0; row < rows; row++) {
                   tempv[offset + (rows * col)] = tempu[index++];
@@ -468,15 +469,15 @@ namespace gr {
               }
 
               index = 0;
-              for (int d = frame_size / (mod*2); d ; d--) {
+              for (int d = frame_size / (mod2); d ; d--) {
                 pack = 0;
-                for (int e = 0; e < (mod * 2); e++) {
+                for (int e = 0; e < (mod2); e++) {
                   offset = mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+                  pack |= tempu[index++] << (((mod2) - 1) - offset);
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
-                //consumed += (mod * 2);
+                //consumed += (mod2);
               }
               consumed += frame_size;
             }

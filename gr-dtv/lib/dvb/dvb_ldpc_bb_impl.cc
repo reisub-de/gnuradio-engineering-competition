@@ -524,7 +524,7 @@ for (int row = 0; row < ROWS; row++) { \
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
-        uint8_t* outi = out + i;
+//        uint8_t* outi = out + i;
         {
         gr_timer t1("LDPC assigment loop 1");
         //#pragma omp parallel for private(consumed)
