@@ -43,6 +43,12 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(1, 1, sizeof(unsigned char)))
     {
+      sem_init(&thread_start, 0, 0);
+      pthread_barrier_init(&barrier, NULL, NUM_THREADS + 1);
+
+      for (size_t i = 0; i < NUM_THREADS; i++) {
+        pthread_create(&threads[i], NULL, load_tempu, (void *)i);
+      }
       signal_constellation = constellation;
       code_rate = rate;
       if (framesize == FECFRAME_NORMAL) {
@@ -433,11 +439,8 @@ namespace gr {
                   }
                 }
               }
-              
 
-                pthread_t threads[4];
-                struct args arguments[16];
-		arguments[0].tempu = tempu;
+                arguments[0].tempu = tempu;
                 arguments[0].rows = rows;
                 arguments[0].c = c1;
                 
@@ -501,95 +504,11 @@ namespace gr {
                 arguments[15].rows = rows;
                 arguments[15].c = c16;
 
-                for (int i = 0; i < 4; i++) {
-									pthread_create(&threads[i], NULL, load_tempu, (void *)&arguments[i*4]);
+                for (int i = 0; i < NUM_THREADS; i++) {
+									sem_post(&thread_start);
                 }
-                for (int i = 0; i < 4; i++) {
-									pthread_join(threads[i], NULL);
-                }
-
-
-	      /*index = 0;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c1[j];
-                index += 16;
-              }
-              index = 1;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c2[j];
-                index += 16;
-              }
-              index = 2;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c3[j];
-                index += 16;
-              }
-              index = 3;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c4[j];
-                index += 16;
-              }
-              index = 4;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c5[j];
-                index += 16;
-              }
-              index = 5;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c6[j];
-                index += 16;
-              }
-              index = 6;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c7[j];
-                index += 16;
-              }
-              index = 7;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c8[j];
-                index += 16;
-              }
-              index = 8;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c9[j];
-                index += 16;
-              }
-              index = 9;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c10[j];
-                index += 16;
-              }
-              index = 10;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c11[j];
-                index += 16;
-              }
-              index = 11;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c12[j];
-                index += 16;
-              }
-              index = 12;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c13[j];
-                index += 16;
-              }
-              index = 13;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c14[j];
-                index += 16;
-              }
-              index = 14;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c15[j];
-                index += 16;
-              }
-              index = 15;
-              for (int j = 0; j < rows; j++) {
-                tempu[index] = c16[j];
-                index += 16;
-              }*/
-              
+              	pthread_barrier_wait(&barrier);
+             
               index = 0;
               for (int d = 0; d < rows; d++) {
                 pack = 0;
@@ -730,21 +649,31 @@ namespace gr {
       return noutput_items;
     }
     
-    // args is an array of two struct args
-    void *dvbt2_interleaver_bb_impl::load_tempu(void *args) {
-			struct args *arguments = (struct args *)args;
-      for (int i = 0; i < 4; i++) {
-        unsigned char *tempu = arguments[i].tempu;
-        int rows = arguments[i].rows;
-        const unsigned char *c = arguments[i].c;
-        int index = 0;
-        for (int j = 0; j < rows; j++) {
-					tempu[index] = c[j];
-          index += 16;
+    void *dvbt2_interleaver_bb_impl::load_tempu(void *tid) {
+      long long thread_id = (long long)tid;
+      int num_loops = 16 / NUM_THREADS;
+      int start_index = thread_id * num_loops;
+      for (;;) {
+        sem_wait(&thread_start);
+        for (int i = 0; i < num_loops; i++) {
+          int idx = start_index + i;
+          unsigned char *tempu = arguments[idx].tempu;
+          int rows = arguments[idx].rows;
+          const unsigned char *c = arguments[idx].c;
+          int index = 0;
+          for (int j = 0; j < rows; j++) {
+            tempu[index] = c[j];
+            index += 16;
+          }
         }
+        pthread_barrier_wait(&barrier);
       }
       return 0;
     }
+    
+    sem_t dvbt2_interleaver_bb_impl::thread_start = {};
+    pthread_barrier_t dvbt2_interleaver_bb_impl::barrier = {};
+    struct args dvbt2_interleaver_bb_impl::arguments[16] = {};
 
     const int dvbt2_interleaver_bb_impl::twist16n[8] =
     {

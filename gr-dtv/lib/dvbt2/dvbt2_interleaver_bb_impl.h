@@ -24,6 +24,9 @@
 #include <gnuradio/dtv/dvbt2_interleaver_bb.h>
 #include "dvb/dvb_defines.h"
 #include <pthread.h>
+#include <semaphore.h>
+
+#define NUM_THREADS 8
 
 namespace gr {
   namespace dtv {
@@ -36,6 +39,12 @@ namespace gr {
     class dvbt2_interleaver_bb_impl : public dvbt2_interleaver_bb
     {
      private:
+      static struct args arguments[16];
+      static sem_t thread_start;
+      static sem_t thread_finish;
+      static pthread_barrier_t barrier;
+
+      pthread_t threads[NUM_THREADS];
       int frame_size;
       int signal_constellation;
       int code_rate;
