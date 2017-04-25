@@ -665,9 +665,9 @@ namespace gr {
 
                   reg_6_wshift(wshift);
                   if (b) {
-                    sseshift[0] ^= s_poly0;
-                    sseshift[1] ^= s_poly1;
-                    //wshift[2] ^= poly2;
+                    wshift[0] ^= poly0;
+                    wshift[1] ^= poly1;
+                    wshift[2] ^= poly2;
 
                   }
                 }
