@@ -188,7 +188,7 @@ namespace gr {
               for (int k = 0; k < nbch; k++) {
                 tempu[k] = *in++;
               }
-              
+
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -196,7 +196,7 @@ namespace gr {
               }
               in = in + (q_val * 360);
               index = 0;
-              
+
               for (int j = 0; j < rows; j++) {
                 out[produced] = tempu[index++] << 1;
                 out[produced++] |= tempu[index++];
@@ -428,6 +428,10 @@ namespace gr {
                 tempu[index++] = c6[j];
                 tempu[index++] = c7[j];
                 tempu[index++] = c8[j];
+                index+=8;
+              }
+              index = 8;
+              for (int j = 0; j < rows; j++) {
                 tempu[index++] = c9[j];
                 tempu[index++] = c10[j];
                 tempu[index++] = c11[j];
@@ -436,7 +440,9 @@ namespace gr {
                 tempu[index++] = c14[j];
                 tempu[index++] = c15[j];
                 tempu[index++] = c16[j];
+                index+=8;
               }
+
               index = 0;
               for (int d = 0; d < frame_size / (mod * 2); d++) {
                 pack = 0;
