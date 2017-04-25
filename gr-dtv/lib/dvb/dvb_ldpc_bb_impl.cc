@@ -530,7 +530,7 @@ for (int row = 0; row < ROWS; row++) { \
         //#pragma omp parallel for private(consumed)
         for (int i=0;  i < (int)nbch ; i++, consumed++) {
           out[i] = in[consumed];
-          
+
         }}
 
         // now do the parity checking
@@ -539,7 +539,8 @@ for (int row = 0; row < ROWS; row++) { \
         const int* ldpc_enc_d = ldpc_encode.d;
 
         {gr_timer t2("LDPC xor loop 1 (l535)");
-        #pragma omp parallel for default(none)
+        //#pragma omp parallel for default(none)
+        //#pragma omp simd
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_enc_p[j]] ^= d[ldpc_enc_d[j]];
         }}
