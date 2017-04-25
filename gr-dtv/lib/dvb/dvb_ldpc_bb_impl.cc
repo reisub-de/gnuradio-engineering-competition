@@ -391,8 +391,9 @@ namespace gr {
 #define LDPC_BF(TABLE_NAME, ROWS) \
 for (int row = 0; row < ROWS; row++) { \
   for (int n = 0; n < 360; n++) { \
+    int calc = n * q; \
     for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
-      ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+      ldpc_encode.p[index] = (TABLE_NAME[row][col] + calc) % pbits; \
       ldpc_encode.d[index] = im; \
       index++; \
     } \
@@ -656,12 +657,59 @@ for (int row = 0; row < ROWS; row++) { \
         }
         
         
-        // First zero all the parity bits
+        //OLD code
+        /*
         memset(p, 0, sizeofp);
         for (int j = 0; j < stop; j++) {
-          out[i + j] = in[consumed];
+					out[i + j] = in[consumed];
           consumed++;
         }
+        */
+        
+        //typedef unsigned char v32uc __attribute__ ((vector_size (32)));
+				memset(p, 0, sizeofp);
+        {
+          memcpy(&out[i], &in[consumed], stop);
+          consumed += stop;
+          /*
+          long long *out = (long long *)&out[i];
+          const long long *in = (const long long *)&in[consumed];
+          
+          int stop_l = stop / 8;
+          int stop_rem = stop % 8;
+          int j;
+          for (j = 0; j < stop_l; j++) {
+						out[j] = in[j];
+            consumed += 8;
+          }
+          memcpy(&out[j], &in[consumed], stop_rem);
+          consumed += stop_rem;
+          */
+          /*
+          v32uc *p = (v32uc *)p;
+          v32uc *out = (v32uc *)&out[i];
+          const v32uc *in = (const v32uc *)&in[consumed];
+
+          int stop_v = stop / 32;
+          int stop_rem = stop % 32;
+          int sizeofp_v = sizeofp / 32;
+          int sizeofp_rem = sizeofp % 32;
+          int j;
+          int k;
+          // First zero all the parity bits
+          for (k = 0; k < sizeofp_v; k++) {
+            p[k] = (v32uc) {0};
+          }
+          memset(&p[k], 0, sizeofp_rem);
+          for (j = 0; j < stop_v; j++) {
+            out[j] = in[j];
+            consumed += 32;
+          }
+          memcpy((unsigned char*)&out[j], (unsigned char*)&in[consumed], stop_rem);
+          consumed += stop_rem;
+          */
+        }
+        
         // now do the parity checking
         for (int j = 0; j < pCheckStop; ++j) {
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
@@ -691,9 +739,12 @@ for (int row = 0; row < ROWS; row++) { \
           p[j] ^= p[j-1];
         }
         if (signal_constellation == MOD_128APSK) {
+          memset(&p[plen], 0, 6);
+          /*
           for (int j = 0; j < 6; j++) {
             p[j + plen] = 0;
           }
+          */
         }
         d += nbch;
         p += frame_size;
