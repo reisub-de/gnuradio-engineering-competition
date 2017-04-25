@@ -176,7 +176,6 @@ namespace gr {
       int consumed = 0;
       int produced = 0;
       int rows, offset, index;
-      unsigned char* pindex;
       unsigned int pack;
       const int *twist;
       const int *mux;
@@ -271,17 +270,16 @@ namespace gr {
                 }
               }
             }
-            //index = 0;
-            pindex = tempu;
+            index = 0;
             for (int j = 0; j < rows; j++) {
-              *pindex++ = c1[j];
-              *pindex++ = c2[j];
-              *pindex++ = c3[j];
-              *pindex++ = c4[j];
-              *pindex++ = c5[j];
-              *pindex++ = c6[j];
-              *pindex++ = c7[j];
-              *pindex++ = c8[j];
+              tempu[index++] = c1[j];
+              tempu[index++] = c2[j];
+              tempu[index++] = c3[j];
+              tempu[index++] = c4[j];
+              tempu[index++] = c5[j];
+              tempu[index++] = c6[j];
+              tempu[index++] = c7[j];
+              tempu[index++] = c8[j];
             }
             index = 0;
             for (int d = 0; d < frame_size / (mod * 2); d++) {
@@ -355,20 +353,19 @@ namespace gr {
               }
             }
             index = 0;
-            pindex = tempu;//*pindex++
             for (int j = 0; j < rows; j++) {
-              *pindex++ = c1[j];
-              *pindex++ = c2[j];
-              *pindex++ = c3[j];
-              *pindex++ = c4[j];
-              *pindex++ = c5[j];
-              *pindex++ = c6[j];
-              *pindex++ = c7[j];
-              *pindex++ = c8[j];
-              *pindex++ = c9[j];
-              *pindex++ = c10[j];
-              *pindex++ = c11[j];
-              *pindex++ = c12[j];
+              tempu[index++] = c1[j];
+              tempu[index++] = c2[j];
+              tempu[index++] = c3[j];
+              tempu[index++] = c4[j];
+              tempu[index++] = c5[j];
+              tempu[index++] = c6[j];
+              tempu[index++] = c7[j];
+              tempu[index++] = c8[j];
+              tempu[index++] = c9[j];
+              tempu[index++] = c10[j];
+              tempu[index++] = c11[j];
+              tempu[index++] = c12[j];
             }
             index = 0;
             for (int d = frame_size / (mod*2); d ; d--) {
@@ -438,29 +435,29 @@ namespace gr {
                   }
                 }
               }
-              pindex = tempu;
+              index = 0;
               for (int j = 0; j < rows; j++) {
-                *pindex++ = c1[j];
-                *pindex++ = c2[j];
-                *pindex++ = c3[j];
-                *pindex++ = c4[j];
-                *pindex++ = c5[j];
-                *pindex++ = c6[j];
-                *pindex++ = c7[j];
-                *pindex++ = c8[j];
-                pindex+=8;
+                tempu[index++] = c1[j];
+                tempu[index++] = c2[j];
+                tempu[index++] = c3[j];
+                tempu[index++] = c4[j];
+                tempu[index++] = c5[j];
+                tempu[index++] = c6[j];
+                tempu[index++] = c7[j];
+                tempu[index++] = c8[j];
+                index+=8;
               }
-              pindex = tempu + 8;
+              index = 8;
               for (int j = 0; j < rows; j++) {
-                *pindex++ = c9[j];
-                *pindex++ = c10[j];
-                *pindex++ = c11[j];
-                *pindex++ = c12[j];
-                *pindex++ = c13[j];
-                *pindex++ = c14[j];
-                *pindex++ = c15[j];
-                *pindex++ = c16[j];
-                pindex+=8;
+                tempu[index++] = c9[j];
+                tempu[index++] = c10[j];
+                tempu[index++] = c11[j];
+                tempu[index++] = c12[j];
+                tempu[index++] = c13[j];
+                tempu[index++] = c14[j];
+                tempu[index++] = c15[j];
+                tempu[index++] = c16[j];
+                index+=8;
               }
 
               index = 0;
