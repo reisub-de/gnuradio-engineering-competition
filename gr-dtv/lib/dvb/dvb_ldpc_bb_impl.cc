@@ -24,7 +24,6 @@
 
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
-#include <omp.h>
 
 #ifndef UNROLL_LOOPS
 #define UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
@@ -528,10 +527,10 @@ for (int row = 0; row < ROWS; row++) { \
         uint8_t* outi = out + i;
         {
         gr_timer t1("LDPC assigment loop 1");
-        #pragma omp parallel for private(consumed)
-        for (int i=0;  i < (int)nbch ; i++) {
+        //#pragma omp parallel for private(consumed)
+        for (int i=0;  i < (int)nbch ; i++, consumed++) {
           out[i] = in[consumed];
-          consumed++;
+          
         }}
         
         // now do the parity checking
@@ -540,7 +539,7 @@ for (int row = 0; row < ROWS; row++) { \
         const int* ldpc_enc_d = ldpc_encode.d;
 
         {gr_timer t2("LDPC xor loop 1 (l535)");
-        #pragma omp parallel for 
+        //#pragma omp parallel for 
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_enc_p[j]] ^= d[ldpc_enc_d[j]];
         }}
