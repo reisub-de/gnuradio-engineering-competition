@@ -422,13 +422,13 @@ for (int row = 0; row < ROWS; row++) { \
           }
         
         case C2_3:
-          LDPC_BF(ldpc_tab_2_ca, 30);
+          LDPC_BF(ldpc_tab_2_3S, 30);
 
         case C3_4:
-          LDPC_BF(ldpc_tab_3_ca, 33);
+          LDPC_BF(ldpc_tab_3_4S, 33);
 
         case C4_5:
-          LDPC_BF(ldpc_tab_4_ca, 35);
+          LDPC_BF(ldpc_tab_4_5S, 35);
 
         case C5_6:
           LDPC_BF(ldpc_tab_5_6S, 37);
