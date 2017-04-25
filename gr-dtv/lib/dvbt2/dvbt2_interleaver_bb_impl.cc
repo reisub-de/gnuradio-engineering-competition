@@ -254,10 +254,12 @@ namespace gr {
             }
             in = in + (q_val * 360);
             index = 0;
+            int rows_col = 0;
             for (int col = 0; col < (mod * 2); col++) {
               offset = twist[col];
-              for (int row = 0; row < rows; row++) {
-                tempv[offset + (rows * col)] = tempu[index++];
+              rows_col = 0;
+              for (int row = 0; row < rows; row++, rows_col+=col) {
+                tempv[offset + rows_col] = tempu[index++];
                 offset++;
                 if (offset == rows) {
                   offset = 0;
@@ -266,14 +268,15 @@ namespace gr {
             }
             index = 0;
             for (int j = 0; j < rows; j++) {
-              tempu[index++] = c1[j];
-              tempu[index++] = c2[j];
-              tempu[index++] = c3[j];
-              tempu[index++] = c4[j];
-              tempu[index++] = c5[j];
-              tempu[index++] = c6[j];
-              tempu[index++] = c7[j];
-              tempu[index++] = c8[j];
+              tempu[index  ] = c1[j];
+              tempu[index+1] = c2[j];
+              tempu[index+2] = c3[j];
+              tempu[index+3] = c4[j];
+              tempu[index+4] = c5[j];
+              tempu[index+5] = c6[j];
+              tempu[index+6] = c7[j];
+              tempu[index+7] = c8[j];
+              index+=8;
             }
             index = 0;
             for (int d = frame_size / (mod*2); d ; d--) {
@@ -326,17 +329,22 @@ namespace gr {
               tempu[k] = *in++;
             }
 
-            for (int t = 0; t < q_val; t++) {
-              for (int s = 0; s < 360; s++) {
-                tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
+            int r=0;
+            int d=0;
+            for (int t = 0; t < q_val; t++, r+=360) {
+              d=0;
+              for (int s = 0; s < 360; s++, d+=q_val) {
+                tempu[nbch + r + s] = in[d + t];
               }
             }
             in = in + (q_val * 360);
             index = 0;
+            int rows_col = 0;
             for (int col = 0; col < (mod * 2); col++) {
               offset = twist[col];
-              for (int row = 0; row < rows; row++) {
-                tempv[offset + (rows * col)] = tempu[index++];
+              rows_col = 0;
+              for (int row = 0; row < rows; row++, rows_col+=col) {
+                tempv[offset + rows_col] = tempu[index++];
                 offset++;
                 if (offset == rows) {
                   offset = 0;
@@ -345,18 +353,19 @@ namespace gr {
             }
             index = 0;
             for (int j = 0; j < rows; j++) {
-              tempu[index++] = c1[j];
-              tempu[index++] = c2[j];
-              tempu[index++] = c3[j];
-              tempu[index++] = c4[j];
-              tempu[index++] = c5[j];
-              tempu[index++] = c6[j];
-              tempu[index++] = c7[j];
-              tempu[index++] = c8[j];
-              tempu[index++] = c9[j];
-              tempu[index++] = c10[j];
-              tempu[index++] = c11[j];
-              tempu[index++] = c12[j];
+              tempu[index  ] = c1[j];
+              tempu[index+1] = c2[j];
+              tempu[index+2] = c3[j];
+              tempu[index+3] = c4[j];
+              tempu[index+4] = c5[j];
+              tempu[index+5] = c6[j];
+              tempu[index+6] = c7[j];
+              tempu[index+7] = c8[j];
+              tempu[index+8] = c9[j];
+              tempu[index+9] = c10[j];
+              tempu[index+10] = c11[j];
+              tempu[index+11] = c12[j];
+              index+=12;
             }
             index = 0;
             for (int d = frame_size / (mod*2); d ; d--) {
@@ -406,9 +415,11 @@ namespace gr {
                 tempu[k] = *in++;
               }
 
-              for (int t = 0; t < q_val; t++) {
-                for (int s = 0; s < 360; s++) {
-                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
+              int r=0, d;
+              for (int t = 0; t < q_val; t++, r+=360) {
+                d=0;
+                for (int s = 0; s < 360; s++, d+=q_val) {
+                  tempu[nbch + r + s] = in[d + t];
                 }
               }
               in = in + (q_val * 360);
@@ -425,35 +436,35 @@ namespace gr {
               }
               index = 0;
               for (int j = 0; j < rows; j++) {
-                tempu[index++] = c1[j];
-                tempu[index++] = c2[j];
-                tempu[index++] = c3[j];
-                tempu[index++] = c4[j];
-                index+=12;
+                tempu[index] = c1[j];
+                tempu[index+1] = c2[j];
+                tempu[index+2] = c3[j];
+                tempu[index+3] = c4[j];
+                index+=16;
               }
               index = 4;
               for (int j = 0; j < rows; j++) {
-                tempu[index++] = c5[j];
-                tempu[index++] = c6[j];
-                tempu[index++] = c7[j];
-                tempu[index++] = c8[j];
-                index+=12;
+                tempu[index] = c5[j];
+                tempu[index+1] = c6[j];
+                tempu[index+2] = c7[j];
+                tempu[index+3] = c8[j];
+                index+=16;
               }
               index = 8;
               for (int j = 0; j < rows; j++) {
-                tempu[index++] = c9[j];
-                tempu[index++] = c10[j];
-                tempu[index++] = c11[j];
-                tempu[index++] = c12[j];
-                index+=12;
+                tempu[index] = c9[j];
+                tempu[index+1] = c10[j];
+                tempu[index+2] = c11[j];
+                tempu[index+3] = c12[j];
+                index+=16;
               }
               index = 12;
               for (int j = 0; j < rows; j++) {
-                tempu[index++] = c13[j];
-                tempu[index++] = c14[j];
-                tempu[index++] = c15[j];
-                tempu[index++] = c16[j];
-                index+=12;
+                tempu[index] = c13[j];
+                tempu[index+1] = c14[j];
+                tempu[index+2] = c15[j];
+                tempu[index+3] = c16[j];
+                index+=16;
               }
 
               index = 0;
@@ -514,14 +525,15 @@ namespace gr {
               }
               index = 0;
               for (int j = 0; j < rows; j++) {
-                tempu[index++] = c1[j];
-                tempu[index++] = c2[j];
-                tempu[index++] = c3[j];
-                tempu[index++] = c4[j];
-                tempu[index++] = c5[j];
-                tempu[index++] = c6[j];
-                tempu[index++] = c7[j];
-                tempu[index++] = c8[j];
+                tempu[index  ] = c1[j];
+                tempu[index+1] = c2[j];
+                tempu[index+2] = c3[j];
+                tempu[index+3] = c4[j];
+                tempu[index+4] = c5[j];
+                tempu[index+5] = c6[j];
+                tempu[index+6] = c7[j];
+                tempu[index+7] = c8[j];
+                index+=8;
               }
               index = 0;
               for (int d = frame_size/mod; d ; d--) {
