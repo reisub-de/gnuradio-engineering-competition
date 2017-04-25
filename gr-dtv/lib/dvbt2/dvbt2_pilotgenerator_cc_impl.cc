@@ -1191,7 +1191,7 @@ namespace gr {
     void
     dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
     {
-        gr_timer t0("pilot generator init_pilots");
+        //gr_timer t0("pilot generator init_pilots");
         
       //int remainder, shift;
       int shift;
@@ -2732,7 +2732,6 @@ namespace gr {
         for (int j = 0; j < num_symbols; j++) {
           init_pilots(j);
           if (j < N_P2) {
-              gr_timer tj0("pilot generator j<N_P2");
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
@@ -2755,7 +2754,6 @@ namespace gr {
             }
           }
           else if (j == (num_symbols - L_FC)) {
-              gr_timer tj0("pilot generator j == n-lfc");
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
@@ -2778,7 +2776,6 @@ namespace gr {
             }
           }
           else {
-              gr_timer tj0("pilot generator else");
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
