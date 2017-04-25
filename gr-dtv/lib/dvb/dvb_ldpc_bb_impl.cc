@@ -24,7 +24,6 @@
 
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
-#include <omp.h>
 
 #ifndef UNROLL_LOOPS
 #define UNROLL_LOOPS __attribute__((optimize("unroll-loops")))
@@ -529,9 +528,10 @@ for (int row = 0; row < ROWS; row++) { \
         {
         gr_timer t1("LDPC assigment loop 1");
         //#pragma omp parallel for private(consumed)
-        for (int i=0;  i < (int)nbch ; i++) {
+
+        for (int i=0;  i < (int)nbch ; i++, consumed++) {
           out[i] = in[consumed];
-          consumed++;
+
         }}
 
         // now do the parity checking
