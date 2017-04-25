@@ -2732,10 +2732,7 @@ namespace gr {
         for (int j = 0; j < num_symbols; j++) {
           init_pilots(j);
           if (j < N_P2) {
-<<<<<<< HEAD
-=======
               //gr_timer tj0("pilot generator j<N_P2");
->>>>>>> 422e392a1a3a1aeb4c69e135c377795ca4d7acfb
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
@@ -2758,10 +2755,6 @@ namespace gr {
             }
           }
           else if (j == (num_symbols - L_FC)) {
-<<<<<<< HEAD
-=======
-              //gr_timer tj0("pilot generator j == n-lfc");
->>>>>>> 422e392a1a3a1aeb4c69e135c377795ca4d7acfb
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
@@ -2784,10 +2777,6 @@ namespace gr {
             }
           }
           else {
-<<<<<<< HEAD
-=======
-              //gr_timer tj0("pilot generator else");
->>>>>>> 422e392a1a3a1aeb4c69e135c377795ca4d7acfb
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
