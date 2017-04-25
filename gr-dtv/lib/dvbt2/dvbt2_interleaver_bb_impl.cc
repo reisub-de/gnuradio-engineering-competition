@@ -508,6 +508,7 @@ namespace gr {
 									pthread_join(threads[i], NULL);
                 }
 
+
 	      /*index = 0;
               for (int j = 0; j < rows; j++) {
                 tempu[index] = c1[j];
