@@ -30,6 +30,8 @@ namespace gr {
     class dvb_bbscrambler_bb_impl : public dvb_bbscrambler_bb
     {
      private:
+      inline void special_xor(int, gr_vector_const_void_star&, gr_vector_void_star&);
+
       unsigned int kbch;
       unsigned char bb_randomise[FRAME_SIZE_NORMAL];
       void init_bb_randomiser(void);
