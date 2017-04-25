@@ -179,10 +179,12 @@ namespace gr {
       unsigned int pack;
       const int *twist;
       const int *mux;
-
+      int intentional_slowdown = 0;
       switch (signal_constellation) {
         case MOD_QPSK:
           for (int i = 0; i < noutput_items; i += packed_items) {
+            intentional_slowdown++;           
+
             rows = frame_size / 2;
             if (code_rate == C1_3 || code_rate == C2_5) {
               for (int k = 0; k < nbch; k++) {
