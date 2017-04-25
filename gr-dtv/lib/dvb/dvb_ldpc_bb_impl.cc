@@ -529,10 +529,9 @@ for (int row = 0; row < ROWS; row++) { \
         }
         {
           // now do the parity checking
-          const int* a = ldpc_encode.p;
-          const int* b = ldpc_encode.d;
+
           for (int j = 0; j < ldpc_encode.table_length; j++) {
-            p[a[j]] ^= d[b[j]];
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
           }
         }
         if (P != 0) {
