@@ -452,9 +452,9 @@ namespace gr {
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
-                //consumed += (mod * 2);
+                consumed += (mod * 2);
               }
-              consumed += frame_size;
+              //consumed += frame_size;
             }
           }
           else {
