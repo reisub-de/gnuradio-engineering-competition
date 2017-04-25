@@ -435,7 +435,7 @@ namespace gr {
               }
               
 
-                pthread_t threads[8];
+                pthread_t threads[4];
                 struct args arguments[16];
 		arguments[0].tempu = tempu;
                 arguments[0].rows = rows;
@@ -501,10 +501,10 @@ namespace gr {
                 arguments[15].rows = rows;
                 arguments[15].c = c16;
 
-                for (int i = 0; i < 8; i++) {
-									pthread_create(&threads[i], NULL, load_tempu, (void *)&arguments[i*2]);
+                for (int i = 0; i < 4; i++) {
+									pthread_create(&threads[i], NULL, load_tempu, (void *)&arguments[i*4]);
                 }
-                for (int i = 0; i < 8; i++) {
+                for (int i = 0; i < 4; i++) {
 									pthread_join(threads[i], NULL);
                 }
 
@@ -733,23 +733,17 @@ namespace gr {
     // args is an array of two struct args
     void *dvbt2_interleaver_bb_impl::load_tempu(void *args) {
 			struct args *arguments = (struct args *)args;
-	      unsigned char *tempu = arguments[0].tempu;
-	      int rows = arguments[0].rows;
-	      const unsigned char *c = arguments[0].c;
-	      int index = 0;
-	      for (int j = 0; j < rows; j++) {
-	        tempu[index] = c[j];
-	        index += 16;
-	      }
-	      tempu = arguments[1].tempu;
-	      rows = arguments[1].rows;
-	      c = arguments[1].c;
-	      index = 0;
-	      for (int j = 0; j < rows; j++) {
-	        tempu[index] = c[j];
-	        index += 16;
-	      }
-	      return 0;
+      for (int i = 0; i < 4; i++) {
+        unsigned char *tempu = arguments[i].tempu;
+        int rows = arguments[i].rows;
+        const unsigned char *c = arguments[i].c;
+        int index = 0;
+        for (int j = 0; j < rows; j++) {
+					tempu[index] = c[j];
+          index += 16;
+        }
+      }
+      return 0;
     }
 
     const int dvbt2_interleaver_bb_impl::twist16n[8] =
