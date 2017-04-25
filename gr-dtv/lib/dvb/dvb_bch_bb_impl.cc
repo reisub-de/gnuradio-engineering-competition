@@ -654,7 +654,7 @@ namespace gr {
                 //Zero the shift register
                 memset(wshift, 0, sizeof(uint64_t) * 3);
                 // MSB of the codeword first
-                for (int j = kbch ; j ; j--) {
+                for (int j = -kbch ; j ; j++) {
                   temp = *out++ = *in++;
                   consumed++;
                   b = (temp ^ (wshift[2] & 1));
