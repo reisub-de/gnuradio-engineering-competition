@@ -366,10 +366,14 @@ namespace gr {
       if (input_mode == INPUTMODE_HIEFF) {
         crc ^= 0x80;
       }
-
-      for (int n = 0; n < 8; n++) {
-        in[i++] = (crc & (1 << n)) ? 1 : 0;
-      }
+      in[i++] = (crc & (1 << 0)) ? 1 : 0;
+      in[i++] = (crc & (1 << 1)) ? 1 : 0;
+      in[i++] = (crc & (1 << 2)) ? 1 : 0;
+      in[i++] = (crc & (1 << 3)) ? 1 : 0;
+      in[i++] = (crc & (1 << 4)) ? 1 : 0;
+      in[i++] = (crc & (1 << 5)) ? 1 : 0;
+      in[i++] = (crc & (1 << 6)) ? 1 : 0;
+      in[i++] = (crc & (1 << 7)) ? 1 : 0;
       return 8;// Length of CRC
     }
 
@@ -405,14 +409,24 @@ namespace gr {
       m_frame_offset_bits = 8;
       if (h->sis_mis == SIS_MIS_MULTIPLE) {
         temp = h->isi;
-        for (int n = 7; n >= 0; n--) {
-          m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
-        }
+        m_frame[m_frame_offset_bits++] = temp & (1 << 7) ? 1 : 0;
+        m_frame[m_frame_offset_bits++] = temp & (1 << 6) ? 1 : 0;
+        m_frame[m_frame_offset_bits++] = temp & (1 << 5) ? 1 : 0;
+        m_frame[m_frame_offset_bits++] = temp & (1 << 4) ? 1 : 0;
+        m_frame[m_frame_offset_bits++] = temp & (1 << 3) ? 1 : 0;
+        m_frame[m_frame_offset_bits++] = temp & (1 << 2) ? 1 : 0;
+        m_frame[m_frame_offset_bits++] = temp & (1 << 1) ? 1 : 0;
+        m_frame[m_frame_offset_bits++] = temp & (1 << 0) ? 1 : 0;
       }
       else {
-        for (int n = 7; n >= 0; n--) {
-          m_frame[m_frame_offset_bits++] = 0;
-        }
+        m_frame[m_frame_offset_bits++] = 0;
+        m_frame[m_frame_offset_bits++] = 0;
+        m_frame[m_frame_offset_bits++] = 0;
+        m_frame[m_frame_offset_bits++] = 0;
+        m_frame[m_frame_offset_bits++] = 0;
+        m_frame[m_frame_offset_bits++] = 0;
+        m_frame[m_frame_offset_bits++] = 0;
+        m_frame[m_frame_offset_bits++] = 0;
       }
       temp = h->upl;
       for (int n = 15; n >= 0; n--) {
@@ -423,9 +437,15 @@ namespace gr {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       temp = h->sync;
-      for (int n = 7; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      m_frame[m_frame_offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      m_frame[m_frame_offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      m_frame[m_frame_offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      m_frame[m_frame_offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      m_frame[m_frame_offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      m_frame[m_frame_offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      m_frame[m_frame_offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      m_frame[m_frame_offset_bits++] = temp & (1 << 0) ? 1 : 0;
+
       // Calculate syncd, this should point to the MSB of the CRC
       temp = count;
       if (temp == 0) {
@@ -450,27 +470,19 @@ namespace gr {
     {
       int temp, m_frame_offset_bits;
       unsigned char *m_frame = out;
+      int n;
 
       m_frame[0] = 0;
       m_frame[1] = 1;
       m_frame_offset_bits = 2;
-      for (int n = 30; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = 0;
-      }
-      for (int n = 21; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = 0;
-      }
-      for (int n = 1; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = 0;
-      }
-      for (int n = 9; n >= 0; n--) {
+      for (n=0; n < 65; ++n) {
         m_frame[m_frame_offset_bits++] = 0;
       }
       temp = ts_rate;
-      for (int n = 26; n >= 0; n--) {
+      for (n = 26; n >= 0; --n) {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
-      for (int n = 9; n >= 0; n--) {
+      for (n = 9; n >= 0; --n) {
         m_frame[m_frame_offset_bits++] = 0;
       }
     }
@@ -500,7 +512,7 @@ namespace gr {
           offset = offset + 80;
 
           if (input_mode == INPUTMODE_HIEFF) {
-            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
+            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); ++j) {
               if (count == 0) {
                 if (*in != 0x47) {
                   GR_LOG_WARN(d_logger, "Transport Stream sync error!");
@@ -523,8 +535,8 @@ namespace gr {
             }
           }
           else {
-            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
-              if (count == 0) {
+            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); ++j) {
+              if (!count) {
                 if (*in != 0x47) {
                   GR_LOG_WARN(d_logger, "Transport Stream sync error!");
                 }
@@ -578,9 +590,10 @@ namespace gr {
               nibble = FALSE;
             }
             else {
-              for (int n = 3; n >= 0; n--) {
-                out[offset++] = bsave & (1 << n) ? 1 : 0;
-              }
+              out[offset++] = bsave & (1 << 3) ? 1 : 0;
+              out[offset++] = bsave & (1 << 2) ? 1 : 0;
+              out[offset++] = bsave & (1 << 1) ? 1 : 0;
+              out[offset++] = bsave & (1 << 0) ? 1 : 0;
               nibble = TRUE;
             }
           }
@@ -597,4 +610,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-

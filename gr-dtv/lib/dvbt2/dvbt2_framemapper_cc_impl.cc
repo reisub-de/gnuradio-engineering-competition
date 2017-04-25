@@ -872,19 +872,7 @@ namespace gr {
           break;
       }
       if ((preamble == PREAMBLE_T2_SISO) || (preamble == PREAMBLE_T2_LITE_SISO)) {
-        if (guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2) {
+        if ((guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) || (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) || (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2) || (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2)) {
           N_FC = 0;
           C_FC = 0;
         }
@@ -1013,7 +1001,7 @@ namespace gr {
       for (int i = 0; i < lw; ++i) {
         temp = 0x80000000;
         pout[i] = 0;
-        for (int j = 0; j < 32; ++j) {
+        for (int j = 32; j--; ) {
           if (pin[ptr++]) {
             pout[i] |= temp;
           }
@@ -1132,41 +1120,102 @@ namespace gr {
       L1Pre *l1preinit = &L1_Signalling[0].l1pre_data;
       int g, o, index;
 
+/* Begin restructure with bitsets */
+	std::bitset<168> bv; //bitvec
+	int intvar[] = {
+		 l1preinit->type
+		,l1preinit->bwt_ext
+		,l1preinit->s1
+		,l1preinit->s2
+		,0
+	      	,l1preinit->l1_repetition_flag
+	      	,l1preinit->guard_interval
+	        ,l1preinit->papr
+		,l1preinit->l1_mod
+		,l1preinit->l1_cod
+  	      	,l1preinit->l1_fec_type
+  	      	,l1preinit->l1_post_size
+  	        ,l1preinit->l1_post_info_size
+  	        ,l1preinit->pilot_pattern
+  	        ,l1preinit->tx_id_availability
+  	        ,l1preinit->cell_id
+  	        ,l1preinit->network_id
+  	        ,l1preinit->t2_system_id
+  	        ,l1preinit->num_t2_frames
+  	        ,l1preinit->num_data_symbols
+  	        ,l1preinit->regen_flag
+  	        ,l1preinit->l1_post_extension
+  	        ,l1preinit->num_rf
+  	        ,l1preinit->current_rf_index
+  	        ,l1preinit->t2_version
+  	        ,l1preinit->l1_post_scrambled
+  	        ,l1preinit->t2_base_lite
+  	        ,l1preinit->reserved
+	};
+
+	int reps[28] = {
+		8,  1,  3, 3, 1,  1,  3,  4, 4,  2, 
+		2, 18, 18, 4, 8, 16, 16, 16, 8, 12, 
+		3,  1,  3, 3, 4,  1,  1,  4
+	};
+
+	int n;
+	for (int i=0;i<28;i++)
+	{
+		n = reps[i];
+		temp = intvar[i];
+		bv <<= n;
+		bv &= (temp & ((1<<n) - 1));
+	}
+
+	for (int i=0;i<168;i++)
+	{
+		l1pre[i] = bv[i];
+	}
+
+/* original (w/o) bitsets */
+#define OLDCODE 0
+#ifdef OLDCODE
       temp = l1preinit->type;
-      for (int n = 7; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       l1pre[offset_bits++] = l1preinit->bwt_ext;
       temp = l1preinit->s1;
-      for (int n = 2; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->s2;
-      for (int n = 2; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       l1pre[offset_bits++] = 0;
       l1pre[offset_bits++] = l1preinit->l1_repetition_flag;
       temp = l1preinit->guard_interval;
-      for (int n = 2; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->papr;
-      for (int n = 3; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->l1_mod;
-      for (int n = 3; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->l1_cod;
-      for (int n = 1; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->l1_fec_type;
-      for (int n = 1; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->l1_post_size;
       for (int n = 17; n >= 0; --n) {
         l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
@@ -1176,13 +1225,19 @@ namespace gr {
         l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       temp = l1preinit->pilot_pattern;
-      for (int n = 3; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->tx_id_availability;
-      for (int n = 7; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->cell_id;
       for (int n = 15; n >= 0; --n) {
         l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
@@ -1196,36 +1251,53 @@ namespace gr {
         l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       temp = l1preinit->num_t2_frames;
-      for (int n = 7; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->num_data_symbols;
-      for (int n = 11; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 11) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 10) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 9) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 8) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->regen_flag;
-      for (int n = 2; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       l1pre[offset_bits++] = l1preinit->l1_post_extension;
       temp = l1preinit->num_rf;
-      for (int n = 2; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->current_rf_index;
-      for (int n = 2; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1preinit->t2_version;
-      for (int n = 3; n >= 0; --n) {
-        l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1pre[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1pre[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       l1pre[offset_bits++] = l1preinit->l1_post_scrambled;
       l1pre[offset_bits++] = l1preinit->t2_base_lite;
       temp = l1preinit->reserved;
       for (int n = 3; n >= 0; --n) {
         l1pre[offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
+#endif
+/* End restructure with bitsets */
       offset_bits += add_crc32_bits(l1pre, offset_bits);
       /* Padding */
       for (int n = KBCH_1_4 - offset_bits - 1; n >= 0; --n) {
@@ -1311,100 +1383,155 @@ namespace gr {
         l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       temp = l1postinit->num_plp;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->num_aux;
-      for (int n = 3; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->aux_config_rfu;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->rf_idx;
-      for (int n = 2; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->frequency;
       for (int n = 31; n >= 0; --n) {
         l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       temp = l1postinit->plp_id;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->plp_type;
-      for (int n = 2; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->plp_payload_type;
-      for (int n = 4; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       l1post[offset_bits++] = l1postinit->ff_flag;
       temp = l1postinit->first_rf_idx;
-      for (int n = 2; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->first_frame_idx;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->plp_group_id;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->plp_cod;
-      for (int n = 2; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->plp_mod;
-      for (int n = 2; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       l1post[offset_bits++] = l1postinit->plp_rotation;
       temp = l1postinit->plp_fec_type;
-      for (int n = 1; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->plp_num_blocks_max;
-      for (int n = 9; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 9) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 8) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->frame_interval;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->time_il_length;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       l1post[offset_bits++] = l1postinit->time_il_type;
       l1post[offset_bits++] = l1postinit->in_band_a_flag;
       l1post[offset_bits++] = l1postinit->in_band_b_flag;
       temp = l1postinit->reserved_1;
-      for (int n = 10; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 10) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 9) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 8) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->plp_mode;
-      for (int n = 1; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       l1post[offset_bits++] = l1postinit->static_flag;
       l1post[offset_bits++] = l1postinit->static_padding_flag;
       temp = l1postinit->fef_length_msb;
-      for (int n = 1; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->reserved_2;
       for (int n = 29; n >= 0; --n) {
         l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       temp = t2_frame_num;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->sub_slice_interval;
       for (int n = 21; n >= 0; --n) {
         l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
@@ -1414,37 +1541,69 @@ namespace gr {
         l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       temp = l1postinit->l1_change_counter;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->start_rf_idx;
-      for (int n = 2; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->reserved_3;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->plp_id_dynamic;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->plp_start;
       for (int n = 21; n >= 0; --n) {
         l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       temp = l1postinit->plp_num_blocks;
-      for (int n = 9; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 9) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 8) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->reserved_4;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       temp = l1postinit->reserved_5;
-      for (int n = 7; n >= 0; --n) {
-        l1post[offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      l1post[offset_bits++] = temp & (1 << 7) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 6) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 5) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 4) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 3) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 2) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 1) ? 1 : 0;
+      l1post[offset_bits++] = temp & (1 << 0) ? 1 : 0;
       offset_bits += add_crc32_bits(l1post, offset_bits);
       if (l1_scrambled == TRUE) {
         for (int n = 0; n < offset_bits; ++n) {
@@ -1481,12 +1640,12 @@ namespace gr {
       for (int n = 0; n < m; ++n) {
         index = post_padding[n] * 360;
         if (post_padding[n] == 19) {
-          for (int w = 0; w < 192; ++w) {
+          for (int w = 192; w--; ) {
             l1_map[index++] = 0x7;
           }
         }
         else {
-          for (int w = 0; w < 360; ++w) {
+          for (int w = 360; w--; ) {
             l1_map[index++] = 0x7;
           }
         }
@@ -1497,7 +1656,7 @@ namespace gr {
       else {
         index = (post_padding[m] * 360) + 360 - last;
       }
-      for (int w = 0; w < last; ++w) {
+      for (int w = last; w--; ) {
         l1_map[index++] = 0x7;
       }
       index = 0;
@@ -1513,7 +1672,7 @@ namespace gr {
       /* BCH */
       offset_bits = 0;
       memset(shift, 0, sizeof(unsigned int) * 6);
-      for (int j = 0; j < KBCH_1_2; ++j) {
+      for (int j = KBCH_1_2; j--; ) {
         value = l1post[offset_bits++];
         b = (value ^ ((shift[5] & 0x01000000) ? 1 : 0));
         reg_6_shift(shift);
@@ -1526,7 +1685,7 @@ namespace gr {
           shift[5] ^= m_poly_s_12[5];
         }
       }
-      for (int n = 0; n < NBCH_PARITY; ++n) {
+      for (int n = NBCH_PARITY; n--; ) {
         l1post[offset_bits++] = (shift[5] & 0x01000000) ? 1 : 0;
         reg_6_shift(shift);
       }
@@ -1599,7 +1758,7 @@ namespace gr {
           cols[j] = &l1_interleave[rows * j];
         }
         index = 0;
-        for (int k = 0; k < rows; ++k) {
+        for (int k = rows; k--; ) {
           for (int w = 0; w < numCols; ++w) {
             *l1post++ = *(cols[w] + index);
           }
@@ -1610,7 +1769,7 @@ namespace gr {
         case L1_MOD_BPSK:
           index = 0;
           produced = 0;
-          for (int d = 0; d < N_post; ++d) {
+          for (int d = N_post; d--; ) {
             out[produced++] = m_bpsk[l1_interleave[index++]];
           }
           break;
@@ -1618,7 +1777,7 @@ namespace gr {
           mod = 2;
           index = 0;
           produced = 0;
-          for (int d = 0; d < N_post / mod; ++d) {
+          for (int d = N_post / mod; d--; ) {
             pack = 0;
             for (int e = 0; e < mod; ++e) {
               pack |= l1_interleave[index++];
@@ -1632,7 +1791,7 @@ namespace gr {
           mod = 4;
           index = 0;
           produced = 0;
-          for (int d = 0; d < N_post / (mod * 2); ++d) {
+          for (int d = N_post / (mod * 2); d--; ) {
             pack = 0;
             for (int e = 0; e < (mod * 2); ++e) {
               offset = mux16[e];
@@ -1649,7 +1808,7 @@ namespace gr {
           mod = 6;
           index = 0;
           produced = 0;
-          for (int d = 0; d < N_post / (mod * 2); ++d) {
+          for (int d = N_post / (mod * 2); d--; ) {
             pack = 0;
             for (int e = 0; e < (mod * 2); ++e) {
               offset = mux64[e];
@@ -1709,46 +1868,46 @@ namespace gr {
 
       for (int i = 0; i < noutput_items; i += mapped_items) {
         if (N_P2 == 1) {
-          for (int j = 0; j < 1840; ++j) {
+          for (int j = 1840; j--; ) {
             *out++ = l1pre_cache[index++];
           }
           add_l1post(out, t2_frame_num);
           t2_frame_num = (t2_frame_num + 1) % t2_frames;
           out += N_post / eta_mod;
-          for (int j = 0; j < stream_items; ++j) {
+          for (int j = stream_items; j--; ) {
             *out++ = *in++;
           }
           index = 0;
-          for (int j = 0; j < mapped_items - stream_items - 1840 - (N_post / eta_mod) - (N_FC - C_FC); ++j) {
+          for (int j = mapped_items - stream_items - 1840 - (N_post / eta_mod) - (N_FC - C_FC); j--; ) {
             *out++ = dummy_randomize[index++];
           }
-          for (int j = 0; j < N_FC - C_FC; ++j) {
+          for (int j = N_FC - C_FC; j--; ) {
              *out++ = unmodulated;
           }
         }
         else {
-          for (int j = 0; j < 1840; ++j) {
+          for (int j = 1840; j--; ) {
             *interleave++ = l1pre_cache[index++];
           }
           add_l1post(interleave, t2_frame_num);
           t2_frame_num = (t2_frame_num + 1) % t2_frames;
           interleave += N_post / eta_mod;
-          for (int j = 0; j < stream_items; ++j) {
+          for (int j = stream_items; j--; ) {
             *interleave++ = *in++;
           }
           index = 0;
-          for (int j = 0; j < mapped_items - stream_items - 1840 - (N_post / eta_mod) - (N_FC - C_FC); ++j) {
+          for (int j = mapped_items - stream_items - 1840 - (N_post / eta_mod) - (N_FC - C_FC); j-- ; ) {
             *interleave++ = dummy_randomize[index++];
           }
-          for (int j = 0; j < N_FC - C_FC; ++j) {
+          for (int j = N_FC - C_FC; j--; ) {
             *interleave++ = unmodulated;
           }
           interleave = zigzag_interleave;
           read = 0;
           index = 0;
-          for (int n = 0; n < N_P2; ++n) {
+          for (int n = N_P2; n--; ) {
             save = read;
-            for (int j = 0; j < 1840 / N_P2; ++j) {
+            for (int j = (18040/N_P2); j--; ) {
               out[index++] = interleave[read];
               count++;
               read += N_P2;
@@ -1758,9 +1917,9 @@ namespace gr {
           }
           read = 1840;
           index = 1840 / N_P2;
-          for (int n = 0; n < N_P2; ++n) {
+          for (int n = N_P2; n--; ) {
             save = read;
-            for (int j = 0; j < (N_post / eta_mod) / N_P2; ++j) {
+            for (int j = (N_post / eta_mod) / N_P2; j--; ) {
               out[index++] = interleave[read];
               count++;
               read += N_P2;
@@ -1770,15 +1929,15 @@ namespace gr {
           }
           read = 1840 + (N_post / eta_mod);
           index = (1840 / N_P2) + ((N_post / eta_mod) / N_P2);
-          for (int n = 0; n < N_P2; ++n) {
-            for (int j = 0; j < C_P2 - (1840 / N_P2) - ((N_post / eta_mod) / N_P2); ++j) {
+          for (int n = N_P2; n--; ) {
+            for (int j = C_P2 - (1840 / N_P2) - ((N_post / eta_mod) / N_P2); j--; ) {
               out[index++] = interleave[read++];
               count++;
             }
             index += C_P2 - (C_P2 - (1840 / N_P2) - ((N_post / eta_mod) / N_P2));
           }
           index -= C_P2 - (C_P2 - (1840 / N_P2) - ((N_post / eta_mod) / N_P2));
-          for (int j = 0; j < mapped_items - count; ++j) {
+          for (int j = mapped_items - count; j--; ) {
             out[index++] = interleave[read++];
           }
           out += mapped_items;

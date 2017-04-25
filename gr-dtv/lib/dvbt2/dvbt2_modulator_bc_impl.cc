@@ -92,21 +92,23 @@ namespace gr {
       switch (constellation) {
         case MOD_QPSK:
           //normalization = std::sqrt(2.0);
-          m_qpsk[0] = gr_complex( 0.70710678118,  0.70710678118);
-          m_qpsk[1] = gr_complex( 0.70710678118, -0.70710678118);
-          m_qpsk[2] = gr_complex(-0.70710678118,  0.70710678118);
-          m_qpsk[3] = gr_complex(-0.70710678118, -0.70710678118);
+          m_qpsk[0] = gr_complex( 0.7071,  0.7071);
+          m_qpsk[1] = gr_complex( 0.7071, -0.7071);
+          m_qpsk[2] = gr_complex(-0.7071,  0.7071);
+          m_qpsk[3] = gr_complex(-0.7071, -0.7071);
           if (rotation == ROTATION_ON) {
             cyclic_delay = TRUE;
             rotation_angle = (2.0 * M_PI * 29.0) / 360.0;
             temp = std::exp(gr_complexd(0.0, rotation_angle));
-            for (int i = 0; i < 4; ++i) {
-              m_qpsk[i] *= temp;
-            }
+            m_qpsk[0] *= temp;
+            m_qpsk[1] *= temp;
+            m_qpsk[2] *= temp;
+            m_qpsk[3] *= temp;
           }
           break;
         case MOD_16QAM:
-          normalization = 3.1622776601;
+          //normalization = std::sqrt(10.0);
+          normalization = 3.162277;
           for (int i = 0; i < 16; ++i) {
             real_index = ((i & 0x8) >> 2) | ((i & 0x2) >> 1);
             imag_index = ((i & 0x4) >> 1) | ((i & 0x1) >> 0);
@@ -122,7 +124,8 @@ namespace gr {
           }
           break;
         case MOD_64QAM:
-          normalization = 6.480740698;
+          //normalization = std::sqrt(42.0);
+          normalization = 6.48074;
           for (int i = 0; i < 64; ++i) {
             real_index = ((i & 0x20) >> 3) | ((i & 0x8) >> 2) | ((i & 0x2) >> 1);
             imag_index = ((i & 0x10) >> 2) | ((i & 0x4) >> 1) | ((i & 0x1) >> 0);
@@ -132,13 +135,14 @@ namespace gr {
             cyclic_delay = TRUE;
             rotation_angle = (2.0 * M_PI * 8.6) / 360.0;
             temp = std::exp(gr_complexd(0.0, rotation_angle));
-            for (int i = 0; i < 64; ++i) {
-              m_64qam[i] *= temp;
+            for (gr_complex*iptr = m_64qam; iptr < m_64qam+64; ++iptr) {
+              *iptr *= temp;
             }
           }
           break;
         case MOD_256QAM:
-          normalization = 13.038404810;
+          //normalization = std::sqrt(170.0);
+          normalization = 13.0384048;
           for (int i = 0; i < 256; ++i) {
             real_index = ((i & 0x80) >> 4) | ((i & 0x20) >> 3) | ((i & 0x8) >> 2) | ((i & 0x2) >> 1);
             imag_index = ((i & 0x40) >> 3) | ((i & 0x10) >> 2) | ((i & 0x4) >> 1) | ((i & 0x1) >> 0);
@@ -148,24 +152,25 @@ namespace gr {
             cyclic_delay = TRUE;
             rotation_angle = (2.0 * M_PI * 3.576334375) / 360.0;
             temp = std::exp(gr_complexd(0.0, rotation_angle));
-            for (int i = 0; i < 256; ++i) {
-              m_256qam[i] *= temp;
+            for (gr_complex*iptr = m_256qam; iptr < m_256qam+256; ++iptr) {
+              *iptr *= temp;
             }
           }
           break;
         default:
           //normalization = std::sqrt(2.0);
-          m_qpsk[0] = gr_complex( 0.70710678118,  0.70710678118);
-          m_qpsk[1] = gr_complex( 0.70710678118, -0.70710678118);
-          m_qpsk[2] = gr_complex(-0.70710678118,  0.70710678118);
-          m_qpsk[3] = gr_complex(-0.70710678118, -0.70710678118);
+          m_qpsk[0] = gr_complex( 0.7071,  0.7071);
+          m_qpsk[1] = gr_complex( 0.7071, -0.7071);
+          m_qpsk[2] = gr_complex(-0.7071,  0.7071);
+          m_qpsk[3] = gr_complex(-0.7071, -0.7071);
           if (rotation == ROTATION_ON) {
             cyclic_delay = TRUE;
             rotation_angle = (2.0 * M_PI * 29.0) / 360.0;
             temp = std::exp(gr_complexd(0.0, rotation_angle));
-            for (int i = 0; i < 4; ++i) {
-              m_qpsk[i] *= temp;
-            }
+            m_qpsk[0] *= temp;
+            m_qpsk[1] *= temp;
+            m_qpsk[2] *= temp;
+            m_qpsk[3] *= temp;
           }
           break;
       }

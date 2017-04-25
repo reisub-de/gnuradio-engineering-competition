@@ -103,25 +103,21 @@ namespace gr {
       init_p1_randomizer();
       s2 = (fftsize & 0x7) << 1;
       for (int i = 0; i < 8; ++i) {
-        for (int j = 7; j >= 0; j--) {
+        for (int j = 7; j >= 0; --j) {
           modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
         }
       }
       for (int i = 0; i < 32; ++i) {
-        for (int j = 7; j >= 0; j--) {
+        for (int j = 7; j >= 0; --j) {
           modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> j) & 0x1;
         }
       }
       for (int i = 0; i < 8; ++i) {
-        for (int j = 7; j >= 0; j--) {
+        for (int j = 7; j >= 0; --j) {
           modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
         }
       }
       dbpsk_modulation_sequence[0] = 1;
-      /*
-      for (int i = 1; i < 385; ++i) {
-        dbpsk_modulation_sequence[i] = 0;
-      }*/
       for (int i = 1; i < 385; ++i) {
         dbpsk_modulation_sequence[i] = 0;
         if (modulation_sequence[i - 1] == 1) {
@@ -136,10 +132,6 @@ namespace gr {
         dbpsk_modulation_sequence[i] = dbpsk_modulation_sequence[i + 1] * p1_randomize[i];
         p1_freq[p1_active_carriers[i] + 86] = float(dbpsk_modulation_sequence[i]);
       }
-      //memset(&p1_freq[0], 0, sizeof(gr_complex) * 1024);
-      /*for (int i = 0; i < 384; ++i) {
-        p1_freq[p1_active_carriers[i] + 86] = float(dbpsk_modulation_sequence[i]);
-      }*/
       p1_fft_size = 1024;
       p1_fft = new fft::fft_complex(p1_fft_size, false, 1);
       gr_complex *dst = p1_fft->get_inbuf();
@@ -185,13 +177,13 @@ namespace gr {
     dvbt2_p1insertion_cc_impl::init_p1_randomizer(void)
     {
       int sr = 0x4e46;
-      for (int i = 0; i < 384; ++i) {
+      for (int*iptr = p1_randomize; iptr < p1_randomize+384; ++iptr) {
         int b = ((sr) ^ (sr >> 1)) & 1;
         if (b == 0) {
-          p1_randomize[i] = 1;
+          *iptr = 1;
         }
         else {
-          p1_randomize[i] = -1;
+          *iptr = -1;
         }
         sr >>= 1;
         if(b) sr |= 0x4000;
@@ -221,43 +213,44 @@ namespace gr {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
       gr_complex *level;
+      gr_complex *jptr;
 
       for (int i = 0; i < noutput_items; i += insertion_items) {
         level = out;
-        for (int j = 0; j < 542; ++j) {
-          *out++ = p1_timeshft[j];
+        for (jptr = p1_timeshft; jptr < p1_timeshft+542; ++jptr) {
+          *out++ = *jptr;
         }
-        for (int j = 0; j < 1024; ++j) {
-          *out++ = p1_time[j];
+        for (jptr = p1_time; jptr < p1_time+1024; ++jptr) {
+          *out++ = *jptr;
         }
-        for (int j = 542; j < 1024; ++j) {
-          *out++ = p1_timeshft[j];
+        for (jptr = p1_timeshft+542; jptr < p1_timeshft+1024; ++jptr) {
+          *out++ = *jptr;
         }
         memcpy(out, in, sizeof(gr_complex) * frame_items);
         if (show_levels == TRUE) {
-          for (int j = 0; j < frame_items + 2048; ++j) {
-            if (level[j].real() > real_positive) {
-              real_positive = level[j].real();
+          for (jptr = level; jptr < level+(frame_items+2048); ++jptr) {
+            if (jptr->real() > real_positive) {
+              real_positive = jptr->real();
             }
-            if (level[j].real() < real_negative) {
-              real_negative = level[j].real();
+            if (jptr->real() < real_negative) {
+              real_negative = jptr->real();
             }
-            if (level[j].imag() > imag_positive) {
-              imag_positive = level[j].imag();
+            if (jptr->imag() > imag_positive) {
+              imag_positive = jptr->imag();
             }
-            if (level[j].imag() < imag_negative) {
-              imag_negative = level[j].imag();
+            if (jptr->imag() < imag_negative) {
+              imag_negative = jptr->imag();
             }
-            if (level[j].real() > real_positive_threshold) {
+            if (jptr->real() > real_positive_threshold) {
               ++real_positive_threshold_count;
             }
-            if (level[j].real() < real_negative_threshold) {
+            if (jptr->real() < real_negative_threshold) {
               ++real_negative_threshold_count;
             }
-            if (level[j].imag() > imag_positive_threshold) {
+            if (jptr->imag() > imag_positive_threshold) {
               ++imag_positive_threshold_count;
             }
-            if (level[j].imag() < imag_negative_threshold) {
+            if (jptr->imag() < imag_negative_threshold) {
               ++imag_negative_threshold_count;
             }
           }
