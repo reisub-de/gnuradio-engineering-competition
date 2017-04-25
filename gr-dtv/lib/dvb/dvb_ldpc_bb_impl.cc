@@ -528,8 +528,8 @@ for (int row = 0; row < ROWS; row++) { \
         {
         gr_timer t1("LDPC assigment loop 1");
         #pragma omp parallel for private(consumed)
-        for (; outi < (int)nbch + (out+i); outi++) {
-          *outi = in[consumed];
+        for (int i=0;  i < (int)nbch ; i++) {
+          out[i] = in[consumed];
           consumed++;
         }}
         
