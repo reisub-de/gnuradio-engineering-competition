@@ -669,6 +669,7 @@ namespace gr {
             }
 
           break;
+
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
