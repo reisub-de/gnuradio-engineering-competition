@@ -179,11 +179,9 @@ namespace gr {
       unsigned int pack;
       const int *twist;
       const int *mux;
-      int intentional_slowdown = 0;
       switch (signal_constellation) {
         case MOD_QPSK:
           for (int i = 0; i < noutput_items; i += packed_items) {
-            intentional_slowdown++;           
 
             rows = frame_size / 2;
             if (code_rate == C1_3 || code_rate == C2_5) {
@@ -192,9 +190,11 @@ namespace gr {
               }
 
               int r=0;
+              int d=0;
               for (int t = 0; t < q_val; t++, r+=360) {
-                for (int s = 0; s < 360; s++) {
-                  tempu[nbch + r + s] = in[(q_val * s) + t];
+                d=0;
+                for (int s = 0; s < 360; s++, d+=q_val) {
+                  tempu[nbch + r + s] = in[d + t];
                 }
               }
               in = in + (q_val * 360);
