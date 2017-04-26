@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/*
+/* 
  * Copyright 2015,2016 Free Software Foundation, Inc.
- *
+ * 
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- *
+ * 
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -524,7 +524,6 @@ for (int row = 0; row < ROWS; row++) { \
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
-//        uint8_t* outi = out + i;
         {
         gr_timer t1("LDPC assigment loop 1");
         //#pragma omp parallel for private(consumed)
@@ -543,12 +542,12 @@ for (int row = 0; row < ROWS; row++) { \
 
         {gr_timer t2("LDPC xor loop 1 (l535)");
 //#pragma omp simd
-        
+
         for (int j = 0; j<ldpc_encode.table_length; j++){
             A[j]=p[ldpc_enc_p[j]];
             B[j]=d[ldpc_enc_d[j]];
         }
-          
+
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           A[j] ^= B[j];
         }}
@@ -557,7 +556,6 @@ for (int row = 0; row < ROWS; row++) { \
             p[ldpc_enc_p[j]]=A[j];
             d[ldpc_enc_d[j]]=B[j];
         }
-        
 
         gr_timer t3("LDPC puncture");
         {

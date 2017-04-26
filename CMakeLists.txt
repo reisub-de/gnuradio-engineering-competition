@@ -343,7 +343,6 @@ include(GrBoost)
 # Enable python component
 ########################################################################
 find_package(PythonLibs ${GR_PYTHON_MIN_VERSION})
-#find_package(PythonLibs 2.7)
 find_package(SWIG)
 
 if(SWIG_FOUND)

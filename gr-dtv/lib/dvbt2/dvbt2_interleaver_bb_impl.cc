@@ -514,7 +514,7 @@ namespace gr {
                   tempu[nbch + r + s] = in[d + t];
                 }
               }
-              
+
               in = in + (q_val * 360);
               index = 0;
               for (int col = 0; col < mod; col++) {

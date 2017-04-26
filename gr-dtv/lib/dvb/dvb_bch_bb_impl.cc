@@ -511,14 +511,6 @@ namespace gr {
       sr[0] = (sr[0] >> 1);
     }
 
-    //inline void
-    //dvb_bch_bb_impl::reg_6_sseshift(my_vec2 *sr)
-    //{
-    //  const my_vec2 carries = (my_vec2 {sr[0][1], sr[1][0]}) << 63;
-    //  sr[1] = sr[1] >> 1 | (my_vec2{sr[0][1], sr[1][0]}) << 63;
-    //  sr[0] = sr[0] >> 1;
-    //}
-
     /*
      * Shift 192 bits
      */
@@ -637,16 +629,15 @@ namespace gr {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
-      my_vec2 sseshift[2]; 
-      //unsigned int shift[6];
-      uint64_t* wshift = (uint64_t*)sseshift; 
+      my_vec2 sseshift[2];
+      uint64_t* wshift = (uint64_t*)sseshift;
       unsigned int *shift = (uint32_t*)wshift;
       int consumed = 0;
 
       switch (bch_code) {
         case BCH_CODE_N12:
             {
-              const uint64_t 
+              const uint64_t
                 poly0 = (uint64_t)m_poly_n_12[0] << 32 | m_poly_n_12[1],
                 poly1 = (uint64_t)m_poly_n_12[2] << 32 | m_poly_n_12[3],
                 poly2 = (uint64_t)m_poly_n_12[4] << 32 | m_poly_n_12[5];
@@ -676,17 +667,13 @@ namespace gr {
                   for(uint64_t b = 1; b; b <<=1)
                     *out++ = !!(wshift[r] & b);
                 }
-                //for (int n = 0; n < 192; n++) {
-                //  *out++ = (shift[5] & 1);
-                //  reg_6_shift(shift);
-                //}
               }
             }
           break;
 
         case BCH_CODE_N10:
           {
-            const uint64_t 
+            const uint64_t
               poly0 = (uint64_t)m_poly_n_10[0] << 32 | m_poly_n_10[1],
               poly1 = (uint64_t)m_poly_n_10[2] << 32 | m_poly_n_10[3],
               poly2 = (uint64_t)m_poly_n_10[4] << 32;
@@ -712,10 +699,6 @@ namespace gr {
                   *out++ = !!(shift[i] & b);
                 }
               }
-              //for( int n = 0; n < 160; n++ ) {
-              //  *out++ = (shift[4] & 1);
-              //  reg_6_wshift(shift);
-              //}
             }
           }
           break;

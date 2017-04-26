@@ -254,7 +254,7 @@ namespace gr {
           {
               const float normalization = sqrt(10);
               const float n_1 = 1.0 / normalization;
-              const float n_3 = 3.0 / normalization; 
+              const float n_3 = 3.0 / normalization;
               m_16qam[0] = gr_complex( n_3,  n_3);
               m_16qam[1] = gr_complex( n_3,  n_1);
               m_16qam[2] = gr_complex( n_1,  n_3);

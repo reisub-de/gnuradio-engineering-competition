@@ -287,9 +287,6 @@ namespace gr {
         }
       }
 
-    
-
-
       // Tell runtime system how many output items we produced.
       return noutput_items;
     }
