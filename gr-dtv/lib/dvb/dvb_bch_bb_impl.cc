@@ -609,42 +609,26 @@ namespace gr {
       const unsigned long long poly2 = ((unsigned long long)m_poly_n_12[4] << 32) + m_poly_n_12[5];
       int consumed = 0;
 
+      int stop = (int)kbch;
 
-      
-      // kbch = 38688
-      // nbch = 38880
-      // bch_code = BCH_CODE_N12
-			int stop = (int)kbch;
-			//int shiftSize = sizeof(unsigned int) * 6;
-      
       switch (bch_code) {
-        // This is our case         
+        // This is our case
         case BCH_CODE_N12:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            //memset(shift, 0, sizeof(unsigned int) * 6);
-            //memset(newshift, 0, sizeof(unsigned int) * 3);
             newshift[0] = 0;
             newshift[1] = 0;
             newshift[2] = 0;
             // MSB of the codeword first
-            // kbch = 38688
+
             // we don't need to convert kbch to int every time here
             for (int j = 0; j < stop; j++) {
               temp = *in++;
               *out++ = temp;
               ++consumed;
-              //b = (temp ^ (shift[5] & 1));
               b = (temp ^ (newshift[2] & 1));
-              //reg_6_shift(shift);
               reg_3_shift(newshift);
               if (b) {
-                //shift[0] ^= m_poly_n_12[0];
-                //shift[1] ^= m_poly_n_12[1];
-                //shift[2] ^= m_poly_n_12[2];
-                //shift[3] ^= m_poly_n_12[3];
-                //shift[4] ^= m_poly_n_12[4];
-                //shift[5] ^= m_poly_n_12[5];
                 newshift[0] ^= poly0;
                 newshift[1] ^= poly1;
                 newshift[2] ^= poly2;
@@ -652,14 +636,12 @@ namespace gr {
             }
             // Now add the parity bits to the output
             for (int n = 0; n < 192; ++n) {
-              //*out++ = (shift[5] & 1);
-              //reg_6_shift(shift);
               *out++ = (newshift[2] & 1);
               reg_3_shift(newshift);
-            } 
+            }
           }
           break;
-        // end of code we need to worry about 
+        // end of code we need to worry about
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register

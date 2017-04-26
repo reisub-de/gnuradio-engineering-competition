@@ -270,38 +270,31 @@ namespace gr {
       }
     }
 
-inline void dvb_bbscrambler_bb_impl::special_xor(int noutput_items, gr_vector_const_void_star &input_items, gr_vector_void_star &output_items)
-{
-  volatile const unsigned long long* in = (volatile const unsigned long long*)input_items[0];
-  volatile unsigned long long* out = (volatile unsigned long long*)output_items[0];
-  int noutput = noutput_items/8;
-
-  for (int i = 0; i < noutput; i += kbch/8)
-  {
-    volatile const unsigned long long* bb = (volatile const unsigned long long*)bb_randomise;
-    for (int j = 0; j < ((int)kbch)/8; ++j)
+    inline void dvb_bbscrambler_bb_impl::special_xor(int noutput_items,
+                          gr_vector_const_void_star &input_items,
+                          gr_vector_void_star &output_items)
     {
-      out[i+j] = in[i+j] ^ bb[j];
+      volatile const unsigned long long* in = (volatile const unsigned long long*)input_items[0];
+      volatile unsigned long long* out = (volatile unsigned long long*)output_items[0];
+      int noutput = noutput_items/8;
+
+      for (int i = 0; i < noutput; i += kbch/8)
+      {
+        volatile const unsigned long long* bb = (volatile const unsigned long long*)bb_randomise;
+        for (int j = 0; j < ((int)kbch)/8; ++j)
+        {
+          out[i+j] = in[i+j] ^ bb[j];
+        }
+      }
     }
-  }
-}
 
     int
     dvb_bbscrambler_bb_impl::work(int noutput_items,
                           gr_vector_const_void_star &input_items,
                           gr_vector_void_star &output_items)
     {
-      //const unsigned char *in = (const unsigned char *) input_items[0];
-      //unsigned char *out = (unsigned char *) output_items[0];
-
-      /*for (int i = 0; i < noutput_items; i += kbch) {
-        for (int j = 0; j < (int)kbch; ++j) {
-          out[i + j] = in[i + j] ^ bb_randomise[j];
-        }
-      }*/
-
       special_xor(noutput_items, input_items, output_items);
-	  
+
       // Tell runtime system how many output items we produced.
       return noutput_items;
     }

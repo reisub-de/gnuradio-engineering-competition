@@ -367,13 +367,11 @@ namespace gr {
             }
           }
           break;
-        
-        
         case MOD_256QAM:
           if (frame_size == FRAME_SIZE_NORMAL) {
             const int MOD = mod*2;
-            
-            rows = frame_size / MOD; // get the number of rows needed to do operations 
+
+            rows = frame_size / MOD; // get the number of rows needed to do operations
                                            // mod=8, and frame_size=FRAME_SIZE_NORMAL
                                            // rows must be 4050 at least???
             // set c1 to c16 to point to the addresses of tempv at intervals of the value of row * n where n = c[m-1]
@@ -395,22 +393,22 @@ namespace gr {
             c14 = &tempv[rows * 13];
             c15 = &tempv[rows * 14];
             c16 = &tempv[rows * 15];
-            
-            
-            // packed_items = frame_size / mod 
-            // mod = 8 
+
+
+            // packed_items = frame_size / mod
+            // mod = 8
             for (int i = 0; i < noutput_items; i += packed_items) {
-              
-              // populate the first 38880 values of tempu with the first 38880 values of input 
-              // nbch = 38880 
+
+              // populate the first 38880 values of tempu with the first 38880 values of input
+              // nbch = 38880
               // write to tempu
-              
+
               memcpy(tempu, in, nbch);
               in += nbch;
               // in == &input_items[38880] at this point
-              
-              // populate the values of tempu starting at 38880 going up by (360 * t) + s each iteration with input values at intervals of 72 * s + t 
-              // qval = 72 
+
+              // populate the values of tempu starting at 38880 going up by (360 * t) + s each iteration with input values at intervals of 72 * s + t
+              // qval = 72
               // 38880 + (360*71) + 359 = 64799max
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
@@ -418,17 +416,17 @@ namespace gr {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
               }
-          	
-              // update the value of the pointer by 25920 
+
+              // update the value of the pointer by 25920
               in = in + (q_val * 360);
               // now in == &input_items[64800]
-              
+
               index = 0;
               // mod = 8
               // so 16 columns
               // loops 16*row times which must be at least 64800 (if rows==4050)
               for (int col = 0; col < MOD; col++) {
-                // get offset from predefined array 
+                // get offset from predefined array
                 offset = twist256n[col];
                 int calc = (rows * col);
                 for (int row = 0; row < rows; row++) {
@@ -440,113 +438,113 @@ namespace gr {
                 }
               }
 
-                arguments[0].tempu = tempu;
-                arguments[0].rows = rows;
-                arguments[0].c = c1;
-                
-                arguments[1].tempu = tempu+1;
-                arguments[1].rows = rows;
-                arguments[1].c = c2;
-                
-                arguments[2].tempu = tempu+2;
-                arguments[2].rows = rows;
-                arguments[2].c = c3;
-                
-                arguments[3].tempu = tempu+3;
-                arguments[3].rows = rows;
-                arguments[3].c = c4;
-                
-                arguments[4].tempu = tempu+4;
-                arguments[4].rows = rows;
-                arguments[4].c = c5;
-                
-                arguments[5].tempu = tempu+5;
-                arguments[5].rows = rows;
-                arguments[5].c = c6;
-                
-                arguments[6].tempu = tempu+6;
-                arguments[6].rows = rows;
-                arguments[6].c = c7;
-                
-                arguments[7].tempu = tempu+7;
-                arguments[7].rows = rows;
-                arguments[7].c = c8;
-                
-                arguments[8].tempu = tempu+8;
-                arguments[8].rows = rows;
-                arguments[8].c = c9;
-                
-                arguments[9].tempu = tempu+9;
-                arguments[9].rows = rows;
-                arguments[9].c = c10;
-                
-                arguments[10].tempu = tempu+10;
-                arguments[10].rows = rows;
-                arguments[10].c = c11;
-                
-                arguments[11].tempu = tempu+11;
-                arguments[11].rows = rows;
-                arguments[11].c = c12;
-                
-                arguments[12].tempu = tempu+12;
-                arguments[12].rows = rows;
-                arguments[12].c = c13;
-                
-                arguments[13].tempu = tempu+13;
-                arguments[13].rows = rows;
-                arguments[13].c = c14;
-                
-                arguments[14].tempu = tempu+14;
-                arguments[14].rows = rows;
-                arguments[14].c = c15;
-                
-                arguments[15].tempu = tempu+15;
-                arguments[15].rows = rows;
-                arguments[15].c = c16;
+              arguments[0].tempu = tempu;
+              arguments[0].rows = rows;
+              arguments[0].c = c1;
 
-                for (int i = 0; i < NUM_THREADS; i++) {
-									sem_post(&thread_start);
-                }
-              	pthread_barrier_wait(&barrier);
-             
+              arguments[1].tempu = tempu+1;
+              arguments[1].rows = rows;
+              arguments[1].c = c2;
+
+              arguments[2].tempu = tempu+2;
+              arguments[2].rows = rows;
+              arguments[2].c = c3;
+
+              arguments[3].tempu = tempu+3;
+              arguments[3].rows = rows;
+              arguments[3].c = c4;
+
+              arguments[4].tempu = tempu+4;
+              arguments[4].rows = rows;
+              arguments[4].c = c5;
+
+              arguments[5].tempu = tempu+5;
+              arguments[5].rows = rows;
+              arguments[5].c = c6;
+
+              arguments[6].tempu = tempu+6;
+              arguments[6].rows = rows;
+              arguments[6].c = c7;
+
+              arguments[7].tempu = tempu+7;
+              arguments[7].rows = rows;
+              arguments[7].c = c8;
+
+              arguments[8].tempu = tempu+8;
+              arguments[8].rows = rows;
+              arguments[8].c = c9;
+
+              arguments[9].tempu = tempu+9;
+              arguments[9].rows = rows;
+              arguments[9].c = c10;
+
+              arguments[10].tempu = tempu+10;
+              arguments[10].rows = rows;
+              arguments[10].c = c11;
+
+              arguments[11].tempu = tempu+11;
+              arguments[11].rows = rows;
+              arguments[11].c = c12;
+
+              arguments[12].tempu = tempu+12;
+              arguments[12].rows = rows;
+              arguments[12].c = c13;
+
+              arguments[13].tempu = tempu+13;
+              arguments[13].rows = rows;
+              arguments[13].c = c14;
+
+              arguments[14].tempu = tempu+14;
+              arguments[14].rows = rows;
+              arguments[14].c = c15;
+
+              arguments[15].tempu = tempu+15;
+              arguments[15].rows = rows;
+              arguments[15].c = c16;
+
+              for (int i = 0; i < NUM_THREADS; i++) {
+                sem_post(&thread_start);
+              }
+              pthread_barrier_wait(&barrier);
+
               index = 0;
               for (int d = 0; d < rows; d++) {
                 pack = 0;
                 if (code_rate == C3_5) {
-                  pack |= tempu[index++] << ((MOD - 1) - 2); 
+                  pack |= tempu[index++] << ((MOD - 1) - 2);
                   pack |= tempu[index++] << ((MOD - 1) - 11);
-                  pack |= tempu[index++] << ((MOD - 1) - 3); 
-                  pack |= tempu[index++] << ((MOD - 1) - 4); 
-                  pack |= tempu[index++] << ((MOD - 1) - 0); 
-                  pack |= tempu[index++] << ((MOD - 1) - 9); 
-                  pack |= tempu[index++] << ((MOD - 1) - 1); 
-                  pack |= tempu[index++] << ((MOD - 1) - 8); 
+                  pack |= tempu[index++] << ((MOD - 1) - 3);
+                  pack |= tempu[index++] << ((MOD - 1) - 4);
+                  pack |= tempu[index++] << ((MOD - 1) - 0);
+                  pack |= tempu[index++] << ((MOD - 1) - 9);
+                  pack |= tempu[index++] << ((MOD - 1) - 1);
+                  pack |= tempu[index++] << ((MOD - 1) - 8);
                   pack |= tempu[index++] << ((MOD - 1) - 10);
                   pack |= tempu[index++] << ((MOD - 1) - 13);
-                  pack |= tempu[index++] << ((MOD - 1) - 7); 
+                  pack |= tempu[index++] << ((MOD - 1) - 7);
                   pack |= tempu[index++] << ((MOD - 1) - 14);
-                  pack |= tempu[index++] << ((MOD - 1) - 6); 
+                  pack |= tempu[index++] << ((MOD - 1) - 6);
                   pack |= tempu[index++] << ((MOD - 1) - 15);
-                  pack |= tempu[index++] << ((MOD - 1) - 5); 
+                  pack |= tempu[index++] << ((MOD - 1) - 5);
                   pack |= tempu[index++] << ((MOD - 1) - 12);
-                }   
+                }
                 else if (code_rate == C2_3) {
-                  pack |= tempu[index++] << ((MOD - 1) - 7); 
-                  pack |= tempu[index++] << ((MOD - 1) - 2); 
-                  pack |= tempu[index++] << ((MOD - 1) - 9); 
-                  pack |= tempu[index++] << ((MOD - 1) - 0); 
-                  pack |= tempu[index++] << ((MOD - 1) - 4); 
-                  pack |= tempu[index++] << ((MOD - 1) - 6); 
+                  pack |= tempu[index++] << ((MOD - 1) - 7);
+                  pack |= tempu[index++] << ((MOD - 1) - 2);
+                  pack |= tempu[index++] << ((MOD - 1) - 9);
+                  pack |= tempu[index++] << ((MOD - 1) - 0);
+                  pack |= tempu[index++] << ((MOD - 1) - 4);
+                  pack |= tempu[index++] << ((MOD - 1) - 6);
                   pack |= tempu[index++] << ((MOD - 1) - 13);
-                  pack |= tempu[index++] << ((MOD - 1) - 3); 
+                  pack |= tempu[index++] << ((MOD - 1) - 3);
                   pack |= tempu[index++] << ((MOD - 1) - 14);
                   pack |= tempu[index++] << ((MOD - 1) - 10);
                   pack |= tempu[index++] << ((MOD - 1) - 15);
-                  pack |= tempu[index++] << ((MOD - 1) - 5); 
-                  pack |= tempu[index++] << ((MOD - 1) - 8); 
+                  pack |= tempu[index++] << ((MOD - 1) - 5);
+                  pack |= tempu[index++] << ((MOD - 1) - 8);
                   pack |= tempu[index++] << ((MOD - 1) - 12);
                   pack |= tempu[index++] << ((MOD - 1) - 11);
-                  pack |= tempu[index++] << ((MOD - 1) - 1); 
+                  pack |= tempu[index++] << ((MOD - 1) - 1);
                 }
                 else {
                   pack |= tempu[index++] << ((MOD - 1) - 15);
@@ -572,8 +570,6 @@ namespace gr {
               }
             }
           }
-        
-        
           else {
             if (code_rate == C1_3) {
               mux = &mux256s_13[0];
@@ -648,7 +644,7 @@ namespace gr {
       // Tell runtime system how many output items we produced.
       return noutput_items;
     }
-    
+
     void *dvbt2_interleaver_bb_impl::load_tempu(void *tid) {
       long long thread_id = (long long)tid;
       int num_loops = 16 / NUM_THREADS;
@@ -670,7 +666,7 @@ namespace gr {
       }
       return 0;
     }
-    
+
     sem_t dvbt2_interleaver_bb_impl::thread_start = {};
     pthread_barrier_t dvbt2_interleaver_bb_impl::barrier = {};
     struct args dvbt2_interleaver_bb_impl::arguments[16] = {};
