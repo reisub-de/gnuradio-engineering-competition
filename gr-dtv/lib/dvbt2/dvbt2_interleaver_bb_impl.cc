@@ -226,25 +226,6 @@ namespace gr {
             }
 
             memcpy(lookup_table, tempu, FRAME_SIZE_NORMAL*sizeof(int));
-
-//                  printf("in_ende %d\n", *in);
-//                  for(int i=0; i<FRAME_SIZE_NORMAL; i++){
-//                      printf("%d, \n", lookup_table[i]);
-//                  }
-            //printf("\n\n%d", *(in-1));
-
-//                  index = 0;
-//                  for (int d = 0; d < frame_size / (mod * 2); d++) {
-//                      pack = 0;
-//                      for (int e = 0; e < (mod * 2); e++) {
-//                          offset = mux[e];
-//                          pack |= tempu[index++] << (((mod * 2) - 1) - offset);
-//                      }
-//                      out[produced++] = pack >> 8;
-//                      out[produced++] = pack & 0xff;
-//                      consumed += (mod * 2);
-//                  }
-
           }
 
       }
@@ -483,7 +464,22 @@ namespace gr {
 
               for (int j = 0; j < FRAME_SIZE_NORMAL; j++) {
                   tempu[j] = in[lookup_table[j]];
+                  j++;
+                  tempu[j] = in[lookup_table[j]];
+                  j++;
+                  tempu[j] = in[lookup_table[j]];
+                  j++;
+                  tempu[j] = in[lookup_table[j]];
+                  j++;
+                  tempu[j] = in[lookup_table[j]];
+                  j++;
+                  tempu[j] = in[lookup_table[j]];
+                  j++;
+                  tempu[j] = in[lookup_table[j]];
+                  j++;
+                  tempu[j] = in[lookup_table[j]];
               }
+                in += FRAME_SIZE_NORMAL;
 
               index = 0;
               for (int d = 0; d < frame_size / (mod * 2); d++) {
