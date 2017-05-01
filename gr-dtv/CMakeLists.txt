@@ -23,6 +23,7 @@
 include(GrBoost)
 
 set(CMAKE_CXX_STANDARD 11)
+#set(CMAKE_CXX_FLAGS "-save-temps")
 #set(CMAKE_CXX_FLAGS "-save-temps -mavx -mavx2")
 
 ########################################################################
