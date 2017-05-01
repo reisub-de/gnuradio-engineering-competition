@@ -628,14 +628,51 @@ for (int row = 0; row < ROWS; row++) { \
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
-        for (int j = 0; j < (int)nbch; j++) {
-          out[i + j] = in[consumed];
-          consumed++;
-        }
+//        for (int j = 0; j < (int)nbch; j++) {
+//          out[i + j] = in[consumed];
+//          consumed++;
+//        }
+        memcpy(out+i, in+consumed, nbch*sizeof(unsigned char));
+        consumed+=nbch;
+
+
         // now do the parity checking
+        //loop unrolling
         for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+            j++;
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
         }
+
+
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
@@ -653,9 +690,29 @@ for (int row = 0; row < ROWS; row++) { \
           }
           p = &out[nbch];
         }
-        for (int j = 1; j < (plen - Xp); j++) {
+
+        const int l = (plen - Xp);
+
+        for (int j = 1; j < l; j++) {
+          p[j] ^= p[j-1];
+          j++;
+          p[j] ^= p[j-1];
+          j++;
+          p[j] ^= p[j-1];
+          j++;
+          p[j] ^= p[j-1];
+          j++;
+          p[j] ^= p[j-1];
+          j++;
+          p[j] ^= p[j-1];
+          j++;
+          p[j] ^= p[j-1];
+          j++;
           p[j] ^= p[j-1];
         }
+
+
+
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
             p[j + plen] = 0;
