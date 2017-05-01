@@ -1,0 +1,12 @@
+Empfohlenes Betreibssystem Debian
+1. Auf der website aus der E-Mail anmelden und passwort nach anleitung setzen
+2. sudo apt-get install build-essential cmake libboost-all-dev pkg-config python python-dev python-mako python-numpy python-six python-cheetah swig git liborc-0.4-dev libfftw3-dev libgsl0-dev
+3. git clone --recursive https://students.rohde-schwarz.com/barkhausens-army/gnuradio.git
+4. cd gnuradio 
+5. mkdir build
+6. cd build
+7. cmake .. (dauert etwa eine stunde)
+8. make && make test
+9. sudo make install
+10. ldconfig
+11. gnuradio-companion
