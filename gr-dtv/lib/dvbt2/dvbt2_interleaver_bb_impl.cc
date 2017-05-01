@@ -447,12 +447,60 @@ namespace gr {
 
 
         case MOD_256QAM:
-//////////////////////////////////////////////////////////////////////////
-          //opt here
-//////////////////////////////////////////////////////////////////////////
           if (frame_size == FRAME_SIZE_NORMAL) {
+
+            //////////////////////////////////////////////////////////////////////////
+            //very fast optimization only for C3_5 code for now
+            //hard coded mapping and loop unrolling
+            //////////////////////////////////////////////////////////////////////////
             if (code_rate == C3_5) {
-              mux = &mux256_35[0];
+                for (int i = 0; i < noutput_items; i += packed_items) {
+                    index = 0;
+                    unsigned char tmp1, tmp2, tmp3, tmp4;
+                    for (int d = 0; d< FRAME_SIZE_NORMAL / (8*2)/2 ; d++)  {
+                        tmp1=0, tmp2=0, tmp3=0, tmp4=0;
+                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[0]);
+                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[1]);
+                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[2]);
+                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[3]);
+                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[4]);
+                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[5]);
+                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[6]);
+                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[7]);
+                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[8]);
+                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[9]);
+                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[10]);
+                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[11]);
+                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[12]);
+                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[13]);
+                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[14]);
+                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[15]);
+                        out[produced++] = tmp2;
+                        out[produced++] = tmp1;
+
+                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[0]);
+                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[1]);
+                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[2]);
+                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[3]);
+                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[4]);
+                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[5]);
+                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[6]);
+                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[7]);
+                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[8]);
+                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[9]);
+                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[10]);
+                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[11]);
+                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[12]);
+                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[13]);
+                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[14]);
+                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[15]);
+                        out[produced++] = tmp4;
+                        out[produced++] = tmp3;
+                    }
+                    consumed += frame_size;
+                    in+=frame_size;
+                }
+                break;
             }
             else if (code_rate == C2_3) {
               mux = &mux256_23[0];
@@ -647,7 +695,7 @@ namespace gr {
       4, 0, 1, 6, 2, 3, 5, 8, 7, 10, 9, 11
     };
 
-    const int dvbt2_interleaver_bb_impl::mux256_35[16] =
+    constexpr int dvbt2_interleaver_bb_impl::mux256_35[16] =
     {
       2, 11, 3, 4, 0, 9, 1, 8, 10, 13, 7, 14, 6, 15, 5, 12
     };
