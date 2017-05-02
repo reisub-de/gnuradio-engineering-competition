@@ -5,7 +5,7 @@ Empfohlenes Betreibssystem Debian
 4. cd gnuradio 
 5. mkdir build
 6. cd build
-7. cmake .. (dauert etwa eine stunde)
+7. cmake -DENABLE_PERFORMANCE_COUNTERS=ON ../ (dauert etwa eine stunde)
 8. make && make test
 9. sudo make install
 10. ldconfig
