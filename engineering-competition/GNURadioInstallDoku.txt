@@ -6,7 +6,7 @@ Empfohlenes Betreibssystem Debian
 5. mkdir build
 6. cd build
 7. cmake -DENABLE_PERFORMANCE_COUNTERS=ON ../
-8. make -j8 && make test
+8. make && make test
 9. sudo make install
 10. ldconfig
 11. gnuradio-companion
