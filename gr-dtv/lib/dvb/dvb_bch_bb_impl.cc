@@ -71,6 +71,7 @@ namespace gr {
             nbch = 38880;
             bch_code = BCH_CODE_N12;
             lookup_table_name = "bch_n12_c3_5_lookup.bin";
+            memcpy(lookup_table_n12, bch_n12_c3_5_lookup_bin, bch_n12_c3_5_lookup_bin_len);
             break;
           case C2_3:
             kbch = 43040;
@@ -374,7 +375,7 @@ namespace gr {
       }
 
       bch_poly_build_tables();
-      gen_lookup_table();
+      //gen_lookup_table();
       set_output_multiple(nbch);
     }
 
