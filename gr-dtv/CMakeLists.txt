@@ -24,7 +24,6 @@ include(GrBoost)
 install(DIRECTORY bch_lookup_tables/ DESTINATION .)
 
 set(CMAKE_CXX_STANDARD 11)
-#set(CMAKE_CXX_FLAGS "-save-temps")
 #set(CMAKE_CXX_FLAGS "-save-temps -mavx -mavx2")
 
 ########################################################################
