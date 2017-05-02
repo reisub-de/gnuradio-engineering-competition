@@ -36,10 +36,19 @@ namespace gr {
       unsigned int bch_code;
 
       unsigned int m_poly_n_8[4];
+      unsigned int m_poly_n_8_rev[4];
+
       unsigned int m_poly_n_10[5];
+      unsigned int m_poly_n_10_rev[5];
+
       unsigned int m_poly_n_12[6];
+      unsigned int m_poly_n_12_rev[6];
+
       unsigned int m_poly_s_12[6];
+      unsigned int m_poly_s_12_rev[6];
+
       unsigned int m_poly_m_12[6];
+      unsigned int m_poly_m_12_rev[6];
 
       std::string lookup_table_name;
 

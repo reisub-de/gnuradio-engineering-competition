@@ -539,7 +539,7 @@ namespace gr {
       const int polys12[]={1,1,1,1,0,1,1,1,1,0,1,0,0,1,1};
 
       int len;
-      int polyout[2][200];
+      int polyout[3][200];
 
       len = poly_mult(polyn01, 17, polyn02,    17,  polyout[0]);
       len = poly_mult(polyn03, 17, polyout[0], len, polyout[1]);
@@ -549,14 +549,20 @@ namespace gr {
       len = poly_mult(polyn07, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn08, 17, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_n_8, 128);
+      poly_reverse(polyout[0], polyout[2], 128);
+      poly_pack(polyout[2], m_poly_n_8_rev, 128);
 
       len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn10, 17, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_n_10, 160);
+      poly_reverse(polyout[0], polyout[2], 160);
+      poly_pack(polyout[2], m_poly_n_10_rev, 160);
 
       len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_n_12, 192);
+      poly_reverse(polyout[0], polyout[2], 192);
+      poly_pack(polyout[2], m_poly_n_12_rev, 192);
 
       len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
       len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
