@@ -10,3 +10,9 @@ Empfohlenes Betreibssystem Debian
 9. sudo make install
 10. ldconfig
 11. gnuradio-companion
+
+Das Testsignal muss noch aus dem Tools repository kopiert werden
+12. cd /home/.../GITORDNER
+13. git clone https://students.rohde-schwarz.com/engcomp/tools
+14. cp /home/.../tools/tp1.ts /home/.../gnuradio/
+
