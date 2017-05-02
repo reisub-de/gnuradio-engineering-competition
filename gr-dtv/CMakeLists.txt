@@ -21,7 +21,6 @@
 # Setup dependencies
 ########################################################################
 include(GrBoost)
-install(DIRECTORY bch_lookup_tables/ DESTINATION .)
 
 set(CMAKE_CXX_STANDARD 11)
 #set(CMAKE_CXX_FLAGS "-save-temps -mavx -mavx2")
@@ -114,6 +113,5 @@ install(
     DESTINATION ${GR_LIBRARY_DIR}/pkgconfig
     COMPONENT "dtv_devel"
 )
-
 
 endif(ENABLE_GR_DTV)
