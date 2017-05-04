@@ -16,3 +16,10 @@ Das Testsignal muss noch aus dem Tools repository kopiert werden
 13. git clone https://students.rohde-schwarz.com/engcomp/tools
 14. cp /home/.../tools/tp1.ts /home/.../gnuradio/
 
+15. in /usr/local/etc/gnuradio/conf.d/gnuradio-runtime.conf Perf Counters anschalten
+
+
+Beim neubauen: 
+1. make && make test
+2. make install
+3.  /usr/local/etc/gnuradio/conf.d/gnuradio-runtime.conf Perf Counters wieder anschalten
