@@ -660,8 +660,8 @@ for (int row = 0; row < ROWS; row++) { \
         /*if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
             p[j + plen] = 0;
-          }*/
-        }
+          }
+        }*/
         d += nbch;
         p += frame_size;
       }
