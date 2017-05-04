@@ -656,10 +656,11 @@ for (int row = 0; row < ROWS; row++) { \
         for (int j = 1; j < (plen - Xp); j++) {
           p[j] ^= p[j-1];
         }
-        if (signal_constellation == MOD_128APSK) {
+        // DVBT2 does not use 128APSK mod by Enigma
+        /*if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
             p[j + plen] = 0;
-          }
+          }*/
         }
         d += nbch;
         p += frame_size;
