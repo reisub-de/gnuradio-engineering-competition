@@ -599,7 +599,7 @@ namespace gr {
                   break;
               case BCH_CODE_N12:
                   lookup = &lookup_table_n12[0][0][0];
-                  tablesize = 3 * 2 * kbch * sizeof(unsigned long int);
+                  tablesize = sizeof(lookup_table_n12);//3 * 2 * kbch * sizeof(unsigned long int);
                   break;
               default:
                   break;
@@ -659,9 +659,9 @@ namespace gr {
                           }
                       }
 
-                      lookup_table_n12[bitpos][1][0] = ((unsigned long int)shift[0]) << 32 | shift[1];
-                      lookup_table_n12[bitpos][1][1] = ((unsigned long int)shift[2]) << 32 | shift[3];
-                      lookup_table_n12[bitpos][1][2] = ((unsigned long int)shift[4]) << 32 | shift[5];
+                      lookup_table_n12[0][bitpos][1] = ((unsigned long int)shift[0]) << 32 | shift[1];
+                      lookup_table_n12[1][bitpos][1] = ((unsigned long int)shift[2]) << 32 | shift[3];
+                      lookup_table_n12[2][bitpos][1] = ((unsigned long int)shift[4]) << 32 | shift[5];
 
                   }
                   break;
@@ -701,58 +701,58 @@ namespace gr {
             for (int j = 0; j < l; j++) {
               temp = *in++;
               *out++ = temp;
-              bch[0] ^= lookup_table_n12[k][temp][0];
-              bch[1] ^= lookup_table_n12[k][temp][1];
-              bch[2] ^= lookup_table_n12[k][temp][2];
+              bch[0] ^= lookup_table_n12[0][k][temp];
+              bch[1] ^= lookup_table_n12[1][k][temp];
+              bch[2] ^= lookup_table_n12[2][k][temp];
               k++;
 
               temp = *in++;
               *out++ = temp;
-              bch[0] ^= lookup_table_n12[k][temp][0];
-              bch[1] ^= lookup_table_n12[k][temp][1];
-              bch[2] ^= lookup_table_n12[k][temp][2];
+              bch[0] ^= lookup_table_n12[0][k][temp];
+              bch[1] ^= lookup_table_n12[1][k][temp];
+              bch[2] ^= lookup_table_n12[2][k][temp];
               k++;
 
               temp = *in++;
               *out++ = temp;
-              bch[0] ^= lookup_table_n12[k][temp][0];
-              bch[1] ^= lookup_table_n12[k][temp][1];
-              bch[2] ^= lookup_table_n12[k][temp][2];
+              bch[0] ^= lookup_table_n12[0][k][temp];
+              bch[1] ^= lookup_table_n12[1][k][temp];
+              bch[2] ^= lookup_table_n12[2][k][temp];
               k++;
 
               temp = *in++;
               *out++ = temp;
-              bch[0] ^= lookup_table_n12[k][temp][0];
-              bch[1] ^= lookup_table_n12[k][temp][1];
-              bch[2] ^= lookup_table_n12[k][temp][2];
+              bch[0] ^= lookup_table_n12[0][k][temp];
+              bch[1] ^= lookup_table_n12[1][k][temp];
+              bch[2] ^= lookup_table_n12[2][k][temp];
               k++;
 
               temp = *in++;
               *out++ = temp;
-              bch[0] ^= lookup_table_n12[k][temp][0];
-              bch[1] ^= lookup_table_n12[k][temp][1];
-              bch[2] ^= lookup_table_n12[k][temp][2];
+              bch[0] ^= lookup_table_n12[0][k][temp];
+              bch[1] ^= lookup_table_n12[1][k][temp];
+              bch[2] ^= lookup_table_n12[2][k][temp];
               k++;
 
               temp = *in++;
               *out++ = temp;
-              bch[0] ^= lookup_table_n12[k][temp][0];
-              bch[1] ^= lookup_table_n12[k][temp][1];
-              bch[2] ^= lookup_table_n12[k][temp][2];
+              bch[0] ^= lookup_table_n12[0][k][temp];
+              bch[1] ^= lookup_table_n12[1][k][temp];
+              bch[2] ^= lookup_table_n12[2][k][temp];
               k++;
 
               temp = *in++;
               *out++ = temp;
-              bch[0] ^= lookup_table_n12[k][temp][0];
-              bch[1] ^= lookup_table_n12[k][temp][1];
-              bch[2] ^= lookup_table_n12[k][temp][2];
+              bch[0] ^= lookup_table_n12[0][k][temp];
+              bch[1] ^= lookup_table_n12[1][k][temp];
+              bch[2] ^= lookup_table_n12[2][k][temp];
               k++;
 
               temp = *in++;
               *out++ = temp;
-              bch[0] ^= lookup_table_n12[k][temp][0];
-              bch[1] ^= lookup_table_n12[k][temp][1];
-              bch[2] ^= lookup_table_n12[k][temp][2];
+              bch[0] ^= lookup_table_n12[0][k][temp];
+              bch[1] ^= lookup_table_n12[1][k][temp];
+              bch[2] ^= lookup_table_n12[2][k][temp];
               k++;
             }
 
