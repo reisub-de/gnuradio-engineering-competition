@@ -260,10 +260,7 @@ namespace gr {
           }
         }
         else {
-          index = 0;
-          for (int w = 0; w < fec_blocks * cell_size; w++) {
-            *out++ = time_interleave[index++];
-          }
+	  memcpy(out, time_interleave, fec_blocks * cell_size * sizeof(gr_complex));
         }
       }
 
