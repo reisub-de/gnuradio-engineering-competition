@@ -181,9 +181,7 @@ namespace gr {
           for (int i = 0; i < noutput_items; i += packed_items) {
             rows = frame_size / 2;
             if (code_rate == C1_3 || code_rate == C2_5) {
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
-              }
+              memcpy(tempu, in, nbch * sizeof(unsigned char));
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -235,9 +233,7 @@ namespace gr {
             c6 = &tempv[rows * 5];
             c7 = &tempv[rows * 6];
             c8 = &tempv[rows * 7];
-            for (int k = 0; k < nbch; k++) {
-              tempu[k] = *in++;
-            }
+            memcpy(tempu, in, nbch * sizeof(unsigned char));
             for (int t = 0; t < q_val; t++) {
               for (int s = 0; s < 360; s++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -313,9 +309,7 @@ namespace gr {
             c10 = &tempv[rows * 9];
             c11 = &tempv[rows * 10];
             c12 = &tempv[rows * 11];
-            for (int k = 0; k < nbch; k++) {
-              tempu[k] = *in++;
-            }
+            memcpy(tempu, in, nbch * sizeof(unsigned char));
             for (int t = 0; t < q_val; t++) {
               for (int s = 0; s < 360; s++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -392,9 +386,7 @@ namespace gr {
               c14 = &tempv[rows * 13];
               c15 = &tempv[rows * 14];
               c16 = &tempv[rows * 15];
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
-              }
+              memcpy(tempu, in, nbch * sizeof(unsigned char));
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -465,9 +457,7 @@ namespace gr {
               c6 = &tempv[rows * 5];
               c7 = &tempv[rows * 6];
               c8 = &tempv[rows * 7];
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
-              }
+              memcpy(tempu, in, nbch * sizeof(unsigned char));
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
