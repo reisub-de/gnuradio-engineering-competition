@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Vv002 Cr35L
-# Generated: Mon Mar 13 09:09:58 2017
+# Generated: Fri May  5 17:01:21 2017
 ##################################################
 
 from gnuradio import blocks
@@ -25,7 +25,7 @@ class vv002_cr35l(gr.top_block):
         # Variables
         ##################################################
         self.output_file = output_file = "gr_tp19.dat"
-        self.input_file = input_file = "tp1.ts"
+        self.input_file = input_file = "../tools/tp1.ts"
 
         ##################################################
         # Blocks
