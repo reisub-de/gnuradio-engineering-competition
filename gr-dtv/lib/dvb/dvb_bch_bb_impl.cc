@@ -756,11 +756,26 @@ namespace gr {
               k++;
             }
 
-            for (int n = 0; n < 192; n++) {
-              *out++ = (bch[2] & 1);
-              bch[2] = (bch[2] >> 1) | (bch[1] << 63);
-              bch[1] = (bch[1] >> 1) | (bch[0] << 63);
-              bch[0] = bch[0] >> 1;
+            // for (int n = 0; n < 192; n++) {
+            //   *out++ = (bch[2] & 1);
+            //   bch[2] = (bch[2] >> 1) | (bch[1] << 63);
+            //   bch[1] = (bch[1] >> 1) | (bch[0] << 63);
+            //   bch[0] = bch[0] >> 1;
+            // }
+
+            for (int n = 0; n < 192/3; n++) {
+              *out++ = bch[2] & 1;
+              bch[2] >>= 1;
+            }
+                        
+            for (int n = 0; n < 192/3; n++) {
+              *out++ = bch[1] & 1;
+              bch[1] >>= 1;
+            }
+                        
+            for (int n = 0; n < 192/3; n++) {
+              *out++ = bch[0] & 1;
+              bch[0] >>= 1;
             }
 
 
