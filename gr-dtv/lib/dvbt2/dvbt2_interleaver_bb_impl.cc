@@ -416,47 +416,47 @@ namespace gr {
 			  
 			  //Not verified, if there is any benefit, but maybe now better to optimize.
 			  // the c s are not necessary
-			  for (int j = 0; j < rows; j++) {
-				for(unsigned short int i =0;i<16;i++){
-					tempu[index++] = tempv[i*rows+j];
-				}
-              }
-			  // const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-              // const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-              // c1 = &tempv[0];
-              // c2 = &tempv[rows];
-              // c3 = &tempv[rows * 2];
-              // c4 = &tempv[rows * 3];
-              // c5 = &tempv[rows * 4];
-              // c6 = &tempv[rows * 5];
-              // c7 = &tempv[rows * 6];
-              // c8 = &tempv[rows * 7];
-              // c9 = &tempv[rows * 8];
-              // c10 = &tempv[rows * 9];
-              // c11 = &tempv[rows * 10];
-              // c12 = &tempv[rows * 11];
-              // c13 = &tempv[rows * 12];
-              // c14 = &tempv[rows * 13];
-              // c15 = &tempv[rows * 14];
-              // c16 = &tempv[rows * 15];
-              // for (int j = 0; j < rows; j++) {
-                // tempu[index++] = c1[j];
-                // tempu[index++] = c2[j];
-                // tempu[index++] = c3[j];
-                // tempu[index++] = c4[j];
-                // tempu[index++] = c5[j];
-                // tempu[index++] = c6[j];
-                // tempu[index++] = c7[j];
-                // tempu[index++] = c8[j];
-                // tempu[index++] = c9[j];
-                // tempu[index++] = c10[j];
-                // tempu[index++] = c11[j];
-                // tempu[index++] = c12[j];
-                // tempu[index++] = c13[j];
-                // tempu[index++] = c14[j];
-                // tempu[index++] = c15[j];
-                // tempu[index++] = c16[j];
+			  // for (int j = 0; j < rows; j++) {
+				// for(unsigned short int i =0;i<16;i++){
+					// tempu[index++] = tempv[i*rows+j];
+				// }
               // }
+			  const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+              const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
+              c1 = &tempv[0];
+              c2 = &tempv[rows];
+              c3 = &tempv[rows * 2];
+              c4 = &tempv[rows * 3];
+              c5 = &tempv[rows * 4];
+              c6 = &tempv[rows * 5];
+              c7 = &tempv[rows * 6];
+              c8 = &tempv[rows * 7];
+              c9 = &tempv[rows * 8];
+              c10 = &tempv[rows * 9];
+              c11 = &tempv[rows * 10];
+              c12 = &tempv[rows * 11];
+              c13 = &tempv[rows * 12];
+              c14 = &tempv[rows * 13];
+              c15 = &tempv[rows * 14];
+              c16 = &tempv[rows * 15];
+              for (int j = 0; j < rows; j++) {
+                tempu[index++] = c1[j];
+                tempu[index++] = c2[j];
+                tempu[index++] = c3[j];
+                tempu[index++] = c4[j];
+                tempu[index++] = c5[j];
+                tempu[index++] = c6[j];
+                tempu[index++] = c7[j];
+                tempu[index++] = c8[j];
+                tempu[index++] = c9[j];
+                tempu[index++] = c10[j];
+                tempu[index++] = c11[j];
+                tempu[index++] = c12[j];
+                tempu[index++] = c13[j];
+                tempu[index++] = c14[j];
+                tempu[index++] = c15[j];
+                tempu[index++] = c16[j];
+              }
 			  
 			  
 			  
