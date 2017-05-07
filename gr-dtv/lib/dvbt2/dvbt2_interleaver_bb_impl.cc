@@ -24,6 +24,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "dvbt2_interleaver_bb_impl.h"
+#include "immintrin.h"
 
 namespace gr {
   namespace dtv {
@@ -152,6 +153,7 @@ namespace gr {
       void
       dvbt2_interleaver_bb_impl::generate_lookup(){
         int rows, offset, index;
+        const int *mux;
         int tempv[FRAME_SIZE_NORMAL];
         int tempu[FRAME_SIZE_NORMAL];
 
@@ -225,7 +227,24 @@ namespace gr {
               tempu[index++] = c16[j];
             }
 
-            memcpy(lookup_table, tempu, FRAME_SIZE_NORMAL*sizeof(int));
+            if (code_rate == C3_5) {
+              mux = &mux256_35[0];
+            }
+            else if (code_rate == C2_3) {
+              mux = &mux256_23[0];
+            }
+            else {
+              mux = &mux256[0];
+            }
+
+            index = 0;
+            for (int d = 0; d < frame_size / (mod * 2); d++) {
+              for (int e = 0; e < (mod * 2); e++) {
+                lookup_table[d*mod*2 + mux[e]] = tempu[index++];
+                
+              }
+            }
+            //memcpy(lookup_table, tempu, FRAME_SIZE_NORMAL*sizeof(int));
           }
 
       }
@@ -448,103 +467,66 @@ namespace gr {
 
         case MOD_256QAM:
           if (frame_size == FRAME_SIZE_NORMAL) {
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 
-            //////////////////////////////////////////////////////////////////////////
-            //very fast optimization only for C3_5 code for now
-            //hard coded mapping and loop unrolling
-            //////////////////////////////////////////////////////////////////////////
-            if (code_rate == C3_5) {
-                for (int i = 0; i < noutput_items; i += packed_items) {
-                    index = 0;
-                    unsigned char tmp1, tmp2, tmp3, tmp4;
-                    for (int d = 0; d< FRAME_SIZE_NORMAL / (8*2)/2 ; d++)  {
-                        tmp1=0, tmp2=0, tmp3=0, tmp4=0;
-                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[0]);
-                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[1]);
-                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[2]);
-                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[3]);
-                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[4]);
-                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[5]);
-                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[6]);
-                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[7]);
-                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[8]);
-                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[9]);
-                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[10]);
-                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[11]);
-                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[12]);
-                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[13]);
-                        tmp2 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[14]);
-                        tmp1 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[15]);
-                        out[produced++] = tmp2;
-                        out[produced++] = tmp1;
 
-                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[0]);
-                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[1]);
-                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[2]);
-                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[3]);
-                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[4]);
-                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[5]);
-                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[6]);
-                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[7]);
-                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[8]);
-                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[9]);
-                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[10]);
-                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[11]);
-                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[12]);
-                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[13]);
-                        tmp4 |= in[lookup_table[index++]] << (((8 * 2) - 1-8) - mux256_35[14]);
-                        tmp3 |= in[lookup_table[index++]] << (((8 * 2) - 1) -   mux256_35[15]);
-                        out[produced++] = tmp4;
-                        out[produced++] = tmp3;
-                    }
-                    consumed += frame_size;
-                    in+=frame_size;
-                }
-                break;
-            }
-            else if (code_rate == C2_3) {
-              mux = &mux256_23[0];
-            }
-            else {
-              mux = &mux256[0];
-            }
-            for (int i = 0; i < noutput_items; i += packed_items) {
+              for (int i = 0; i < noutput_items; i += FRAME_SIZE_NORMAL/8) {
+                  int index = 0;
 
-              for (int j = 0; j < FRAME_SIZE_NORMAL; j++) {
-                  tempu[j] = in[lookup_table[j]];
-                  j++;
-                  tempu[j] = in[lookup_table[j]];
-                  j++;
-                  tempu[j] = in[lookup_table[j]];
-                  j++;
-                  tempu[j] = in[lookup_table[j]];
-                  j++;
-                  tempu[j] = in[lookup_table[j]];
-                  j++;
-                  tempu[j] = in[lookup_table[j]];
-                  j++;
-                  tempu[j] = in[lookup_table[j]];
-                  j++;
-                  tempu[j] = in[lookup_table[j]];
+                  //__m256i d0;
+                  unsigned char pack;
+
+                  for (int j = 0; j < FRAME_SIZE_NORMAL/8; j++) {
+                      pack = 0;
+                      pack |= in[lookup_table[index++]] << 7;
+                      pack |= in[lookup_table[index++]] << 6;
+                      pack |= in[lookup_table[index++]] << 5;
+                      pack |= in[lookup_table[index++]] << 4;
+                      pack |= in[lookup_table[index++]] << 3;
+                      pack |= in[lookup_table[index++]] << 2;
+                      pack |= in[lookup_table[index++]] << 1;
+                      pack |= in[lookup_table[index++]] << 0;
+                      *out++ = pack;
+
+                  }
+                  in += FRAME_SIZE_NORMAL;
               }
-                in += FRAME_SIZE_NORMAL;
+              consume_each (noutput_items*8);
 
-              index = 0;
-              for (int d = 0; d < frame_size / (mod * 2); d++) {
-                pack = 0;
-                for (int e = 0; e < (mod * 2); e++) {
-                  offset = mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - offset);
-                }
-                out[produced++] = pack >> 8;
-                out[produced++] = pack & 0xff;
-                consumed += (mod * 2);
-              }
-            }
+              // Tell runtime system how many output items we produced.
+              return noutput_items;
           }
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
 
+////////////////////////////////////////////////////////////////////////////
+   // without packing
+////////////////////////////////////////////////////////////////////////////
+//              for (int i = 0; i < noutput_items; i += FRAME_SIZE_NORMAL) {
+//                  int index = 0;
+//
+//                  for (int j = 0; j < FRAME_SIZE_NORMAL/8; j++) {
+//                      *out++ = in[lookup_table[index+0]];
+//                      *out++ = in[lookup_table[index+1]];
+//                      *out++ = in[lookup_table[index+2]];
+//                      *out++ = in[lookup_table[index+3]];
+//                      *out++ = in[lookup_table[index+4]];
+//                      *out++ = in[lookup_table[index+5]];
+//                      *out++ = in[lookup_table[index+6]];
+//                      *out++ = in[lookup_table[index+7]];
+//                      index+=8;
+//                  }
+//                  in += FRAME_SIZE_NORMAL;
+//              }
+//              consume_each (noutput_items);
+//
+//              // Tell runtime system how many output items we produced.
+//              return noutput_items;
+//      }
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
+
           else {
             if (code_rate == C1_3) {
               mux = &mux256s_13[0];
