@@ -988,6 +988,7 @@ namespace gr {
       for (int i = 0; i < C_PS; i++) {
         fc_carrier_map[i] = DATA_CARRIER;
       }
+      //CA: TODO
       for (int i = 0; i < C_PS; i++) {
         if (i % dx == 0) {
           if (miso == TRUE && miso_group == MISO_TX2) {
