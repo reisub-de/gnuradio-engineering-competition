@@ -418,7 +418,7 @@ namespace gr {
 			  // the c s are not necessary
 			  for (int j = 0; j < rows; j++) {
 				for(unsigned short int i =0;i<16;i++){
-					tempu[index++] = &tempv[i*rows+j];
+					tempu[index++] = tempv[i*rows+j];
 				}
               }
 			  // const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
