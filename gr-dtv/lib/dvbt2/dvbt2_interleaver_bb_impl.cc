@@ -298,6 +298,8 @@ namespace gr {
           else {
             mux = &mux64[0];
           }
+		  
+		  
           for (int i = 0; i < noutput_items; i += packed_items) {
             rows = frame_size / (mod * 2);
             const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
@@ -374,32 +376,28 @@ namespace gr {
             }
             for (int i = 0; i < noutput_items; i += packed_items) {
               rows = frame_size / (mod * 2);
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-              const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-              c1 = &tempv[0];
-              c2 = &tempv[rows];
-              c3 = &tempv[rows * 2];
-              c4 = &tempv[rows * 3];
-              c5 = &tempv[rows * 4];
-              c6 = &tempv[rows * 5];
-              c7 = &tempv[rows * 6];
-              c8 = &tempv[rows * 7];
-              c9 = &tempv[rows * 8];
-              c10 = &tempv[rows * 9];
-              c11 = &tempv[rows * 10];
-              c12 = &tempv[rows * 11];
-              c13 = &tempv[rows * 12];
-              c14 = &tempv[rows * 13];
-              c15 = &tempv[rows * 14];
-              c16 = &tempv[rows * 15];
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
-              }
+
+			  //Should be faster, based on http://nadeausoftware.com/articles/2012/05/c_c_tip_how_copy_memory_quickly .
+              // for (int k = 0; k < nbch; k++) {
+                // tempu[k] = *in++;
+              // }
+			  memcpy(tempu,in,nbch);
+			  
+			  
+			  //Not sure if there is any benefit, but maybe the loop can be better optimized.
+			  // for(unsigned long int a = 0; a < q_val*360; a++){
+				  // tempu[nbch+a] = in[  (a%360)*q_val + (a/360)  ];
+			  // }
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
+				  
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
               }
+			  
+			  
+			  
+			  
               in = in + (q_val * 360);
               index = 0;
               for (int col = 0; col < (mod * 2); col++) {
@@ -413,24 +411,55 @@ namespace gr {
                 }
               }
               index = 0;
-              for (int j = 0; j < rows; j++) {
-                tempu[index++] = c1[j];
-                tempu[index++] = c2[j];
-                tempu[index++] = c3[j];
-                tempu[index++] = c4[j];
-                tempu[index++] = c5[j];
-                tempu[index++] = c6[j];
-                tempu[index++] = c7[j];
-                tempu[index++] = c8[j];
-                tempu[index++] = c9[j];
-                tempu[index++] = c10[j];
-                tempu[index++] = c11[j];
-                tempu[index++] = c12[j];
-                tempu[index++] = c13[j];
-                tempu[index++] = c14[j];
-                tempu[index++] = c15[j];
-                tempu[index++] = c16[j];
+			  
+			  
+			  
+			  //Not verified, if there is any benefit, but maybe now better to optimize.
+			  // the c s are not necessary
+			  for (int j = 0; j < rows; j++) {
+				for(unsigned short int i =0;i<16;i++){
+					tempu[index++] = &tempv[i*rows+j];
+				}
               }
+			  // const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+              // const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
+              // c1 = &tempv[0];
+              // c2 = &tempv[rows];
+              // c3 = &tempv[rows * 2];
+              // c4 = &tempv[rows * 3];
+              // c5 = &tempv[rows * 4];
+              // c6 = &tempv[rows * 5];
+              // c7 = &tempv[rows * 6];
+              // c8 = &tempv[rows * 7];
+              // c9 = &tempv[rows * 8];
+              // c10 = &tempv[rows * 9];
+              // c11 = &tempv[rows * 10];
+              // c12 = &tempv[rows * 11];
+              // c13 = &tempv[rows * 12];
+              // c14 = &tempv[rows * 13];
+              // c15 = &tempv[rows * 14];
+              // c16 = &tempv[rows * 15];
+              // for (int j = 0; j < rows; j++) {
+                // tempu[index++] = c1[j];
+                // tempu[index++] = c2[j];
+                // tempu[index++] = c3[j];
+                // tempu[index++] = c4[j];
+                // tempu[index++] = c5[j];
+                // tempu[index++] = c6[j];
+                // tempu[index++] = c7[j];
+                // tempu[index++] = c8[j];
+                // tempu[index++] = c9[j];
+                // tempu[index++] = c10[j];
+                // tempu[index++] = c11[j];
+                // tempu[index++] = c12[j];
+                // tempu[index++] = c13[j];
+                // tempu[index++] = c14[j];
+                // tempu[index++] = c15[j];
+                // tempu[index++] = c16[j];
+              // }
+			  
+			  
+			  
               index = 0;
               for (int d = 0; d < frame_size / (mod * 2); d++) {
                 pack = 0;
