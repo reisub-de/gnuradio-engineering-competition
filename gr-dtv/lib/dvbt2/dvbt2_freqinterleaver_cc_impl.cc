@@ -727,18 +727,16 @@ namespace gr {
         }
       }
       if (fftsize == FFTSIZE_32K || fftsize == FFTSIZE_32K_T2GI) {
+		  int a;
         for (int j = 0; j < q_odd; j++) {
-          int a;
           a = Hodd[j];
           Heven[a] = j;
         }
         for (int j = 0; j < q_oddP2; j++) {
-          int a;
           a = HoddP2[j];
           HevenP2[a] = j;
         }
         for (int j = 0; j < q_oddFC; j++) {
-          int a;
           a = HoddFC[j];
           HevenFC[a] = j;
         }

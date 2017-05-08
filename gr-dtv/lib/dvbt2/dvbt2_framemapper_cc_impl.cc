@@ -1061,8 +1061,7 @@ namespace gr {
     void
     dvbt2_framemapper_cc_impl::add_l1pre(gr_complex *out)
     {
-      //int temp = 0;
-	  int offset_bits = 0;
+      int temp, offset_bits = 0;
       unsigned char b, value;
       unsigned int shift[6];
       int plen = FRAME_SIZE_SHORT - NBCH_1_4;
@@ -1072,99 +1071,99 @@ namespace gr {
       L1Pre *l1preinit = &L1_Signalling[0].l1pre_data;
       int g, o, index;
 
-      //temp = l1preinit->type;
+      temp = l1preinit->type;
       for (int n = 7; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->type & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
       l1pre[offset_bits++] = l1preinit->bwt_ext;
-      //temp = l1preinit->s1;
+      temp = l1preinit->s1;
       for (int n = 2; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->s1 & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->s2;
+      temp = l1preinit->s2;
       for (int n = 2; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->s2 & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
       l1pre[offset_bits++] = 0;
       l1pre[offset_bits++] = l1preinit->l1_repetition_flag;
-      //temp = l1preinit->guard_interval;
+      temp = l1preinit->guard_interval;
       for (int n = 2; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->guard_interval & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->papr;
+      temp = l1preinit->papr;
       for (int n = 3; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->papr & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->l1_mod;
+      temp = l1preinit->l1_mod;
       for (int n = 3; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->l1_mod & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->l1_cod;
+      temp = l1preinit->l1_cod;
       for (int n = 1; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->l1_cod & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->l1_fec_type;
+      temp = l1preinit->l1_fec_type;
       for (int n = 1; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->l1_fec_type & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->l1_post_size;
+      temp = l1preinit->l1_post_size;
       for (int n = 17; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->l1_post_size & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->l1_post_info_size;
+      temp = l1preinit->l1_post_info_size;
       for (int n = 17; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->l1_post_info_size & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->pilot_pattern;
+      temp = l1preinit->pilot_pattern;
       for (int n = 3; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->pilot_pattern & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->tx_id_availability;
+      temp = l1preinit->tx_id_availability;
       for (int n = 7; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->tx_id_availability & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->cell_id;
+      temp = l1preinit->cell_id;
       for (int n = 15; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->cell_id & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->network_id;
+      temp = l1preinit->network_id;
       for (int n = 15; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->network_id & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->t2_system_id;
+      temp = l1preinit->t2_system_id;
       for (int n = 15; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->t2_system_id & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->num_t2_frames;
+      temp = l1preinit->num_t2_frames;
       for (int n = 7; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->num_t2_frames & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->num_data_symbols;
+      temp = l1preinit->num_data_symbols;
       for (int n = 11; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->num_data_symbols & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->regen_flag;
+      temp = l1preinit->regen_flag;
       for (int n = 2; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->regen_flag & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
       l1pre[offset_bits++] = l1preinit->l1_post_extension;
-      //temp = l1preinit->num_rf;
+      temp = l1preinit->num_rf;
       for (int n = 2; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->num_rf & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->current_rf_index;
+      temp = l1preinit->current_rf_index;
       for (int n = 2; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->current_rf_index & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
-      //temp = l1preinit->t2_version;
+      temp = l1preinit->t2_version;
       for (int n = 3; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->t2_version & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
       l1pre[offset_bits++] = l1preinit->l1_post_scrambled;
       l1pre[offset_bits++] = l1preinit->t2_base_lite;
-      //temp = l1preinit->reserved;
+      temp = l1preinit->reserved;
       for (int n = 3; n >= 0; n--) {
-        l1pre[offset_bits++] = (l1preinit->reserved & (1 << n) )>> n;
+        l1pre[offset_bits++] = (temp & (1 << n) )>> n;
       }
       offset_bits += add_crc32_bits(l1pre, offset_bits);
       /* Padding */
@@ -1248,39 +1247,39 @@ namespace gr {
 
       temp = l1postinit->sub_slices_per_frame;
       for (int n = 14; n >= 0; n--) {
-        l1post[offset_bits++] = (l1postinit->sub_slices_per_frame & (1 << n) )>> n;
+        l1post[offset_bits++] = (temp & (1 << n) )>> n;
       }
       temp = l1postinit->num_plp;
       for (int n = 7; n >= 0; n--) {
-        l1post[offset_bits++] = (l1postinit->num_plp & (1 << n) )>> n;
+        l1post[offset_bits++] = (temp & (1 << n) )>> n;
       }
       temp = l1postinit->num_aux;
       for (int n = 3; n >= 0; n--) {
-        l1post[offset_bits++] = (l1postinit->num_aux & (1 << n) )>> n;
+        l1post[offset_bits++] = (temp & (1 << n) )>> n;
       }
       temp = l1postinit->aux_config_rfu;
       for (int n = 7; n >= 0; n--) {
-        l1post[offset_bits++] = (l1postinit->aux_config_rfu & (1 << n) )>> n;
+        l1post[offset_bits++] = (temp & (1 << n) )>> n;
       }
       temp = l1postinit->rf_idx;
       for (int n = 2; n >= 0; n--) {
-        l1post[offset_bits++] = (l1postinit->rf_idx & (1 << n) )>> n;
+        l1post[offset_bits++] = (temp & (1 << n) )>> n;
       }
       temp = l1postinit->frequency;
       for (int n = 31; n >= 0; n--) {
-        l1post[offset_bits++] = (l1postinit->frequency & (1 << n) )>> n;
+        l1post[offset_bits++] = (temp & (1 << n) )>> n;
       }
       temp = l1postinit->plp_id;
       for (int n = 7; n >= 0; n--) {
-        l1post[offset_bits++] = (l1postinit->plp_id & (1 << n) )>> n;
+        l1post[offset_bits++] = (temp & (1 << n) )>> n;
       }
       temp = l1postinit->plp_type;
       for (int n = 2; n >= 0; n--) {
-        l1post[offset_bits++] = (l1postinit->plp_type & (1 << n) )>> n;
+        l1post[offset_bits++] = (temp & (1 << n) )>> n;
       }
       temp = l1postinit->plp_payload_type;
       for (int n = 4; n >= 0; n--) {
-        l1post[offset_bits++] = (l1postinit->plp_payload_type & (1 << n) )>> n;
+        l1post[offset_bits++] = (temp & (1 << n) )>> n;
       }
       l1post[offset_bits++] = l1postinit->ff_flag;
       temp = l1postinit->first_rf_idx;
