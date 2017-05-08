@@ -41,9 +41,9 @@ class vv002_cr35l(gr.top_block):
         self.dtv_dvb_bch_bb_0 = dtv.dvb_bch_bb(dtv.STANDARD_DVBT2, dtv.FECFRAME_NORMAL, dtv.C3_5)
         self.dtv_dvb_bbscrambler_bb_0 = dtv.dvb_bbscrambler_bb(dtv.STANDARD_DVBT2, dtv.FECFRAME_NORMAL, dtv.C3_5)
         self.dtv_dvb_bbheader_bb_0 = dtv.dvb_bbheader_bb(dtv.STANDARD_DVBT2, dtv.FECFRAME_NORMAL, dtv.C3_5, dtv.RO_0_35, dtv.INPUTMODE_HIEFF, dtv.INBAND_OFF, 168, 4000000)
-        self.digital_ofdm_cyclic_prefixer_0 = digital.ofdm_cyclic_prefixer(32768, 32768+32768/128, 0, '')
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, input_file, False)
-        self.blocks_file_sink_1 = blocks.file_sink(gr.sizeof_gr_complex*1, output_file, False)
+        self.digital_ofdm_cyclic_prefixer_0 = digital.ofdm_cyclic_prefixer(32768, 32768 + 32768 / 128, 0, '')
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char * 1, input_file, False)
+        self.blocks_file_sink_1 = blocks.file_sink(gr.sizeof_gr_complex * 1, output_file, False)
         self.blocks_file_sink_1.set_unbuffered(False)
 
         ##################################################
@@ -83,6 +83,13 @@ def main(top_block_cls=vv002_cr35l, options=None):
     tb = top_block_cls()
     tb.start()
     tb.wait()
+
+    # Add performance counter
+    tb.dtv_dvbt2_pilotgenerator_cc_0.pc_work_time_total()
+    tb.dtv_dvbt2_interleaver_bb_0.pc_work_time_total()
+    tb.dtv_dvbt2_freqinterleaver_cc_0.pc_work_time_total()
+    tb.dtv_dvb_ldpc_bb_0.pc_work_time_total()
+    tb.dtv_dvb_bch_bb_0.pc_work_time_total()
 
 
 if __name__ == '__main__':
