@@ -38,6 +38,16 @@ namespace gr {
     /*
      * The private constructor
      */
+    const unsigned int dvb_bch_bb_impl::m_poly_n_8[4] =
+    {3563495200, 2931179416, 3186222222, 4205109304};
+    const unsigned int dvb_bch_bb_impl::m_poly_n_10[5] =
+    {2309414173, 2160364535, 3236568662, 4174140479, 3073419270};
+    const unsigned int dvb_bch_bb_impl::m_poly_n_12[6] =
+    {3886694502, 4020363968, 2433788987, 456454922, 948582945, 3245368434};
+    const unsigned int dvb_bch_bb_impl::m_poly_s_12[6] =
+    {2778765451, 3957846346, 2517222852, 3007729046, 425188166, 45114482};
+    const unsigned int dvb_bch_bb_impl::m_poly_m_12[6] =
+    {3498187715, 4096699498, 3433104751, 3653255568, 2977959358, 3709950066};
     dvb_bch_bb_impl::dvb_bch_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate)
       : gr::block("dvb_bch_bb",
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
@@ -371,7 +381,6 @@ namespace gr {
         }
       }
 
-      bch_poly_build_tables();
       set_output_multiple(nbch);
     }
 
@@ -386,69 +395,6 @@ namespace gr {
     dvb_bch_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
       ninput_items_required[0] = (noutput_items / nbch) * kbch;
-    }
-
-    /*
-     * Polynomial calculation routines
-     * multiply polynomials
-     */
-    int
-    dvb_bch_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
-    {
-      memset(out, 0, sizeof(int) * (lena + lenb));
-
-      for (int i = 0; i < lena; i++) {
-        for (int j = 0; j < lenb; j++) {
-          if (ina[i] * inb[j] > 0 ) {
-            out[i + j]++;    // count number of terms for this pwr of x
-          }
-        }
-      }
-      int max = 0;
-      for (int i = 0; i < lena + lenb; i++) {
-        out[i] = out[i] & 1;    // If even ignore the term
-        if(out[i]) {
-          max = i;
-        }
-      }
-      // return the size of array to house the result.
-      return max + 1;
-    }
-
-    /*
-     * Pack the polynomial into a 32 bit array
-     */
-    void
-    dvb_bch_bb_impl::poly_pack(const int *pin, unsigned int* pout, int len)
-    {
-      int lw = len / 32;
-      int ptr = 0;
-      unsigned int temp;
-      if (len % 32) {
-        lw++;
-      }
-
-      for (int i = 0; i < lw; i++) {
-        temp = 0x80000000;
-        pout[i] = 0;
-        for (int j = 0; j < 32; j++) {
-          if (pin[ptr++]) {
-            pout[i] |= temp;
-          }
-          temp >>= 1;
-        }
-      }
-    }
-
-    void
-    dvb_bch_bb_impl::poly_reverse(int *pin, int *pout, int len)
-    {
-      int c;
-      c = len - 1;
-
-      for (int i = 0; i < len; i++) {
-        pout[c--] = pin[i];
-      }
     }
 
     /*
@@ -488,98 +434,6 @@ namespace gr {
       sr[2] = (sr[2] >> 1) | (sr[1] << 31);
       sr[1] = (sr[1] >> 1) | (sr[0] << 31);
       sr[0] = (sr[0] >> 1);
-    }
-
-    void
-    dvb_bch_bb_impl::bch_poly_build_tables(void)
-    {
-      // Normal polynomials
-      const int polyn01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1};
-      const int polyn02[]={1,1,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1};
-      const int polyn03[]={1,0,1,1,1,1,0,1,1,1,1,1,0,0,0,0,1};
-      const int polyn04[]={1,0,1,0,1,0,1,0,0,1,0,1,1,0,1,0,1};
-      const int polyn05[]={1,1,1,1,0,1,0,0,1,1,1,1,1,0,0,0,1};
-      const int polyn06[]={1,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1};
-      const int polyn07[]={1,0,1,0,0,1,1,0,1,1,1,1,0,1,0,1,1};
-      const int polyn08[]={1,1,1,0,0,1,1,0,1,1,0,0,1,1,1,0,1};
-      const int polyn09[]={1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,1};
-      const int polyn10[]={1,1,1,0,0,1,0,1,1,0,1,0,1,1,1,0,1};
-      const int polyn11[]={1,0,1,1,0,1,0,0,0,1,0,1,1,1,0,0,1};
-      const int polyn12[]={1,1,0,0,0,1,1,1,0,1,0,1,1,0,0,0,1};
-
-      // Medium polynomials
-      const int polym01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,1};
-      const int polym02[]={1,1,0,0,1,0,0,1,0,0,1,1,0,0,0,1};
-      const int polym03[]={1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1};
-      const int polym04[]={1,0,1,1,0,1,1,0,1,0,1,1,0,0,0,1};
-      const int polym05[]={1,1,1,0,1,0,1,1,0,0,1,0,1,0,0,1};
-      const int polym06[]={1,0,0,0,1,0,1,1,0,0,0,0,1,1,0,1};
-      const int polym07[]={1,0,1,0,1,1,0,1,0,0,0,1,1,0,1,1};
-      const int polym08[]={1,0,1,0,1,0,1,0,1,1,0,1,0,0,1,1};
-      const int polym09[]={1,1,1,0,1,1,0,1,0,1,0,1,1,1,0,1};
-      const int polym10[]={1,1,1,1,1,0,0,1,0,0,1,1,1,1,0,1};
-      const int polym11[]={1,1,1,0,1,0,0,0,0,1,0,1,0,0,0,1};
-      const int polym12[]={1,0,1,0,1,0,0,0,1,0,1,1,0,1,1,1};
-
-      // Short polynomials
-      const int polys01[]={1,1,0,1,0,1,0,0,0,0,0,0,0,0,1};
-      const int polys02[]={1,0,0,0,0,0,1,0,1,0,0,1,0,0,1};
-      const int polys03[]={1,1,1,0,0,0,1,0,0,1,1,0,0,0,1};
-      const int polys04[]={1,0,0,0,1,0,0,1,1,0,1,0,1,0,1};
-      const int polys05[]={1,0,1,0,1,0,1,0,1,1,0,1,0,1,1};
-      const int polys06[]={1,0,0,1,0,0,0,1,1,1,0,0,0,1,1};
-      const int polys07[]={1,0,1,0,0,1,1,1,0,0,1,1,0,1,1};
-      const int polys08[]={1,0,0,0,0,1,0,0,1,1,1,1,0,0,1};
-      const int polys09[]={1,1,1,1,0,0,0,0,0,1,1,0,0,0,1};
-      const int polys10[]={1,0,0,1,0,0,1,0,0,1,0,1,1,0,1};
-      const int polys11[]={1,0,0,0,1,0,0,0,0,0,0,1,1,0,1};
-      const int polys12[]={1,1,1,1,0,1,1,1,1,0,1,0,0,1,1};
-
-      int len;
-      int polyout[2][200];
-
-      len = poly_mult(polyn01, 17, polyn02,    17,  polyout[0]);
-      len = poly_mult(polyn03, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn04, 17, polyout[1], len, polyout[0]);
-      len = poly_mult(polyn05, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn06, 17, polyout[1], len, polyout[0]);
-      len = poly_mult(polyn07, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn08, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_8, 128);
-
-      len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn10, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_10, 160);
-
-      len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_12, 192);
-
-      len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
-      len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys04, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys05, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys06, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys07, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys08, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys09, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys10, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys11, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys12, 15, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_s_12, 168);
-
-      len = poly_mult(polym01, 16, polym02,    16,  polyout[0]);
-      len = poly_mult(polym03, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym04, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym05, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym06, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym07, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym08, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym09, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym10, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_m_12, 180);
     }
 
     int
