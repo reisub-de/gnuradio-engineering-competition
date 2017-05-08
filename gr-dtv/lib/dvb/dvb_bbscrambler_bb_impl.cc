@@ -96,116 +96,116 @@ namespace gr {
 		  
 		  
 		  
-        switch (rate) {
-          case C1_4:
-            kbch = 16008;
-            break;
-          case C1_3:
-            kbch = 21408;
-            break;
-          case C2_5:
-            kbch = 25728;
-            break;
-          case C1_2:
-            kbch = 32208;
-            break;
-          case C3_5:
-            kbch = 38688;
-            break;
-          case C2_3:
-            kbch = 43040;
-            break;
-          case C3_4:
-            kbch = 48408;
-            break;
-          case C4_5:
-            kbch = 51648;
-            break;
-          case C5_6:
-            kbch = 53840;
-            break;
-          case C8_9:
-            kbch = 57472;
-            break;
-          case C9_10:
-            kbch = 58192;
-            break;
-          case C2_9_VLSNR:
-            kbch = 14208;
-            break;
-          case C13_45:
-            kbch = 18528;
-            break;
-          case C9_20:
-            kbch = 28968;
-            break;
-          case C90_180:
-            kbch = 32208;
-            break;
-          case C96_180:
-            kbch = 34368;
-            break;
-          case C11_20:
-            kbch = 35448;
-            break;
-          case C100_180:
-            kbch = 35808;
-            break;
-          case C104_180:
-            kbch = 37248;
-            break;
-          case C26_45:
-            kbch = 37248;
-            break;
-          case C18_30:
-            kbch = 38688;
-            break;
-          case C28_45:
-            kbch = 40128;
-            break;
-          case C23_36:
-            kbch = 41208;
-            break;
-          case C116_180:
-            kbch = 41568;
-            break;
-          case C20_30:
-            kbch = 43008;
-            break;
-          case C124_180:
-            kbch = 44448;
-            break;
-          case C25_36:
-            kbch = 44808;
-            break;
-          case C128_180:
-            kbch = 45888;
-            break;
-          case C13_18:
-            kbch = 46608;
-            break;
-          case C132_180:
-            kbch = 47328;
-            break;
-          case C22_30:
-            kbch = 47328;
-            break;
-          case C135_180:
-            kbch = 48408;
-            break;
-          case C140_180:
-            kbch = 50208;
-            break;
-          case C7_9:
-            kbch = 50208;
-            break;
-          case C154_180:
-            kbch = 55248;
-            break;
-          default:
-            kbch = 0;
-            break;
-        }
+        // switch (rate) {
+          // case C1_4:
+            // kbch = 16008;
+            // break;
+          // case C1_3:
+            // kbch = 21408;
+            // break;
+          // case C2_5:
+            // kbch = 25728;
+            // break;
+          // case C1_2:
+            // kbch = 32208;
+            // break;
+          // case C3_5:
+            // kbch = 38688;
+            // break;
+          // case C2_3:
+            // kbch = 43040;
+            // break;
+          // case C3_4:
+            // kbch = 48408;
+            // break;
+          // case C4_5:
+            // kbch = 51648;
+            // break;
+          // case C5_6:
+            // kbch = 53840;
+            // break;
+          // case C8_9:
+            // kbch = 57472;
+            // break;
+          // case C9_10:
+            // kbch = 58192;
+            // break;
+          // case C2_9_VLSNR:
+            // kbch = 14208;
+            // break;
+          // case C13_45:
+            // kbch = 18528;
+            // break;
+          // case C9_20:
+            // kbch = 28968;
+            // break;
+          // case C90_180:
+            // kbch = 32208;
+            // break;
+          // case C96_180:
+            // kbch = 34368;
+            // break;
+          // case C11_20:
+            // kbch = 35448;
+            // break;
+          // case C100_180:
+            // kbch = 35808;
+            // break;
+          // case C104_180:
+            // kbch = 37248;
+            // break;
+          // case C26_45:
+            // kbch = 37248;
+            // break;
+          // case C18_30:
+            // kbch = 38688;
+            // break;
+          // case C28_45:
+            // kbch = 40128;
+            // break;
+          // case C23_36:
+            // kbch = 41208;
+            // break;
+          // case C116_180:
+            // kbch = 41568;
+            // break;
+          // case C20_30:
+            // kbch = 43008;
+            // break;
+          // case C124_180:
+            // kbch = 44448;
+            // break;
+          // case C25_36:
+            // kbch = 44808;
+            // break;
+          // case C128_180:
+            // kbch = 45888;
+            // break;
+          // case C13_18:
+            // kbch = 46608;
+            // break;
+          // case C132_180:
+            // kbch = 47328;
+            // break;
+          // case C22_30:
+            // kbch = 47328;
+            // break;
+          // case C135_180:
+            // kbch = 48408;
+            // break;
+          // case C140_180:
+            // kbch = 50208;
+            // break;
+          // case C7_9:
+            // kbch = 50208;
+            // break;
+          // case C154_180:
+            // kbch = 55248;
+            // break;
+          // default:
+            // kbch = 0;
+            // break;
+        // }
       }
       else if (framesize == FECFRAME_SHORT) {
         switch (rate) {
