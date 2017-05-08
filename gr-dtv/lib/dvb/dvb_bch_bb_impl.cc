@@ -594,8 +594,8 @@ namespace gr {
       unsigned int shift[6];
       int consumed = 0;
 
-      switch (bch_code) {
-        case BCH_CODE_N12:
+      //switch (bch_code) {
+        //case BCH_CODE_N12:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
@@ -621,7 +621,7 @@ namespace gr {
               reg_6_shift(shift);
             }
           }
-          break;
+        /*  break;
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
@@ -727,7 +727,7 @@ namespace gr {
             }
           }
           break;
-      }
+      }*/
 
       // Tell runtime system how many input items we consumed on
       // each input stream.
