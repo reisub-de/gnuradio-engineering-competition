@@ -2768,9 +2768,9 @@ namespace gr {
             }
           }
           out -= ofdm_fft_size;
-          if (equalization_enable == EQUALIZATION_ON) {
+          /*if (equalization_enable == EQUALIZATION_ON) {
             volk_32fc_x2_multiply_32fc(out, out, inverse_sinc, ofdm_fft_size);
-          }
+          }*/
           dst = ofdm_fft->get_inbuf();
           memcpy(&dst[ofdm_fft_size / 2], &out[0], sizeof(gr_complex) * ofdm_fft_size / 2);
           memcpy(&dst[0], &out[ofdm_fft_size / 2], sizeof(gr_complex) * ofdm_fft_size / 2);
