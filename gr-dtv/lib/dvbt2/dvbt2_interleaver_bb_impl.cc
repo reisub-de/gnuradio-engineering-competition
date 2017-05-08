@@ -396,10 +396,10 @@ namespace gr {
               c16 = &tempv[rows * 15];
 
 			  //Should be faster, based on http://nadeausoftware.com/articles/2012/05/c_c_tip_how_copy_memory_quickly .
-              // for (int k = 0; k < nbch; k++) {
-                // tempu[k] = *in++;
-              // }
-			  memcpy(tempu,in,nbch);
+               for (int k = 0; k < nbch; k++) {
+                 tempu[k] = *in++;
+               }
+			  //memcpy(tempu,in,nbch);
 			  
 			  
 			  //Not sure if there is any benefit, but maybe the loop can be better optimized.
