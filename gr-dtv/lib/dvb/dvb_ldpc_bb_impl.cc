@@ -616,16 +616,16 @@ for (int row = 0; row < ROWS; row++) { \
       int puncture, index;
 
       for (int i = 0; i < noutput_items; i += frame_size) {
-        if (Xs != 0) {
+        /*if (Xs != 0) {
           s = &shortening_buffer[0];
           memset(s, 0, sizeof(unsigned char) * Xs);
           memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
           d = s;
-        }
-        if (P != 0) {
+        }*/
+        /*if (P != 0) {
           p = &puncturing_buffer[nbch];
           b = &out[i + nbch];
-        }
+        }*/
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
         for (int j = 0; j < (int)nbch; j++) {
