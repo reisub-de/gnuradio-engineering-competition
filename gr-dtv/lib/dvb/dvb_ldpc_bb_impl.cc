@@ -615,7 +615,7 @@ for (int row = 0; row < ROWS; row++) { \
       int consumed = 0;
       int puncture, index;
 
-      for (register int i = 0; i < noutput_items; i += frame_size) {
+      for (int i = 0; i < noutput_items; i += frame_size) {
         if (Xs != 0) {
           s = &shortening_buffer[0];
           memset(s, 0, sizeof(unsigned char) * Xs);
@@ -636,7 +636,7 @@ for (int row = 0; row < ROWS; row++) { \
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
         }
-        if (P != 0) {
+        /*if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
             p[j] = 0x55;
@@ -652,8 +652,8 @@ for (int row = 0; row < ROWS; row++) { \
             }
           }
           p = &out[nbch];
-        }
-        for (register int j = 1; j < (plen - Xp); j++) {
+        }*/
+        for (int j = 1; j < (plen - Xp); j++) {
           p[j] ^= p[j-1];
         }
         // DVBT2 does not use 128APSK mod by Enigma
