@@ -176,7 +176,7 @@ namespace gr {
       const int *twist;
       const int *mux;
 
-      /*switch (signal_constellation) {
+      switch (signal_constellation) {
         case MOD_QPSK:
           for (int i = 0; i < noutput_items; i += packed_items) {
             rows = frame_size / 2;
@@ -361,7 +361,7 @@ namespace gr {
             }
           }
           break;
-        case MOD_256QAM:*/
+        case MOD_256QAM:
           //if (frame_size == FRAME_SIZE_NORMAL) {
             //if (code_rate == C3_5) {
               mux = &mux256_35[0];
@@ -508,8 +508,8 @@ namespace gr {
               }
             }
           }*/
-          //break;
-      //}
+          break;
+      }
 
       // Tell runtime system how many input items we consumed on
       // each input stream.
