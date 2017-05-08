@@ -489,7 +489,7 @@ namespace gr {
       unsigned char b;
 
       for (int i = 0; i < noutput_items; i += kbch) {
-        if (frame_size != FECFRAME_MEDIUM) {
+        //if (frame_size != FECFRAME_MEDIUM) {
           if (fec_block == 0 && inband_type_b == TRUE) {
             padding = 104;
           }
@@ -499,7 +499,7 @@ namespace gr {
           add_bbheader(&out[offset], count, padding, TRUE);
           offset = offset + 80;
 
-          if (input_mode == INPUTMODE_HIEFF) {
+          //if (input_mode == INPUTMODE_HIEFF) {
             for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
               if (count == 0) {
                 if (*in != 0x47) {
@@ -521,7 +521,7 @@ namespace gr {
               add_inband_type_b(&out[offset], ts_rate);
               offset = offset + 104;
             }
-          }
+          /*}
           else {
             for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
               if (count == 0) {
@@ -546,11 +546,11 @@ namespace gr {
               add_inband_type_b(&out[offset], ts_rate);
               offset = offset + 104;
             }
-          }
+          }*/
           if (inband_type_b == TRUE) {
             fec_block = (fec_block + 1) % fec_blocks;
           }
-        }
+        /*}
         else {
           padding = 0;
           add_bbheader(&out[offset], count, padding, nibble);
@@ -584,7 +584,7 @@ namespace gr {
               nibble = TRUE;
             }
           }
-        }
+        }*/
       }
 
       // Tell runtime system how many input items we consumed on
