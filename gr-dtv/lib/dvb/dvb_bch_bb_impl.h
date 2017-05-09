@@ -23,6 +23,7 @@
 
 #include <gnuradio/dtv/dvb_bch_bb.h>
 #include "dvb_defines.h"
+#include <vector>
 
 namespace gr {
   namespace dtv {
@@ -33,13 +34,23 @@ namespace gr {
       unsigned int kbch;
       unsigned int nbch;
       unsigned int bch_code;
+      // Polynomial product
       unsigned int m_poly_n_8[4];
       unsigned int m_poly_n_10[5];
       unsigned int m_poly_n_12[6];
       unsigned int m_poly_s_12[6];
       unsigned int m_poly_m_12[6];
-      void conv_multi_thread(const int*, const int, const int*, const int, int* const);
-      int mod_multi_thread(const int, const int, int* const);
+      // // Multi-threading element
+      // std::vector<pthread_t> thread_pool;
+      // std::vector<sem_t>  sem_pool;
+      // // function handle
+      // void *product_sum(void *data);
+
+      // // Multi-Thread member function
+      // void conv_multi_thread(const int*, const int, const int*, const int, int* const);
+      // int mod_multi_thread(const int, const int, int* const);
+
+      // Class member function
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
       void poly_reverse(int*, int*, int);
