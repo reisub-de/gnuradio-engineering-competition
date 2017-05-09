@@ -38,6 +38,8 @@ namespace gr {
       unsigned int m_poly_n_12[6];
       unsigned int m_poly_s_12[6];
       unsigned int m_poly_m_12[6];
+      void conv_multi_thread(const int*, const int, const int*, const int, int* const);
+      int mod_multi_thread(const int, const int, int* const);
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
       void poly_reverse(int*, int*, int);

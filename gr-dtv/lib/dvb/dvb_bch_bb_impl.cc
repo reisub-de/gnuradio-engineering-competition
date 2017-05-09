@@ -388,6 +388,16 @@ namespace gr {
       ninput_items_required[0] = (noutput_items / nbch) * kbch;
     }
 
+    // Use the multithreading acceleration
+    void 
+    conv_multi_thread(const int* ina, const int lena, const int* inb, const int lenb, int* const out)
+    {}
+
+    int 
+    mod_multi_thread(const int lena, const int lenb, int* const out)
+    {
+      return 1;
+    }
     /*
      * Polynomial calculation routines
      * multiply polynomials
