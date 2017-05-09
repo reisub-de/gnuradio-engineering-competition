@@ -24,8 +24,8 @@ class vv002_cr35l(gr.top_block):
         ##################################################
         # Variables
         ##################################################
-        self.output_file = output_file = "gr_tp19.dat"
-        self.input_file = input_file = "tp1.ts"
+        self.output_file = output_file = "/home/tom/competition/tools/gr_tp19.dat"
+        self.input_file = input_file = "/home/tom/competition/tools/tp1.ts"
 
         ##################################################
         # Blocks

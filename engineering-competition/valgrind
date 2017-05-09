@@ -1,0 +1,56 @@
+- Compile GNURadio with Debug flags: [https://gnuradio.org/doc/doxygen/build_guide.html][https://wiki.gnuradio.org/index.php/UbuntuInstall]
+  go to ./gnuradio
+  mkdir build
+  cd build
+  cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo ../
+  sudo make install -j 5 [Cores + 1 for maximum performance?]
+
+- create setup env script with: [paths have to be corrected depending on linux distro.]
+#!/bin/sh
+LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH
+PYTHONPATH=/usr/local/lib/python2.7/site-packages:$PYTHONPATH
+export PYTHONPATH
+
+- source script:
+source set_env.sh
+
+http://stackoverflow.com/questions/9529969/profiling-c-python-swig
+https://baptiste-wicht.com/posts/2011/09/profile-c-application-with-callgrind-kcachegrind.html
+http://blog.audio-tk.com/2009/04/07/profiling-with-valgrind/
+
+- install valgrind, kcachegrind, graphviz:
+[on Arch/Manjaro]: pacman -S valgrind kcachegrind graphviz
+[on Ubuntu/Debian]: probably apt-get install valgrind kcachegrind graphviz [not tested]
+
+- ensure that the correct path in vv002_cr35 is set [absolute path for in/output_file]:
+self.output_file = output_file = "/home/tom/competition/tools/gr_tp19.dat"
+self.input_file = input_file = "/home/tom/competition/tools/tp1.ts"
+
+- execute valgrind:
+  cd gnuradio
+  valgrind --tool=callgrind --dump-instr=yes --simulate-cache=yes --collect-jumps=yes python2.7 './vv002_cr35l.py'
+
+- open kcachegrind
+goto settings, configure kcachegrind, annotations to load source files if wanted [does nothing? Which folder to add?]
+choose cycle estimation
+
+RESULTS: [cycle estimation]
+22.6% Time in dvb_ldpc_bb_impl.cc
+16.3% Time in dvbt2_interleaver_bb_impl.cc
+13.8% Time in dvb_bch_bb_impl.cc
+
+
+Most expensive lines:
+ldpc:
+loop around 637 has basically all the workload
+
+interleaver:
+loop around 401/402 has a small load
+loop around 414 has a small load
+loop around 429 has a slightly bigger load
+loop around 441 has a slightly bigger load
+loop around 469/471 has a slightly bigger load
+
+bch:
+between 600 and 623, esp. function reg_6_shift
