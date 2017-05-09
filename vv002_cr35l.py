@@ -84,11 +84,11 @@ def main(top_block_cls=vv002_cr35l, options=None):
     tb.start()
     tb.wait()
 
-    print tb.dtv_dvbt2_pilotgenerator_cc_0.pc_work_time_total()
-    print tb.dtv_dvbt2_interleaver_bb_0.pc_work_time_total()
-    print tb.dtv_dvbt2_freqinterleaver_cc_0.pc_work_time_total()
-    print tb.dtv_dvb_ldpc_bb_0.pc_work_time_total()
-    print tb.dtv_dvb_bch_bb_0.pc_work_time_total()
+    print "pilotgenerator runtime is: ", tb.dtv_dvbt2_pilotgenerator_cc_0.pc_work_time_total()
+    print "interleaver runtime is: ", tb.dtv_dvbt2_interleaver_bb_0.pc_work_time_total()
+    print "freqinterleaver runtime is: ", tb.dtv_dvbt2_freqinterleaver_cc_0.pc_work_time_total()
+    print "ldpc runtime is: ", tb.dtv_dvb_ldpc_bb_0.pc_work_time_total()
+    print "bch runtime is: ", tb.dtv_dvb_bch_bb_0.pc_work_time_total()
 
 
 if __name__ == '__main__':
