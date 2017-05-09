@@ -196,9 +196,8 @@ namespace gr {
       gr_complex *out = (gr_complex *) output_items[0];
       const unsigned char *in_delay;
       int index, index_delay;
-
-      switch (signal_constellation) {
-        case MOD_QPSK:
+	  if(signal_constellation < 2){
+        if(signal_constellation == 0){
           for (int i = 0; i < noutput_items; i += cell_size) {
             if (cyclic_delay == FALSE) {
               for (int j = 0; j < cell_size; j++) {
@@ -216,8 +215,8 @@ namespace gr {
               }
             }
           }
-          break;
-        case MOD_16QAM:
+		}
+		else{
           for (int i = 0; i < noutput_items; i += cell_size) {
             if (cyclic_delay == FALSE) {
               for (int j = 0; j < cell_size; j++) {
@@ -235,8 +234,10 @@ namespace gr {
               }
             }
           }
-          break;
-        case MOD_64QAM:
+		}
+	  }
+	  else{
+        if(signal_constellation == 2){
           for (int i = 0; i < noutput_items; i += cell_size) {
             if (cyclic_delay == FALSE) {
               for (int j = 0; j < cell_size; j++) {
@@ -254,8 +255,8 @@ namespace gr {
               }
             }
           }
-          break;
-        case MOD_256QAM:
+		}
+        else{
           for (int i = 0; i < noutput_items; i += cell_size) {
             if (cyclic_delay == FALSE) {
               for (int j = 0; j < cell_size; j++) {
@@ -273,7 +274,8 @@ namespace gr {
               }
             }
           }
-          break;
+		}
+		  
       }
 
       // Tell runtime system how many input items we consumed on

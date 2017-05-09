@@ -634,41 +634,63 @@ namespace gr {
       else {
         shift = dx * ((symbol + (K_EXT / dx)) % dy);
       }
-      switch (fft_size) {
-        case FFTSIZE_1K:
-          for (int i = 0; i < 10; i++) {
-            data_carrier_map[tr_papr_map_1k[i] + shift] = TRPAPR_CARRIER;
-          }
-          break;
-        case FFTSIZE_2K:
-          for (int i = 0; i < 18; i++) {
-            data_carrier_map[tr_papr_map_2k[i] + shift] = TRPAPR_CARRIER;
-          }
-          break;
-        case FFTSIZE_4K:
-          for (int i = 0; i < 36; i++) {
-            data_carrier_map[tr_papr_map_4k[i] + shift] = TRPAPR_CARRIER;
-          }
-          break;
-        case FFTSIZE_8K:
-        case FFTSIZE_8K_T2GI:
-          for (int i = 0; i < 72; i++) {
-            data_carrier_map[tr_papr_map_8k[i] + shift] = TRPAPR_CARRIER;
-          }
-          break;
-        case FFTSIZE_16K:
-        case FFTSIZE_16K_T2GI:
-          for (int i = 0; i < 144; i++) {
-            data_carrier_map[tr_papr_map_16k[i] + shift] = TRPAPR_CARRIER;
-          }
-          break;
-        case FFTSIZE_32K:
-        case FFTSIZE_32K_T2GI:
-          for (int i = 0; i < 288; i++) {
-            data_carrier_map[tr_papr_map_32k[i] + shift] = TRPAPR_CARRIER;
-          }
-          break;
-      }
+	  
+		// enum dvbt2_fftsize_t {
+		  // FFTSIZE_2K = 0,
+		  // FFTSIZE_8K,
+		  // FFTSIZE_4K,
+		  // FFTSIZE_1K,
+		  // FFTSIZE_16K,
+		  // FFTSIZE_32K,
+		  // FFTSIZE_8K_T2GI,
+		  // FFTSIZE_32K_T2GI,
+		  // FFTSIZE_16K_T2GI = 11,
+		// };
+	  
+	  
+	  if(fft_size < 4){
+		  if(fft_size < 2){
+			  if(fft_size == 0){
+				//FFTSIZE_2K
+				for (int i = 0; i < 18; i++) {
+					data_carrier_map[tr_papr_map_2k[i] + shift] = TRPAPR_CARRIER;
+				}
+			  }
+		  }else{
+			  if(fft_size == 2){
+				//FFTSIZE_4K
+				for (int i = 0; i < 36; i++) {
+					data_carrier_map[tr_papr_map_4k[i] + shift] = TRPAPR_CARRIER;
+				}
+			  }
+			  else{
+				//FFTSIZE_1K
+				for (int i = 0; i < 10; i++) {
+					data_carrier_map[tr_papr_map_1k[i] + shift] = TRPAPR_CARRIER;
+				}
+			  }
+		  }
+	  }else{
+			if(fft_size == 11){
+				//FFTSIZE_16K_T2GI
+				for (int i = 0; i < 144; i++) {
+					data_carrier_map[tr_papr_map_16k[i] + shift] = TRPAPR_CARRIER;
+				}
+			}
+			else if(fft_size == 7){
+				//FFTSIZE_32K_T2GI
+				for (int i = 0; i < 288; i++) {
+					data_carrier_map[tr_papr_map_32k[i] + shift] = TRPAPR_CARRIER;
+				}
+			}
+			else if(fft_size == 6){
+				//FFTSIZE_8K_T2GI
+				for (int i = 0; i < 72; i++) {
+					data_carrier_map[tr_papr_map_8k[i] + shift] = TRPAPR_CARRIER;
+				}
+			}
+		}
+	
     }
 
     int

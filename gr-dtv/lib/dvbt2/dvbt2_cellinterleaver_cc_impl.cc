@@ -51,93 +51,109 @@ namespace gr {
       int logic14[6] = {0, 1, 4, 5, 9, 11};
       int logic15[4] = {0, 1, 2, 12};
       int *logic;
+	  
+		// enum dvb_constellation_t {
+			// MOD_QPSK = 0,
+			// MOD_16QAM,
+			// MOD_64QAM,
+			// MOD_256QAM,
+			// MOD_8PSK,
+			// MOD_8APSK,
+			// MOD_16APSK,
+			// MOD_8_8APSK,
+			// MOD_32APSK,
+			// MOD_4_12_16APSK,
+			// MOD_4_8_4_16APSK,
+			// MOD_64APSK,
+			// MOD_8_16_20_20APSK,
+			// MOD_4_12_20_28APSK,
+			// MOD_128APSK,
+			// MOD_256APSK,
+			// MOD_BPSK,
+			// MOD_BPSK_SF2,
+			// MOD_8VSB,
+			// MOD_OTHER,
+		// };
       if (framesize == FECFRAME_NORMAL) {
-        switch (constellation) {
-          case MOD_QPSK:
-            cell_size = 32400;
-            pn_degree = 15;
-            pn_mask = 0x3fff;
-            max_states = 32768;
-            logic = &logic15[0];
-            xor_size = 4;
-            break;
-          case MOD_16QAM:
-            cell_size = 16200;
-            pn_degree = 14;
-            pn_mask = 0x1fff;
-            max_states = 16384;
-            logic = &logic14[0];
-            xor_size = 6;
-            break;
-          case MOD_64QAM:
-            cell_size = 10800;
-            pn_degree = 14;
-            pn_mask = 0x1fff;
-            max_states = 16384;
-            logic = &logic14[0];
-            xor_size = 6;
-            break;
-          case MOD_256QAM:
-            cell_size = 8100;
-            pn_degree = 13;
-            pn_mask = 0xfff;
-            max_states = 8192;
-            logic = &logic13[0];
-            xor_size = 4;
-            break;
-          default:
-            cell_size = 32400;
-            pn_degree = 15;
-            pn_mask = 0x3fff;
-            max_states = 32768;
-            logic = &logic15[0];
-            xor_size = 4;
-            break;
-        }
+		  if((constellation >1) && (constellation <4)){
+			if(constellation == 3){
+				//MOD_256QAM
+				cell_size = 8100;
+				pn_degree = 13;
+				pn_mask = 0xfff;
+				max_states = 8192;
+				logic = &logic13[0];
+				xor_size = 4;
+			}else{
+				//MOD_64QAM
+				cell_size = 10800;
+				pn_degree = 14;
+				pn_mask = 0x1fff;
+				max_states = 16384;
+				logic = &logic14[0];
+				xor_size = 6;
+			}
+		  }
+		  else{
+			if(constellation == 1){
+				//MOD_16QAM
+				cell_size = 16200;
+				pn_degree = 14;
+				pn_mask = 0x1fff;
+				max_states = 16384;
+				logic = &logic14[0];
+				xor_size = 6;
+			}else{
+				//default MOD_QPSK
+				cell_size = 32400;
+				pn_degree = 15;
+				pn_mask = 0x3fff;
+				max_states = 32768;
+				logic = &logic15[0];
+				xor_size = 4;
+			}
+		  }
       }
       else {
-        switch (constellation) {
-          case MOD_QPSK:
-            cell_size = 8100;
-            pn_degree = 13;
-            pn_mask = 0xfff;
-            max_states = 8192;
-            logic = &logic13[0];
-            xor_size = 4;
-            break;
-          case MOD_16QAM:
-            cell_size = 4050;
-            pn_degree = 12;
-            pn_mask = 0x7ff;
-            max_states = 4096;
-            logic = &logic12[0];
-            xor_size = 2;
-            break;
-          case MOD_64QAM:
-            cell_size = 2700;
-            pn_degree = 12;
-            pn_mask = 0x7ff;
-            max_states = 4096;
-            logic = &logic12[0];
-            xor_size = 2;
-            break;
-          case MOD_256QAM:
-            cell_size = 2025;
-            pn_degree = 11;
-            pn_mask = 0x3ff;
-            max_states = 2048;
-            logic = &logic11[0];
-            xor_size = 2;
-            break;
-          default:
-            cell_size = 8100;
-            pn_degree = 13;
-            pn_mask = 0xfff;
-            max_states = 8192;
-            logic = &logic13[0];
-            xor_size = 4;
-            break;
-        }
+		  if((constellation >1) && (constellation <4)){
+			if(constellation == 3){
+				//MOD_256QAM
+				cell_size = 2025;
+				pn_degree = 11;
+				pn_mask = 0x3ff;
+				max_states = 2048;
+				logic = &logic11[0];
+				xor_size = 2;
+			}else{
+				//MOD_64QAM
+				cell_size = 2700;
+				pn_degree = 12;
+				pn_mask = 0x7ff;
+				max_states = 4096;
+				logic = &logic12[0];
+				xor_size = 2;
+			}
+		  }
+		  else{
+			if(constellation == 1){
+				//MOD_16QAM
+				cell_size = 4050;
+				pn_degree = 12;
+				pn_mask = 0x7ff;
+				max_states = 4096;
+				logic = &logic12[0];
+				xor_size = 2;
+			}else{
+				//default MOD_QPSK
+				cell_size = 8100;
+				pn_degree = 13;
+				pn_mask = 0xfff;
+				max_states = 8192;
+				logic = &logic13[0];
+				xor_size = 4;
+			}
+		  }
+
       }
       for (int i = 0; i < max_states; i++) {
         if (i == 0 || i == 1) {

@@ -176,8 +176,8 @@ namespace gr {
       const int *twist;
       const int *mux;
 
-      switch (signal_constellation) {
-        case MOD_QPSK:
+      if(signal_constellation<2) {
+		  if(signal_constellation == 0){
           for (int i = 0; i < noutput_items; i += packed_items) {
             rows = frame_size / 2;
             if (code_rate == C1_3 || code_rate == C2_5) {
@@ -204,8 +204,8 @@ namespace gr {
               }
             }
           }
-          break;
-        case MOD_16QAM:
+		  }
+        else{
           if (frame_size == FRAME_SIZE_NORMAL) {
             twist = &twist16n[0];
           }
@@ -278,8 +278,10 @@ namespace gr {
               consumed += (mod * 2);
             }
           }
-          break;
-        case MOD_64QAM:
+		}
+	  }
+	  else{
+        if(signal_constellation==2){
           if (frame_size == FRAME_SIZE_NORMAL) {
             twist = &twist64n[0];
           }
@@ -362,8 +364,8 @@ namespace gr {
               consumed += (mod * 2);
             }
           }
-          break;
-        case MOD_256QAM:
+		}
+		else{
           if (frame_size == FRAME_SIZE_NORMAL) {
             if (code_rate == C3_5) {
               mux = &mux256_35[0];
@@ -547,8 +549,9 @@ namespace gr {
               }
             }
           }
-          break;
+		}
       }
+	
 
       // Tell runtime system how many input items we consumed on
       // each input stream.
@@ -557,6 +560,7 @@ namespace gr {
       // Tell runtime system how many output items we produced.
       return noutput_items;
     }
+
 
     const int dvbt2_interleaver_bb_impl::twist16n[8] =
     {
