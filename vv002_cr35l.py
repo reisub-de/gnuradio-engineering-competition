@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Vv002 Cr35L
-# Generated: Mon Mar 13 09:09:58 2017
+# Generated: Tue May  9 08:26:17 2017
 ##################################################
 
 from gnuradio import blocks
@@ -84,12 +84,11 @@ def main(top_block_cls=vv002_cr35l, options=None):
     tb.start()
     tb.wait()
 
-    # Add performance counter
-    tb.dtv_dvbt2_pilotgenerator_cc_0.pc_work_time_total()
-    tb.dtv_dvbt2_interleaver_bb_0.pc_work_time_total()
-    tb.dtv_dvbt2_freqinterleaver_cc_0.pc_work_time_total()
-    tb.dtv_dvb_ldpc_bb_0.pc_work_time_total()
-    tb.dtv_dvb_bch_bb_0.pc_work_time_total()
+    print tb.dtv_dvbt2_pilotgenerator_cc_0.pc_work_time_total()
+    print tb.dtv_dvbt2_interleaver_bb_0.pc_work_time_total()
+    print tb.dtv_dvbt2_freqinterleaver_cc_0.pc_work_time_total()
+    print tb.dtv_dvb_ldpc_bb_0.pc_work_time_total()
+    print tb.dtv_dvb_bch_bb_0.pc_work_time_total()
 
 
 if __name__ == '__main__':

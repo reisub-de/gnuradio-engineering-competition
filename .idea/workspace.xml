@@ -1,0 +1,2037 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true" buildAllGenerated="true">
+    <generated>
+      <config projectName="gnuradio" targetName="_dtv_swig" />
+      <config projectName="gnuradio" targetName="gnuradio-vocoder" />
+      <config projectName="gnuradio" targetName="trellis_generated_includes" />
+      <config projectName="gnuradio" targetName="filter_swig_gr_filter_swig_2b734" />
+      <config projectName="gnuradio" targetName="pmt_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="pygen_gr_dtv_python_dtv_b1828" />
+      <config projectName="gnuradio" targetName="volk" />
+      <config projectName="gnuradio" targetName="pygen_grc_scripts_d87c8" />
+      <config projectName="gnuradio" targetName="blocks_generated_includes" />
+      <config projectName="gnuradio" targetName="pygen_gr_pager_apps_13667" />
+      <config projectName="gnuradio" targetName="dial_tone" />
+      <config projectName="gnuradio" targetName="_blocks_swig10_swig_tag" />
+      <config projectName="gnuradio" targetName="wavelet_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="test-gr-blocks" />
+      <config projectName="gnuradio" targetName="gnuradio-digital" />
+      <config projectName="gnuradio" targetName="_pager_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gnuradio_runtime_python_gnuradio_gr_a25c7" />
+      <config projectName="gnuradio" targetName="pygen_gr_dtv_swig_80d47" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_b160d" />
+      <config projectName="gnuradio" targetName="gnuradio-runtime" />
+      <config projectName="gnuradio" targetName="gnuradio-blocks" />
+      <config projectName="gnuradio" targetName="pygen_gr_qtgui_examples_1fde7" />
+      <config projectName="gnuradio" targetName="runtime_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="blocks_swig7_gr_blocks_swig_a6e57" />
+      <config projectName="gnuradio" targetName="pygen_gr_wxgui_grc_45aad" />
+      <config projectName="gnuradio" targetName="pygen_gnuradio_runtime_examples_network_2420e" />
+      <config projectName="gnuradio" targetName="gnuradio-dtv" />
+      <config projectName="gnuradio" targetName="_digital_swig0_swig_tag" />
+      <config projectName="gnuradio" targetName="blocks_swig3_gr_blocks_swig_a6e57" />
+      <config projectName="gnuradio" targetName="pygen_gnuradio_runtime_python_gnuradio_ad2cd" />
+      <config projectName="gnuradio" targetName="pygen_gnuradio_runtime_swig_02ef7" />
+      <config projectName="gnuradio" targetName="_blocks_swig2_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_utils_python_modtool_9d77f" />
+      <config projectName="gnuradio" targetName="_wavelet_swig" />
+      <config projectName="gnuradio" targetName="pmt_swig_gnuradio_runtime_swig_7dd5e" />
+      <config projectName="gnuradio" targetName="pygen_gr_fft_python_fft_b9333" />
+      <config projectName="gnuradio" targetName="pygen_gnuradio_runtime_python_gnuradio_ctrlport_163b5" />
+      <config projectName="gnuradio" targetName="gnuradio-fec" />
+      <config projectName="gnuradio" targetName="blocks_swig10_swig_doc" />
+      <config projectName="gnuradio" targetName="_fft_swig" />
+      <config projectName="gnuradio" targetName="pygen_gr_vocoder_swig_dc56b" />
+      <config projectName="gnuradio" targetName="pygen_volk_python_volk_modtool_118d3" />
+      <config projectName="gnuradio" targetName="pygen_gr_utils_python_utils_5d7fc" />
+      <config projectName="gnuradio" targetName="gr_runtime_test" />
+      <config projectName="gnuradio" targetName="noaa_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="_trellis_swig1_swig_tag" />
+      <config projectName="gnuradio" targetName="blocks_swig7_swig_doc" />
+      <config projectName="gnuradio" targetName="_vocoder_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="gr_fec_rstest" />
+      <config projectName="gnuradio" targetName="blocks_swig9_swig_doc" />
+      <config projectName="gnuradio" targetName="test-gr-filter" />
+      <config projectName="gnuradio" targetName="gnuradio-channels" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_python_grc_gnuradio_3d151" />
+      <config projectName="gnuradio" targetName="pygen_grc_gui_b57fc" />
+      <config projectName="gnuradio" targetName="digital_swig0_swig_doc" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_examples_tags_5b5f8" />
+      <config projectName="gnuradio" targetName="blocks_swig4_gr_blocks_swig_a6e57" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_2a350" />
+      <config projectName="gnuradio" targetName="_pmt_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_f3230" />
+      <config projectName="gnuradio" targetName="pygen_gr_vocoder_examples_be32c" />
+      <config projectName="gnuradio" targetName="vocoder_swig_gr_vocoder_swig_e41bf" />
+      <config projectName="gnuradio" targetName="pygen_grc_7a7ae" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_a0c42" />
+      <config projectName="gnuradio" targetName="pygen_gr_wxgui_python_wxgui_648f0" />
+      <config projectName="gnuradio" targetName="pygen_gnuradio_runtime_python_gnuradio_gru_9ecfb" />
+      <config projectName="gnuradio" targetName="noaa_swig_gr_noaa_swig_6fd1f" />
+      <config projectName="gnuradio" targetName="pygen_gnuradio_runtime_swig_1e8de" />
+      <config projectName="gnuradio" targetName="pygen_gr_dtv_apps_588ab" />
+      <config projectName="gnuradio" targetName="fft_swig_gr_fft_swig_7c2a8" />
+      <config projectName="gnuradio" targetName="_trellis_swig1" />
+      <config projectName="gnuradio" targetName="_trellis_swig0" />
+      <config projectName="gnuradio" targetName="generate_codebook" />
+      <config projectName="gnuradio" targetName="pygen_gr_digital_python_digital_e78e8" />
+      <config projectName="gnuradio" targetName="trellis_swig1_swig_doc" />
+      <config projectName="gnuradio" targetName="_noaa_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_audio_python_audio_d5152" />
+      <config projectName="gnuradio" targetName="gnuradio-config-info" />
+      <config projectName="gnuradio" targetName="pygen_gr_dtv_examples_39217" />
+      <config projectName="gnuradio" targetName="gnuradio-qtgui" />
+      <config projectName="gnuradio" targetName="pygen_gr_digital_examples_128b3" />
+      <config projectName="gnuradio" targetName="_blocks_swig6_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_fft_swig_479a5" />
+      <config projectName="gnuradio" targetName="blocks_swig4_swig_doc" />
+      <config projectName="gnuradio" targetName="gnuradio-pmt" />
+      <config projectName="gnuradio" targetName="gnuradio-pager" />
+      <config projectName="gnuradio" targetName="_blocks_swig3" />
+      <config projectName="gnuradio" targetName="gnuradio-trellis" />
+      <config projectName="gnuradio" targetName="pygen_volk_python_volk_modtool_80cbe" />
+      <config projectName="gnuradio" targetName="pager_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="pygen_gr_qtgui_apps_96414" />
+      <config projectName="gnuradio" targetName="_blocks_swig3_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_channels_python_channels_a4491" />
+      <config projectName="gnuradio" targetName="analog_generated_includes" />
+      <config projectName="gnuradio" targetName="_wavelet_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="blocks_swig1_gr_blocks_swig_a6e57" />
+      <config projectName="gnuradio" targetName="_channels_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_trellis_python_trellis_48305" />
+      <config projectName="gnuradio" targetName="test_atsci" />
+      <config projectName="gnuradio" targetName="pygen_gr_digital_swig_28105" />
+      <config projectName="gnuradio" targetName="atsci_viterbi_gen" />
+      <config projectName="gnuradio" targetName="blocks_swig9_gr_blocks_swig_a6e57" />
+      <config projectName="gnuradio" targetName="_audio_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="trellis_swig1_gr_trellis_swig_30622" />
+      <config projectName="gnuradio" targetName="gnuradio-noaa" />
+      <config projectName="gnuradio" targetName="pygen_gr_qtgui_swig_5e588" />
+      <config projectName="gnuradio" targetName="test-gnuradio-pmt" />
+      <config projectName="gnuradio" targetName="atsc_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="_digital_swig2" />
+      <config projectName="gnuradio" targetName="_digital_swig1" />
+      <config projectName="gnuradio" targetName="_digital_swig0" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_2358e" />
+      <config projectName="gnuradio" targetName="gnuradio-wavelet" />
+      <config projectName="gnuradio" targetName="_blocks_swig9_swig_tag" />
+      <config projectName="gnuradio" targetName="analog_swig_gr_analog_swig_343b7" />
+      <config projectName="gnuradio" targetName="fec_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="_runtime_swig" />
+      <config projectName="gnuradio" targetName="pygen_gr_atsc_swig_d4b2d" />
+      <config projectName="gnuradio" targetName="pygen_gr_wavelet_swig_24ec8" />
+      <config projectName="gnuradio" targetName="volk_profile" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_examples_ctrlport_caa27" />
+      <config projectName="gnuradio" targetName="_digital_swig1_swig_tag" />
+      <config projectName="gnuradio" targetName="_qtgui_swig" />
+      <config projectName="gnuradio" targetName="fft_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="_analog_swig" />
+      <config projectName="gnuradio" targetName="_atsc_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_qtgui_apps_2db0f" />
+      <config projectName="gnuradio" targetName="channels_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="wxgui_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="pygen_gr_digital_examples_1a70e" />
+      <config projectName="gnuradio" targetName="pygen_gr_pager_python_pager_1f20f" />
+      <config projectName="gnuradio" targetName="pygen_gnuradio_runtime_python_gnuradio_ctrlport_6badf" />
+      <config projectName="gnuradio" targetName="digital_generated_includes" />
+      <config projectName="gnuradio" targetName="_atsc_swig" />
+      <config projectName="gnuradio" targetName="blocks_swig8_swig_doc" />
+      <config projectName="gnuradio" targetName="blocks_swig6_gr_blocks_swig_a6e57" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_e8b4f" />
+      <config projectName="gnuradio" targetName="pygen_gr_digital_python_grc_gnuradio_e53b3" />
+      <config projectName="gnuradio" targetName="_fft_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_noaa_python_noaa_fb1bc" />
+      <config projectName="gnuradio" targetName="pygen_gr_fec_swig_f3cde" />
+      <config projectName="gnuradio" targetName="uninstall" />
+      <config projectName="gnuradio" targetName="trellis_swig0_gr_trellis_swig_30622" />
+      <config projectName="gnuradio" targetName="digital_swig1_swig_doc" />
+      <config projectName="gnuradio" targetName="_audio_swig" />
+      <config projectName="gnuradio" targetName="_runtime_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_analog_python_analog_fe313" />
+      <config projectName="gnuradio" targetName="test-gnuradio-runtime" />
+      <config projectName="gnuradio" targetName="grc_generated_xml" />
+      <config projectName="gnuradio" targetName="test-gr-digital" />
+      <config projectName="gnuradio" targetName="_blocks_swig0_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_trellis_examples_python_ac871" />
+      <config projectName="gnuradio" targetName="_blocks_swig8" />
+      <config projectName="gnuradio" targetName="_blocks_swig7" />
+      <config projectName="gnuradio" targetName="_blocks_swig6" />
+      <config projectName="gnuradio" targetName="_blocks_swig5" />
+      <config projectName="gnuradio" targetName="_blocks_swig4" />
+      <config projectName="gnuradio" targetName="pygen_gr_pager_swig_69ba3" />
+      <config projectName="gnuradio" targetName="_blocks_swig2" />
+      <config projectName="gnuradio" targetName="_blocks_swig1" />
+      <config projectName="gnuradio" targetName="_blocks_swig0" />
+      <config projectName="gnuradio" targetName="pygen_grc_core_generator_34152" />
+      <config projectName="gnuradio" targetName="channels_swig_gr_channels_swig_733d0" />
+      <config projectName="gnuradio" targetName="pygen_gr_atsc_python_atsc_29efb" />
+      <config projectName="gnuradio" targetName="pager_swig_gr_pager_swig_b2a57" />
+      <config projectName="gnuradio" targetName="qtgui_swig_gr_qtgui_swig_59a4d" />
+      <config projectName="gnuradio" targetName="_blocks_swig7_swig_tag" />
+      <config projectName="gnuradio" targetName="wxgui_swig_gr_wxgui_swig_bfff2" />
+      <config projectName="gnuradio" targetName="blocks_swig5_swig_doc" />
+      <config projectName="gnuradio" targetName="pygen_gr_digital_swig_1efc5" />
+      <config projectName="gnuradio" targetName="gnuradio-atsc" />
+      <config projectName="gnuradio" targetName="volk-config-info" />
+      <config projectName="gnuradio" targetName="atsc_swig_gr_atsc_swig_4c1be" />
+      <config projectName="gnuradio" targetName="test_all" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_128e1" />
+      <config projectName="gnuradio" targetName="pygen_gr_audio_examples_python_35231" />
+      <config projectName="gnuradio" targetName="audio_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="_qtgui_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_6fbd0" />
+      <config projectName="gnuradio" targetName="pygen_gr_wavelet_python_wavelet_41961" />
+      <config projectName="gnuradio" targetName="pygen_gr_digital_swig_04b5a" />
+      <config projectName="gnuradio" targetName="pygen_gr_digital_python_digital_d1a86" />
+      <config projectName="gnuradio" targetName="gnuradio-filter" />
+      <config projectName="gnuradio" targetName="_fec_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_grc_core_utils_8d604" />
+      <config projectName="gnuradio" targetName="pygen_gr_fec_python_fec_10717" />
+      <config projectName="gnuradio" targetName="_wxgui_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_trellis_swig_23e90" />
+      <config projectName="gnuradio" targetName="pygen_gr_audio_swig_31f26" />
+      <config projectName="gnuradio" targetName="pygen_gr_trellis_swig_e7821" />
+      <config projectName="gnuradio" targetName="pygen_gr_channels_swig_481c6" />
+      <config projectName="gnuradio" targetName="pygen_gr_fec_python_fec_LDPC_275f2" />
+      <config projectName="gnuradio" targetName="pygen_gr_atsc_python_atsc_20edb" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_50aba" />
+      <config projectName="gnuradio" targetName="_vocoder_swig" />
+      <config projectName="gnuradio" targetName="digital_swig1_gr_digital_swig_61a2d" />
+      <config projectName="gnuradio" targetName="_digital_swig2_swig_tag" />
+      <config projectName="gnuradio" targetName="_filter_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="_blocks_swig4_swig_tag" />
+      <config projectName="gnuradio" targetName="_wxgui_swig" />
+      <config projectName="gnuradio" targetName="blocks_swig2_swig_doc" />
+      <config projectName="gnuradio" targetName="digital_swig0_gr_digital_swig_61a2d" />
+      <config projectName="gnuradio" targetName="blocks_swig8_gr_blocks_swig_a6e57" />
+      <config projectName="gnuradio" targetName="pygen_gr_noaa_swig_8ac0c" />
+      <config projectName="gnuradio" targetName="audio_swig_gr_audio_swig_675a4" />
+      <config projectName="gnuradio" targetName="gr_pmt_test" />
+      <config projectName="gnuradio" targetName="pygen_gr_wxgui_python_wxgui_e9f56" />
+      <config projectName="gnuradio" targetName="pygen_gr_filter_swig_728bf" />
+      <config projectName="gnuradio" targetName="_pmt_swig" />
+      <config projectName="gnuradio" targetName="gnuradio-wxgui" />
+      <config projectName="gnuradio" targetName="digital_swig2_gr_digital_swig_61a2d" />
+      <config projectName="gnuradio" targetName="pygen_gr_utils_python_utils_06806" />
+      <config projectName="gnuradio" targetName="pygen_gr_trellis_swig_fe6bb" />
+      <config projectName="gnuradio" targetName="_channels_swig" />
+      <config projectName="gnuradio" targetName="gnuradio-audio" />
+      <config projectName="gnuradio" targetName="vocoder_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="pygen_gr_vocoder_python_vocoder_823e4" />
+      <config projectName="gnuradio" targetName="blocks_swig6_swig_doc" />
+      <config projectName="gnuradio" targetName="pygen_gr_filter_python_filter_aa8f9" />
+      <config projectName="gnuradio" targetName="digital_swig2_swig_doc" />
+      <config projectName="gnuradio" targetName="_pager_swig" />
+      <config projectName="gnuradio" targetName="_analog_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="filter_generated_includes" />
+      <config projectName="gnuradio" targetName="runtime_swig_gnuradio_runtime_swig_7dd5e" />
+      <config projectName="gnuradio" targetName="pygen_gr_wxgui_python_wxgui_fc4c5" />
+      <config projectName="gnuradio" targetName="pygen_grc_core_36455" />
+      <config projectName="gnuradio" targetName="dtv_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="_blocks_swig1_swig_tag" />
+      <config projectName="gnuradio" targetName="display_qt" />
+      <config projectName="gnuradio" targetName="pygen_gr_digital_examples_349b7" />
+      <config projectName="gnuradio" targetName="pygen_gr_filter_apps_8fd4a" />
+      <config projectName="gnuradio" targetName="analog_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="gr_trellis_xml" />
+      <config projectName="gnuradio" targetName="blocks_swig5_gr_blocks_swig_a6e57" />
+      <config projectName="gnuradio" targetName="pygen_gr_digital_swig_71db5" />
+      <config projectName="gnuradio" targetName="pmt_swig" />
+      <config projectName="gnuradio" targetName="pygen_gr_filter_python_filter_gui_4e041" />
+      <config projectName="gnuradio" targetName="pygen_gr_analog_swig_94179" />
+      <config projectName="gnuradio" targetName="pygen_gr_analog_examples_f1427" />
+      <config projectName="gnuradio" targetName="wavelet_swig_gr_wavelet_swig_fa30f" />
+      <config projectName="gnuradio" targetName="_filter_swig" />
+      <config projectName="gnuradio" targetName="blocks_swig10_gr_blocks_swig_a6e57" />
+      <config projectName="gnuradio" targetName="pygen_gr_fec_python_fec_polar_8831f" />
+      <config projectName="gnuradio" targetName="test-gr-analog" />
+      <config projectName="gnuradio" targetName="pygen_gr_wxgui_swig_7dc6e" />
+      <config projectName="gnuradio" targetName="_blocks_swig8_swig_tag" />
+      <config projectName="gnuradio" targetName="_trellis_swig0_swig_tag" />
+      <config projectName="gnuradio" targetName="_dtv_swig_swig_tag" />
+      <config projectName="gnuradio" targetName="qtgui_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="_blocks_swig10" />
+      <config projectName="gnuradio" targetName="dtv_swig_gr_dtv_swig_8366b" />
+      <config projectName="gnuradio" targetName="_noaa_swig" />
+      <config projectName="gnuradio" targetName="blocks_swig0_gr_blocks_swig_a6e57" />
+      <config projectName="gnuradio" targetName="gnuradio-fft" />
+      <config projectName="gnuradio" targetName="gnuradio-analog" />
+      <config projectName="gnuradio" targetName="pygen_gr_filter_examples_940d6" />
+      <config projectName="gnuradio" targetName="volk_obj" />
+      <config projectName="gnuradio" targetName="blocks_swig1_swig_doc" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_b070a" />
+      <config projectName="gnuradio" targetName="pygen_gnuradio_runtime_python_pmt_a0f88" />
+      <config projectName="gnuradio" targetName="_blocks_swig9" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_python_blocks_88d9a" />
+      <config projectName="gnuradio" targetName="blocks_swig0_swig_doc" />
+      <config projectName="gnuradio" targetName="filter_swig_swig_doc" />
+      <config projectName="gnuradio" targetName="pygen_gr_qtgui_python_qtgui_c2d81" />
+      <config projectName="gnuradio" targetName="_fec_swig" />
+      <config projectName="gnuradio" targetName="pygen_gnuradio_runtime_examples_mp_sched_5fe63" />
+      <config projectName="gnuradio" targetName="pmt_generated" />
+      <config projectName="gnuradio" targetName="blocks_swig2_gr_blocks_swig_a6e57" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_6e401" />
+      <config projectName="gnuradio" targetName="trellis_swig0_swig_doc" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_python_grc_gnuradio_e1bef" />
+      <config projectName="gnuradio" targetName="fec_swig_gr_fec_swig_95135" />
+      <config projectName="gnuradio" targetName="pygen_gnuradio_runtime_examples_volk_benchmark_7c781" />
+      <config projectName="gnuradio" targetName="pygen_gr_blocks_swig_29787" />
+      <config projectName="gnuradio" targetName="pygen_gr_analog_examples_tags_eb4ef" />
+      <config projectName="gnuradio" targetName="_blocks_swig5_swig_tag" />
+      <config projectName="gnuradio" targetName="pygen_gr_filter_python_filter_design_e99f1" />
+      <config projectName="gnuradio" targetName="blocks_swig3_swig_doc" />
+      <config projectName="gnuradio" targetName="pygen_gr_fec_python_fec_polar_42e2e" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f5ebd04d-32b8-4dca-a84f-f25deb8509f2" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/vv002_cr35l.py" afterPath="$PROJECT_DIR$/vv002_cr35l.py" />
+    </list>
+    <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/vv002_cr35l.py" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="64" />
+    <option name="y" value="-11" />
+    <option name="width" value="1377" />
+    <option name="height" value="912" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gnuradio" />
+              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gnuradio" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Application.gnuradio-config-info">
+    <configuration default="true" type="CLion_Remote" factoryName="GDB Remote Debug" remoteCommand="" symbolFile="" sysroot="">
+      <method />
+    </configuration>
+    <configuration default="true" type="CMakeCatchTestRunConfigurationType" factoryName="Catch Test" PASS_PARENT_ENVS_2="true" TEST_MODE="SUITE_TEST">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" PASS_PARENT_ENVS_2="true" TEST_MODE="SUITE_TEST">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="ChromiumRemoteDebugType" factoryName="Chromium Remote">
+      <method />
+    </configuration>
+    <configuration default="true" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
+      <method />
+    </configuration>
+    <configuration default="true" type="FirefoxRemoteDebugType" factoryName="Firefox Remote">
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerJest" factoryName="Jest">
+      <node-interpreter value="project" />
+      <working-dir value="" />
+      <envs />
+      <scope-kind value="ALL" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavaScriptTestRunnerProtractor" factoryName="Protractor">
+      <config-file value="" />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="NodeWebKit" factoryName="NW.js">
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="gnuradio" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="ReactNative" factoryName="React Native">
+      <node-interpreter value="project" />
+      <platform value="ANDROID" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="gnuradio" />
+      <method />
+    </configuration>
+    <configuration default="true" type="XSLT" factoryName="XSLT">
+      <option name="myOutputFile" />
+      <option name="myOpenOutputFile" value="false" />
+      <option name="myOpenInBrowser" value="false" />
+      <option name="mySmartErrorHandling" value="true" />
+      <option name="myRunnerPort" value="34873" />
+      <option name="myVmArguments" />
+      <option name="myWorkingDirectory" />
+      <option name="myModule" />
+      <option name="myJdk" />
+      <parameters />
+      <OutputType value="CONSOLE" save-to-file="false" />
+      <FileType name="XML" />
+      <JdkChoice value="FROM_MODULE" />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.grunt" factoryName="Grunt.js">
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run" />
+      <scripts />
+      <node-interpreter value="project" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="gnuradio" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="gnuradio" />
+      <option name="_new_regexPattern" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;.&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="gnuradio" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;.&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="gnuradio" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;.&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="uninstall" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="uninstall" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-config-info" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-config-info" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="gnuradio-config-info">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gnuradio_runtime_examples_mp_sched_5fe63" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gnuradio_runtime_examples_mp_sched_5fe63" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gnuradio_runtime_examples_network_2420e" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gnuradio_runtime_examples_network_2420e" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gnuradio_runtime_examples_volk_benchmark_7c781" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gnuradio_runtime_examples_volk_benchmark_7c781" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-runtime" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-runtime" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gr_runtime_test" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gr_runtime_test" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="gr_runtime_test">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="test-gnuradio-runtime" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="test-gnuradio-runtime" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-pmt" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-pmt" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gr_pmt_test" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gr_pmt_test" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="gr_pmt_test">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pmt_generated" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pmt_generated" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="test-gnuradio-pmt" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="test-gnuradio-pmt" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gnuradio_runtime_python_gnuradio_ad2cd" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gnuradio_runtime_python_gnuradio_ad2cd" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gnuradio_runtime_python_gnuradio_ctrlport_163b5" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gnuradio_runtime_python_gnuradio_ctrlport_163b5" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gnuradio_runtime_python_gnuradio_ctrlport_6badf" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gnuradio_runtime_python_gnuradio_ctrlport_6badf" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gnuradio_runtime_python_gnuradio_gr_a25c7" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gnuradio_runtime_python_gnuradio_gr_a25c7" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gnuradio_runtime_python_gnuradio_gru_9ecfb" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gnuradio_runtime_python_gnuradio_gru_9ecfb" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gnuradio_runtime_python_pmt_a0f88" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gnuradio_runtime_python_pmt_a0f88" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_pmt_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_pmt_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_pmt_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_pmt_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_pmt_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_runtime_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_runtime_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_runtime_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_runtime_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_runtime_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pmt_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pmt_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pmt_swig_gnuradio_runtime_swig_7dd5e" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pmt_swig_gnuradio_runtime_swig_7dd5e" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="pmt_swig_gnuradio_runtime_swig_7dd5e">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pmt_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pmt_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gnuradio_runtime_swig_02ef7" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gnuradio_runtime_swig_02ef7" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gnuradio_runtime_swig_1e8de" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gnuradio_runtime_swig_1e8de" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="runtime_swig_gnuradio_runtime_swig_7dd5e" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="runtime_swig_gnuradio_runtime_swig_7dd5e" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="runtime_swig_gnuradio_runtime_swig_7dd5e">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="runtime_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="runtime_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_analog_examples_f1427" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_analog_examples_f1427" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_analog_examples_tags_eb4ef" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_analog_examples_tags_eb4ef" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="analog_generated_includes" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="analog_generated_includes" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-analog" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-analog" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="test-gr-analog" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="test-gr-analog" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="test-gr-analog">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_analog_python_analog_fe313" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_analog_python_analog_fe313" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_analog_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_analog_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_analog_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_analog_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_analog_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="analog_swig_gr_analog_swig_343b7" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="analog_swig_gr_analog_swig_343b7" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="analog_swig_gr_analog_swig_343b7">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="analog_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="analog_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_analog_swig_94179" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_analog_swig_94179" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="atsci_viterbi_gen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="atsci_viterbi_gen" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="atsci_viterbi_gen">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-atsc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-atsc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="test_atsci" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="test_atsci" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="test_atsci">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_atsc_python_atsc_20edb" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_atsc_python_atsc_20edb" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_atsc_python_atsc_29efb" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_atsc_python_atsc_29efb" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_atsc_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_atsc_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_atsc_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_atsc_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_atsc_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="atsc_swig_gr_atsc_swig_4c1be" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="atsc_swig_gr_atsc_swig_4c1be" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="atsc_swig_gr_atsc_swig_4c1be">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="atsc_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="atsc_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_atsc_swig_d4b2d" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_atsc_swig_d4b2d" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="dial_tone" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="dial_tone" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="dial_tone">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_audio_examples_python_35231" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_audio_examples_python_35231" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-audio" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-audio" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_audio_python_audio_d5152" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_audio_python_audio_d5152" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_audio_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_audio_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_audio_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_audio_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_audio_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="audio_swig_gr_audio_swig_675a4" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="audio_swig_gr_audio_swig_675a4" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="audio_swig_gr_audio_swig_675a4">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="audio_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="audio_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_audio_swig_31f26" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_audio_swig_31f26" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_examples_ctrlport_caa27" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_examples_ctrlport_caa27" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_examples_tags_5b5f8" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_examples_tags_5b5f8" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_generated_includes" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_generated_includes" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-blocks" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-blocks" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="test-gr-blocks" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="test-gr-blocks" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="test-gr-blocks">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_python_blocks_88d9a" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_python_blocks_88d9a" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_python_grc_gnuradio_3d151" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_python_grc_gnuradio_3d151" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_python_grc_gnuradio_e1bef" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_python_grc_gnuradio_e1bef" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig0" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig0" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig0_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig0_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_blocks_swig0_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig1" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig1" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig10" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig10" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig10_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig10_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_blocks_swig10_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig1_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig1_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_blocks_swig1_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig2" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig2" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig2_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig2_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_blocks_swig2_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig3" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig3" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig3_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig3_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_blocks_swig3_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig4" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig4" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig4_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig4_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_blocks_swig4_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig5" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig5" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig5_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig5_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_blocks_swig5_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig6" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig6" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig6_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig6_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_blocks_swig6_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig7" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig7" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig7_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig7_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_blocks_swig7_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig8" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig8" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig8_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig8_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_blocks_swig8_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig9" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig9" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_blocks_swig9_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_blocks_swig9_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_blocks_swig9_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig0_gr_blocks_swig_a6e57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig0_gr_blocks_swig_a6e57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="blocks_swig0_gr_blocks_swig_a6e57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig0_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig0_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig10_gr_blocks_swig_a6e57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig10_gr_blocks_swig_a6e57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="blocks_swig10_gr_blocks_swig_a6e57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig10_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig10_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig1_gr_blocks_swig_a6e57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig1_gr_blocks_swig_a6e57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="blocks_swig1_gr_blocks_swig_a6e57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig1_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig1_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig2_gr_blocks_swig_a6e57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig2_gr_blocks_swig_a6e57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="blocks_swig2_gr_blocks_swig_a6e57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig2_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig2_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig3_gr_blocks_swig_a6e57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig3_gr_blocks_swig_a6e57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="blocks_swig3_gr_blocks_swig_a6e57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig3_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig3_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig4_gr_blocks_swig_a6e57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig4_gr_blocks_swig_a6e57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="blocks_swig4_gr_blocks_swig_a6e57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig4_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig4_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig5_gr_blocks_swig_a6e57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig5_gr_blocks_swig_a6e57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="blocks_swig5_gr_blocks_swig_a6e57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig5_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig5_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig6_gr_blocks_swig_a6e57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig6_gr_blocks_swig_a6e57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="blocks_swig6_gr_blocks_swig_a6e57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig6_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig6_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig7_gr_blocks_swig_a6e57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig7_gr_blocks_swig_a6e57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="blocks_swig7_gr_blocks_swig_a6e57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig7_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig7_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig8_gr_blocks_swig_a6e57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig8_gr_blocks_swig_a6e57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="blocks_swig8_gr_blocks_swig_a6e57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig8_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig8_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig9_gr_blocks_swig_a6e57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig9_gr_blocks_swig_a6e57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="blocks_swig9_gr_blocks_swig_a6e57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="blocks_swig9_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="blocks_swig9_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_128e1" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_128e1" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_2358e" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_2358e" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_29787" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_29787" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_2a350" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_2a350" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_50aba" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_50aba" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_6e401" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_6e401" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_6fbd0" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_6fbd0" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_a0c42" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_a0c42" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_b070a" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_b070a" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_b160d" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_b160d" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_e8b4f" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_e8b4f" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_blocks_swig_f3230" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_blocks_swig_f3230" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-channels" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-channels" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_channels_python_channels_a4491" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_channels_python_channels_a4491" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_channels_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_channels_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_channels_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_channels_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_channels_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="channels_swig_gr_channels_swig_733d0" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="channels_swig_gr_channels_swig_733d0" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="channels_swig_gr_channels_swig_733d0">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="channels_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="channels_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_channels_swig_481c6" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_channels_swig_481c6" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_digital_examples_128b3" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_digital_examples_128b3" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_digital_examples_1a70e" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_digital_examples_1a70e" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_digital_examples_349b7" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_digital_examples_349b7" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="digital_generated_includes" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="digital_generated_includes" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-digital" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-digital" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="test-gr-digital" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="test-gr-digital" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="test-gr-digital">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_digital_python_digital_d1a86" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_digital_python_digital_d1a86" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_digital_python_digital_e78e8" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_digital_python_digital_e78e8" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_digital_python_grc_gnuradio_e53b3" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_digital_python_grc_gnuradio_e53b3" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_digital_swig0" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_digital_swig0" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_digital_swig0_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_digital_swig0_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_digital_swig0_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_digital_swig1" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_digital_swig1" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_digital_swig1_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_digital_swig1_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_digital_swig1_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_digital_swig2" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_digital_swig2" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_digital_swig2_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_digital_swig2_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_digital_swig2_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="digital_swig0_gr_digital_swig_61a2d" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="digital_swig0_gr_digital_swig_61a2d" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="digital_swig0_gr_digital_swig_61a2d">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="digital_swig0_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="digital_swig0_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="digital_swig1_gr_digital_swig_61a2d" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="digital_swig1_gr_digital_swig_61a2d" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="digital_swig1_gr_digital_swig_61a2d">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="digital_swig1_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="digital_swig1_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="digital_swig2_gr_digital_swig_61a2d" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="digital_swig2_gr_digital_swig_61a2d" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="digital_swig2_gr_digital_swig_61a2d">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="digital_swig2_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="digital_swig2_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_digital_swig_04b5a" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_digital_swig_04b5a" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_digital_swig_1efc5" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_digital_swig_1efc5" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_digital_swig_28105" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_digital_swig_28105" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_digital_swig_71db5" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_digital_swig_71db5" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_dtv_apps_588ab" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_dtv_apps_588ab" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_dtv_examples_39217" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_dtv_examples_39217" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-dtv" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-dtv" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_dtv_python_dtv_b1828" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_dtv_python_dtv_b1828" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_dtv_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_dtv_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_dtv_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_dtv_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_dtv_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="dtv_swig_gr_dtv_swig_8366b" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="dtv_swig_gr_dtv_swig_8366b" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="dtv_swig_gr_dtv_swig_8366b">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="dtv_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="dtv_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_dtv_swig_80d47" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_dtv_swig_80d47" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-fec" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-fec" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gr_fec_rstest" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gr_fec_rstest" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="gr_fec_rstest">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_fec_python_fec_10717" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_fec_python_fec_10717" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_fec_python_fec_LDPC_275f2" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_fec_python_fec_LDPC_275f2" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_fec_python_fec_polar_42e2e" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_fec_python_fec_polar_42e2e" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_fec_python_fec_polar_8831f" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_fec_python_fec_polar_8831f" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_fec_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_fec_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_fec_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_fec_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_fec_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="fec_swig_gr_fec_swig_95135" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="fec_swig_gr_fec_swig_95135" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="fec_swig_gr_fec_swig_95135">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="fec_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="fec_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_fec_swig_f3cde" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_fec_swig_f3cde" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-fft" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-fft" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_fft_python_fft_b9333" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_fft_python_fft_b9333" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_fft_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_fft_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_fft_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_fft_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_fft_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="fft_swig_gr_fft_swig_7c2a8" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="fft_swig_gr_fft_swig_7c2a8" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="fft_swig_gr_fft_swig_7c2a8">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="fft_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="fft_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_fft_swig_479a5" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_fft_swig_479a5" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_filter_apps_8fd4a" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_filter_apps_8fd4a" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_filter_examples_940d6" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_filter_examples_940d6" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="filter_generated_includes" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="filter_generated_includes" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-filter" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-filter" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="test-gr-filter" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="test-gr-filter" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="test-gr-filter">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_filter_python_filter_aa8f9" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_filter_python_filter_aa8f9" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_filter_python_filter_design_e99f1" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_filter_python_filter_design_e99f1" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_filter_python_filter_gui_4e041" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_filter_python_filter_gui_4e041" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_filter_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_filter_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_filter_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_filter_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_filter_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="filter_swig_gr_filter_swig_2b734" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="filter_swig_gr_filter_swig_2b734" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="filter_swig_gr_filter_swig_2b734">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="filter_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="filter_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_filter_swig_728bf" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_filter_swig_728bf" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-noaa" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-noaa" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_noaa_python_noaa_fb1bc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_noaa_python_noaa_fb1bc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_noaa_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_noaa_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_noaa_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_noaa_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_noaa_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="noaa_swig_gr_noaa_swig_6fd1f" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="noaa_swig_gr_noaa_swig_6fd1f" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="noaa_swig_gr_noaa_swig_6fd1f">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="noaa_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="noaa_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_noaa_swig_8ac0c" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_noaa_swig_8ac0c" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_pager_apps_13667" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_pager_apps_13667" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-pager" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-pager" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_pager_python_pager_1f20f" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_pager_python_pager_1f20f" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_pager_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_pager_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_pager_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_pager_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_pager_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pager_swig_gr_pager_swig_b2a57" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pager_swig_gr_pager_swig_b2a57" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="pager_swig_gr_pager_swig_b2a57">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pager_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pager_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_pager_swig_69ba3" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_pager_swig_69ba3" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_qtgui_apps_2db0f" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_qtgui_apps_2db0f" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_qtgui_apps_96414" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_qtgui_apps_96414" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_qtgui_examples_1fde7" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_qtgui_examples_1fde7" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="display_qt" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="display_qt" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="display_qt">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-qtgui" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-qtgui" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_qtgui_python_qtgui_c2d81" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_qtgui_python_qtgui_c2d81" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_qtgui_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_qtgui_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_qtgui_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_qtgui_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_qtgui_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_qtgui_swig_5e588" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_qtgui_swig_5e588" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="qtgui_swig_gr_qtgui_swig_59a4d" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="qtgui_swig_gr_qtgui_swig_59a4d" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="qtgui_swig_gr_qtgui_swig_59a4d">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="qtgui_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="qtgui_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gr_trellis_xml" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gr_trellis_xml" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_trellis_examples_python_ac871" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_trellis_examples_python_ac871" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="trellis_generated_includes" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="trellis_generated_includes" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-trellis" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-trellis" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_trellis_python_trellis_48305" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_trellis_python_trellis_48305" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_trellis_swig0" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_trellis_swig0" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_trellis_swig0_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_trellis_swig0_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_trellis_swig0_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_trellis_swig1" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_trellis_swig1" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_trellis_swig1_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_trellis_swig1_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_trellis_swig1_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_trellis_swig_23e90" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_trellis_swig_23e90" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_trellis_swig_e7821" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_trellis_swig_e7821" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_trellis_swig_fe6bb" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_trellis_swig_fe6bb" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="trellis_swig0_gr_trellis_swig_30622" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="trellis_swig0_gr_trellis_swig_30622" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="trellis_swig0_gr_trellis_swig_30622">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="trellis_swig0_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="trellis_swig0_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="trellis_swig1_gr_trellis_swig_30622" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="trellis_swig1_gr_trellis_swig_30622" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="trellis_swig1_gr_trellis_swig_30622">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="trellis_swig1_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="trellis_swig1_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_utils_python_modtool_9d77f" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_utils_python_modtool_9d77f" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_utils_python_utils_06806" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_utils_python_utils_06806" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_utils_python_utils_5d7fc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_utils_python_utils_5d7fc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_vocoder_examples_be32c" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_vocoder_examples_be32c" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="generate_codebook" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="generate_codebook" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="generate_codebook">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-vocoder" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-vocoder" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_vocoder_python_vocoder_823e4" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_vocoder_python_vocoder_823e4" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_vocoder_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_vocoder_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_vocoder_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_vocoder_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_vocoder_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_vocoder_swig_dc56b" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_vocoder_swig_dc56b" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="vocoder_swig_gr_vocoder_swig_e41bf" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="vocoder_swig_gr_vocoder_swig_e41bf" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="vocoder_swig_gr_vocoder_swig_e41bf">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="vocoder_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="vocoder_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-wavelet" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-wavelet" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_wavelet_python_wavelet_41961" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_wavelet_python_wavelet_41961" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_wavelet_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_wavelet_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_wavelet_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_wavelet_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_wavelet_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_wavelet_swig_24ec8" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_wavelet_swig_24ec8" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="wavelet_swig_gr_wavelet_swig_fa30f" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="wavelet_swig_gr_wavelet_swig_fa30f" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="wavelet_swig_gr_wavelet_swig_fa30f">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="wavelet_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="wavelet_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_wxgui_grc_45aad" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_wxgui_grc_45aad" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gnuradio-wxgui" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="gnuradio-wxgui" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_wxgui_python_wxgui_648f0" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_wxgui_python_wxgui_648f0" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_wxgui_python_wxgui_e9f56" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_wxgui_python_wxgui_e9f56" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_wxgui_python_wxgui_fc4c5" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_wxgui_python_wxgui_fc4c5" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_wxgui_swig" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_wxgui_swig" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="_wxgui_swig_swig_tag" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="_wxgui_swig_swig_tag" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="_wxgui_swig_swig_tag">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_gr_wxgui_swig_7dc6e" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_gr_wxgui_swig_7dc6e" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="wxgui_swig_gr_wxgui_swig_bfff2" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="wxgui_swig_gr_wxgui_swig_bfff2" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="wxgui_swig_gr_wxgui_swig_bfff2">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="wxgui_swig_swig_doc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="wxgui_swig_swig_doc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_grc_7a7ae" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_grc_7a7ae" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="grc_generated_xml" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="grc_generated_xml" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_grc_core_36455" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_grc_core_36455" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_grc_core_generator_34152" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_grc_core_generator_34152" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_grc_core_utils_8d604" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_grc_core_utils_8d604" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_grc_gui_b57fc" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_grc_gui_b57fc" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_grc_scripts_d87c8" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_grc_scripts_d87c8" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="volk-config-info" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="volk-config-info" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="volk-config-info">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="volk_profile" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="volk_profile" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="volk_profile">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="test_all" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="test_all" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="gnuradio" RUN_TARGET_NAME="test_all">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="volk" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="volk" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="volk_obj" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="volk_obj" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_volk_python_volk_modtool_118d3" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_volk_python_volk_modtool_118d3" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pygen_volk_python_volk_modtool_80cbe" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="gnuradio" TARGET_NAME="pygen_volk_python_volk_modtool_80cbe" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <list size="281">
+      <item index="0" class="java.lang.String" itemvalue="Application.Build All" />
+      <item index="1" class="java.lang.String" itemvalue="Application.uninstall" />
+      <item index="2" class="java.lang.String" itemvalue="Application.gnuradio-config-info" />
+      <item index="3" class="java.lang.String" itemvalue="Application.pygen_gnuradio_runtime_examples_mp_sched_5fe63" />
+      <item index="4" class="java.lang.String" itemvalue="Application.pygen_gnuradio_runtime_examples_network_2420e" />
+      <item index="5" class="java.lang.String" itemvalue="Application.pygen_gnuradio_runtime_examples_volk_benchmark_7c781" />
+      <item index="6" class="java.lang.String" itemvalue="Application.gnuradio-runtime" />
+      <item index="7" class="java.lang.String" itemvalue="Application.gr_runtime_test" />
+      <item index="8" class="java.lang.String" itemvalue="Application.test-gnuradio-runtime" />
+      <item index="9" class="java.lang.String" itemvalue="Application.gnuradio-pmt" />
+      <item index="10" class="java.lang.String" itemvalue="Application.gr_pmt_test" />
+      <item index="11" class="java.lang.String" itemvalue="Application.pmt_generated" />
+      <item index="12" class="java.lang.String" itemvalue="Application.test-gnuradio-pmt" />
+      <item index="13" class="java.lang.String" itemvalue="Application.pygen_gnuradio_runtime_python_gnuradio_ad2cd" />
+      <item index="14" class="java.lang.String" itemvalue="Application.pygen_gnuradio_runtime_python_gnuradio_ctrlport_163b5" />
+      <item index="15" class="java.lang.String" itemvalue="Application.pygen_gnuradio_runtime_python_gnuradio_ctrlport_6badf" />
+      <item index="16" class="java.lang.String" itemvalue="Application.pygen_gnuradio_runtime_python_gnuradio_gr_a25c7" />
+      <item index="17" class="java.lang.String" itemvalue="Application.pygen_gnuradio_runtime_python_gnuradio_gru_9ecfb" />
+      <item index="18" class="java.lang.String" itemvalue="Application.pygen_gnuradio_runtime_python_pmt_a0f88" />
+      <item index="19" class="java.lang.String" itemvalue="Application._pmt_swig" />
+      <item index="20" class="java.lang.String" itemvalue="Application._pmt_swig_swig_tag" />
+      <item index="21" class="java.lang.String" itemvalue="Application._runtime_swig" />
+      <item index="22" class="java.lang.String" itemvalue="Application._runtime_swig_swig_tag" />
+      <item index="23" class="java.lang.String" itemvalue="Application.pmt_swig" />
+      <item index="24" class="java.lang.String" itemvalue="Application.pmt_swig_gnuradio_runtime_swig_7dd5e" />
+      <item index="25" class="java.lang.String" itemvalue="Application.pmt_swig_swig_doc" />
+      <item index="26" class="java.lang.String" itemvalue="Application.pygen_gnuradio_runtime_swig_02ef7" />
+      <item index="27" class="java.lang.String" itemvalue="Application.pygen_gnuradio_runtime_swig_1e8de" />
+      <item index="28" class="java.lang.String" itemvalue="Application.runtime_swig_gnuradio_runtime_swig_7dd5e" />
+      <item index="29" class="java.lang.String" itemvalue="Application.runtime_swig_swig_doc" />
+      <item index="30" class="java.lang.String" itemvalue="Application.pygen_gr_analog_examples_f1427" />
+      <item index="31" class="java.lang.String" itemvalue="Application.pygen_gr_analog_examples_tags_eb4ef" />
+      <item index="32" class="java.lang.String" itemvalue="Application.analog_generated_includes" />
+      <item index="33" class="java.lang.String" itemvalue="Application.gnuradio-analog" />
+      <item index="34" class="java.lang.String" itemvalue="Application.test-gr-analog" />
+      <item index="35" class="java.lang.String" itemvalue="Application.pygen_gr_analog_python_analog_fe313" />
+      <item index="36" class="java.lang.String" itemvalue="Application._analog_swig" />
+      <item index="37" class="java.lang.String" itemvalue="Application._analog_swig_swig_tag" />
+      <item index="38" class="java.lang.String" itemvalue="Application.analog_swig_gr_analog_swig_343b7" />
+      <item index="39" class="java.lang.String" itemvalue="Application.analog_swig_swig_doc" />
+      <item index="40" class="java.lang.String" itemvalue="Application.pygen_gr_analog_swig_94179" />
+      <item index="41" class="java.lang.String" itemvalue="Application.atsci_viterbi_gen" />
+      <item index="42" class="java.lang.String" itemvalue="Application.gnuradio-atsc" />
+      <item index="43" class="java.lang.String" itemvalue="Application.test_atsci" />
+      <item index="44" class="java.lang.String" itemvalue="Application.pygen_gr_atsc_python_atsc_20edb" />
+      <item index="45" class="java.lang.String" itemvalue="Application.pygen_gr_atsc_python_atsc_29efb" />
+      <item index="46" class="java.lang.String" itemvalue="Application._atsc_swig" />
+      <item index="47" class="java.lang.String" itemvalue="Application._atsc_swig_swig_tag" />
+      <item index="48" class="java.lang.String" itemvalue="Application.atsc_swig_gr_atsc_swig_4c1be" />
+      <item index="49" class="java.lang.String" itemvalue="Application.atsc_swig_swig_doc" />
+      <item index="50" class="java.lang.String" itemvalue="Application.pygen_gr_atsc_swig_d4b2d" />
+      <item index="51" class="java.lang.String" itemvalue="Application.dial_tone" />
+      <item index="52" class="java.lang.String" itemvalue="Application.pygen_gr_audio_examples_python_35231" />
+      <item index="53" class="java.lang.String" itemvalue="Application.gnuradio-audio" />
+      <item index="54" class="java.lang.String" itemvalue="Application.pygen_gr_audio_python_audio_d5152" />
+      <item index="55" class="java.lang.String" itemvalue="Application._audio_swig" />
+      <item index="56" class="java.lang.String" itemvalue="Application._audio_swig_swig_tag" />
+      <item index="57" class="java.lang.String" itemvalue="Application.audio_swig_gr_audio_swig_675a4" />
+      <item index="58" class="java.lang.String" itemvalue="Application.audio_swig_swig_doc" />
+      <item index="59" class="java.lang.String" itemvalue="Application.pygen_gr_audio_swig_31f26" />
+      <item index="60" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_examples_ctrlport_caa27" />
+      <item index="61" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_examples_tags_5b5f8" />
+      <item index="62" class="java.lang.String" itemvalue="Application.blocks_generated_includes" />
+      <item index="63" class="java.lang.String" itemvalue="Application.gnuradio-blocks" />
+      <item index="64" class="java.lang.String" itemvalue="Application.test-gr-blocks" />
+      <item index="65" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_python_blocks_88d9a" />
+      <item index="66" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_python_grc_gnuradio_3d151" />
+      <item index="67" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_python_grc_gnuradio_e1bef" />
+      <item index="68" class="java.lang.String" itemvalue="Application._blocks_swig0" />
+      <item index="69" class="java.lang.String" itemvalue="Application._blocks_swig0_swig_tag" />
+      <item index="70" class="java.lang.String" itemvalue="Application._blocks_swig1" />
+      <item index="71" class="java.lang.String" itemvalue="Application._blocks_swig10" />
+      <item index="72" class="java.lang.String" itemvalue="Application._blocks_swig10_swig_tag" />
+      <item index="73" class="java.lang.String" itemvalue="Application._blocks_swig1_swig_tag" />
+      <item index="74" class="java.lang.String" itemvalue="Application._blocks_swig2" />
+      <item index="75" class="java.lang.String" itemvalue="Application._blocks_swig2_swig_tag" />
+      <item index="76" class="java.lang.String" itemvalue="Application._blocks_swig3" />
+      <item index="77" class="java.lang.String" itemvalue="Application._blocks_swig3_swig_tag" />
+      <item index="78" class="java.lang.String" itemvalue="Application._blocks_swig4" />
+      <item index="79" class="java.lang.String" itemvalue="Application._blocks_swig4_swig_tag" />
+      <item index="80" class="java.lang.String" itemvalue="Application._blocks_swig5" />
+      <item index="81" class="java.lang.String" itemvalue="Application._blocks_swig5_swig_tag" />
+      <item index="82" class="java.lang.String" itemvalue="Application._blocks_swig6" />
+      <item index="83" class="java.lang.String" itemvalue="Application._blocks_swig6_swig_tag" />
+      <item index="84" class="java.lang.String" itemvalue="Application._blocks_swig7" />
+      <item index="85" class="java.lang.String" itemvalue="Application._blocks_swig7_swig_tag" />
+      <item index="86" class="java.lang.String" itemvalue="Application._blocks_swig8" />
+      <item index="87" class="java.lang.String" itemvalue="Application._blocks_swig8_swig_tag" />
+      <item index="88" class="java.lang.String" itemvalue="Application._blocks_swig9" />
+      <item index="89" class="java.lang.String" itemvalue="Application._blocks_swig9_swig_tag" />
+      <item index="90" class="java.lang.String" itemvalue="Application.blocks_swig0_gr_blocks_swig_a6e57" />
+      <item index="91" class="java.lang.String" itemvalue="Application.blocks_swig0_swig_doc" />
+      <item index="92" class="java.lang.String" itemvalue="Application.blocks_swig10_gr_blocks_swig_a6e57" />
+      <item index="93" class="java.lang.String" itemvalue="Application.blocks_swig10_swig_doc" />
+      <item index="94" class="java.lang.String" itemvalue="Application.blocks_swig1_gr_blocks_swig_a6e57" />
+      <item index="95" class="java.lang.String" itemvalue="Application.blocks_swig1_swig_doc" />
+      <item index="96" class="java.lang.String" itemvalue="Application.blocks_swig2_gr_blocks_swig_a6e57" />
+      <item index="97" class="java.lang.String" itemvalue="Application.blocks_swig2_swig_doc" />
+      <item index="98" class="java.lang.String" itemvalue="Application.blocks_swig3_gr_blocks_swig_a6e57" />
+      <item index="99" class="java.lang.String" itemvalue="Application.blocks_swig3_swig_doc" />
+      <item index="100" class="java.lang.String" itemvalue="Application.blocks_swig4_gr_blocks_swig_a6e57" />
+      <item index="101" class="java.lang.String" itemvalue="Application.blocks_swig4_swig_doc" />
+      <item index="102" class="java.lang.String" itemvalue="Application.blocks_swig5_gr_blocks_swig_a6e57" />
+      <item index="103" class="java.lang.String" itemvalue="Application.blocks_swig5_swig_doc" />
+      <item index="104" class="java.lang.String" itemvalue="Application.blocks_swig6_gr_blocks_swig_a6e57" />
+      <item index="105" class="java.lang.String" itemvalue="Application.blocks_swig6_swig_doc" />
+      <item index="106" class="java.lang.String" itemvalue="Application.blocks_swig7_gr_blocks_swig_a6e57" />
+      <item index="107" class="java.lang.String" itemvalue="Application.blocks_swig7_swig_doc" />
+      <item index="108" class="java.lang.String" itemvalue="Application.blocks_swig8_gr_blocks_swig_a6e57" />
+      <item index="109" class="java.lang.String" itemvalue="Application.blocks_swig8_swig_doc" />
+      <item index="110" class="java.lang.String" itemvalue="Application.blocks_swig9_gr_blocks_swig_a6e57" />
+      <item index="111" class="java.lang.String" itemvalue="Application.blocks_swig9_swig_doc" />
+      <item index="112" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_128e1" />
+      <item index="113" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_2358e" />
+      <item index="114" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_29787" />
+      <item index="115" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_2a350" />
+      <item index="116" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_50aba" />
+      <item index="117" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_6e401" />
+      <item index="118" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_6fbd0" />
+      <item index="119" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_a0c42" />
+      <item index="120" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_b070a" />
+      <item index="121" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_b160d" />
+      <item index="122" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_e8b4f" />
+      <item index="123" class="java.lang.String" itemvalue="Application.pygen_gr_blocks_swig_f3230" />
+      <item index="124" class="java.lang.String" itemvalue="Application.gnuradio-channels" />
+      <item index="125" class="java.lang.String" itemvalue="Application.pygen_gr_channels_python_channels_a4491" />
+      <item index="126" class="java.lang.String" itemvalue="Application._channels_swig" />
+      <item index="127" class="java.lang.String" itemvalue="Application._channels_swig_swig_tag" />
+      <item index="128" class="java.lang.String" itemvalue="Application.channels_swig_gr_channels_swig_733d0" />
+      <item index="129" class="java.lang.String" itemvalue="Application.channels_swig_swig_doc" />
+      <item index="130" class="java.lang.String" itemvalue="Application.pygen_gr_channels_swig_481c6" />
+      <item index="131" class="java.lang.String" itemvalue="Application.pygen_gr_digital_examples_128b3" />
+      <item index="132" class="java.lang.String" itemvalue="Application.pygen_gr_digital_examples_1a70e" />
+      <item index="133" class="java.lang.String" itemvalue="Application.pygen_gr_digital_examples_349b7" />
+      <item index="134" class="java.lang.String" itemvalue="Application.digital_generated_includes" />
+      <item index="135" class="java.lang.String" itemvalue="Application.gnuradio-digital" />
+      <item index="136" class="java.lang.String" itemvalue="Application.test-gr-digital" />
+      <item index="137" class="java.lang.String" itemvalue="Application.pygen_gr_digital_python_digital_d1a86" />
+      <item index="138" class="java.lang.String" itemvalue="Application.pygen_gr_digital_python_digital_e78e8" />
+      <item index="139" class="java.lang.String" itemvalue="Application.pygen_gr_digital_python_grc_gnuradio_e53b3" />
+      <item index="140" class="java.lang.String" itemvalue="Application._digital_swig0" />
+      <item index="141" class="java.lang.String" itemvalue="Application._digital_swig0_swig_tag" />
+      <item index="142" class="java.lang.String" itemvalue="Application._digital_swig1" />
+      <item index="143" class="java.lang.String" itemvalue="Application._digital_swig1_swig_tag" />
+      <item index="144" class="java.lang.String" itemvalue="Application._digital_swig2" />
+      <item index="145" class="java.lang.String" itemvalue="Application._digital_swig2_swig_tag" />
+      <item index="146" class="java.lang.String" itemvalue="Application.digital_swig0_gr_digital_swig_61a2d" />
+      <item index="147" class="java.lang.String" itemvalue="Application.digital_swig0_swig_doc" />
+      <item index="148" class="java.lang.String" itemvalue="Application.digital_swig1_gr_digital_swig_61a2d" />
+      <item index="149" class="java.lang.String" itemvalue="Application.digital_swig1_swig_doc" />
+      <item index="150" class="java.lang.String" itemvalue="Application.digital_swig2_gr_digital_swig_61a2d" />
+      <item index="151" class="java.lang.String" itemvalue="Application.digital_swig2_swig_doc" />
+      <item index="152" class="java.lang.String" itemvalue="Application.pygen_gr_digital_swig_04b5a" />
+      <item index="153" class="java.lang.String" itemvalue="Application.pygen_gr_digital_swig_1efc5" />
+      <item index="154" class="java.lang.String" itemvalue="Application.pygen_gr_digital_swig_28105" />
+      <item index="155" class="java.lang.String" itemvalue="Application.pygen_gr_digital_swig_71db5" />
+      <item index="156" class="java.lang.String" itemvalue="Application.pygen_gr_dtv_apps_588ab" />
+      <item index="157" class="java.lang.String" itemvalue="Application.pygen_gr_dtv_examples_39217" />
+      <item index="158" class="java.lang.String" itemvalue="Application.gnuradio-dtv" />
+      <item index="159" class="java.lang.String" itemvalue="Application.pygen_gr_dtv_python_dtv_b1828" />
+      <item index="160" class="java.lang.String" itemvalue="Application._dtv_swig" />
+      <item index="161" class="java.lang.String" itemvalue="Application._dtv_swig_swig_tag" />
+      <item index="162" class="java.lang.String" itemvalue="Application.dtv_swig_gr_dtv_swig_8366b" />
+      <item index="163" class="java.lang.String" itemvalue="Application.dtv_swig_swig_doc" />
+      <item index="164" class="java.lang.String" itemvalue="Application.pygen_gr_dtv_swig_80d47" />
+      <item index="165" class="java.lang.String" itemvalue="Application.gnuradio-fec" />
+      <item index="166" class="java.lang.String" itemvalue="Application.gr_fec_rstest" />
+      <item index="167" class="java.lang.String" itemvalue="Application.pygen_gr_fec_python_fec_10717" />
+      <item index="168" class="java.lang.String" itemvalue="Application.pygen_gr_fec_python_fec_LDPC_275f2" />
+      <item index="169" class="java.lang.String" itemvalue="Application.pygen_gr_fec_python_fec_polar_42e2e" />
+      <item index="170" class="java.lang.String" itemvalue="Application.pygen_gr_fec_python_fec_polar_8831f" />
+      <item index="171" class="java.lang.String" itemvalue="Application._fec_swig" />
+      <item index="172" class="java.lang.String" itemvalue="Application._fec_swig_swig_tag" />
+      <item index="173" class="java.lang.String" itemvalue="Application.fec_swig_gr_fec_swig_95135" />
+      <item index="174" class="java.lang.String" itemvalue="Application.fec_swig_swig_doc" />
+      <item index="175" class="java.lang.String" itemvalue="Application.pygen_gr_fec_swig_f3cde" />
+      <item index="176" class="java.lang.String" itemvalue="Application.gnuradio-fft" />
+      <item index="177" class="java.lang.String" itemvalue="Application.pygen_gr_fft_python_fft_b9333" />
+      <item index="178" class="java.lang.String" itemvalue="Application._fft_swig" />
+      <item index="179" class="java.lang.String" itemvalue="Application._fft_swig_swig_tag" />
+      <item index="180" class="java.lang.String" itemvalue="Application.fft_swig_gr_fft_swig_7c2a8" />
+      <item index="181" class="java.lang.String" itemvalue="Application.fft_swig_swig_doc" />
+      <item index="182" class="java.lang.String" itemvalue="Application.pygen_gr_fft_swig_479a5" />
+      <item index="183" class="java.lang.String" itemvalue="Application.pygen_gr_filter_apps_8fd4a" />
+      <item index="184" class="java.lang.String" itemvalue="Application.pygen_gr_filter_examples_940d6" />
+      <item index="185" class="java.lang.String" itemvalue="Application.filter_generated_includes" />
+      <item index="186" class="java.lang.String" itemvalue="Application.gnuradio-filter" />
+      <item index="187" class="java.lang.String" itemvalue="Application.test-gr-filter" />
+      <item index="188" class="java.lang.String" itemvalue="Application.pygen_gr_filter_python_filter_aa8f9" />
+      <item index="189" class="java.lang.String" itemvalue="Application.pygen_gr_filter_python_filter_design_e99f1" />
+      <item index="190" class="java.lang.String" itemvalue="Application.pygen_gr_filter_python_filter_gui_4e041" />
+      <item index="191" class="java.lang.String" itemvalue="Application._filter_swig" />
+      <item index="192" class="java.lang.String" itemvalue="Application._filter_swig_swig_tag" />
+      <item index="193" class="java.lang.String" itemvalue="Application.filter_swig_gr_filter_swig_2b734" />
+      <item index="194" class="java.lang.String" itemvalue="Application.filter_swig_swig_doc" />
+      <item index="195" class="java.lang.String" itemvalue="Application.pygen_gr_filter_swig_728bf" />
+      <item index="196" class="java.lang.String" itemvalue="Application.gnuradio-noaa" />
+      <item index="197" class="java.lang.String" itemvalue="Application.pygen_gr_noaa_python_noaa_fb1bc" />
+      <item index="198" class="java.lang.String" itemvalue="Application._noaa_swig" />
+      <item index="199" class="java.lang.String" itemvalue="Application._noaa_swig_swig_tag" />
+      <item index="200" class="java.lang.String" itemvalue="Application.noaa_swig_gr_noaa_swig_6fd1f" />
+      <item index="201" class="java.lang.String" itemvalue="Application.noaa_swig_swig_doc" />
+      <item index="202" class="java.lang.String" itemvalue="Application.pygen_gr_noaa_swig_8ac0c" />
+      <item index="203" class="java.lang.String" itemvalue="Application.pygen_gr_pager_apps_13667" />
+      <item index="204" class="java.lang.String" itemvalue="Application.gnuradio-pager" />
+      <item index="205" class="java.lang.String" itemvalue="Application.pygen_gr_pager_python_pager_1f20f" />
+      <item index="206" class="java.lang.String" itemvalue="Application._pager_swig" />
+      <item index="207" class="java.lang.String" itemvalue="Application._pager_swig_swig_tag" />
+      <item index="208" class="java.lang.String" itemvalue="Application.pager_swig_gr_pager_swig_b2a57" />
+      <item index="209" class="java.lang.String" itemvalue="Application.pager_swig_swig_doc" />
+      <item index="210" class="java.lang.String" itemvalue="Application.pygen_gr_pager_swig_69ba3" />
+      <item index="211" class="java.lang.String" itemvalue="Application.pygen_gr_qtgui_apps_2db0f" />
+      <item index="212" class="java.lang.String" itemvalue="Application.pygen_gr_qtgui_apps_96414" />
+      <item index="213" class="java.lang.String" itemvalue="Application.pygen_gr_qtgui_examples_1fde7" />
+      <item index="214" class="java.lang.String" itemvalue="Application.display_qt" />
+      <item index="215" class="java.lang.String" itemvalue="Application.gnuradio-qtgui" />
+      <item index="216" class="java.lang.String" itemvalue="Application.pygen_gr_qtgui_python_qtgui_c2d81" />
+      <item index="217" class="java.lang.String" itemvalue="Application._qtgui_swig" />
+      <item index="218" class="java.lang.String" itemvalue="Application._qtgui_swig_swig_tag" />
+      <item index="219" class="java.lang.String" itemvalue="Application.pygen_gr_qtgui_swig_5e588" />
+      <item index="220" class="java.lang.String" itemvalue="Application.qtgui_swig_gr_qtgui_swig_59a4d" />
+      <item index="221" class="java.lang.String" itemvalue="Application.qtgui_swig_swig_doc" />
+      <item index="222" class="java.lang.String" itemvalue="Application.gr_trellis_xml" />
+      <item index="223" class="java.lang.String" itemvalue="Application.pygen_gr_trellis_examples_python_ac871" />
+      <item index="224" class="java.lang.String" itemvalue="Application.trellis_generated_includes" />
+      <item index="225" class="java.lang.String" itemvalue="Application.gnuradio-trellis" />
+      <item index="226" class="java.lang.String" itemvalue="Application.pygen_gr_trellis_python_trellis_48305" />
+      <item index="227" class="java.lang.String" itemvalue="Application._trellis_swig0" />
+      <item index="228" class="java.lang.String" itemvalue="Application._trellis_swig0_swig_tag" />
+      <item index="229" class="java.lang.String" itemvalue="Application._trellis_swig1" />
+      <item index="230" class="java.lang.String" itemvalue="Application._trellis_swig1_swig_tag" />
+      <item index="231" class="java.lang.String" itemvalue="Application.pygen_gr_trellis_swig_23e90" />
+      <item index="232" class="java.lang.String" itemvalue="Application.pygen_gr_trellis_swig_e7821" />
+      <item index="233" class="java.lang.String" itemvalue="Application.pygen_gr_trellis_swig_fe6bb" />
+      <item index="234" class="java.lang.String" itemvalue="Application.trellis_swig0_gr_trellis_swig_30622" />
+      <item index="235" class="java.lang.String" itemvalue="Application.trellis_swig0_swig_doc" />
+      <item index="236" class="java.lang.String" itemvalue="Application.trellis_swig1_gr_trellis_swig_30622" />
+      <item index="237" class="java.lang.String" itemvalue="Application.trellis_swig1_swig_doc" />
+      <item index="238" class="java.lang.String" itemvalue="Application.pygen_gr_utils_python_modtool_9d77f" />
+      <item index="239" class="java.lang.String" itemvalue="Application.pygen_gr_utils_python_utils_06806" />
+      <item index="240" class="java.lang.String" itemvalue="Application.pygen_gr_utils_python_utils_5d7fc" />
+      <item index="241" class="java.lang.String" itemvalue="Application.pygen_gr_vocoder_examples_be32c" />
+      <item index="242" class="java.lang.String" itemvalue="Application.generate_codebook" />
+      <item index="243" class="java.lang.String" itemvalue="Application.gnuradio-vocoder" />
+      <item index="244" class="java.lang.String" itemvalue="Application.pygen_gr_vocoder_python_vocoder_823e4" />
+      <item index="245" class="java.lang.String" itemvalue="Application._vocoder_swig" />
+      <item index="246" class="java.lang.String" itemvalue="Application._vocoder_swig_swig_tag" />
+      <item index="247" class="java.lang.String" itemvalue="Application.pygen_gr_vocoder_swig_dc56b" />
+      <item index="248" class="java.lang.String" itemvalue="Application.vocoder_swig_gr_vocoder_swig_e41bf" />
+      <item index="249" class="java.lang.String" itemvalue="Application.vocoder_swig_swig_doc" />
+      <item index="250" class="java.lang.String" itemvalue="Application.gnuradio-wavelet" />
+      <item index="251" class="java.lang.String" itemvalue="Application.pygen_gr_wavelet_python_wavelet_41961" />
+      <item index="252" class="java.lang.String" itemvalue="Application._wavelet_swig" />
+      <item index="253" class="java.lang.String" itemvalue="Application._wavelet_swig_swig_tag" />
+      <item index="254" class="java.lang.String" itemvalue="Application.pygen_gr_wavelet_swig_24ec8" />
+      <item index="255" class="java.lang.String" itemvalue="Application.wavelet_swig_gr_wavelet_swig_fa30f" />
+      <item index="256" class="java.lang.String" itemvalue="Application.wavelet_swig_swig_doc" />
+      <item index="257" class="java.lang.String" itemvalue="Application.pygen_gr_wxgui_grc_45aad" />
+      <item index="258" class="java.lang.String" itemvalue="Application.gnuradio-wxgui" />
+      <item index="259" class="java.lang.String" itemvalue="Application.pygen_gr_wxgui_python_wxgui_648f0" />
+      <item index="260" class="java.lang.String" itemvalue="Application.pygen_gr_wxgui_python_wxgui_e9f56" />
+      <item index="261" class="java.lang.String" itemvalue="Application.pygen_gr_wxgui_python_wxgui_fc4c5" />
+      <item index="262" class="java.lang.String" itemvalue="Application._wxgui_swig" />
+      <item index="263" class="java.lang.String" itemvalue="Application._wxgui_swig_swig_tag" />
+      <item index="264" class="java.lang.String" itemvalue="Application.pygen_gr_wxgui_swig_7dc6e" />
+      <item index="265" class="java.lang.String" itemvalue="Application.wxgui_swig_gr_wxgui_swig_bfff2" />
+      <item index="266" class="java.lang.String" itemvalue="Application.wxgui_swig_swig_doc" />
+      <item index="267" class="java.lang.String" itemvalue="Application.pygen_grc_7a7ae" />
+      <item index="268" class="java.lang.String" itemvalue="Application.grc_generated_xml" />
+      <item index="269" class="java.lang.String" itemvalue="Application.pygen_grc_core_36455" />
+      <item index="270" class="java.lang.String" itemvalue="Application.pygen_grc_core_generator_34152" />
+      <item index="271" class="java.lang.String" itemvalue="Application.pygen_grc_core_utils_8d604" />
+      <item index="272" class="java.lang.String" itemvalue="Application.pygen_grc_gui_b57fc" />
+      <item index="273" class="java.lang.String" itemvalue="Application.pygen_grc_scripts_d87c8" />
+      <item index="274" class="java.lang.String" itemvalue="Application.volk-config-info" />
+      <item index="275" class="java.lang.String" itemvalue="Application.volk_profile" />
+      <item index="276" class="java.lang.String" itemvalue="Application.test_all" />
+      <item index="277" class="java.lang.String" itemvalue="Application.volk" />
+      <item index="278" class="java.lang.String" itemvalue="Application.volk_obj" />
+      <item index="279" class="java.lang.String" itemvalue="Application.pygen_volk_python_volk_modtool_118d3" />
+      <item index="280" class="java.lang.String" itemvalue="Application.pygen_volk_python_volk_modtool_80cbe" />
+    </list>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f5ebd04d-32b8-4dca-a84f-f25deb8509f2" name="Default" comment="" />
+      <created>1494312203165</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1494312203165</updated>
+      <workItem from="1494312208269" duration="381000" />
+      <workItem from="1494315636965" duration="555000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="936000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="64" y="-11" width="1377" height="912" extended-state="6" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24945454" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/vv002_cr35l.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1494319171634" expanded="true" signature="5021:5076" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/vv002_cr35l.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="151">
+          <caret line="80" column="12" lean-forward="true" selection-start-line="80" selection-start-column="12" selection-end-line="80" selection-end-column="12" />
+          <folding>
+            <marker date="1494319171634" expanded="true" signature="5021:5076" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>
