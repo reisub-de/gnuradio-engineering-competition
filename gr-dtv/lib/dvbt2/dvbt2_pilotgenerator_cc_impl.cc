@@ -2694,7 +2694,6 @@ namespace gr {
       }
       for (int i = 0; i < noutput_items; i += num_symbols) {
         for (int j = 0; j < num_symbols; j++) {
-          init_pilots(j);
           if (j < N_P2) {
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
@@ -2740,6 +2739,7 @@ namespace gr {
             }
           }
           else {
+            init_pilots(j);
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
