@@ -261,6 +261,7 @@ namespace gr {
         }
         else {
 	  memcpy(out, time_interleave, fec_blocks * cell_size * sizeof(gr_complex));
+	  out += fec_blocks * cell_size;
         }
       }
 
