@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Vv002 Cr35L
-# Generated: Mon Mar 13 09:09:58 2017
+# Generated: Thu May 11 00:32:10 2017
 ##################################################
 
 from gnuradio import blocks
@@ -79,6 +79,8 @@ class vv002_cr35l(gr.top_block):
 
 
 def main(top_block_cls=vv002_cr35l, options=None):
+    if gr.enable_realtime_scheduling() != gr.RT_OK:
+        print "Error: failed to enable real-time scheduling."
 
     tb = top_block_cls()
     tb.start()
