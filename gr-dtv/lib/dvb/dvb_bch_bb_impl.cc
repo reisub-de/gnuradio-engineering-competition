@@ -25,19 +25,6 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_bch_bb_impl.h"
 
-#include <algorithm>
-#include <vector>
-// // Multi-thread lib
-// #include <algorithm>
-// #include <vector>
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <unistd.h>
-// #include <pthread.h>
-// #include <semaphore.h>
-// #include <stdbool.h>
-// #include <fcntl.h>
-
 namespace gr {
   namespace dtv {
 
@@ -400,32 +387,7 @@ namespace gr {
     {
       ninput_items_required[0] = (noutput_items / nbch) * kbch;
     }
-    // // Function handle
-    // void *product_sum(void *data) {
 
-    // }
-
-    // // Use the multithreading acceleration
-    // void 
-    // conv_multi_thread(const int* ina, const int lena, const int* inb, const int lenb, int* const out)
-    // {
-    //   std::for_each(sem_pool.begin(), sem_pool.end(), [](sem_t& sem) {
-    //     sem_init(sem, 0, 1);
-    //   });
-    //   std::for_each(thread_pool.begin(), thread_pool.end(), [out](pthread_t& thread){
-    //     pthread_create(&thread, NULL, pr);
-    //   })
-    // }
-
-    // int 
-    // mod_multi_thread(const int lena, const int lenb, int* const out)
-    // {
-    //   return 1;
-    // }
-    /*
-     * Polynomial calculation routines
-     * multiply polynomials
-     */
     int
     dvb_bch_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
     {
@@ -433,7 +395,7 @@ namespace gr {
 
       for (int i = 0; i < lena; i++) {
         for (int j = 0; j < lenb; j++) {
-          if ((ina[i] | inb[j]) & 1 ) {
+          if ((ina[i] != 0 && inb[j]) & 1 ) {
             out[i + j]++;    // count number of terms for this pwr of x
           }
         }

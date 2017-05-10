@@ -40,15 +40,6 @@ namespace gr {
       unsigned int m_poly_n_12[6];
       unsigned int m_poly_s_12[6];
       unsigned int m_poly_m_12[6];
-      // // Multi-threading element
-      // std::vector<pthread_t> thread_pool;
-      // std::vector<sem_t>  sem_pool;
-      // // function handle
-      // void *product_sum(void *data);
-
-      // // Multi-Thread member function
-      // void conv_multi_thread(const int*, const int, const int*, const int, int* const);
-      // int mod_multi_thread(const int, const int, int* const);
 
       // Class member function
       int poly_mult(const int*, int, const int*, int, int*);
