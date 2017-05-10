@@ -23,6 +23,7 @@
 
 #include <gnuradio/dtv/dvb_ldpc_bb.h>
 #include "dvb_defines.h"
+#include "ldpc_encode_lookup_table.h"
 
 typedef struct{
     int table_length;
