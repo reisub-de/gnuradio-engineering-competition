@@ -411,7 +411,8 @@ for (int row = 0; row < ROWS; row++) { \
           LDPC_BF(ldpc_tab_1_2N,  90);
         }
         if (code_rate == C3_5) {
-          LDPC_BF(ldpc_tab_3_5N,  108);
+          //LDPC_BF(ldpc_tab_3_5N,  108);
+            ldpc_encode = ldpc_encode_template;
         }
         if (code_rate == C2_3) {
           if (dvb_standard == STANDARD_DVBT2) {
