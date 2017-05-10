@@ -74,7 +74,7 @@ namespace gr {
   const std::string
   version()
   {
-    return "3.7.12git-102-g8b39c8f8";
+    return "3.7.12git-103-gea9a0631";
   }
 
   // Return individual parts of the version
