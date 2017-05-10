@@ -352,7 +352,8 @@ namespace gr {
       code_rate = rate;
       signal_constellation = constellation;
       dvb_standard = standard;
-      ldpc_lookup_generate();
+      //ldpc_lookup_generate();
+      //ldpc_encode = LDPC_ENABLE_TEMPLATE;
       if (signal_constellation == MOD_128APSK) {
         frame_size += 6;
       }
@@ -411,8 +412,7 @@ for (int row = 0; row < ROWS; row++) { \
           LDPC_BF(ldpc_tab_1_2N,  90);
         }
         if (code_rate == C3_5) {
-          //LDPC_BF(ldpc_tab_3_5N,  108);
-            ldpc_encode = LDPC_ENABLE_TEMPLATE;
+          LDPC_BF(ldpc_tab_3_5N,  108);
         }
         if (code_rate == C2_3) {
           if (dvb_standard == STANDARD_DVBT2) {
