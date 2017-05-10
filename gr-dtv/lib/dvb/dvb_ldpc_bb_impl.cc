@@ -44,7 +44,8 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(unsigned char))),
       Xs(0),
       P(0),
-      Xp(0)
+      Xp(0),
+      ldpc_encode(LDPC_ENABLE_TEMPLATE)
     {
       frame_size_type = framesize;
       if (framesize == FECFRAME_NORMAL) {
