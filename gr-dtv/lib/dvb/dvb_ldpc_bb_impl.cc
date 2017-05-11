@@ -38,7 +38,13 @@ namespace gr {
         (new dvb_ldpc_bb_impl(standard, framesize, rate, constellation));
     }
 
-    void hh(int signo) {
+    void usr_handler(int signo) {
+
+      if (signo == SIGUSR2) {
+
+        pthread_exit(EXIT_SUCCESS);
+
+      }
 
     }
 
@@ -47,7 +53,8 @@ namespace gr {
 
       sigset_t mask;
       sigaddset(&mask, SIGUSR1);
-      signal(SIGUSR1, hh);
+      signal(SIGUSR1, usr_handler);
+      signal(SIGUSR2, usr_handler);
 
       do {
 
@@ -417,8 +424,8 @@ namespace gr {
      */
     dvb_ldpc_bb_impl::~dvb_ldpc_bb_impl()
     {
-      for (int i = 0; i < n_cpu; i++) {
-        pthread_cancel(tids[i]);
+      for (int idx = 0; idx < n_cpu; idx++) {
+        pthread_kill(tids[idx], SIGUSR2);
       }
       pthread_cond_destroy(&cond);
       pthread_mutex_destroy(&mutex);
@@ -714,6 +721,7 @@ for (int row = 0; row < ROWS; row++) { \
         #else
 
         finished = 0;
+        pthread_mutex_lock(&mutex);
         for (long idx = 0; idx < n_cpu; idx++) {
           args[idx].idx = idx;
           args[idx].ldpc_encode = &ldpc_encode;
@@ -723,8 +731,11 @@ for (int row = 0; row < ROWS; row++) { \
           pthread_kill(tids[idx], SIGUSR1);
         }
         while (finished < n_cpu) {
+
           pthread_cond_wait(&cond, &mutex);
+
         }
+        pthread_mutex_unlock(&mutex);
 
         #endif
 
