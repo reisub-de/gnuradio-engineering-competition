@@ -61,6 +61,7 @@ class FEC_API cldpc
        - "Modern Coding Theory", T Richardson and R Urbanke.
     */
     std::vector<char> encode(std::vector<char> dataword);
+    void encode_accelerated(const unsigned char * input, size_t size, unsigned char * output);
 
     //! Returns the dimension of the code
     int dimension();

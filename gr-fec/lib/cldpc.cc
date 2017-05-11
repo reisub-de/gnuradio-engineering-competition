@@ -114,6 +114,31 @@ cldpc::encode(std::vector<char> dataword)
   }
 }
 
+void cldpc::encode_accelerated(const unsigned char * input, size_t size, unsigned char * output) {
+    if (size == K) {
+
+        for(int i = rank_H; i < N; i++) {
+            output[permute[i]] = input[i - rank_H];
+        }
+
+        for(int i = 0; i < rank_H; i++) {
+
+            unsigned char sum = 0;
+
+            for (size_t j = 0; j < K; j++) {
+
+                sum = sum ^ (G[i][N - K +j] & input[j]);
+
+            }
+
+            output[permute[i]] = sum;
+        }
+
+    } else {
+        throw std::runtime_error("bad vector length!");
+    }
+}
+
 int
 cldpc::dimension()
 {
