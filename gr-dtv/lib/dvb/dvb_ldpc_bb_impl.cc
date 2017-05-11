@@ -95,6 +95,7 @@ namespace gr {
        pthread_cond_init(&cond, NULL);
 
       for (long idx = 0; idx < n_cpu; idx++) {
+        args[idx].idx = idx;
         args[idx].finished = &finished;
         args[idx].mutex = &mutex;
         args[idx].cond = &cond;
@@ -426,6 +427,7 @@ namespace gr {
     {
       for (int idx = 0; idx < n_cpu; idx++) {
         pthread_kill(tids[idx], SIGRTMIN + 2);
+        pthread_join(tids[idx], NULL);
       }
       pthread_cond_destroy(&cond);
       pthread_mutex_destroy(&mutex);
@@ -723,7 +725,6 @@ for (int row = 0; row < ROWS; row++) { \
         finished = 0;
         pthread_mutex_lock(&mutex);
         for (long idx = 0; idx < n_cpu; idx++) {
-          args[idx].idx = idx;
           args[idx].ldpc_encode = &ldpc_encode;
           args[idx].p = p;
           args[idx].d = d;
