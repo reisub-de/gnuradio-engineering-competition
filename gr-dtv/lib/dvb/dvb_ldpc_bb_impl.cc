@@ -48,6 +48,12 @@ namespace gr {
       P(0),
       Xp(0)
     {
+      n_cpu = sysconf(_SC_NPROCESSORS_ONLN);
+      ldpc_encode.items_per_cpu = new int[n_cpu]();
+      ldpc_encode.p2 = new int[n_cpu * LDPC_ENCODE_TABLE_LENGTH];
+      ldpc_encode.d2 = new int[n_cpu * LDPC_ENCODE_TABLE_LENGTH];
+
+
       frame_size_type = framesize;
       if (framesize == FECFRAME_NORMAL) {
         frame_size = FRAME_SIZE_NORMAL;
@@ -366,6 +372,9 @@ namespace gr {
      */
     dvb_ldpc_bb_impl::~dvb_ldpc_bb_impl()
     {
+      delete[] ldpc_encode.items_per_cpu;
+      delete[] ldpc_encode.p2;
+      delete[] ldpc_encode.d2;
     }
 
     void
@@ -381,6 +390,11 @@ for (int row = 0; row < ROWS; row++) { \
       ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
       ldpc_encode.d[index] = im; \
       index++; \
+      int rr = ldpc_encode.p[index] % n_cpu; \
+      int & cur_idx = ldpc_encode.items_per_cpu[rr]; \
+      ldpc_encode.p2[rr * LDPC_ENCODE_TABLE_LENGTH + cur_idx] = ldpc_encode.p[index]; \
+      ldpc_encode.d2[rr * LDPC_ENCODE_TABLE_LENGTH + cur_idx] = ldpc_encode.d[index]; \
+      cur_idx += 1; \
     } \
     im++; \
   } \
@@ -599,102 +613,23 @@ for (int row = 0; row < ROWS; row++) { \
     }
 
     struct general_work_arg {
-      long idx;
-      long n_cpu;
-      int noutput_items;
-      int Xs;
-      int Xp;
-      int P;
-      unsigned int frame_size;
-      unsigned int frame_size_real;
-      unsigned int nbch;
-      unsigned int signal_constellation;
-      const unsigned char * in;
-      unsigned char * out;
-      unsigned char * b;
+      int idx;
+      int n_cpu;;
       const ldpc_encode_table * ldpc_encode;
+      const unsigned char *d;
+      unsigned char * p;
     };
-    void * general_work_accelerated(void * argument) {
-      general_work_arg * arg = (general_work_arg *) argument;
-      const int noutput_items = arg->noutput_items;
-      const int Xs = arg->Xs;
-      const int Xp = arg->Xp;
-      const int P = arg->P;
-      const unsigned int frame_size = arg->frame_size;
-      const unsigned int frame_size_real = arg->frame_size_real;
-      const unsigned int nbch = arg->nbch;
-      const unsigned char * in = arg-> in;
-      const unsigned char * d = in;
-      const unsigned int signal_constellation = arg->signal_constellation;
-      unsigned char * out = arg->out;
-      unsigned char * b = arg->b;
-      unsigned char * p = &out[nbch];
-      const ldpc_encode_table * ldpc_encode = arg->ldpc_encode;
+    void * general_work_acc(void * arguments) {
+      general_work_arg * arg = (general_work_arg *) arguments;
 
-      unsigned char s[FRAME_SIZE_NORMAL];
-      unsigned char pb[FRAME_SIZE_NORMAL];
 
-      int plen = (frame_size_real + Xp) - nbch;
-      int puncture, index;
-
-      for (int i = frame_size * arg->idx; i < noutput_items; i += frame_size * arg->n_cpu) {
-
-        int consumed = i / frame_size * nbch;
-        d = in + i / frame_size * nbch;
-        p = out + nbch + i / frame_size * frame_size;
-
-        if (Xs != 0) {
-          memset(s, 0, sizeof(unsigned char) * Xs);
-          memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
-          d = s;
-        }
-        if (P != 0) {
-          p = &pb[nbch];
-          b = &out[i + nbch];
-        }
-        // First zero all the parity bits
-        memset(p, 0, sizeof(unsigned char) * plen);
-        for (int j = 0; j < (int)nbch; j++) {
-          out[i + j] = in[consumed];
-          consumed++;
-        }
-        // now do the parity checking
-        for (int j = 0; j < ldpc_encode->table_length; j++) {
-          p[ldpc_encode->p[j]] ^= d[ldpc_encode->d[j]];
-        }
-        if (P != 0) {
-          puncture = 0;
-          for (int j = 0; j < plen; j += P) {
-            p[j] = 0x55;
-            puncture++;
-            if (puncture == Xp) {
-              break;
-            }
-          }
-          index = 0;
-          for (int j = 0; j < plen; j++) {
-            if (p[j] != 0x55) {
-              b[index++] = p[j];
-            }
-          }
-          p = &out[nbch];
-        }
-        for (int j = 1; j < (plen - Xp); j++) {
-          p[j] ^= p[j-1];
-        }
-        if (signal_constellation == MOD_128APSK) {
-          for (int j = 0; j < 6; j++) {
-            p[j + plen] = 0;
-          }
-        }
-        d += nbch;
-        p += frame_size;
+      for (int i = 0; i < arg->ldpc_encode->items_per_cpu[arg->idx]; i += 1) {
+        arg->p[arg->ldpc_encode->p2[i]] ^= arg->d[arg->ldpc_encode->d2[i]];
       }
-
       return EXIT_SUCCESS;
     }
 
-    //#define USE_ACC
+
     int
     dvb_ldpc_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -706,54 +641,14 @@ for (int row = 0; row < ROWS; row++) { \
       unsigned char * b = (unsigned char *) output_items[0];
       int consumed = 0;
 
-      #ifndef USE_ACC
-
       const unsigned char *d;
       unsigned char * p;
-      unsigned char *s;
+      unsigned char * s;
       // Calculate the number of parity bits
       int plen = (frame_size_real + Xp) - nbch;
       d = in;
       p = &out[nbch];
       int puncture, index;
-
-      #endif
-
-      long n_cpu = sysconf(_SC_NPROCESSORS_ONLN);
-
-static int counter = 0;
-printf("[%d] n_cpu: %ld\n", counter, n_cpu);
-counter += 1;
-
-      #ifdef USE_ACC
-      pthread_t tids[n_cpu];
-      general_work_arg args[n_cpu];
-      for (long cpu = 0; cpu < n_cpu; cpu++) {
-        args[cpu].idx = cpu;
-        args[cpu].n_cpu = n_cpu;
-        args[cpu].noutput_items = noutput_items;
-        args[cpu].frame_size = frame_size;
-        args[cpu].frame_size_real = frame_size_real;
-        args[cpu].Xs = Xs;
-        args[cpu].Xp = Xp;
-        args[cpu].nbch = nbch;
-        args[cpu].in = in;
-        args[cpu].P = P;
-        args[cpu].out = out;
-        args[cpu].b = b;
-        args[cpu].ldpc_encode = &ldpc_encode;
-        args[cpu].signal_constellation = signal_constellation;
-        pthread_create(tids + cpu, NULL, general_work_accelerated, args + cpu);
-      }
-
-      for (long cpu = 0; cpu < n_cpu; cpu++) {
-        pthread_join(tids[cpu], NULL);
-      }
-
-      consumed = noutput_items / frame_size * nbch;
-
-      #else
-
 
       for (int i = 0; i < noutput_items; i += frame_size) {
         if (Xs != 0) {
@@ -772,10 +667,30 @@ counter += 1;
           out[i + j] = in[consumed];
           consumed++;
         }
+
         // now do the parity checking
+        #define USE_ACC
+        #ifndef USE_ACC
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
         }
+        #else
+        pthread_t tids[n_cpu];
+        general_work_arg args[n_cpu];
+        for (long idx = 0; idx < n_cpu; idx++) {
+          args[idx].idx = idx;
+          args[idx].n_cpu = n_cpu;
+          args[idx].ldpc_encode = &ldpc_encode;
+          args[idx].p = p;
+          args[idx].d = d;
+          pthread_create(tids + idx, NULL, general_work_acc, args + idx);
+        }
+        for (long idx = 0; idx < n_cpu; idx++) {
+          pthread_join(tids[idx], NULL);
+        }
+
+        #endif
+
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
@@ -804,29 +719,6 @@ counter += 1;
         d += nbch;
         p += frame_size;
       }
-
-      #endif
-
-
-      //printf("consumed: %d\n", consumed);
-      //FILE * file = fopen("input.txt", "w");
-      printf("nbch: %u, noutput_items: %d, frame_size: %d\n", nbch, noutput_items, frame_size);
-/*
-      for (int i = 0; i < consumed; i++) {
-        fprintf(file, "0x%0x ", in[i]);
-        if (i%8==7)fprintf(file, "\n");
-      }
-      fclose(file);
-
-      file = fopen("output.txt", "w");
-      for (int i = 0; i < consumed; i++) {
-        fprintf(file, "0x%0x ", out[i]);
-        if (i%8==70)fprintf(file, "\n");
-      }
-      printf("\n");*/
-
-
-      // exit(0);
 
       // Tell runtime system how many input items we consumed on
       // each input stream.

@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -28,6 +28,9 @@ typedef struct{
     int table_length;
     int d[LDPC_ENCODE_TABLE_LENGTH];
     int p[LDPC_ENCODE_TABLE_LENGTH];
+    int * items_per_cpu;
+    int * d2;
+    int * p2;
 }ldpc_encode_table;
 
 namespace gr {
@@ -36,6 +39,7 @@ namespace gr {
     class dvb_ldpc_bb_impl : public dvb_ldpc_bb
     {
      private:
+      long n_cpu;
       unsigned int frame_size;
       unsigned int frame_size_real;
       unsigned int frame_size_type;
