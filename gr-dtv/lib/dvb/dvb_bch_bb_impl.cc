@@ -26,6 +26,7 @@
 #include "dvb_bch_bb_impl.h"
 
 #include <stdio.h>
+#include <memory>
 
 namespace gr {
   namespace dtv {

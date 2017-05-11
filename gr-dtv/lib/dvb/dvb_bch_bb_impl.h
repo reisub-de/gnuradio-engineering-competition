@@ -75,7 +75,7 @@ namespace gr {
             
           virtual int run();
       };
-      // Multi-thread data type
+      // Multi-thread data structrue
       struct DataBchMultiThread {
         DataBchMultiThread( unsigned int arg_kbcn,
                             const unsigned char *arg_in,
