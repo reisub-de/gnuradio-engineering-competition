@@ -51,7 +51,7 @@ namespace gr {
       unsigned char puncturing_buffer[FRAME_SIZE_NORMAL];
       unsigned char shortening_buffer[FRAME_SIZE_NORMAL];
       void ldpc_lookup_generate(void);
-      ldpc_encode_table ldpc_encode;
+      ldpc_encode_table ldpc_encode = LDPC_ENABLE_TEMPLATE;
 
       const static int ldpc_tab_1_4N[45][13];
       const static int ldpc_tab_1_3N[60][13];
