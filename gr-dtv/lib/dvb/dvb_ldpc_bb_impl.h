@@ -33,6 +33,16 @@ typedef struct{
     int * p2;
 }ldpc_encode_table;
 
+struct general_work_arg {
+  int idx;
+  const ldpc_encode_table * ldpc_encode;
+  const unsigned char *d;
+  unsigned char * p;
+  int * finished;
+  pthread_mutex_t * mutex;
+  pthread_cond_t * cond;
+};
+
 namespace gr {
   namespace dtv {
 
@@ -40,6 +50,13 @@ namespace gr {
     {
      private:
       long n_cpu;
+      pthread_t * tids;
+      general_work_arg * args;
+      pthread_mutex_t mutex;
+      pthread_cond_t cond;
+      int finished;
+
+
       unsigned int frame_size;
       unsigned int frame_size_real;
       unsigned int frame_size_type;
