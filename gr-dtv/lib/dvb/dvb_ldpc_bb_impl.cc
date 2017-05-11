@@ -49,6 +49,7 @@ namespace gr {
       Xp(0)
     {
       n_cpu = sysconf(_SC_NPROCESSORS_ONLN);
+      n_cpu = n_cpu / 2;
       ldpc_encode.items_per_cpu = new int[n_cpu]();
       ldpc_encode.p2 = new int[n_cpu * LDPC_ENCODE_TABLE_LENGTH];
       ldpc_encode.d2 = new int[n_cpu * LDPC_ENCODE_TABLE_LENGTH];
