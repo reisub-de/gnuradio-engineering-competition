@@ -40,7 +40,7 @@ namespace gr {
 
     void usr_handler(int signo) {
 
-      if (signo == SIGUSR2) {
+      if (signo == SIGRTMIN + 2) {
 
         pthread_exit(EXIT_SUCCESS);
 
@@ -53,8 +53,8 @@ namespace gr {
 
       sigset_t mask;
       sigaddset(&mask, SIGUSR1);
-      signal(SIGUSR1, usr_handler);
-      signal(SIGUSR2, usr_handler);
+      signal(SIGRTMIN + 1, usr_handler);
+      signal(SIGRTMIN + 2, usr_handler);
 
       do {
 
@@ -425,7 +425,7 @@ namespace gr {
     dvb_ldpc_bb_impl::~dvb_ldpc_bb_impl()
     {
       for (int idx = 0; idx < n_cpu; idx++) {
-        pthread_kill(tids[idx], SIGUSR2);
+        pthread_kill(tids[idx], SIGRTMIN + 2);
       }
       pthread_cond_destroy(&cond);
       pthread_mutex_destroy(&mutex);
@@ -728,7 +728,7 @@ for (int row = 0; row < ROWS; row++) { \
           args[idx].p = p;
           args[idx].d = d;
           // pthread_create(tids + idx, NULL, general_work_acc, args + idx);
-          pthread_kill(tids[idx], SIGUSR1);
+          pthread_kill(tids[idx], SIGRTMIN + 1);
         }
         while (finished < n_cpu) {
 
