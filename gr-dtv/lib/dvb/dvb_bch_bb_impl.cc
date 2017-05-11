@@ -25,6 +25,8 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_bch_bb_impl.h"
 
+#include <stdio.h>
+
 namespace gr {
   namespace dtv {
 
@@ -578,6 +580,42 @@ namespace gr {
       poly_pack(polyout[0], m_poly_m_12, 180);
     }
 
+    dvb_bch_bb_impl::BchCodeN12Task::BchCodeN12Task(){}
+
+    int dvb_bch_bb_impl::BchCodeN12Task::run() {
+      DataBchMultiThread *data = (DataBchMultiThread*)arg_;
+      const unsigned char *in =  (const unsigned char *)(data->in);
+      unsigned char *out = (unsigned char*)(data->out);
+      const int kbch = (int)(data->kbch);
+      dvb_bch_bb_impl *self_ptr = (dvb_bch_bb_impl*)(data->self_ptr);
+      unsigned int* m_poly_n_12 = (unsigned int*)(data->m_poly_n_12);
+      unsigned char b, temp;
+      unsigned int shift[6];
+
+      memset(shift, 0, sizeof(unsigned int) * 6);
+
+      for (int j = 0; j < kbch; j++) {
+        temp = *in++;
+        *out++ = temp;
+        b = (temp ^ (shift[5] & 1));
+        self_ptr->reg_6_shift(shift);
+        if (b) {
+          shift[0] ^= m_poly_n_12[0];
+          shift[1] ^= m_poly_n_12[1];
+          shift[2] ^= m_poly_n_12[2];
+          shift[3] ^= m_poly_n_12[3];
+          shift[4] ^= m_poly_n_12[4];
+          shift[5] ^= m_poly_n_12[5];
+        }
+      }
+      // Now add the parity bits to the output
+      for (int n = 0; n < 192; n++) {
+        *out++ = (shift[5] & 1);
+        self_ptr->reg_6_shift(shift);
+      }
+      return 0;
+    }
+
     int
     dvb_bch_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -592,31 +630,52 @@ namespace gr {
 
       switch (bch_code) {
         case BCH_CODE_N12:
-          for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
-            // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              *out++ = temp;
-              consumed++;
-              b = (temp ^ (shift[5] & 1));
-              reg_6_shift(shift);
-              if (b) {
-                shift[0] ^= m_poly_n_12[0];
-                shift[1] ^= m_poly_n_12[1];
-                shift[2] ^= m_poly_n_12[2];
-                shift[3] ^= m_poly_n_12[3];
-                shift[4] ^= m_poly_n_12[4];
-                shift[5] ^= m_poly_n_12[5];
-              }
+          {
+            std::vector<BchCodeN12Task> tasks; 
+            std::vector<DataBchMultiThread> thread_arg;
+            ThreadPool thread_pool(5);
+            for (int i = 0; i < noutput_items; i += nbch) {
+              thread_arg.push_back(DataBchMultiThread(kbch,
+                                                      in,
+                                                      out,
+                                                      this,
+                                                      m_poly_n_12));
+              tasks.push_back(BchCodeN12Task());
+              tasks.back().setArg((void*)(&thread_arg.back()));
+              thread_pool.addTask(&(tasks.back())); 
+              in += (int)kbch;
+              out += (int)kbch + 192;
+              consumed += (int)kbch;
             }
-            // Now add the parity bits to the output
-            for (int n = 0; n < 192; n++) {
-              *out++ = (shift[5] & 1);
-              reg_6_shift(shift);
-            }
+            while (thread_pool.size() != 0) if (thread_pool.size() > 1) printf("%d\n", thread_pool.size());;
+            thread_pool.stop();
           }
+
+          // for (int i = 0; i < noutput_items; i += nbch) {
+          //   //Zero the shift register
+          //   memset(shift, 0, sizeof(unsigned int) * 6);
+          //   // MSB of the codeword first
+          //   for (int j = 0; j < (int)kbch; j++) {
+          //     temp = *in++;
+          //     *out++ = temp;
+          //     consumed++;
+          //     b = (temp ^ (shift[5] & 1));
+          //     reg_6_shift(shift);
+          //     if (b) {
+          //       shift[0] ^= m_poly_n_12[0];
+          //       shift[1] ^= m_poly_n_12[1];
+          //       shift[2] ^= m_poly_n_12[2];
+          //       shift[3] ^= m_poly_n_12[3];
+          //       shift[4] ^= m_poly_n_12[4];
+          //       shift[5] ^= m_poly_n_12[5];
+          //     }
+          //   }
+          //   // Now add the parity bits to the output
+          //   for (int n = 0; n < 192; n++) {
+          //     *out++ = (shift[5] & 1);
+          //     reg_6_shift(shift);
+          //   }
+          // }
           break;
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
@@ -733,6 +792,125 @@ namespace gr {
       return noutput_items;
     }
 
+    // Thread pool definition
+    ThreadPool::ThreadPool(int threadNum)
+    {
+        isRunning_ = true;
+        threadsNum_ = threadNum;
+        createThreads();
+    }
+
+    ThreadPool::~ThreadPool()
+    {
+        stop();
+        for(std::deque<Task*>::iterator it = taskQueue_.begin(); it != taskQueue_.end(); ++it)
+        {
+            delete *it;
+        }
+        taskQueue_.clear();
+    }
+
+    int ThreadPool::createThreads()
+    {
+        pthread_mutex_init(&mutex_, NULL);
+        pthread_cond_init(&condition_, NULL);
+        threads_ = (pthread_t*)malloc(sizeof(pthread_t) * threadsNum_);
+        for (int i = 0; i < threadsNum_; i++)
+        {
+            pthread_create(&threads_[i], NULL, threadFunc, this);
+        }
+        return 0;
+    }
+
+    size_t ThreadPool::addTask(Task *task)
+    {
+        pthread_mutex_lock(&mutex_);
+        taskQueue_.push_back(task);
+        int size = taskQueue_.size();
+        pthread_mutex_unlock(&mutex_);
+        pthread_cond_signal(&condition_);
+        return size;
+    }
+
+    void ThreadPool::stop()
+    {
+        if (!isRunning_)
+        {
+            return;
+        }
+
+        isRunning_ = false;
+        pthread_cond_broadcast(&condition_);
+
+        for (int i = 0; i < threadsNum_; i++)
+        {
+            pthread_join(threads_[i], NULL);
+        }
+
+        free(threads_);
+        threads_ = NULL;
+
+        pthread_mutex_destroy(&mutex_);
+        pthread_cond_destroy(&condition_);
+    }
+
+    int ThreadPool::size()
+    {
+        pthread_mutex_lock(&mutex_);
+        int size = taskQueue_.size();
+        pthread_mutex_unlock(&mutex_);
+        return size;
+    }
+
+    Task* ThreadPool::take()
+    {
+        Task* task = NULL;
+        while (!task)
+        {
+            pthread_mutex_lock(&mutex_);
+            while (taskQueue_.empty() && isRunning_)
+            {
+                pthread_cond_wait(&condition_, &mutex_);
+            }
+
+            if (!isRunning_)
+            {
+                pthread_mutex_unlock(&mutex_);
+                
+                break;
+            }
+            else if (taskQueue_.empty())
+            {
+                pthread_mutex_unlock(&mutex_);
+                continue;
+            }
+
+            assert(!taskQueue_.empty());
+            task = taskQueue_.front();
+            taskQueue_.pop_front();
+            pthread_mutex_unlock(&mutex_);
+        }
+        return task;
+    }
+
+    void* ThreadPool::threadFunc(void* arg)
+    {
+        pthread_t tid = pthread_self();
+        ThreadPool* pool = static_cast<ThreadPool*>(arg);
+        while (pool->isRunning_)
+        {
+            Task* task = pool->take();
+            if (!task)
+            {
+                // printf("thread %lu will exit\n", tid);
+                break;
+            }
+
+            assert(task);
+            task->run();
+        }
+        return 0;
+    }
   } /* namespace dtv */
 } /* namespace gr */
 

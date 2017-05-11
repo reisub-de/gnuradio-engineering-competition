@@ -23,11 +23,28 @@
 
 #include <gnuradio/dtv/dvb_bch_bb.h>
 #include "dvb_defines.h"
-#include <vector>
 
 namespace gr {
   namespace dtv {
+    // Multi-thread task base class definition
+    class Task  
+    {  
+     public:
+        Task(void* arg = NULL, const std::string taskName = "")
+            : arg_(arg), taskName_(taskName) {}
 
+        virtual ~Task() {}
+
+        void setArg(void* arg){arg_ = arg;}
+
+        virtual int run() = 0;
+
+    protected:
+        void*       arg_;
+        std::string taskName_;
+    };
+
+    // Bch main component
     class dvb_bch_bb_impl : public dvb_bch_bb
     {
      private:
@@ -50,6 +67,33 @@ namespace gr {
       inline void reg_6_shift(unsigned int*);
       void bch_poly_build_tables(void);
 
+      // Multi-thread task
+      class BchCodeN12Task: public Task  
+      {  
+      public:  
+          BchCodeN12Task();
+            
+          virtual int run();
+      };
+      // Multi-thread data type
+      struct DataBchMultiThread {
+        DataBchMultiThread( unsigned int arg_kbcn,
+                            const unsigned char *arg_in,
+                            unsigned char *arg_out,
+                            void * arg_self_ptr,
+                            unsigned int *arg_m_poly_n_12)
+                            : kbch(arg_kbcn),
+                              in(arg_in),
+                              out(arg_out),
+                              self_ptr(arg_self_ptr),
+                              m_poly_n_12(arg_m_poly_n_12) {}
+        unsigned int kbch;
+        const unsigned char *in;
+        unsigned char *out;
+        void *self_ptr;
+        unsigned int *m_poly_n_12;
+      };
+
      public:
       dvb_bch_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate);
       ~dvb_bch_bb_impl();
@@ -62,6 +106,36 @@ namespace gr {
                        gr_vector_void_star &output_items);
     };
 
+    // Thread pool declaration
+    class ThreadPool
+    {
+    public:
+        ThreadPool(int threadNum = 8);
+        ~ThreadPool();
+
+    public:
+        size_t addTask(Task *task);
+        void   stop();
+        int    size();
+        Task*  take();
+
+    private:
+        int createThreads();
+        static void* threadFunc(void * threadData);
+
+    private:
+        ThreadPool& operator=(const ThreadPool&);
+        ThreadPool(const ThreadPool&);
+
+    private:
+        volatile  bool              isRunning_;
+        int                         threadsNum_;
+        pthread_t*                  threads_;
+
+        std::deque<Task*>           taskQueue_;
+        pthread_mutex_t             mutex_;
+        pthread_cond_t              condition_;
+    };
   } // namespace dtv
 } // namespace gr
 
