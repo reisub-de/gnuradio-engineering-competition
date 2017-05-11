@@ -1,1 +1,0 @@
-/usr/bin/c++    -fvisibility=hidden -Wsign-compare -Wall -Wno-uninitialized -g -O2   CMakeFiles/pager_swig_gr_pager_swig_b2a57.dir/pager_swig_gr_pager_swig_b2a57.cpp.o  -o pager_swig_gr_pager_swig_b2a57 -rdynamic 

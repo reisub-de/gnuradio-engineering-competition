@@ -1,1 +1,0 @@
-/usr/bin/c++    -fvisibility=hidden -Wsign-compare -Wall -Wno-uninitialized -Wall -fvisibility=hidden -g -O2   CMakeFiles/test_all.dir/testqa.cc.o CMakeFiles/test_all.dir/qa_utils.cc.o  -o test_all -Wl,-rpath,/home/zhiwei/WorkSpace/gnuradio/cmake-build-debug/volk/lib -rdynamic libvolk.so.1.3 -ldl -lorc-0.4 

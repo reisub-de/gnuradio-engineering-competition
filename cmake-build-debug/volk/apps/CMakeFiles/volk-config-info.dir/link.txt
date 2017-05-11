@@ -1,1 +1,0 @@
-/usr/bin/c++    -fvisibility=hidden -Wsign-compare -Wall -Wno-uninitialized -Wall -g -O2   CMakeFiles/volk-config-info.dir/volk-config-info.cc.o  -o volk-config-info -Wl,-rpath,/home/zhiwei/WorkSpace/gnuradio/cmake-build-debug/volk/lib: -rdynamic ../lib/libvolk.so.1.3 -lboost_filesystem -lboost_system -lboost_unit_test_framework -lboost_program_options -ldl -lorc-0.4 

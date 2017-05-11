@@ -1,8 +1,0 @@
--DGR_PERFORMANCE_COUNTERS
--DENABLE_GR_LOG
--DHAVE_LOG4CPP
--DQT_GUI_LIB
--DQT_CORE_LIB
--o
-/home/zhiwei/WorkSpace/gnuradio/cmake-build-debug/gr-qtgui/lib/__/include/gnuradio/qtgui/moc_TimeRasterDisplayPlot.cxx
-/home/zhiwei/WorkSpace/gnuradio/gr-qtgui/include/gnuradio/qtgui/TimeRasterDisplayPlot.h
