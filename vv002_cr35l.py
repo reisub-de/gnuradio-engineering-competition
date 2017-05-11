@@ -84,11 +84,21 @@ def main(top_block_cls=vv002_cr35l, options=None):
     tb.start()
     tb.wait()
 
-    print "pilotgenerator runtime is: ", tb.dtv_dvbt2_pilotgenerator_cc_0.pc_work_time_total()
+    print "pilot_gen runtime is: ", tb.dtv_dvbt2_pilotgenerator_cc_0.pc_work_time_total()
+    print "p1insert runtime is: ", tb.dtv_dvbt2_p1insertion_cc_0.pc_work_time_total()
+    print "modulator runtime is: ", tb.dtv_dvbt2_modulator_bc_0.pc_work_time_total()
     print "interleaver runtime is: ", tb.dtv_dvbt2_interleaver_bb_0.pc_work_time_total()
     print "freqinterleaver runtime is: ", tb.dtv_dvbt2_freqinterleaver_cc_0.pc_work_time_total()
+    print "cellinterleaver runtime is: ", tb.dtv_dvbt2_framemapper_cc_0.pc_work_time_total()
+    print "cellinterleaver runtime is: ", tb.dtv_dvbt2_cellinterleaver_cc_0.pc_work_time_total()
     print "ldpc runtime is: ", tb.dtv_dvb_ldpc_bb_0.pc_work_time_total()
     print "bch runtime is: ", tb.dtv_dvb_bch_bb_0.pc_work_time_total()
+    print "bbscrambler runtime is: ", tb.dtv_dvb_bbscrambler_bb_0.pc_work_time_total()
+    print "bbheader runtime is: ", tb.dtv_dvb_bbheader_bb_0.pc_work_time_total()
+    print "digital_ofdm runtime is: ", tb.digital_ofdm_cyclic_prefixer_0.pc_work_time_total()
+    print "file_source runtime is: ", tb.blocks_file_source_0.pc_work_time_total()
+
+    print tb.dtv_dvbt2_pilotgenerator_cc_0.pc_work_time_total() + tb.dtv_dvbt2_p1insertion_cc_0.pc_work_time_total() + tb.dtv_dvbt2_modulator_bc_0.pc_work_time_total() + tb.dtv_dvbt2_interleaver_bb_0.pc_work_time_total() + tb.dtv_dvbt2_freqinterleaver_cc_0.pc_work_time_total() + tb.dtv_dvbt2_framemapper_cc_0.pc_work_time_total() + tb.dtv_dvbt2_cellinterleaver_cc_0.pc_work_time_total() + tb.dtv_dvb_ldpc_bb_0.pc_work_time_total() + tb.dtv_dvb_bch_bb_0.pc_work_time_total() + tb.dtv_dvb_bbscrambler_bb_0.pc_work_time_total() + tb.dtv_dvb_bbheader_bb_0.pc_work_time_total() + tb.digital_ofdm_cyclic_prefixer_0.pc_work_time_total() + tb.blocks_file_source_0.pc_work_time_total() + tb.blocks_file_sink_1.pc_work_time_total()
 
 
 if __name__ == '__main__':
