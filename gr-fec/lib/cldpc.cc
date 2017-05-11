@@ -22,6 +22,7 @@
 
 #include <gnuradio/fec/cldpc.h>
 #include <stdexcept>
+#include <cstdio>
 
 cldpc::cldpc(const GF2Mat  X) {
     H = X;
@@ -127,7 +128,7 @@ void cldpc::encode_accelerated(const unsigned char * input, size_t size, unsigne
 
             for (size_t j = 0; j < K; j++) {
 
-                sum = sum ^ (G[i][N - K +j] & input[j]);
+                sum = sum ^ (G.get_element(i, N - K +j) & input[j]);
 
             }
 
