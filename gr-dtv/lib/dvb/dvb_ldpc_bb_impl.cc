@@ -389,12 +389,12 @@ for (int row = 0; row < ROWS; row++) { \
     for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
       ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
       ldpc_encode.d[index] = im; \
-      index++; \
       int rr = ldpc_encode.p[index] % n_cpu; \
       int & cur_idx = ldpc_encode.items_per_cpu[rr]; \
       ldpc_encode.p2[rr * LDPC_ENCODE_TABLE_LENGTH + cur_idx] = ldpc_encode.p[index]; \
       ldpc_encode.d2[rr * LDPC_ENCODE_TABLE_LENGTH + cur_idx] = ldpc_encode.d[index]; \
       cur_idx += 1; \
+      index++; \
     } \
     im++; \
   } \
@@ -614,7 +614,6 @@ for (int row = 0; row < ROWS; row++) { \
 
     struct general_work_arg {
       int idx;
-      int n_cpu;;
       const ldpc_encode_table * ldpc_encode;
       const unsigned char *d;
       unsigned char * p;
@@ -624,7 +623,7 @@ for (int row = 0; row < ROWS; row++) { \
 
 
       for (int i = 0; i < arg->ldpc_encode->items_per_cpu[arg->idx]; i += 1) {
-        arg->p[arg->ldpc_encode->p2[i]] ^= arg->d[arg->ldpc_encode->d2[i]];
+        arg->p[arg->ldpc_encode->p2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]] ^= arg->d[arg->ldpc_encode->d2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]];
       }
       return EXIT_SUCCESS;
     }
@@ -679,7 +678,6 @@ for (int row = 0; row < ROWS; row++) { \
         general_work_arg args[n_cpu];
         for (long idx = 0; idx < n_cpu; idx++) {
           args[idx].idx = idx;
-          args[idx].n_cpu = n_cpu;
           args[idx].ldpc_encode = &ldpc_encode;
           args[idx].p = p;
           args[idx].d = d;
