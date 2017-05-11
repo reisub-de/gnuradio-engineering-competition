@@ -50,12 +50,6 @@ namespace gr {
     {
      private:
       long n_cpu;
-      pthread_t * tids;
-      general_work_arg * args;
-      pthread_mutex_t mutex;
-      pthread_cond_t cond;
-      int finished;
-
 
       unsigned int frame_size;
       unsigned int frame_size_real;

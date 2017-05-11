@@ -38,39 +38,14 @@ namespace gr {
         (new dvb_ldpc_bb_impl(standard, framesize, rate, constellation));
     }
 
-    void usr_handler(int signo) {
-
-      if (signo == SIGRTMIN + 2) {
-
-        pthread_exit(EXIT_SUCCESS);
-
-      }
-
-    }
 
     void * general_work_acc(void * arguments) {
       general_work_arg * arg = (general_work_arg *) arguments;
 
-      sigset_t mask;
-      sigaddset(&mask, SIGUSR1);
-      signal(SIGRTMIN + 1, usr_handler);
-      signal(SIGRTMIN + 2, usr_handler);
 
-      do {
-
-        pause();
-
-        for (int i = 0; i < arg->ldpc_encode->items_per_cpu[arg->idx]; i += 1) {
-          arg->p[arg->ldpc_encode->p2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]] ^= arg->d[arg->ldpc_encode->d2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]];
-        }
-
-        pthread_mutex_lock(arg->mutex);
-        * (arg->finished) += 1;
-        pthread_cond_signal(arg->cond);
-        pthread_mutex_unlock(arg->mutex);
-
-      } while (1);
-
+      for (int i = 0; i < arg->ldpc_encode->items_per_cpu[arg->idx]; i += 1) {
+        arg->p[arg->ldpc_encode->p2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]] ^= arg->d[arg->ldpc_encode->d2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]];
+      }
 
       return EXIT_SUCCESS;
     }
@@ -88,19 +63,6 @@ namespace gr {
       Xp(0)
     {
       n_cpu = sysconf(_SC_NPROCESSORS_ONLN);
-      tids = new pthread_t[n_cpu];
-      args = new general_work_arg[n_cpu];
-
-       pthread_mutex_init(&mutex, NULL);
-       pthread_cond_init(&cond, NULL);
-
-      for (long idx = 0; idx < n_cpu; idx++) {
-        args[idx].idx = idx;
-        args[idx].finished = &finished;
-        args[idx].mutex = &mutex;
-        args[idx].cond = &cond;
-        pthread_create(tids + idx, NULL, general_work_acc, args + idx);
-      }
 
       ldpc_encode.items_per_cpu = new int[n_cpu]();
       ldpc_encode.p2 = new int[n_cpu * LDPC_ENCODE_TABLE_LENGTH];
@@ -425,14 +387,6 @@ namespace gr {
      */
     dvb_ldpc_bb_impl::~dvb_ldpc_bb_impl()
     {
-      for (int idx = 0; idx < n_cpu; idx++) {
-        pthread_kill(tids[idx], SIGRTMIN + 2);
-        pthread_join(tids[idx], NULL);
-      }
-      pthread_cond_destroy(&cond);
-      pthread_mutex_destroy(&mutex);
-      delete[] tids;
-      delete[] args;
       delete[] ldpc_encode.items_per_cpu;
       delete[] ldpc_encode.p2;
       delete[] ldpc_encode.d2;
@@ -722,21 +676,20 @@ for (int row = 0; row < ROWS; row++) { \
         }
         #else
 
-        finished = 0;
-        pthread_mutex_lock(&mutex);
+        pthread_t tids[n_cpu];
+        general_work_arg args[n_cpu];
+
         for (long idx = 0; idx < n_cpu; idx++) {
           args[idx].ldpc_encode = &ldpc_encode;
           args[idx].p = p;
           args[idx].d = d;
-          // pthread_create(tids + idx, NULL, general_work_acc, args + idx);
-          pthread_kill(tids[idx], SIGRTMIN + 1);
+          args[idx].idx = idx;
+          pthread_create(tids + idx, NULL, general_work_acc, args + idx);
         }
-        while (finished < n_cpu) {
 
-          pthread_cond_wait(&cond, &mutex);
-
+        for (int idx = 0; idx < n_cpu; idx++) {
+          pthread_join(tids[idx], NULL);
         }
-        pthread_mutex_unlock(&mutex);
 
         #endif
 
