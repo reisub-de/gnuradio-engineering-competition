@@ -42,10 +42,26 @@ namespace gr {
     void * general_work_acc(void * arguments) {
       general_work_arg * arg = (general_work_arg *) arguments;
 
+      pthread_mutex_lock(arg->mutex1);
 
-      for (int i = 0; i < arg->ldpc_encode->items_per_cpu[arg->idx]; i += 1) {
-        arg->p[arg->ldpc_encode->p2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]] ^= arg->d[arg->ldpc_encode->d2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]];
+      while (0 == pthread_cond_wait(arg->cond1, arg->mutex1)) {
+
+        if (*(arg->status) != 0) {
+          pthread_mutex_unlock(arg->mutex1);
+          pthread_exit(EXIT_SUCCESS);
+        }
+        for (int i = 0; i < arg->ldpc_encode->items_per_cpu[arg->idx]; i += 1) {
+          arg->p[arg->ldpc_encode->p2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]] ^= arg->d[arg->ldpc_encode->d2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]];
+        }
+
+        pthread_mutex_lock(arg->mutex2);
+        * (arg->finished) += 1;
+        pthread_cond_signal(arg->cond2);
+        pthread_mutex_unlock(arg->mutex2);
+
       }
+
+      pthread_mutex_unlock(arg->mutex1);
 
       return EXIT_SUCCESS;
     }
@@ -63,6 +79,24 @@ namespace gr {
       Xp(0)
     {
       n_cpu = sysconf(_SC_NPROCESSORS_ONLN);
+      args = new general_work_arg[n_cpu];
+      tids = new pthread_t[n_cpu];
+
+      pthread_mutex_init(&mutex1, NULL);
+      pthread_mutex_init(&mutex2, NULL);
+      pthread_cond_init(&cond1, NULL);
+      pthread_cond_init(&cond2, NULL);
+
+      for (long idx = 0; idx < n_cpu; idx++) {
+        args[idx].idx = idx;
+        args[idx].finished = &finished;
+        args[idx].status = &status;
+        args[idx].mutex1 = &mutex1;
+        args[idx].mutex2 = &mutex2;
+        args[idx].cond1 = &cond1;
+        args[idx].cond2 = &cond2;
+        pthread_create(tids + idx, NULL, general_work_acc, args + idx);
+      }
 
       ldpc_encode.items_per_cpu = new int[n_cpu]();
       ldpc_encode.p2 = new int[n_cpu * LDPC_ENCODE_TABLE_LENGTH];
@@ -387,6 +421,24 @@ namespace gr {
      */
     dvb_ldpc_bb_impl::~dvb_ldpc_bb_impl()
     {
+
+      status = 1;
+      // pthread_mutex_lock(&mutex1);
+      pthread_cond_broadcast(&cond1);
+      // pthread_mutex_unlock(&mutex1);
+
+      for (int idx = 0; idx < n_cpu; idx++) {
+
+        pthread_join(tids[idx], NULL);
+
+      }
+
+      pthread_mutex_destroy(&mutex1);
+      pthread_mutex_destroy(&mutex2);
+      pthread_cond_destroy(&cond1);
+      pthread_cond_destroy(&cond2);
+      delete[] args;
+      delete[] tids;
       delete[] ldpc_encode.items_per_cpu;
       delete[] ldpc_encode.p2;
       delete[] ldpc_encode.d2;
@@ -676,20 +728,28 @@ for (int row = 0; row < ROWS; row++) { \
         }
         #else
 
-        pthread_t tids[n_cpu];
-        general_work_arg args[n_cpu];
+        finished = 0;
 
         for (long idx = 0; idx < n_cpu; idx++) {
           args[idx].ldpc_encode = &ldpc_encode;
           args[idx].p = p;
           args[idx].d = d;
           args[idx].idx = idx;
-          pthread_create(tids + idx, NULL, general_work_acc, args + idx);
         }
 
-        for (int idx = 0; idx < n_cpu; idx++) {
-          pthread_join(tids[idx], NULL);
+        pthread_mutex_lock(&mutex2);
+        //pthread_mutex_lock(&mutex1);
+        pthread_cond_broadcast(&cond1);
+
+        //pthread_mutex_unlock(&mutex1);
+
+        while (finished < n_cpu) {
+
+          pthread_cond_wait(&cond2, &mutex2);
+
         }
+
+        pthread_mutex_unlock(&mutex2);
 
         #endif
 

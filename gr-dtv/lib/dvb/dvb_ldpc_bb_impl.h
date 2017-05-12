@@ -38,9 +38,12 @@ struct general_work_arg {
   const ldpc_encode_table * ldpc_encode;
   const unsigned char *d;
   unsigned char * p;
+  pthread_cond_t * cond1;
+  pthread_cond_t * cond2;
+  pthread_mutex_t * mutex1;
+  pthread_mutex_t * mutex2;
   int * finished;
-  pthread_mutex_t * mutex;
-  pthread_cond_t * cond;
+  int * status; // 0 - normal, 1 - exit
 };
 
 namespace gr {
@@ -50,6 +53,15 @@ namespace gr {
     {
      private:
       long n_cpu;
+
+      pthread_t * tids;
+      general_work_arg * args;
+      pthread_cond_t cond1;
+      pthread_cond_t cond2;
+      pthread_mutex_t mutex1;
+      pthread_mutex_t mutex2;
+      int finished;
+      int status;
 
       unsigned int frame_size;
       unsigned int frame_size_real;
