@@ -370,29 +370,26 @@ namespace gr {
     dvb_ldpc_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
       ninput_items_required[0] = (noutput_items / frame_size) * nbch;
-    }
+	}
 
 #define LDPC_BF(TABLE_NAME, ROWS) \
+ldpc_encode.table_length = ROWS;\
 for (int row = 0; row < ROWS; row++) { \
+  ldpc_encode.d[row] = TABLE_NAME[row][0];\
   for (int n = 0; n < 360; n++) { \
     for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
       ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
-      ldpc_encode.d[index] = im; \
-      index++; \
+      index++;\
     } \
-    im++; \
   } \
 } 
 
     void
     dvb_ldpc_bb_impl::ldpc_lookup_generate(void)
     {
-      int im;
-      int index;
+	  int index = 0;
       int pbits;
       int q;
-      index = 0;
-      im = 0;
 
       pbits = (frame_size_real + Xp) - nbch;    //number of parity bits
       q = q_val;
@@ -592,8 +589,7 @@ for (int row = 0; row < ROWS; row++) { \
         if (code_rate == C1_3_MEDIUM) {
           LDPC_BF(ldpc_tab_1_3M,   30);
         }
-      }
-      ldpc_encode.table_length = index;
+      } 
     }
 
     int
@@ -612,6 +608,9 @@ for (int row = 0; row < ROWS; row++) { \
       int plen = (frame_size_real + Xp) - nbch;
       d = in;
       p = &out[nbch];
+	  int information_bit = 0; //witch one bit multiple xors are done - variable to save this bit
+	  int col0 = 0;
+	  int column_width = 0;
       int consumed = 0;
       int puncture, index;
 
@@ -632,10 +631,24 @@ for (int row = 0; row < ROWS; row++) { \
           out[i + j] = in[consumed];
           consumed++;
         }
-        // now do the parity checking
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
-        }
+
+		// do the parity checking
+		for (int row = 0; row < ldpc_encode.table_length; row++) {
+			// every column can have a different size - values stored in ldpc_encode.d
+			column_width = ldpc_encode.d[row];
+			//used row is the same per 360 incoming bits
+			for (int n = 0; n < 360; n++) {
+				//get the current bit
+				information_bit = d[row*360 + n];
+				for (int col = 0; col < column_width; col++) {
+					//calculate the parity bits
+					p[ldpc_encode.p[col0 + col]] ^= information_bit;
+				}
+				// save the starting adress for each bit
+				col0 += column_width;
+			}
+		}
+
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
