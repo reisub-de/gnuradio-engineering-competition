@@ -30,10 +30,6 @@ typedef struct{
     int p[LDPC_ENCODE_TABLE_LENGTH];
 }ldpc_encode_table;
 
-typedef struct{
-    int d=0, p=0;
-}ldpc_pair;
-
 namespace gr {
   namespace dtv {
 
