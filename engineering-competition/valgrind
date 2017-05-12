@@ -43,7 +43,8 @@ RESULTS: [cycle estimation]
 
 Most expensive lines:
 ldpc:
-loop around 637 has basically all the workload
+loop around 637 has basically all the workload --> view gdb.md, "random" memory access is slow.
+                                                    maybe swap order --> less random write, only random read
 
 interleaver:
 loop around 401/402 has a small load
