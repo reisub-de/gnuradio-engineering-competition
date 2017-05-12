@@ -614,7 +614,8 @@ for (int row = 0; row < ROWS; row++) { \
       p = &out[nbch];
       int consumed = 0;
       int puncture, index;
-
+    
+        
       for (int i = 0; i < noutput_items; i += frame_size) {
         if (Xs != 0) {
           s = &shortening_buffer[0];
