@@ -591,16 +591,22 @@ namespace gr {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
-      unsigned int shift[6];
       int consumed = 0;
 
       switch (bch_code) {
         case BCH_CODE_N12:
+          //printf("noutput_items: %d\n", noutput_items);
+            //printf("kbch: %d\n", kbch);
+            //printf("nbch: %d\n", nbch);
+          //printf("ninput_items: %d\n", ninput_items.size());
+          //printf("input_items: %d\n", input_items.size());
+          
           for (int i = 0; i < noutput_items; i += nbch) {
+            unsigned int shift[6] = {0};
             //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
+            //memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
+            while(consumed < (int)kbch) {
               temp = *in++;
               *out++ = temp;
               consumed++;
@@ -625,7 +631,8 @@ namespace gr {
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 5);
+            unsigned int shift[6] = {0};
+            //memset(shift, 0, sizeof(unsigned int) * 5);
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
@@ -651,7 +658,8 @@ namespace gr {
         case BCH_CODE_N8:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 4);
+              unsigned int shift[6] = {0};
+            //memset(shift, 0, sizeof(unsigned int) * 4);
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
@@ -676,7 +684,8 @@ namespace gr {
         case BCH_CODE_S12:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
+            unsigned int shift[6] = {0};
+              //memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
@@ -703,7 +712,8 @@ namespace gr {
         case BCH_CODE_M12:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
+            unsigned int shift[6] = {0};
+              //memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
