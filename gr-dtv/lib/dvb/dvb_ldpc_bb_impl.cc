@@ -632,22 +632,22 @@ for (int row = 0; row < ROWS; row++) { \
           consumed++;
         }
 
-		// do the parity checking
-		for (int row = 0; row < ldpc_encode.table_length; row++) {
-			// every column can have a different size - values stored in ldpc_encode.d
-			column_width = ldpc_encode.d[row];
-			//used row is the same per 360 incoming bits
-			for (int n = 0; n < 360; n++) {
-				//get the current bit
-				information_bit = d[row*360 + n];
-				for (int col = 0; col < column_width; col++) {
-					//calculate the parity bits
-					p[ldpc_encode.p[col0 + col]] ^= information_bit;
-				}
-				// save the starting adress for each bit
-				col0 += column_width;
-			}
-		}
+        // do the parity checking
+        for (int row = 0; row < ldpc_encode.table_length; row++) {
+            // every column can have a different size - values stored in ldpc_encode.d
+            column_width = ldpc_encode.d[row];
+            //used row is the same per 360 incoming bits
+            for (int n = 0; n < 360; n++) {
+                //get the current bit
+                information_bit = d[row*360 + n];
+                for (int col = 0; col < column_width; col++) {
+                    //calculate the parity bits
+                    p[ldpc_encode.p[col0 + col]] ^= information_bit;
+	        }
+                // save the starting adress for each bit
+                col0 += column_width;
+            }
+        }
 
         if (P != 0) {
           puncture = 0;
