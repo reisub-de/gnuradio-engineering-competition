@@ -608,9 +608,10 @@ for (int row = 0; row < ROWS; row++) { \
       int plen = (frame_size_real + Xp) - nbch;
       d = in;
       p = &out[nbch];
-	  int information_bit = 0; //witch one bit multiple xors are done - variable to save this bit
-	  int col0 = 0;
-	  int column_width = 0;
+      int information_bit = 0; //witch one bit multiple xors are done - variable to save this bit
+      int col0 = 0;
+      int column_width = 0;
+      int bitnumber = 0;
       int consumed = 0;
       int puncture, index;
 
@@ -639,13 +640,14 @@ for (int row = 0; row < ROWS; row++) { \
             //used row is the same per 360 incoming bits
             for (int n = 0; n < 360; n++) {
                 //get the current bit
-                information_bit = d[row*360 + n];
+                information_bit = d[bitnumber];
                 for (int col = 0; col < column_width; col++) {
                     //calculate the parity bits
                     p[ldpc_encode.p[col0 + col]] ^= information_bit;
 	        }
                 // save the starting adress for each bit
                 col0 += column_width;
+                bitnumber += 1;
             }
         }
 
