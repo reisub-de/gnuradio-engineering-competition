@@ -647,7 +647,8 @@ namespace gr {
       switch (bch_code) {
         case BCH_CODE_N12:
           //TODO: Make this pretty, use VOLK
-          #if !defined(__AVX2__)
+          #if defined(__AVX2__)
+          //#if false
             #warning "USING AVX2"
             {
             for (int i = 0; i < noutput_items; i += nbch) {
