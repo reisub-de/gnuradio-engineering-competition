@@ -3,20 +3,9 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Vv002 Cr35L
-# Generated: Sun May 14 11:36:16 2017
+# Generated: Sun May 14 12:00:07 2017
 ##################################################
 
-if __name__ == '__main__':
-    import ctypes
-    import sys
-    if sys.platform.startswith('linux'):
-        try:
-            x11 = ctypes.cdll.LoadLibrary('libX11.so')
-            x11.XInitThreads()
-        except:
-            print "Warning: failed to XInitThreads()"
-
-from PyQt4 import Qt
 from gnuradio import blocks
 from gnuradio import digital
 from gnuradio import dtv
@@ -25,35 +14,12 @@ from gnuradio import gr
 from gnuradio.eng_option import eng_option
 from gnuradio.filter import firdes
 from optparse import OptionParser
-import sys
-from gnuradio import qtgui
 
 
-class vv002_cr35l(gr.top_block, Qt.QWidget):
+class vv002_cr35l(gr.top_block):
 
     def __init__(self):
         gr.top_block.__init__(self, "Vv002 Cr35L")
-        Qt.QWidget.__init__(self)
-        self.setWindowTitle("Vv002 Cr35L")
-        qtgui.util.check_set_qss()
-        try:
-            self.setWindowIcon(Qt.QIcon.fromTheme('gnuradio-grc'))
-        except:
-            pass
-        self.top_scroll_layout = Qt.QVBoxLayout()
-        self.setLayout(self.top_scroll_layout)
-        self.top_scroll = Qt.QScrollArea()
-        self.top_scroll.setFrameStyle(Qt.QFrame.NoFrame)
-        self.top_scroll_layout.addWidget(self.top_scroll)
-        self.top_scroll.setWidgetResizable(True)
-        self.top_widget = Qt.QWidget()
-        self.top_scroll.setWidget(self.top_widget)
-        self.top_layout = Qt.QVBoxLayout(self.top_widget)
-        self.top_grid_layout = Qt.QGridLayout()
-        self.top_layout.addLayout(self.top_grid_layout)
-
-        self.settings = Qt.QSettings("GNU Radio", "vv002_cr35l")
-        self.restoreGeometry(self.settings.value("geometry").toByteArray())
 
         ##################################################
         # Variables
@@ -104,11 +70,6 @@ class vv002_cr35l(gr.top_block, Qt.QWidget):
         self.connect((self.dtv_dvbt2_p1insertion_cc_0, 0), (self.blocks_file_sink_1, 0))
         self.connect((self.dtv_dvbt2_pilotgenerator_cc_0, 0), (self.digital_ofdm_cyclic_prefixer_0, 0))
 
-    def closeEvent(self, event):
-        self.settings = Qt.QSettings("GNU Radio", "vv002_cr35l")
-        self.settings.setValue("geometry", self.saveGeometry())
-        event.accept()
-
     def get_output_file(self):
         return self.output_file
 
@@ -126,21 +87,9 @@ class vv002_cr35l(gr.top_block, Qt.QWidget):
 
 def main(top_block_cls=vv002_cr35l, options=None):
 
-    from distutils.version import StrictVersion
-    if StrictVersion(Qt.qVersion()) >= StrictVersion("4.5.0"):
-        style = gr.prefs().get_string('qtgui', 'style', 'raster')
-        Qt.QApplication.setGraphicsSystem(style)
-    qapp = Qt.QApplication(sys.argv)
-
     tb = top_block_cls()
     tb.start()
-    tb.show()
-
-    def quitting():
-        tb.stop()
-        tb.wait()
-    qapp.connect(qapp, Qt.SIGNAL("aboutToQuit()"), quitting)
-    qapp.exec_()
+    tb.wait()
 
 
 if __name__ == '__main__':
