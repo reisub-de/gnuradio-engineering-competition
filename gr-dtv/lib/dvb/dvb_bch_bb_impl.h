@@ -48,7 +48,8 @@ namespace gr {
       void bch_poly_build_tables(void);
 
       #if defined(__AVX2__)
-      inline __m256i bitShiftRight256ymm(__m256i*, int);
+      __m256i m_256_poly_n_12;
+      inline bool bitShiftRight256ymm(__m256i*, int);
       inline unsigned int reverse(register unsigned int x);
       #endif
 

@@ -580,6 +580,16 @@ namespace gr {
       len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
       len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_m_12, 180);
+      #if defined(__AVX2__)
+      m_256_poly_n_12 = _mm256_set_epi32(0,
+                                                0,
+                                                m_poly_n_12[0],
+                                                m_poly_n_12[1],
+                                                m_poly_n_12[2],
+                                                m_poly_n_12[3],
+                                                m_poly_n_12[4],
+                                                m_poly_n_12[5]);
+      #endif
     }
 
 #if defined(__AVX2__)
@@ -589,14 +599,14 @@ namespace gr {
     //          __m256i *data - data to shift
     //          int count     - number of bits to shift
     // return:  __m256i       - carry out bit(s)
-    inline __m256i dvb_bch_bb_impl::bitShiftRight256ymm (__m256i *data, int count)
+    inline bool dvb_bch_bb_impl::bitShiftRight256ymm (__m256i *data, int count)
        {
        __m256i innerCarry, carryOut, rotate;
 
        //innerCarry = _mm256_set_epi32(0,1,2,4,8,16,64,128);
 
        innerCarry = _mm256_slli_epi64 (*data, 64 - count);                        // carry outs in bit (64-count) of each qword
-       rotate     = _mm256_permute4x64_epi64 (innerCarry, 0b00111001);            // rotate ymm RIGHT 64 bits (left was 0x93=0b10 01 00 11)
+       rotate     = _mm256_permute4x64_epi64 (innerCarry, 0b00111001);            // rotate ymm RIGHT 64 bits (left was 0x93=0b10 01 00 11). Crosslane operation, may be slow
        //innerCarry = _mm256_blend_epi32 (_mm256_setzero_si256 (), rotate, 0xFC); // clear highest qword
        //blend chooses from either first or second operand, depending on third.
        //0xFC is 0b11111100 (left) --> modify to 0b00111111 (right)
@@ -604,7 +614,7 @@ namespace gr {
        *data      = _mm256_srli_epi64 (*data, count);                             // shift all qwords left
        *data      = _mm256_or_si256 (*data, innerCarry);                          // propagate carrys
        carryOut   = _mm256_xor_si256 (innerCarry, rotate);                        // clear all except highest qword
-       return carryOut;
+       return !_mm256_testz_si256(carryOut,carryOut); //p1 & p2 == 0
        }
 
     //----------------------------------------------------------------------------
@@ -640,15 +650,6 @@ namespace gr {
           #if defined(__AVX2__)
             #warning "AVX2 DETECTED"
             {
-            __m256i m_256_poly_n_12 = _mm256_set_epi32(0,
-                                                      0,
-                                                      m_poly_n_12[0],
-                                                      m_poly_n_12[1],
-                                                      m_poly_n_12[2],
-                                                      m_poly_n_12[3],
-                                                      m_poly_n_12[4],
-                                                      m_poly_n_12[5]);
-
             for (int i = 0; i < noutput_items; i += nbch) {
               //Zero the shift register
               __m256i shift_vector = _mm256_setzero_si256();
@@ -656,8 +657,8 @@ namespace gr {
               for (int j = 0; j < (int)kbch; j++) {
                 temp = *in++;
                 *out++ = temp;
-                __m256i carry = bitShiftRight256ymm(&shift_vector,1);
-                b = temp ^ (((int*) &carry)[7] != 0);
+                bool carry = bitShiftRight256ymm(&shift_vector,1);
+                b = temp ^ carry; //(((int*) &carry)[7] != 0);
                 if (b) {
                   shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
                 }
@@ -701,9 +702,16 @@ namespace gr {
                 }
               }
               // Now add the parity bits to the output
-              for (int n = 0; n < 192; n++) {
+              /*for (int n = 0; n < 192; n++) {
                 *out++ = (shift[5] & 1);
                 reg_6_shift(shift);
+              }*/
+              for(int n = 0; n < 6; n++) {
+                unsigned int shift_int = shift[5-n];
+                for(int m = 0; m < 32; m++) {
+                  *out++ = (char)(shift_int & 1);
+                  shift_int >>= 1;
+                }
               }
             }
           #endif
