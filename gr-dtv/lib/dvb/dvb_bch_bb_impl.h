@@ -48,7 +48,7 @@ namespace gr {
       void bch_poly_build_tables(void);
 
       #if defined(__AVX2__)
-      __m256i m_256_poly_n_12;
+      //__m256i m_256_poly_n_12; causes segfault.. Maybe has something to do with swig?
       inline bool bitShiftRight256ymm(__m256i*, int);
       inline unsigned int reverse(register unsigned int x);
       #endif

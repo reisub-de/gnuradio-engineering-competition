@@ -580,16 +580,6 @@ namespace gr {
       len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
       len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_m_12, 180);
-      #if defined(__AVX2__)
-      m_256_poly_n_12 = _mm256_set_epi32(0,
-                                                0,
-                                                m_poly_n_12[0],
-                                                m_poly_n_12[1],
-                                                m_poly_n_12[2],
-                                                m_poly_n_12[3],
-                                                m_poly_n_12[4],
-                                                m_poly_n_12[5]);
-      #endif
     }
 
 #if defined(__AVX2__)
@@ -644,11 +634,21 @@ namespace gr {
       unsigned int shift[6];
       int consumed = 0;
 
+      //Should do this only once, but causes segfault..
+      __m256i m_256_poly_n_12 = _mm256_set_epi32(0,
+                                                0,
+                                                m_poly_n_12[0],
+                                                m_poly_n_12[1],
+                                                m_poly_n_12[2],
+                                                m_poly_n_12[3],
+                                                m_poly_n_12[4],
+                                                m_poly_n_12[5]);
+
       switch (bch_code) {
         case BCH_CODE_N12:
           //TODO: Make this pretty, use VOLK
-          #if defined(__AVX2__)
-            #warning "AVX2 DETECTED"
+          #if !defined(__AVX2__)
+            #warning "USING AVX2"
             {
             for (int i = 0; i < noutput_items; i += nbch) {
               //Zero the shift register
@@ -681,7 +681,7 @@ namespace gr {
             consumed += (int)kbch;
           }
           #else
-            #warning "AVX2 NOT DETECTED"
+            #warning "NOT USING AVX2"
             for (int i = 0; i < noutput_items; i += nbch) {
               //Zero the shift register
               memset(shift, 0, sizeof(unsigned int) * 6);
