@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -582,6 +582,46 @@ namespace gr {
       poly_pack(polyout[0], m_poly_m_12, 180);
     }
 
+#if defined(__AVX2__)
+    //Modified from http://stackoverflow.com/questions/25248766/emulating-shifts-on-32-bytes-with-avx
+    //----------------------------------------------------------------------------
+    // bit shift right a 256-bit value using ymm registers
+    //          __m256i *data - data to shift
+    //          int count     - number of bits to shift
+    // return:  __m256i       - carry out bit(s)
+    inline __m256i dvb_bch_bb_impl::bitShiftRight256ymm (__m256i *data, int count)
+       {
+       __m256i innerCarry, carryOut, rotate;
+
+       //innerCarry = _mm256_set_epi32(0,1,2,4,8,16,64,128);
+
+       innerCarry = _mm256_slli_epi64 (*data, 64 - count);                        // carry outs in bit (64-count) of each qword
+       rotate     = _mm256_permute4x64_epi64 (innerCarry, 0b00111001);            // rotate ymm RIGHT 64 bits (left was 0x93=0b10 01 00 11)
+       //innerCarry = _mm256_blend_epi32 (_mm256_setzero_si256 (), rotate, 0xFC); // clear highest qword
+       //blend chooses from either first or second operand, depending on third.
+       //0xFC is 0b11111100 (left) --> modify to 0b00111111 (right)
+       innerCarry = _mm256_blend_epi32 (_mm256_setzero_si256 (), rotate, 0b00111111);
+       *data      = _mm256_srli_epi64 (*data, count);                             // shift all qwords left
+       *data      = _mm256_or_si256 (*data, innerCarry);                          // propagate carrys
+       carryOut   = _mm256_xor_si256 (innerCarry, rotate);                        // clear all except highest qword
+       return carryOut;
+       }
+
+    //----------------------------------------------------------------------------
+
+    //http://stackoverflow.com/questions/746171/best-algorithm-for-bit-reversal-from-msb-lsb-to-lsb-msb-in-c
+    //not needed
+    inline unsigned int
+    dvb_bch_bb_impl::reverse(register unsigned int x)
+    {
+        x = (((x & 0xaaaaaaaa) >> 1) | ((x & 0x55555555) << 1));
+        x = (((x & 0xcccccccc) >> 2) | ((x & 0x33333333) << 2));
+        x = (((x & 0xf0f0f0f0) >> 4) | ((x & 0x0f0f0f0f) << 4));
+        x = (((x & 0xff00ff00) >> 8) | ((x & 0x00ff00ff) << 8));
+        return((x >> 16) | (x << 16));
+    }
+#endif
+
     int
     dvb_bch_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -596,31 +636,78 @@ namespace gr {
 
       switch (bch_code) {
         case BCH_CODE_N12:
-          for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
-            // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              *out++ = temp;
-              consumed++;
-              b = (temp ^ (shift[5] & 1));
-              reg_6_shift(shift);
-              if (b) {
-                shift[0] ^= m_poly_n_12[0];
-                shift[1] ^= m_poly_n_12[1];
-                shift[2] ^= m_poly_n_12[2];
-                shift[3] ^= m_poly_n_12[3];
-                shift[4] ^= m_poly_n_12[4];
-                shift[5] ^= m_poly_n_12[5];
+          //TODO: Make this pretty, use VOLK
+          #if defined(__AVX2__)
+            #warning "AVX2 DETECTED"
+            {
+            __m256i m_256_poly_n_12 = _mm256_set_epi32(0,
+                                                      0,
+                                                      m_poly_n_12[0],
+                                                      m_poly_n_12[1],
+                                                      m_poly_n_12[2],
+                                                      m_poly_n_12[3],
+                                                      m_poly_n_12[4],
+                                                      m_poly_n_12[5]);
+
+            for (int i = 0; i < noutput_items; i += nbch) {
+              //Zero the shift register
+              __m256i shift_vector = _mm256_setzero_si256();
+              // MSB of the codeword first
+              for (int j = 0; j < (int)kbch; j++) {
+                temp = *in++;
+                *out++ = temp;
+                __m256i carry = bitShiftRight256ymm(&shift_vector,1);
+                b = temp ^ (((int*) &carry)[7] != 0);
+                if (b) {
+                  shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
+                }
+              }
+              // Now add the parity bits to the output
+
+              //for (int n = 0; n < 192; n++) {
+              //  __m256i carry = bitShiftRight256ymm(&shift_vector,1);
+              //  *out++ = (((int*) &carry)[7] != 0);
+              //}
+              //More efficient:
+              for(int n = 0; n < 6; n++) {
+                unsigned int shift_int = (((unsigned int*)&shift_vector)[n]);
+                for(int m = 0; m < 32; m++) {
+                  *out++ = (char)(shift_int & 1);
+                  shift_int >>= 1;
+                }
               }
             }
-            // Now add the parity bits to the output
-            for (int n = 0; n < 192; n++) {
-              *out++ = (shift[5] & 1);
-              reg_6_shift(shift);
-            }
+            consumed += (int)kbch;
           }
+          #else
+            #warning "AVX2 NOT DETECTED"
+            for (int i = 0; i < noutput_items; i += nbch) {
+              //Zero the shift register
+              memset(shift, 0, sizeof(unsigned int) * 6);
+              // MSB of the codeword first
+              for (int j = 0; j < (int)kbch; j++) {
+                temp = *in++;
+                *out++ = temp;
+                consumed++;
+                b = (temp ^ (shift[5] & 1));
+                reg_6_shift(shift);
+                if (b) {
+                  shift[0] ^= m_poly_n_12[0];
+                  shift[1] ^= m_poly_n_12[1];
+                  shift[2] ^= m_poly_n_12[2];
+                  shift[3] ^= m_poly_n_12[3];
+                  shift[4] ^= m_poly_n_12[4];
+                  shift[5] ^= m_poly_n_12[5];
+                }
+              }
+              // Now add the parity bits to the output
+              for (int n = 0; n < 192; n++) {
+                *out++ = (shift[5] & 1);
+                reg_6_shift(shift);
+              }
+            }
+          #endif
+
           break;
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
@@ -739,4 +826,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-

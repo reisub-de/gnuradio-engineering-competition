@@ -57,3 +57,14 @@ $1 = {0 <repeats 12 times>, 1 <repeats 12 times>, 2 <repeats 12 times>, 3 <repea
 tr -d '\n' < p.csv >> p_new.csv
 
 ldpc_encode.table_length = 233280
+
+
+prevent optimization of function:
+__attribute__((optimize(0))) *** BEFORE DECLARATION ***
+display/8tw *(int*)&shift_vector@8
+display/8tw shift
+display/t (temp ^ (shift[5] & 1))
+display/t temp ^ (((int*) &carry)[7] != 0)
+display/t *(out-100)@100
+
+break dvb_bch_bb_impl.cc:666

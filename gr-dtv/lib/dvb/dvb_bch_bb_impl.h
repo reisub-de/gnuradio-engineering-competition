@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -23,6 +23,7 @@
 
 #include <gnuradio/dtv/dvb_bch_bb.h>
 #include "dvb_defines.h"
+#include <immintrin.h>
 
 namespace gr {
   namespace dtv {
@@ -46,6 +47,11 @@ namespace gr {
       inline void reg_6_shift(unsigned int*);
       void bch_poly_build_tables(void);
 
+      #if defined(__AVX2__)
+      inline __m256i bitShiftRight256ymm(__m256i*, int);
+      inline unsigned int reverse(register unsigned int x);
+      #endif
+
      public:
       dvb_bch_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate);
       ~dvb_bch_bb_impl();
@@ -62,4 +68,3 @@ namespace gr {
 } // namespace gr
 
 #endif /* INCLUDED_DTV_DVB_BCH_BB_IMPL_H */
-
