@@ -181,8 +181,8 @@ namespace gr {
           for (int i = 0; i < noutput_items; i += packed_items) {
             rows = frame_size / 2;
             if (code_rate == C1_3 || code_rate == C2_5) {
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
+              for (int k = nbch; k--; ) {
+                tempu[nbch-k] = *in++;
               }
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
