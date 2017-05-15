@@ -2695,10 +2695,10 @@ namespace gr {
       for (int i = 0; i < noutput_items; i += num_symbols) {
         for (int j = 0; j < num_symbols; j++) {
           init_pilots(j);
+          for (int n = 0; n < left_nulls; n++) {
+            *out++ = zero;
+          }
           if (j < N_P2) {
-            for (int n = 0; n < left_nulls; n++) {
-              *out++ = zero;
-            }
             for (int n = 0; n < C_PS; n++) {
               if (p2_carrier_map[n] == P2PILOT_CARRIER) {
                 *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
@@ -2713,14 +2713,8 @@ namespace gr {
                 *out++ = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
-            }
           }
           else if (j == (num_symbols - L_FC)) {
-            for (int n = 0; n < left_nulls; n++) {
-              *out++ = zero;
-            }
             for (int n = 0; n < C_PS; n++) {
               if (fc_carrier_map[n] == SCATTERED_CARRIER) {
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
@@ -2735,14 +2729,8 @@ namespace gr {
                 *out++ = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
-            }
           }
           else {
-            for (int n = 0; n < left_nulls; n++) {
-              *out++ = zero;
-            }
             for (int n = 0; n < C_PS; n++) {
               if (data_carrier_map[n] == SCATTERED_CARRIER) {
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
@@ -2763,9 +2751,9 @@ namespace gr {
                 *out++ = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
-            }
+          }
+          for (int n = 0; n < right_nulls; n++) {
+            *out++ = zero;
           }
           out -= ofdm_fft_size;
           if (equalization_enable == EQUALIZATION_ON) {
