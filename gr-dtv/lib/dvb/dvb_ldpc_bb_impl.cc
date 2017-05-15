@@ -747,8 +747,8 @@ for (int row = 0; row < ROWS; row++) { \
 
         pthread_mutex_lock(&mutex2);
 
-        status = 0;
         pthread_mutex_lock(&mutex1);
+        status = 0;
         pthread_cond_broadcast(&cond1);
         pthread_mutex_unlock(&mutex1);
 
