@@ -660,9 +660,11 @@ namespace gr {
         }
       }
       init_prbs();
-      for (int i = 0; i < C_PS; i++) {
+      /*for (int i = 0; i < C_PS; i++) {
         p2_carrier_map[i] = DATA_CARRIER;
-      }
+      }*/
+      memset(p2_carrier_map, DATA_CARRIER, C_PS * sizeof(int));    // hack by Enigma
+
       if ((fftsize == FFTSIZE_32K || fftsize == FFTSIZE_32K_T2GI) && (miso == FALSE)) {
         step = 6;
       }
@@ -985,9 +987,9 @@ namespace gr {
           dy = 16;
           break;
       }
-      for (int i = 0; i < C_PS; i++) {
+      /*for (int i = 0; i < C_PS; i++) {
         fc_carrier_map[i] = DATA_CARRIER;
-      }
+      }*/
       for (int i = 0; i < C_PS; i++) {
         if (i % dx == 0) {
           if (miso == TRUE && miso_group == MISO_TX2) {
@@ -2703,9 +2705,9 @@ namespace gr {
               if (p2_carrier_map[n] == P2PILOT_CARRIER) {
                 *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (p2_carrier_map[n] == P2PILOT_CARRIER_INVERTED) {
+              /*else if (p2_carrier_map[n] == P2PILOT_CARRIER_INVERTED) {
                 *out++ = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
+              }*/ // hack by Enigma
               else if (p2_carrier_map[n] == P2PAPR_CARRIER) {
                 *out++ = zero;
               }
@@ -2725,12 +2727,12 @@ namespace gr {
               if (fc_carrier_map[n] == SCATTERED_CARRIER) {
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (fc_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
+              /*else if (fc_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
                 *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (fc_carrier_map[n] == TRPAPR_CARRIER) {
                 *out++ = zero;
-              }
+              }*/ // hack by Enigma
               else {
                 *out++ = *in++;
               }
@@ -2747,18 +2749,18 @@ namespace gr {
               if (data_carrier_map[n] == SCATTERED_CARRIER) {
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
+              /*else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
                 *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
+              }*/
               else if (data_carrier_map[n] == CONTINUAL_CARRIER) {
                 *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
+              /*else if (data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
                 *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (data_carrier_map[n] == TRPAPR_CARRIER) {
                 *out++ = zero;
-              }
+              }*/
               else {
                 *out++ = *in++;
               }

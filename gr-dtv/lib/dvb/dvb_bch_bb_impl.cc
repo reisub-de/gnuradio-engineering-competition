@@ -382,7 +382,7 @@ namespace gr {
     {
     }
 
-    void
+    inline void
     dvb_bch_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
       ninput_items_required[0] = (noutput_items / nbch) * kbch;
@@ -392,7 +392,7 @@ namespace gr {
      * Polynomial calculation routines
      * multiply polynomials
      */
-    int
+    inline int
     dvb_bch_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
     {
       memset(out, 0, sizeof(int) * (lena + lenb));
@@ -418,7 +418,7 @@ namespace gr {
     /*
      * Pack the polynomial into a 32 bit array
      */
-    void
+    inline void
     dvb_bch_bb_impl::poly_pack(const int *pin, unsigned int* pout, int len)
     {
       int lw = len / 32;
@@ -440,7 +440,7 @@ namespace gr {
       }
     }
 
-    void
+    inline void
     dvb_bch_bb_impl::poly_reverse(int *pin, int *pout, int len)
     {
       int c;
@@ -490,7 +490,7 @@ namespace gr {
       sr[0] = (sr[0] >> 1);
     }
 
-    void
+    inline void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
     {
       // Normal polynomials
