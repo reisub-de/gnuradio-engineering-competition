@@ -423,9 +423,9 @@ namespace gr {
     {
 
       status = 1;
-      // pthread_mutex_lock(&mutex1);
+      pthread_mutex_lock(&mutex1);
       pthread_cond_broadcast(&cond1);
-      // pthread_mutex_unlock(&mutex1);
+      pthread_mutex_unlock(&mutex1);
 
       for (int idx = 0; idx < n_cpu; idx++) {
 
@@ -738,10 +738,10 @@ for (int row = 0; row < ROWS; row++) { \
         }
 
         pthread_mutex_lock(&mutex2);
-        //pthread_mutex_lock(&mutex1);
+        pthread_mutex_lock(&mutex1);
         pthread_cond_broadcast(&cond1);
 
-        //pthread_mutex_unlock(&mutex1);
+        pthread_mutex_unlock(&mutex1);
 
         while (finished < n_cpu) {
 
