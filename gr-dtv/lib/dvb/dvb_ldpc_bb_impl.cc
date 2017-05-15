@@ -471,6 +471,7 @@ for (int row = 0; row < ROWS; row++) { \
       int value = (TABLE_NAME[row][col] + (n * q)) % pbits; \
       int rr = value % n_cpu; \
       int & cur_idx = ldpc_encode.items_per_cpu[rr]; \
+      /* more rational arangement would lead to better performance */ \
       ldpc_encode.p2[rr * LDPC_ENCODE_TABLE_LENGTH + cur_idx] = value; \
       ldpc_encode.d2[rr * LDPC_ENCODE_TABLE_LENGTH + cur_idx] = im; \
       cur_idx += 1; \
