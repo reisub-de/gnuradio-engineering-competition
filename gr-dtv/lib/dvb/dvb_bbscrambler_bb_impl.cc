@@ -24,6 +24,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "dvb_bbscrambler_bb_impl.h"
+#include <emmintrin.h>
 
 namespace gr {
   namespace dtv {
@@ -277,10 +278,26 @@ namespace gr {
     {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
+      
+      
 
+      // For scrambling use For loop enrolling and SSE2
+      // Instead of process each byte, process 16byte blocks in Hardware
+      __m128i in_128;
+      __m128i random_128;
+      __m128i out_128;
+      
       for (int i = 0; i < noutput_items; i += kbch) {
-        for (int j = 0; j < (int)kbch; ++j) {
-          out[i + j] = in[i + j] ^ bb_randomise[j];
+        for (int j = 0; j < (int)kbch; j += 32) {
+          in_128 = _mm_loadu_si128((__m128i*) &in[i + j]);
+          random_128 = _mm_loadu_si128((__m128i*) &bb_randomise[j]);
+          out_128 = _mm_xor_si128(in_128, random_128);
+          _mm_storeu_si128((__m128i*)&out[i+j], out_128);
+          
+          in_128 = _mm_loadu_si128((__m128i*) &in[i + j + 16]);
+          random_128 = _mm_loadu_si128((__m128i*) &bb_randomise[j+ 16]);
+          out_128 = _mm_xor_si128(in_128, random_128);
+          _mm_storeu_si128((__m128i*)&out[i+j+ 16], out_128);
         }
       }
 
