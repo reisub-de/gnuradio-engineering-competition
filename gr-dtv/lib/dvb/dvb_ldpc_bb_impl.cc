@@ -641,12 +641,13 @@ for (int row = 0; row < ROWS; row++) { \
             for (int n = 0; n < 360; n++) {
                 //get the current bit
                 information_bit = d[bitnumber];
-                for (int col = col0; col < column_width+col0; col++) {
+                for (int col = 0; col < column_width; col++) {
                     //calculate the parity bits
-                    p[ldpc_encode.p[col]] ^= information_bit;
+                    p[ldpc_encode.p[col0 + col]] ^= information_bit;
 	        }
                 // save the starting adress for each bit
-                ++bitnumber;
+                col0 += column_width;
+                bitnumber += 1;
             }
         }
 
