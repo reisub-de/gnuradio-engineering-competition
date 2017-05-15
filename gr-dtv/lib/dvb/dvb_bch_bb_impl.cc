@@ -26,7 +26,7 @@
 #include "dvb_bch_bb_impl.h"
 
 #include <stdio.h>
-#include <memory>
+#include <boost/scoped_ptr.hpp>
 
 namespace gr {
   namespace dtv {
@@ -391,53 +391,53 @@ namespace gr {
       ninput_items_required[0] = (noutput_items / nbch) * kbch;
     }
 
-    int
-    dvb_bch_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
-    {
-      memset(out, 0, sizeof(int) * (lena + lenb));
+    // int
+    // dvb_bch_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
+    // {
+    //   memset(out, 0, sizeof(int) * (lena + lenb));
 
-      for (int i = 0; i < lena; i++) {
-        for (int j = 0; j < lenb; j++) {
-          if ((ina[i] != 0 && inb[j]) & 1 ) {
-            out[i + j]++;    // count number of terms for this pwr of x
-          }
-        }
-      }
-      int max = 0;
-      for (int i = 0; i < lena + lenb; i++) {
-        out[i] = out[i] & 1;    // If even ignore the term
-        if(out[i]) {
-          max = i;
-        }
-      }
-      // return the size of array to house the result.
-      return max + 1;
-    }
+    //   for (int i = 0; i < lena; i++) {
+    //     for (int j = 0; j < lenb; j++) {
+    //       if ((ina[i] != 0 && inb[j]) & 1 ) {
+    //         out[i + j]++;    // count number of terms for this pwr of x
+    //       }
+    //     }
+    //   }
+    //   int max = 0;
+    //   for (int i = 0; i < lena + lenb; i++) {
+    //     out[i] = out[i] & 1;    // If even ignore the term
+    //     if(out[i]) {
+    //       max = i;
+    //     }
+    //   }
+    //   // return the size of array to house the result.
+    //   return max + 1;
+    // }
 
     /*
      * Pack the polynomial into a 32 bit array
      */
-    void
-    dvb_bch_bb_impl::poly_pack(const int *pin, unsigned int* pout, int len)
-    {
-      int lw = len / 32;
-      int ptr = 0;
-      unsigned int temp;
-      if (len % 32) {
-        lw++;
-      }
+    // void
+    // dvb_bch_bb_impl::poly_pack(const int *pin, unsigned int* pout, int len)
+    // {
+    //   int lw = len / 32;
+    //   int ptr = 0;
+    //   unsigned int temp;
+    //   if (len % 32) {
+    //     lw++;
+    //   }
 
-      for (int i = 0; i < lw; i++) {
-        temp = 0x80000000;
-        pout[i] = 0;
-        for (int j = 0; j < 32; j++) {
-          if (pin[ptr++]) {
-            pout[i] |= temp;
-          }
-          temp >>= 1;
-        }
-      }
-    }
+    //   for (int i = 0; i < lw; i++) {
+    //     temp = 0x80000000;
+    //     pout[i] = 0;
+    //     for (int j = 0; j < 32; j++) {
+    //       if (pin[ptr++]) {
+    //         pout[i] |= temp;
+    //       }
+    //       temp >>= 1;
+    //     }
+    //   }
+    // }
 
     void
     dvb_bch_bb_impl::poly_reverse(int *pin, int *pout, int len)
@@ -492,93 +492,124 @@ namespace gr {
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
     {
-      // Normal polynomials
-      const int polyn01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1};
-      const int polyn02[]={1,1,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1};
-      const int polyn03[]={1,0,1,1,1,1,0,1,1,1,1,1,0,0,0,0,1};
-      const int polyn04[]={1,0,1,0,1,0,1,0,0,1,0,1,1,0,1,0,1};
-      const int polyn05[]={1,1,1,1,0,1,0,0,1,1,1,1,1,0,0,0,1};
-      const int polyn06[]={1,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1};
-      const int polyn07[]={1,0,1,0,0,1,1,0,1,1,1,1,0,1,0,1,1};
-      const int polyn08[]={1,1,1,0,0,1,1,0,1,1,0,0,1,1,1,0,1};
-      const int polyn09[]={1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,1};
-      const int polyn10[]={1,1,1,0,0,1,0,1,1,0,1,0,1,1,1,0,1};
-      const int polyn11[]={1,0,1,1,0,1,0,0,0,1,0,1,1,1,0,0,1};
-      const int polyn12[]={1,1,0,0,0,1,1,1,0,1,0,1,1,0,0,0,1};
+      // // Normal polynomials
+      // const int polyn01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1};
+      // const int polyn02[]={1,1,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1};
+      // const int polyn03[]={1,0,1,1,1,1,0,1,1,1,1,1,0,0,0,0,1};
+      // const int polyn04[]={1,0,1,0,1,0,1,0,0,1,0,1,1,0,1,0,1};
+      // const int polyn05[]={1,1,1,1,0,1,0,0,1,1,1,1,1,0,0,0,1};
+      // const int polyn06[]={1,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1};
+      // const int polyn07[]={1,0,1,0,0,1,1,0,1,1,1,1,0,1,0,1,1};
+      // const int polyn08[]={1,1,1,0,0,1,1,0,1,1,0,0,1,1,1,0,1};
+      // const int polyn09[]={1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,1};
+      // const int polyn10[]={1,1,1,0,0,1,0,1,1,0,1,0,1,1,1,0,1};
+      // const int polyn11[]={1,0,1,1,0,1,0,0,0,1,0,1,1,1,0,0,1};
+      // const int polyn12[]={1,1,0,0,0,1,1,1,0,1,0,1,1,0,0,0,1};
 
-      // Medium polynomials
-      const int polym01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,1};
-      const int polym02[]={1,1,0,0,1,0,0,1,0,0,1,1,0,0,0,1};
-      const int polym03[]={1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1};
-      const int polym04[]={1,0,1,1,0,1,1,0,1,0,1,1,0,0,0,1};
-      const int polym05[]={1,1,1,0,1,0,1,1,0,0,1,0,1,0,0,1};
-      const int polym06[]={1,0,0,0,1,0,1,1,0,0,0,0,1,1,0,1};
-      const int polym07[]={1,0,1,0,1,1,0,1,0,0,0,1,1,0,1,1};
-      const int polym08[]={1,0,1,0,1,0,1,0,1,1,0,1,0,0,1,1};
-      const int polym09[]={1,1,1,0,1,1,0,1,0,1,0,1,1,1,0,1};
-      const int polym10[]={1,1,1,1,1,0,0,1,0,0,1,1,1,1,0,1};
-      const int polym11[]={1,1,1,0,1,0,0,0,0,1,0,1,0,0,0,1};
-      const int polym12[]={1,0,1,0,1,0,0,0,1,0,1,1,0,1,1,1};
+      // // Medium polynomials
+      // const int polym01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,1};
+      // const int polym02[]={1,1,0,0,1,0,0,1,0,0,1,1,0,0,0,1};
+      // const int polym03[]={1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1};
+      // const int polym04[]={1,0,1,1,0,1,1,0,1,0,1,1,0,0,0,1};
+      // const int polym05[]={1,1,1,0,1,0,1,1,0,0,1,0,1,0,0,1};
+      // const int polym06[]={1,0,0,0,1,0,1,1,0,0,0,0,1,1,0,1};
+      // const int polym07[]={1,0,1,0,1,1,0,1,0,0,0,1,1,0,1,1};
+      // const int polym08[]={1,0,1,0,1,0,1,0,1,1,0,1,0,0,1,1};
+      // const int polym09[]={1,1,1,0,1,1,0,1,0,1,0,1,1,1,0,1};
+      // const int polym10[]={1,1,1,1,1,0,0,1,0,0,1,1,1,1,0,1};
+      // const int polym11[]={1,1,1,0,1,0,0,0,0,1,0,1,0,0,0,1};
+      // const int polym12[]={1,0,1,0,1,0,0,0,1,0,1,1,0,1,1,1};
 
-      // Short polynomials
-      const int polys01[]={1,1,0,1,0,1,0,0,0,0,0,0,0,0,1};
-      const int polys02[]={1,0,0,0,0,0,1,0,1,0,0,1,0,0,1};
-      const int polys03[]={1,1,1,0,0,0,1,0,0,1,1,0,0,0,1};
-      const int polys04[]={1,0,0,0,1,0,0,1,1,0,1,0,1,0,1};
-      const int polys05[]={1,0,1,0,1,0,1,0,1,1,0,1,0,1,1};
-      const int polys06[]={1,0,0,1,0,0,0,1,1,1,0,0,0,1,1};
-      const int polys07[]={1,0,1,0,0,1,1,1,0,0,1,1,0,1,1};
-      const int polys08[]={1,0,0,0,0,1,0,0,1,1,1,1,0,0,1};
-      const int polys09[]={1,1,1,1,0,0,0,0,0,1,1,0,0,0,1};
-      const int polys10[]={1,0,0,1,0,0,1,0,0,1,0,1,1,0,1};
-      const int polys11[]={1,0,0,0,1,0,0,0,0,0,0,1,1,0,1};
-      const int polys12[]={1,1,1,1,0,1,1,1,1,0,1,0,0,1,1};
+      // // Short polynomials
+      // const int polys01[]={1,1,0,1,0,1,0,0,0,0,0,0,0,0,1};
+      // const int polys02[]={1,0,0,0,0,0,1,0,1,0,0,1,0,0,1};
+      // const int polys03[]={1,1,1,0,0,0,1,0,0,1,1,0,0,0,1};
+      // const int polys04[]={1,0,0,0,1,0,0,1,1,0,1,0,1,0,1};
+      // const int polys05[]={1,0,1,0,1,0,1,0,1,1,0,1,0,1,1};
+      // const int polys06[]={1,0,0,1,0,0,0,1,1,1,0,0,0,1,1};
+      // const int polys07[]={1,0,1,0,0,1,1,1,0,0,1,1,0,1,1};
+      // const int polys08[]={1,0,0,0,0,1,0,0,1,1,1,1,0,0,1};
+      // const int polys09[]={1,1,1,1,0,0,0,0,0,1,1,0,0,0,1};
+      // const int polys10[]={1,0,0,1,0,0,1,0,0,1,0,1,1,0,1};
+      // const int polys11[]={1,0,0,0,1,0,0,0,0,0,0,1,1,0,1};
+      // const int polys12[]={1,1,1,1,0,1,1,1,1,0,1,0,0,1,1};
 
-      int len;
-      int polyout[2][200];
+      // int len;
+      // int polyout[2][200];
 
-      len = poly_mult(polyn01, 17, polyn02,    17,  polyout[0]);
-      len = poly_mult(polyn03, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn04, 17, polyout[1], len, polyout[0]);
-      len = poly_mult(polyn05, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn06, 17, polyout[1], len, polyout[0]);
-      len = poly_mult(polyn07, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn08, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_8, 128);
+      // len = poly_mult(polyn01, 17, polyn02,    17,  polyout[0]);
+      // len = poly_mult(polyn03, 17, polyout[0], len, polyout[1]);
+      // len = poly_mult(polyn04, 17, polyout[1], len, polyout[0]);
+      // len = poly_mult(polyn05, 17, polyout[0], len, polyout[1]);
+      // len = poly_mult(polyn06, 17, polyout[1], len, polyout[0]);
+      // len = poly_mult(polyn07, 17, polyout[0], len, polyout[1]);
+      // len = poly_mult(polyn08, 17, polyout[1], len, polyout[0]);
+      // poly_pack(polyout[0], m_poly_n_8, 128);
 
-      len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn10, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_10, 160);
+      // len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
+      // len = poly_mult(polyn10, 17, polyout[1], len, polyout[0]);
+      // poly_pack(polyout[0], m_poly_n_10, 160);
 
-      len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_12, 192);
+      // len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
+      // len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
+      // poly_pack(polyout[0], m_poly_n_12, 192);
 
-      len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
-      len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys04, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys05, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys06, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys07, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys08, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys09, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys10, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys11, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys12, 15, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_s_12, 168);
+      // len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
+      // len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
+      // len = poly_mult(polys04, 15, polyout[1], len, polyout[0]);
+      // len = poly_mult(polys05, 15, polyout[0], len, polyout[1]);
+      // len = poly_mult(polys06, 15, polyout[1], len, polyout[0]);
+      // len = poly_mult(polys07, 15, polyout[0], len, polyout[1]);
+      // len = poly_mult(polys08, 15, polyout[1], len, polyout[0]);
+      // len = poly_mult(polys09, 15, polyout[0], len, polyout[1]);
+      // len = poly_mult(polys10, 15, polyout[1], len, polyout[0]);
+      // len = poly_mult(polys11, 15, polyout[0], len, polyout[1]);
+      // len = poly_mult(polys12, 15, polyout[1], len, polyout[0]);
+      // poly_pack(polyout[0], m_poly_s_12, 168);
 
-      len = poly_mult(polym01, 16, polym02,    16,  polyout[0]);
-      len = poly_mult(polym03, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym04, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym05, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym06, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym07, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym08, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym09, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym10, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_m_12, 180);
+      // len = poly_mult(polym01, 16, polym02,    16,  polyout[0]);
+      // len = poly_mult(polym03, 16, polyout[0], len, polyout[1]);
+      // len = poly_mult(polym04, 16, polyout[1], len, polyout[0]);
+      // len = poly_mult(polym05, 16, polyout[0], len, polyout[1]);
+      // len = poly_mult(polym06, 16, polyout[1], len, polyout[0]);
+      // len = poly_mult(polym07, 16, polyout[0], len, polyout[1]);
+      // len = poly_mult(polym08, 16, polyout[1], len, polyout[0]);
+      // len = poly_mult(polym09, 16, polyout[0], len, polyout[1]);
+      // len = poly_mult(polym10, 16, polyout[1], len, polyout[0]);
+      // len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
+      // len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
+      // poly_pack(polyout[0], m_poly_m_12, 180);
+      m_poly_n_8[0] = 0xD4669F20;
+      m_poly_n_8[1] = 0xAEB63F98;
+      m_poly_n_8[2] = 0xBDE9E48E;
+      m_poly_n_8[3] = 0xFAA4E038;
+
+      m_poly_n_10[0] = 0x89A6DD1D;
+      m_poly_n_10[1] = 0x80C48BF7;
+      m_poly_n_10[2] = 0xC0EA1E56;
+      m_poly_n_10[3] = 0xF8CC543F;
+      m_poly_n_10[4] = 0xB730A806;
+
+      m_poly_n_12[0] = 0xE7AA4066;
+      m_poly_n_12[1] = 0xEFA1E2C0;
+      m_poly_n_12[2] = 0x9110AC3B;
+      m_poly_n_12[3] = 0x1B34F30A;
+      m_poly_n_12[4] = 0x388A3A21;
+      m_poly_n_12[5] = 0xC1706472;
+
+      m_poly_s_12[0] = 0xa5a0988b;
+      m_poly_s_12[1] = 0xebe7f14a;
+      m_poly_s_12[2] = 0x9609c5c4;
+      m_poly_s_12[3] = 0xb3464d96;
+      m_poly_s_12[4] = 0x1957db46;
+      m_poly_s_12[5] = 0x2b06472;
+
+      m_poly_m_12[0] = 0xd0821bc3;
+      m_poly_m_12[1] = 0xf42eac6a;
+      m_poly_m_12[2] = 0xcca1056f;
+      m_poly_m_12[3] = 0xd9c04190;
+      m_poly_m_12[4] = 0xb1800dbe;
+      m_poly_m_12[5] = 0xdd215872;
     }
 
     dvb_bch_bb_impl::BchCodeN12Task::BchCodeN12Task(){}
@@ -617,6 +648,39 @@ namespace gr {
       return 0;
     }
 
+    void dvb_bch_bb_impl::test_api(DataBchMultiThread* arg_) {
+      DataBchMultiThread *data = arg_;
+      const unsigned char *in =  (const unsigned char *)(data->in);
+      unsigned char *out = (unsigned char*)(data->out);
+      const int kbch = (int)(data->kbch);
+      dvb_bch_bb_impl *self_ptr = (dvb_bch_bb_impl*)(data->self_ptr);
+      unsigned int* m_poly_n_12 = (unsigned int*)(data->m_poly_n_12);
+      unsigned char b, temp;
+      unsigned int shift[6];
+
+      memset(shift, 0, sizeof(unsigned int) * 6);
+
+      for (int j = 0; j < kbch; j++) {
+        temp = *in++;
+        *out++ = temp;
+        b = (temp ^ (shift[5] & 1));
+        self_ptr->reg_6_shift(shift);
+        if (b) {
+          shift[0] ^= m_poly_n_12[0];
+          shift[1] ^= m_poly_n_12[1];
+          shift[2] ^= m_poly_n_12[2];
+          shift[3] ^= m_poly_n_12[3];
+          shift[4] ^= m_poly_n_12[4];
+          shift[5] ^= m_poly_n_12[5];
+        }
+      }
+      // Now add the parity bits to the output
+      for (int n = 0; n < 192; n++) {
+        *out++ = (shift[5] & 1);
+        self_ptr->reg_6_shift(shift);
+      }
+    }
+
     int
     dvb_bch_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -632,51 +696,60 @@ namespace gr {
       switch (bch_code) {
         case BCH_CODE_N12:
           {
-            std::vector<BchCodeN12Task> tasks; 
-            std::vector<DataBchMultiThread> thread_arg;
-            ThreadPool thread_pool(5);
-            for (int i = 0; i < noutput_items; i += nbch) {
-              thread_arg.push_back(DataBchMultiThread(kbch,
-                                                      in,
-                                                      out,
-                                                      this,
-                                                      m_poly_n_12));
-              tasks.push_back(BchCodeN12Task());
-              tasks.back().setArg((void*)(&thread_arg.back()));
-              thread_pool.addTask(&(tasks.back())); 
+            int num_thread = noutput_items / nbch;
+
+            boost::scoped_ptr<BchCodeN12Task> tasks[num_thread];
+            boost::scoped_ptr<DataBchMultiThread> thread_args[num_thread];
+            ThreadPool thread_pool(8);
+
+            for (int i = 0; i < num_thread; i++) {
+              thread_args[i].reset(new DataBchMultiThread( kbch,
+                                                          in,
+                                                          out,
+                                                          this,
+                                                          m_poly_n_12));
+              tasks[i].reset(new BchCodeN12Task());
               in += (int)kbch;
               out += (int)kbch + 192;
               consumed += (int)kbch;
             }
-            while (thread_pool.size() != 0) if (thread_pool.size() > 1) printf("%d\n", thread_pool.size());;
-            thread_pool.stop();
-          }
 
-          // for (int i = 0; i < noutput_items; i += nbch) {
-          //   //Zero the shift register
-          //   memset(shift, 0, sizeof(unsigned int) * 6);
-          //   // MSB of the codeword first
-          //   for (int j = 0; j < (int)kbch; j++) {
-          //     temp = *in++;
-          //     *out++ = temp;
-          //     consumed++;
-          //     b = (temp ^ (shift[5] & 1));
-          //     reg_6_shift(shift);
-          //     if (b) {
-          //       shift[0] ^= m_poly_n_12[0];
-          //       shift[1] ^= m_poly_n_12[1];
-          //       shift[2] ^= m_poly_n_12[2];
-          //       shift[3] ^= m_poly_n_12[3];
-          //       shift[4] ^= m_poly_n_12[4];
-          //       shift[5] ^= m_poly_n_12[5];
-          //     }
-          //   }
-          //   // Now add the parity bits to the output
-          //   for (int n = 0; n < 192; n++) {
-          //     *out++ = (shift[5] & 1);
-          //     reg_6_shift(shift);
-          //   }
-          // }
+            for (int i = 0; i < num_thread; i++) {
+              tasks[i]->setArg((void*)(&(*(thread_args[i]))));
+
+              thread_pool.addTask(&(*(tasks[i]))); 
+              // test_api(&(*(thread_arg[i])));
+            }            
+            while (thread_pool.size() != 0) ;
+            thread_pool.stop();
+          
+
+            // for (int i = 0; i < noutput_items; i += nbch) {
+            //   //Zero the shift register
+            //   memset(shift, 0, sizeof(unsigned int) * 6);
+            //   // MSB of the codeword first
+            //   for (int j = 0; j < (int)kbch; j++) {
+            //     temp = *in++;
+            //     *out++ = temp;
+            //     consumed++;
+            //     b = (temp ^ (shift[5] & 1));
+            //     reg_6_shift(shift);
+            //     if (b) {
+            //       shift[0] ^= m_poly_n_12[0];
+            //       shift[1] ^= m_poly_n_12[1];
+            //       shift[2] ^= m_poly_n_12[2];
+            //       shift[3] ^= m_poly_n_12[3];
+            //       shift[4] ^= m_poly_n_12[4];
+            //       shift[5] ^= m_poly_n_12[5];
+            //     }
+            //   }
+            //   // Now add the parity bits to the output
+            //   for (int n = 0; n < 192; n++) {
+            //     *out++ = (shift[5] & 1);
+            //     reg_6_shift(shift);
+            //   }
+            // }
+          }
           break;
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {

@@ -59,8 +59,8 @@ namespace gr {
       unsigned int m_poly_m_12[6];
 
       // Class member function
-      int poly_mult(const int*, int, const int*, int, int*);
-      void poly_pack(const int*, unsigned int*, int);
+      // int poly_mult(const int*, int, const int*, int, int*);
+      // void poly_pack(const int*, unsigned int*, int);
       void poly_reverse(int*, int*, int);
       inline void reg_4_shift(unsigned int*);
       inline void reg_5_shift(unsigned int*);
@@ -93,6 +93,8 @@ namespace gr {
         void *self_ptr;
         unsigned int *m_poly_n_12;
       };
+
+      void test_api(DataBchMultiThread*);
 
      public:
       dvb_bch_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate);
