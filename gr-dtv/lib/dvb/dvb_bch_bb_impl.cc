@@ -579,23 +579,24 @@ namespace gr {
       // len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
       // len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
       // poly_pack(polyout[0], m_poly_m_12, 180);
-      m_poly_n_8[0] = 0xD4669F20;
-      m_poly_n_8[1] = 0xAEB63F98;
-      m_poly_n_8[2] = 0xBDE9E48E;
-      m_poly_n_8[3] = 0xFAA4E038;
 
-      m_poly_n_10[0] = 0x89A6DD1D;
-      m_poly_n_10[1] = 0x80C48BF7;
-      m_poly_n_10[2] = 0xC0EA1E56;
-      m_poly_n_10[3] = 0xF8CC543F;
-      m_poly_n_10[4] = 0xB730A806;
+      m_poly_n_8[0] = 0xd4669f20;
+      m_poly_n_8[1] = 0xaeb63f98;
+      m_poly_n_8[2] = 0xbde9e48e;
+      m_poly_n_8[3] = 0xfaa4e038;
 
-      m_poly_n_12[0] = 0xE7AA4066;
-      m_poly_n_12[1] = 0xEFA1E2C0;
-      m_poly_n_12[2] = 0x9110AC3B;
-      m_poly_n_12[3] = 0x1B34F30A;
-      m_poly_n_12[4] = 0x388A3A21;
-      m_poly_n_12[5] = 0xC1706472;
+      m_poly_n_10[0] = 0x89a6dd1d;
+      m_poly_n_10[1] = 0x80c48bf7;
+      m_poly_n_10[2] = 0xc0ea1e56;
+      m_poly_n_10[3] = 0xf8cc543f;
+      m_poly_n_10[4] = 0xb730a806;
+
+      m_poly_n_12[0] = 0xe7aa4066;
+      m_poly_n_12[1] = 0xefa1e2c0;
+      m_poly_n_12[2] = 0x9110ac3b;
+      m_poly_n_12[3] = 0x1b34f30a;
+      m_poly_n_12[4] = 0x388a3a21;
+      m_poly_n_12[5] = 0xc1706472;
 
       m_poly_s_12[0] = 0xa5a0988b;
       m_poly_s_12[1] = 0xebe7f14a;
