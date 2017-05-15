@@ -649,39 +649,6 @@ namespace gr {
       return 0;
     }
 
-    void dvb_bch_bb_impl::test_api(DataBchMultiThread* arg_) {
-      DataBchMultiThread *data = arg_;
-      const unsigned char *in =  (const unsigned char *)(data->in);
-      unsigned char *out = (unsigned char*)(data->out);
-      const int kbch = (int)(data->kbch);
-      dvb_bch_bb_impl *self_ptr = (dvb_bch_bb_impl*)(data->self_ptr);
-      unsigned int* m_poly_n_12 = (unsigned int*)(data->m_poly_n_12);
-      unsigned char b, temp;
-      unsigned int shift[6];
-
-      memset(shift, 0, sizeof(unsigned int) * 6);
-
-      for (int j = 0; j < kbch; j++) {
-        temp = *in++;
-        *out++ = temp;
-        b = (temp ^ (shift[5] & 1));
-        self_ptr->reg_6_shift(shift);
-        if (b) {
-          shift[0] ^= m_poly_n_12[0];
-          shift[1] ^= m_poly_n_12[1];
-          shift[2] ^= m_poly_n_12[2];
-          shift[3] ^= m_poly_n_12[3];
-          shift[4] ^= m_poly_n_12[4];
-          shift[5] ^= m_poly_n_12[5];
-        }
-      }
-      // Now add the parity bits to the output
-      for (int n = 0; n < 192; n++) {
-        *out++ = (shift[5] & 1);
-        self_ptr->reg_6_shift(shift);
-      }
-    }
-
     int
     dvb_bch_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -697,31 +664,23 @@ namespace gr {
       switch (bch_code) {
         case BCH_CODE_N12:
           {
-            int num_thread = noutput_items / nbch;
-
-            boost::scoped_ptr<BchCodeN12Task> tasks[num_thread];
-            boost::scoped_ptr<DataBchMultiThread> thread_args[num_thread];
-            ThreadPool thread_pool(8);
-
-            for (int i = 0; i < num_thread; i++) {
-              thread_args[i].reset(new DataBchMultiThread( kbch,
-                                                          in,
-                                                          out,
-                                                          this,
-                                                          m_poly_n_12));
-              tasks[i].reset(new BchCodeN12Task());
+            std::vector<BchCodeN12Task> tasks; 
+            std::vector<DataBchMultiThread> thread_arg;
+            ThreadPool thread_pool(5);
+            for (int i = 0; i < noutput_items; i += nbch) {
+              thread_arg.push_back(DataBchMultiThread(kbch,
+                                                      in,
+                                                      out,
+                                                      this,
+                                                      m_poly_n_12));
+              tasks.push_back(BchCodeN12Task());
+              tasks.back().setArg((void*)(&thread_arg.back()));
+              thread_pool.addTask(&(tasks.back())); 
               in += (int)kbch;
               out += (int)kbch + 192;
               consumed += (int)kbch;
             }
-
-            for (int i = 0; i < num_thread; i++) {
-              tasks[i]->setArg((void*)(&(*(thread_args[i]))));
-
-              thread_pool.addTask(&(*(tasks[i]))); 
-              // test_api(&(*(thread_arg[i])));
-            }            
-            while (thread_pool.size() != 0) ;
+            while (thread_pool.size() != 0) if (thread_pool.size() > 1) printf("%d\n", thread_pool.size());;
             thread_pool.stop();
           
 
