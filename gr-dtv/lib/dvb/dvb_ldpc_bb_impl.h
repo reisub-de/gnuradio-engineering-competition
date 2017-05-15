@@ -33,6 +33,9 @@ typedef struct{
     int * p2;
 }ldpc_encode_table;
 
+enum Status {
+  PENDING, STOPPED, START_TICK, START_TOCK
+};
 struct general_work_arg {
   int idx;
   const ldpc_encode_table * ldpc_encode;
@@ -43,7 +46,7 @@ struct general_work_arg {
   pthread_mutex_t * mutex1;
   pthread_mutex_t * mutex2;
   int * finished;
-  int * status; // 0 - normal, 1 - exit
+  Status * status;
 };
 
 namespace gr {
@@ -61,7 +64,8 @@ namespace gr {
       pthread_mutex_t mutex1;
       pthread_mutex_t mutex2;
       int finished;
-      int status;
+      Status status;
+      Status next_clock;
 
       unsigned int frame_size;
       unsigned int frame_size_real;
