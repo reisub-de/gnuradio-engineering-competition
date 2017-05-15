@@ -25,9 +25,9 @@
 #include "dvb_defines.h"
 
 typedef struct{
-    int table_length;
-    int d[LDPC_ENCODE_TABLE_LENGTH];
-    int p[LDPC_ENCODE_TABLE_LENGTH];
+    unsigned short p[LDPC_ENCODE_TABLE_LENGTH];
+    unsigned short d[LDPC_ENCODE_TABLE_LENGTH];
+    unsigned short table_length;
 }ldpc_encode_table;
 
 namespace gr {
