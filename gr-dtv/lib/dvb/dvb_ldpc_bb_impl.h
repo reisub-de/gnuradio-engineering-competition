@@ -28,26 +28,7 @@ typedef struct{
     int table_length;
     int d[LDPC_ENCODE_TABLE_LENGTH];
     int p[LDPC_ENCODE_TABLE_LENGTH];
-    int * items_per_cpu;
-    int * d2;
-    int * p2;
 }ldpc_encode_table;
-
-enum Status {
-  PENDING, STOPPED, START_TICK, START_TOCK
-};
-struct general_work_arg {
-  int idx;
-  const ldpc_encode_table * ldpc_encode;
-  const unsigned char *d;
-  unsigned char * p;
-  pthread_cond_t * cond1;
-  pthread_cond_t * cond2;
-  pthread_mutex_t * mutex1;
-  pthread_mutex_t * mutex2;
-  int * finished;
-  Status * status;
-};
 
 namespace gr {
   namespace dtv {
@@ -55,18 +36,6 @@ namespace gr {
     class dvb_ldpc_bb_impl : public dvb_ldpc_bb
     {
      private:
-      long n_cpu;
-
-      pthread_t * tids;
-      general_work_arg * args;
-      pthread_cond_t cond1;
-      pthread_cond_t cond2;
-      pthread_mutex_t mutex1;
-      pthread_mutex_t mutex2;
-      int finished;
-      Status status;
-      Status next_clock;
-
       unsigned int frame_size;
       unsigned int frame_size_real;
       unsigned int frame_size_type;
@@ -161,4 +130,3 @@ namespace gr {
 } // namespace gr
 
 #endif /* INCLUDED_DTV_DVB_LDPC_BB_IMPL_H */
-

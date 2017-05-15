@@ -23,9 +23,6 @@
 #endif
 
 #include <gnuradio/io_signature.h>
-#include <unistd.h>
-#include <signal.h>
-#include <cstdio>
 #include "dvb_ldpc_bb_impl.h"
 
 namespace gr {
@@ -38,42 +35,6 @@ namespace gr {
         (new dvb_ldpc_bb_impl(standard, framesize, rate, constellation));
     }
 
-
-    void * general_work_acc(void * arguments) {
-      general_work_arg * arg = (general_work_arg *) arguments;
-      Status last_clock = PENDING;
-
-      while (true) {
-
-        pthread_mutex_lock(arg->mutex1);
-
-        while (*(arg->status) == PENDING || *(arg->status) == last_clock) {
-          pthread_cond_wait(arg->cond1, arg->mutex1);
-        }
-
-        pthread_mutex_unlock(arg->mutex1);
-
-        if (*(arg->status) == STOPPED) {
-          pthread_exit(EXIT_SUCCESS);
-        }
-
-        last_clock = *(arg->status);
-
-        for (int i = 0; i < arg->ldpc_encode->items_per_cpu[arg->idx]; i += 1) {
-          arg->p[arg->ldpc_encode->p2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]] ^= arg->d[arg->ldpc_encode->d2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]];
-        }
-
-        pthread_mutex_lock(arg->mutex2);
-        *(arg->finished) += 1;
-        pthread_cond_signal(arg->cond2);
-        pthread_mutex_unlock(arg->mutex2);
-
-      }
-
-      return EXIT_SUCCESS;
-    }
-
-
     /*
      * The private constructor
      */
@@ -85,34 +46,6 @@ namespace gr {
       P(0),
       Xp(0)
     {
-      n_cpu = sysconf(_SC_NPROCESSORS_ONLN);
-      args = new general_work_arg[n_cpu];
-      tids = new pthread_t[n_cpu];
-
-      pthread_mutex_init(&mutex1, NULL);
-      pthread_mutex_init(&mutex2, NULL);
-      pthread_cond_init(&cond1, NULL);
-      pthread_cond_init(&cond2, NULL);
-
-      next_clock = START_TICK;
-      status = PENDING;
-
-      for (long idx = 0; idx < n_cpu; idx++) {
-        args[idx].idx = idx;
-        args[idx].finished = &finished;
-        args[idx].status = &status;
-        args[idx].mutex1 = &mutex1;
-        args[idx].mutex2 = &mutex2;
-        args[idx].cond1 = &cond1;
-        args[idx].cond2 = &cond2;
-        pthread_create(tids + idx, NULL, general_work_acc, args + idx);
-      }
-
-      ldpc_encode.items_per_cpu = new int[n_cpu]();
-      ldpc_encode.p2 = new int[n_cpu * LDPC_ENCODE_TABLE_LENGTH];
-      ldpc_encode.d2 = new int[n_cpu * LDPC_ENCODE_TABLE_LENGTH];
-
-
       frame_size_type = framesize;
       if (framesize == FECFRAME_NORMAL) {
         frame_size = FRAME_SIZE_NORMAL;
@@ -431,27 +364,6 @@ namespace gr {
      */
     dvb_ldpc_bb_impl::~dvb_ldpc_bb_impl()
     {
-
-      status = STOPPED;
-      pthread_mutex_lock(&mutex1);
-      pthread_cond_broadcast(&cond1);
-      pthread_mutex_unlock(&mutex1);
-
-      for (int idx = 0; idx < n_cpu; idx++) {
-
-        pthread_join(tids[idx], NULL);
-
-      }
-
-      pthread_mutex_destroy(&mutex1);
-      pthread_mutex_destroy(&mutex2);
-      pthread_cond_destroy(&cond1);
-      pthread_cond_destroy(&cond2);
-      delete[] args;
-      delete[] tids;
-      delete[] ldpc_encode.items_per_cpu;
-      delete[] ldpc_encode.p2;
-      delete[] ldpc_encode.d2;
     }
 
     void
@@ -464,17 +376,8 @@ namespace gr {
 for (int row = 0; row < ROWS; row++) { \
   for (int n = 0; n < 360; n++) { \
     for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
-      /* \
       ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
       ldpc_encode.d[index] = im; \
-      */ \
-      int value = (TABLE_NAME[row][col] + (n * q)) % pbits; \
-      int rr = value % n_cpu; \
-      int & cur_idx = ldpc_encode.items_per_cpu[rr]; \
-      /* more rational arangement would lead to better performance */ \
-      ldpc_encode.p2[rr * LDPC_ENCODE_TABLE_LENGTH + cur_idx] = value; \
-      ldpc_encode.d2[rr * LDPC_ENCODE_TABLE_LENGTH + cur_idx] = im; \
-      cur_idx += 1; \
       index++; \
     } \
     im++; \
@@ -700,17 +603,16 @@ for (int row = 0; row < ROWS; row++) { \
                        gr_vector_void_star &output_items)
     {
       const unsigned char *in = (const unsigned char *) input_items[0];
-      unsigned char * out = (unsigned char *) output_items[0];
-      unsigned char * b = (unsigned char *) output_items[0];
-      int consumed = 0;
-
+      unsigned char *out = (unsigned char *) output_items[0];
       const unsigned char *d;
-      unsigned char * p;
-      unsigned char * s;
+      unsigned char *p;
+      unsigned char *b = (unsigned char *) output_items[0];
+      unsigned char *s;
       // Calculate the number of parity bits
       int plen = (frame_size_real + Xp) - nbch;
       d = in;
       p = &out[nbch];
+      int consumed = 0;
       int puncture, index;
 
       for (int i = 0; i < noutput_items; i += frame_size) {
@@ -730,41 +632,10 @@ for (int row = 0; row < ROWS; row++) { \
           out[i + j] = in[consumed];
           consumed++;
         }
-
         // now do the parity checking
-        #define USE_ACC
-        #ifndef USE_ACC
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
         }
-        #else
-
-        finished = 0;
-
-        for (long idx = 0; idx < n_cpu; idx++) {
-          args[idx].ldpc_encode = &ldpc_encode;
-          args[idx].p = p;
-          args[idx].d = d;
-          args[idx].idx = idx;
-        }
-
-
-        pthread_mutex_lock(&mutex1);
-        status = next_clock;
-        pthread_cond_broadcast(&cond1);
-        pthread_mutex_unlock(&mutex1);
-
-        pthread_mutex_lock(&mutex2);
-        while (finished < n_cpu) {
-          pthread_cond_wait(&cond2, &mutex2);
-        }
-        pthread_mutex_unlock(&mutex2);
-
-        next_clock = next_clock == START_TICK ? START_TOCK : START_TICK;
-        status = PENDING;
-
-        #endif
-
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
@@ -5576,4 +5447,3 @@ for (int row = 0; row < ROWS; row++) { \
 
   } /* namespace dtv */
 } /* namespace gr */
-
