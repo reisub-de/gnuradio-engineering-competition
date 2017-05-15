@@ -41,29 +41,30 @@ namespace gr {
 
     void * general_work_acc(void * arguments) {
       general_work_arg * arg = (general_work_arg *) arguments;
-
+      Status last_clock = PENDING;
 
       while (true) {
 
         pthread_mutex_lock(arg->mutex1);
 
-        while (*(arg->status) == 2) {
+        while (*(arg->status) == PENDING || *(arg->status) == last_clock) {
           pthread_cond_wait(arg->cond1, arg->mutex1);
         }
 
-
         pthread_mutex_unlock(arg->mutex1);
 
-        if (*(arg->status) == 1) {
+        if (*(arg->status) == STOPPED) {
           pthread_exit(EXIT_SUCCESS);
         }
+
+        last_clock = *(arg->status);
 
         for (int i = 0; i < arg->ldpc_encode->items_per_cpu[arg->idx]; i += 1) {
           arg->p[arg->ldpc_encode->p2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]] ^= arg->d[arg->ldpc_encode->d2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]];
         }
 
         pthread_mutex_lock(arg->mutex2);
-        * (arg->finished) += 1;
+        *(arg->finished) += 1;
         pthread_cond_signal(arg->cond2);
         pthread_mutex_unlock(arg->mutex2);
 
@@ -93,7 +94,8 @@ namespace gr {
       pthread_cond_init(&cond1, NULL);
       pthread_cond_init(&cond2, NULL);
 
-      status = 2;
+      next_clock = START_TICK;
+      status = PENDING;
 
       for (long idx = 0; idx < n_cpu; idx++) {
         args[idx].idx = idx;
@@ -430,7 +432,7 @@ namespace gr {
     dvb_ldpc_bb_impl::~dvb_ldpc_bb_impl()
     {
 
-      status = 1;
+      status = STOPPED;
       pthread_mutex_lock(&mutex1);
       pthread_cond_broadcast(&cond1);
       pthread_mutex_unlock(&mutex1);
@@ -745,22 +747,20 @@ for (int row = 0; row < ROWS; row++) { \
           args[idx].idx = idx;
         }
 
-        pthread_mutex_lock(&mutex2);
 
         pthread_mutex_lock(&mutex1);
-        status = 0;
+        status = next_clock;
         pthread_cond_broadcast(&cond1);
         pthread_mutex_unlock(&mutex1);
 
+        pthread_mutex_lock(&mutex2);
         while (finished < n_cpu) {
-
           pthread_cond_wait(&cond2, &mutex2);
-
         }
-
         pthread_mutex_unlock(&mutex2);
 
-        status = 2;
+        next_clock = next_clock == START_TICK ? START_TOCK : START_TICK;
+        status = PENDING;
 
         #endif
 
