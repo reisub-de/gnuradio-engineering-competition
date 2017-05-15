@@ -427,15 +427,15 @@ namespace gr {
 			  
 			  
 			  //Not sure if there is any benefit, but maybe the loop can be better optimized.
-			  for(unsigned long int a = 0; a < q_val*360; a++){
-				  tempu[nbch+a] = in[  (a%360)*q_val + (a/360)  ];
-			  }
-              // for (int t = 0; t < q_val; t++) {
-                // for (int s = 0; s < 360; s++) {
+			  // for(unsigned long int a = 0; a < q_val*360; a++){
+				  // tempu[nbch+a] = in[  (a%360)*q_val + (a/360)  ];
+			  // }
+              for (int t = 0; t < q_val; t++) {
+                for (int s = 0; s < 360; s++) {
 				  
-                  // tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
-                // }
-              // }
+                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
+                }
+              }
 			  
 			  
 			  
