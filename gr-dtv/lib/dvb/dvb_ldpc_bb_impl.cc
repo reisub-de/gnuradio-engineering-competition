@@ -42,14 +42,22 @@ namespace gr {
     void * general_work_acc(void * arguments) {
       general_work_arg * arg = (general_work_arg *) arguments;
 
-      pthread_mutex_lock(arg->mutex1);
 
-      while (0 == pthread_cond_wait(arg->cond1, arg->mutex1)) {
+      while (true) {
 
-        if (*(arg->status) != 0) {
-          pthread_mutex_unlock(arg->mutex1);
+        pthread_mutex_lock(arg->mutex1);
+
+        while (*(arg->status) == 2) {
+          pthread_cond_wait(arg->cond1, arg->mutex1);
+        }
+
+
+        pthread_mutex_unlock(arg->mutex1);
+
+        if (*(arg->status) == 1) {
           pthread_exit(EXIT_SUCCESS);
         }
+
         for (int i = 0; i < arg->ldpc_encode->items_per_cpu[arg->idx]; i += 1) {
           arg->p[arg->ldpc_encode->p2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]] ^= arg->d[arg->ldpc_encode->d2[arg->idx * LDPC_ENCODE_TABLE_LENGTH + i]];
         }
@@ -60,8 +68,6 @@ namespace gr {
         pthread_mutex_unlock(arg->mutex2);
 
       }
-
-      pthread_mutex_unlock(arg->mutex1);
 
       return EXIT_SUCCESS;
     }
@@ -86,6 +92,8 @@ namespace gr {
       pthread_mutex_init(&mutex2, NULL);
       pthread_cond_init(&cond1, NULL);
       pthread_cond_init(&cond2, NULL);
+
+      status = 2;
 
       for (long idx = 0; idx < n_cpu; idx++) {
         args[idx].idx = idx;
@@ -738,9 +746,10 @@ for (int row = 0; row < ROWS; row++) { \
         }
 
         pthread_mutex_lock(&mutex2);
+
+        status = 0;
         pthread_mutex_lock(&mutex1);
         pthread_cond_broadcast(&cond1);
-
         pthread_mutex_unlock(&mutex1);
 
         while (finished < n_cpu) {
@@ -750,6 +759,8 @@ for (int row = 0; row < ROWS; row++) { \
         }
 
         pthread_mutex_unlock(&mutex2);
+
+        status = 2;
 
         #endif
 
