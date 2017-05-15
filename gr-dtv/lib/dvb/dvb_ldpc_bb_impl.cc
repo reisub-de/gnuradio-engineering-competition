@@ -628,15 +628,51 @@ for (int row = 0; row < ROWS; row++) { \
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
-        while(consumed < (int)nbch) {
-          out[i + consumed] = boost::move(in[consumed]);
-          //out[i + consumed] = in[consumed];
+        for (int j = 0; j < (int)nbch; j++) {
+          out[i + j] = in[consumed];
           consumed++;
         } 
         
         // now do the parity checking
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
+        for (int j = 0; j < ldpc_encode.table_length; j=j+36) {
+            // For faster check, enroll the For Loop
+            // The table is always a multiple of 360
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+          p[ldpc_encode.p[j+1]] ^= d[ldpc_encode.d[j+1]];
+          p[ldpc_encode.p[j+2]] ^= d[ldpc_encode.d[j+2]];
+          p[ldpc_encode.p[j+3]] ^= d[ldpc_encode.d[j+3]];
+          p[ldpc_encode.p[j+4]] ^= d[ldpc_encode.d[j+4]];
+          p[ldpc_encode.p[j+5]] ^= d[ldpc_encode.d[j+5]];
+          p[ldpc_encode.p[j+6]] ^= d[ldpc_encode.d[j+6]];
+          p[ldpc_encode.p[j+7]] ^= d[ldpc_encode.d[j+7]];
+          p[ldpc_encode.p[j+8]] ^= d[ldpc_encode.d[j+8]];
+          p[ldpc_encode.p[j+9]] ^= d[ldpc_encode.d[j+9]];
+          p[ldpc_encode.p[j+10]] ^= d[ldpc_encode.d[j+10]];
+          p[ldpc_encode.p[j+11]] ^= d[ldpc_encode.d[j+11]];
+          p[ldpc_encode.p[j+12]] ^= d[ldpc_encode.d[j+12]];
+          p[ldpc_encode.p[j+13]] ^= d[ldpc_encode.d[j+13]];
+          p[ldpc_encode.p[j+14]] ^= d[ldpc_encode.d[j+14]];
+          p[ldpc_encode.p[j+15]] ^= d[ldpc_encode.d[j+15]];
+          p[ldpc_encode.p[j+16]] ^= d[ldpc_encode.d[j+16]];
+          p[ldpc_encode.p[j+17]] ^= d[ldpc_encode.d[j+17]];
+          p[ldpc_encode.p[j+18]] ^= d[ldpc_encode.d[j+18]];
+          p[ldpc_encode.p[j+19]] ^= d[ldpc_encode.d[j+19]];
+          p[ldpc_encode.p[j+20]] ^= d[ldpc_encode.d[j+20]];
+          p[ldpc_encode.p[j+21]] ^= d[ldpc_encode.d[j+21]];
+          p[ldpc_encode.p[j+22]] ^= d[ldpc_encode.d[j+22]];
+          p[ldpc_encode.p[j+23]] ^= d[ldpc_encode.d[j+23]];
+          p[ldpc_encode.p[j+24]] ^= d[ldpc_encode.d[j+24]];
+          p[ldpc_encode.p[j+25]] ^= d[ldpc_encode.d[j+25]];
+          p[ldpc_encode.p[j+26]] ^= d[ldpc_encode.d[j+26]];
+          p[ldpc_encode.p[j+27]] ^= d[ldpc_encode.d[j+27]];
+          p[ldpc_encode.p[j+28]] ^= d[ldpc_encode.d[j+28]];
+          p[ldpc_encode.p[j+29]] ^= d[ldpc_encode.d[j+29]];
+          p[ldpc_encode.p[j+30]] ^= d[ldpc_encode.d[j+30]];
+          p[ldpc_encode.p[j+31]] ^= d[ldpc_encode.d[j+31]];
+          p[ldpc_encode.p[j+32]] ^= d[ldpc_encode.d[j+32]];
+          p[ldpc_encode.p[j+33]] ^= d[ldpc_encode.d[j+33]];
+          p[ldpc_encode.p[j+34]] ^= d[ldpc_encode.d[j+34]];
+          p[ldpc_encode.p[j+35]] ^= d[ldpc_encode.d[j+35]];
         }
       
         if (P != 0) {
@@ -657,7 +693,7 @@ for (int row = 0; row < ROWS; row++) { \
           p = &out[nbch];
         }
         for (int j = 1; j < (plen - Xp); j++) {
-          p[j] ^= boost::move(p[j-1]);
+          p[j] ^= p[j-1];
         }
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
