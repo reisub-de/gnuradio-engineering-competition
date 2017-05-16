@@ -631,6 +631,9 @@ namespace gr {
       unsigned int shift[6];
 	  unsigned long long shift_64[3];
       int consumed = 0;
+      const unsigned long long p1 = m_poly_n_12_64[0];
+      const unsigned long long p2 = m_poly_n_12_64[1];
+      const unsigned long long p3 = m_poly_n_12_64[2];
 
       switch (bch_code) {
         case BCH_CODE_N12:
@@ -645,9 +648,9 @@ namespace gr {
               b = (temp ^ (shift_64[2] & 1));
               reg_3_shift(shift_64);
               if (b) {
-				shift_64[0] ^= m_poly_n_12_64[0];
-				shift_64[1] ^= m_poly_n_12_64[1];
-				shift_64[2] ^= m_poly_n_12_64[2];
+				shift_64[0] ^= p1;
+				shift_64[1] ^= p2;
+				shift_64[2] ^= p3;
               }
             }
             // Now add the parity bits to the output
