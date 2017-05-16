@@ -224,8 +224,11 @@ namespace gr {
           else {
             mux = &mux16[0];
           }
+          //just calc it once
+          
+          rows = frame_size / (mod * 2);
           for (int i = 0; i < noutput_items; i += packed_items) {
-            rows = frame_size / (mod * 2);
+            
             const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
             c1 = &tempv[0];
             c2 = &tempv[rows];
@@ -235,6 +238,7 @@ namespace gr {
             c6 = &tempv[rows * 5];
             c7 = &tempv[rows * 6];
             c8 = &tempv[rows * 7];
+
             for (int k = 0; k < nbch; k++) {
               tempu[k] = *in++;
             }
@@ -245,16 +249,79 @@ namespace gr {
             }
             in = in + (q_val * 360);
             index = 0;
-            for (int col = 0; col < (mod * 2); col++) {
-              offset = twist[col];
+            //for (int col = 0; col < (mod * 2); col++) {
+              offset = twist[0];
               for (int row = 0; row < rows; row++) {
-                tempv[offset + (rows * col)] = tempu[index++];
+                tempv[offset + (rows * 0)] = tempu[index++];
                 offset++;
                 if (offset == rows) {
                   offset = 0;
                 }
               }
-            }
+
+              offset = twist[1];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 1)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[2];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 2)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[3];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 3)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[4];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 4)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[5];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 5)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[6];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 6)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[7];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 7)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+            //}
             index = 0;
             for (int j = 0; j < rows; j++) {
               tempu[index++] = c1[j];
@@ -267,12 +334,33 @@ namespace gr {
               tempu[index++] = c8[j];
             }
             index = 0;
-            for (int d = 0; d < frame_size / (mod * 2); d++) {
+            for (int d = 0; d < rows; d++) {
               pack = 0;
-              for (int e = 0; e < (mod * 2); e++) {
-                offset = mux[e];
+              //for (int e = 0; e < (mod * 2); e++) {
+                offset = mux[0];
                 pack |= tempu[index++] << (((mod * 2) - 1) - offset);
-              }
+
+                offset = mux[1];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[2];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[3];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[4];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[5];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[6];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[7];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+              //}
               out[produced++] = pack >> 4;
               out[produced++] = pack & 0xf;
               consumed += (mod * 2);
@@ -298,8 +386,9 @@ namespace gr {
           else {
             mux = &mux64[0];
           }
+          
+          rows = frame_size / (mod * 2);
           for (int i = 0; i < noutput_items; i += packed_items) {
-            rows = frame_size / (mod * 2);
             const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
             c1 = &tempv[0];
             c2 = &tempv[rows];
@@ -316,6 +405,8 @@ namespace gr {
             for (int k = 0; k < nbch; k++) {
               tempu[k] = *in++;
             }
+            //memcpy(tempu, in, nbch);
+            //in += nbch;
             for (int t = 0; t < q_val; t++) {
               for (int s = 0; s < 360; s++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -323,16 +414,114 @@ namespace gr {
             }
             in = in + (q_val * 360);
             index = 0;
-            for (int col = 0; col < (mod * 2); col++) {
-              offset = twist[col];
+            //for (int col = 0; col < (mod * 2); col++) {
+              offset = twist[0];
               for (int row = 0; row < rows; row++) {
-                tempv[offset + (rows * col)] = tempu[index++];
+                tempv[offset + (rows * 0)] = tempu[index++];
                 offset++;
                 if (offset == rows) {
                   offset = 0;
                 }
               }
-            }
+
+              offset = twist[1];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 1)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+              offset = twist[2];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 2)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[3];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 3)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[4];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 4)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[5];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 5)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[6];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 6)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[7];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 7)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[8];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 8)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[9];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 9)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[10];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 10)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+
+              offset = twist[11];
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * 11)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+            //}
             index = 0;
             for (int j = 0; j < rows; j++) {
               tempu[index++] = c1[j];
@@ -349,16 +538,49 @@ namespace gr {
               tempu[index++] = c12[j];
             }
             index = 0;
-            for (int d = 0; d < frame_size / (mod * 2); d++) {
+            for (int d = 0; d < rows; d++) {
               pack = 0;
-              for (int e = 0; e < (mod * 2); e++) {
-                offset = mux[e];
+              //for (int e = 0; e < (mod * 2); e++) {
+                offset = mux[0];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[1];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[2];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[3];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[4];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[5];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[6];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[7];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[8];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[9];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[10];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[11];
                 pack |= tempu[index++] << (((mod * 2) - 1) - offset);
               }
               out[produced++] = pack >> 6;
               out[produced++] = pack & 0x3f;
               consumed += (mod * 2);
-            }
+            //}
           }
           break;
         case MOD_256QAM:
@@ -372,8 +594,10 @@ namespace gr {
             else {
               mux = &mux256[0];
             }
+            
+            rows = frame_size / (mod * 2);
             for (int i = 0; i < noutput_items; i += packed_items) {
-              rows = frame_size / (mod * 2);
+              
               const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
               const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
               c1 = &tempv[0];
@@ -402,16 +626,153 @@ namespace gr {
               }
               in = in + (q_val * 360);
               index = 0;
-              for (int col = 0; col < (mod * 2); col++) {
-                offset = twist256n[col];
+
+              //for small loop counts do loop unrolling
+              //for (int col = 0; col < mod2; col++) {
+                offset = twist256n[0];
                 for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
+                  tempv[offset + (rows * 0)] = tempu[index++];
                   offset++;
                   if (offset == rows) {
                     offset = 0;
                   }
                 }
-              }
+
+                offset = twist256n[1];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 1)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[2];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 2)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[3];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 3)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[4];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 4)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[5];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 5)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[6];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 6)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[7];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 7)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[8];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 8)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[9];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 9)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[10];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 10)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[11];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 11)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[12];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 12)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[13];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 13)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[14];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 14)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256n[15];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 15)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+              //}
               index = 0;
               for (int j = 0; j < rows; j++) {
                 tempu[index++] = c1[j];
@@ -432,12 +793,58 @@ namespace gr {
                 tempu[index++] = c16[j];
               }
               index = 0;
-              for (int d = 0; d < frame_size / (mod * 2); d++) {
+              for (int d = 0; d < rows; d++) {
                 pack = 0;
-                for (int e = 0; e < (mod * 2); e++) {
-                  offset = mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - offset);
-                }
+                //better do loop unrolling for small number of loops
+                //for (int e = 0; e < mod2; e++) {
+                offset = mux[0];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[1];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[2];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[3];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[4];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[5];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[6];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[7];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[8];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[9];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[10];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[11];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[12];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[13];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[14];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+
+                offset = mux[15];
+                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+                //}
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
                 consumed += (mod * 2);
@@ -454,8 +861,9 @@ namespace gr {
             else {
               mux = &mux256s[0];
             }
+            rows = frame_size / mod;
             for (int i = 0; i < noutput_items; i += packed_items) {
-              rows = frame_size / mod;
+              
               const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
               c1 = &tempv[0];
               c2 = &tempv[rows];
@@ -468,6 +876,7 @@ namespace gr {
               for (int k = 0; k < nbch; k++) {
                 tempu[k] = *in++;
               }
+              //memcpy(tempu, in, nbch);
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -475,16 +884,79 @@ namespace gr {
               }
               in = in + (q_val * 360);
               index = 0;
-              for (int col = 0; col < mod; col++) {
-                offset = twist256s[col];
+              //for (int col = 0; col < mod; col++) {
+                offset = twist256s[0];
                 for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
+                  tempv[offset + (rows * 0)] = tempu[index++];
                   offset++;
                   if (offset == rows) {
                     offset = 0;
                   }
                 }
-              }
+
+                offset = twist256s[1];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 1)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256s[2];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 2)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256s[3];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 3)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256s[4];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 4)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256s[5];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 5)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256s[6];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 6)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+
+                offset = twist256s[7];
+                for (int row = 0; row < rows; row++) {
+                  tempv[offset + (rows * 7)] = tempu[index++];
+                  offset++;
+                  if (offset == rows) {
+                    offset = 0;
+                  }
+                }
+              //}
               index = 0;
               for (int j = 0; j < rows; j++) {
                 tempu[index++] = c1[j];
@@ -497,12 +969,34 @@ namespace gr {
                 tempu[index++] = c8[j];
               }
               index = 0;
-              for (int d = 0; d < frame_size / mod; d++) {
+              for (int d = 0; d < rows; d++) {
                 pack = 0;
-                for (int e = 0; e < mod; e++) {
-                  offset = mux[e];
-                  pack |= tempu[index++] << ((mod - 1) - offset);
-                }
+                //for (int e = 0; e < mod; e++) {
+                offset = mux[0];
+                pack |= tempu[index++] << ((mod - 1) - offset);
+
+                offset = mux[1];
+                pack |= tempu[index++] << ((mod - 1) - offset);
+
+                offset = mux[2];
+                pack |= tempu[index++] << ((mod - 1) - offset);
+
+                offset = mux[3];
+                pack |= tempu[index++] << ((mod - 1) - offset);
+
+                offset = mux[4];
+                pack |= tempu[index++] << ((mod - 1) - offset);
+
+                offset = mux[5];
+                pack |= tempu[index++] << ((mod - 1) - offset);
+
+                offset = mux[6];
+                pack |= tempu[index++] << ((mod - 1) - offset);
+
+                offset = mux[7];
+                pack |= tempu[index++] << ((mod - 1) - offset);
+
+                //}
                 out[produced++] = pack & 0xff;
                 consumed += mod;
               }
