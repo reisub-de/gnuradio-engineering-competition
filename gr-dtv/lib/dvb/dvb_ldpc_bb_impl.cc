@@ -691,6 +691,7 @@ for (int row = 0; row < ROWS; row++) { \
         //threads[2].join();
         //threads[3].join();
       
+        
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
