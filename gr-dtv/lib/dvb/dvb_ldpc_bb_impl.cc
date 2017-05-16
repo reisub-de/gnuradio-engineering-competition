@@ -25,6 +25,10 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
 #include <emmintrin.h>
+#include <iostream>
+#include <fstream>
+#include <boost/thread.hpp>
+#include <algorithm>
 
 namespace gr {
   namespace dtv {
@@ -379,12 +383,18 @@ for (int row = 0; row < ROWS; row++) { \
     for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
       ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
       ldpc_encode.d[index] = im; \
+      ldpc_encode.sorted_p_d.push_back(std::make_pair(ldpc_encode.p[index], ldpc_encode.d[index])); \
       index++; \
     } \
     im++; \
   } \
 } 
 
+    inline bool compare (const std::pair<int, int>& struct1, const std::pair<int, int>& struct2)
+    {
+        return (struct1.first < struct2.first);
+    }
+    
     void
     dvb_ldpc_bb_impl::ldpc_lookup_generate(void)
     {
@@ -595,6 +605,21 @@ for (int row = 0; row < ROWS; row++) { \
         }
       }
       ldpc_encode.table_length = index;
+      
+      // Sort the ldpc_encode table, so all identical parity values will be consecutively
+      c_threads_count = ldpc_encode.table_length / 8;
+      std::sort(ldpc_encode.sorted_p_d.begin(), ldpc_encode.sorted_p_d.end(), compare);
+      
+      
+      
+      /*std::ofstream write;
+      write.open("ldpc_sorted.txt");
+      for(std::vector<std::pair<int, int> >::iterator it = ldpc_encode.sorted_p_d.begin(); it != ldpc_encode.sorted_p_d.end(); it++)
+      {
+        write << (*it).first << "\t" << (*it).second << std::endl;
+        //printf("%d\t%d\n", it->first, it->second);
+      }
+      write.close();*/
     }
 
     int
@@ -634,47 +659,37 @@ for (int row = 0; row < ROWS; row++) { \
         memcpy(out+i, in, nbch);
         consumed = nbch;
         
-        // now do the parity checking
-        for (int j = 0; j < ldpc_encode.table_length; j=j+36) {
-            // For faster check, enroll the For Loop
-            // The table is always a multiple of 360
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
-          p[ldpc_encode.p[j+1]] ^= d[ldpc_encode.d[j+1]];
-          p[ldpc_encode.p[j+2]] ^= d[ldpc_encode.d[j+2]];
-          p[ldpc_encode.p[j+3]] ^= d[ldpc_encode.d[j+3]];
-          p[ldpc_encode.p[j+4]] ^= d[ldpc_encode.d[j+4]];
-          p[ldpc_encode.p[j+5]] ^= d[ldpc_encode.d[j+5]];
-          p[ldpc_encode.p[j+6]] ^= d[ldpc_encode.d[j+6]];
-          p[ldpc_encode.p[j+7]] ^= d[ldpc_encode.d[j+7]];
-          p[ldpc_encode.p[j+8]] ^= d[ldpc_encode.d[j+8]];
-          p[ldpc_encode.p[j+9]] ^= d[ldpc_encode.d[j+9]];
-          p[ldpc_encode.p[j+10]] ^= d[ldpc_encode.d[j+10]];
-          p[ldpc_encode.p[j+11]] ^= d[ldpc_encode.d[j+11]];
-          p[ldpc_encode.p[j+12]] ^= d[ldpc_encode.d[j+12]];
-          p[ldpc_encode.p[j+13]] ^= d[ldpc_encode.d[j+13]];
-          p[ldpc_encode.p[j+14]] ^= d[ldpc_encode.d[j+14]];
-          p[ldpc_encode.p[j+15]] ^= d[ldpc_encode.d[j+15]];
-          p[ldpc_encode.p[j+16]] ^= d[ldpc_encode.d[j+16]];
-          p[ldpc_encode.p[j+17]] ^= d[ldpc_encode.d[j+17]];
-          p[ldpc_encode.p[j+18]] ^= d[ldpc_encode.d[j+18]];
-          p[ldpc_encode.p[j+19]] ^= d[ldpc_encode.d[j+19]];
-          p[ldpc_encode.p[j+20]] ^= d[ldpc_encode.d[j+20]];
-          p[ldpc_encode.p[j+21]] ^= d[ldpc_encode.d[j+21]];
-          p[ldpc_encode.p[j+22]] ^= d[ldpc_encode.d[j+22]];
-          p[ldpc_encode.p[j+23]] ^= d[ldpc_encode.d[j+23]];
-          p[ldpc_encode.p[j+24]] ^= d[ldpc_encode.d[j+24]];
-          p[ldpc_encode.p[j+25]] ^= d[ldpc_encode.d[j+25]];
-          p[ldpc_encode.p[j+26]] ^= d[ldpc_encode.d[j+26]];
-          p[ldpc_encode.p[j+27]] ^= d[ldpc_encode.d[j+27]];
-          p[ldpc_encode.p[j+28]] ^= d[ldpc_encode.d[j+28]];
-          p[ldpc_encode.p[j+29]] ^= d[ldpc_encode.d[j+29]];
-          p[ldpc_encode.p[j+30]] ^= d[ldpc_encode.d[j+30]];
-          p[ldpc_encode.p[j+31]] ^= d[ldpc_encode.d[j+31]];
-          p[ldpc_encode.p[j+32]] ^= d[ldpc_encode.d[j+32]];
-          p[ldpc_encode.p[j+33]] ^= d[ldpc_encode.d[j+33]];
-          p[ldpc_encode.p[j+34]] ^= d[ldpc_encode.d[j+34]];
-          p[ldpc_encode.p[j+35]] ^= d[ldpc_encode.d[j+35]];
+        /*static bool alreadyLogged = false;
+        if(!alreadyLogged)
+        {
+            for (int j = 0; j < rowCounter.size(); j++) {
+                printf("Count: %d\t Value%d\n", rowCounter[j].first, rowCounter[j].second);
+            }
         }
+        alreadyLogged = true;
+        */
+        
+        /*const unsigned int count = rowCounter.size();
+        for (int j = 0; i < count; j++)
+        {
+          for(int x = 0; x < rowCounter[count].first; x++)
+          {
+             p[ldpc_encode.p[j+x]] ^= d[ldpc_encode.d[rowCounter[count].second]]; 
+          }
+        }*/
+        
+        // now do the parity checking
+        // Each thread gets the half of the array for parityCheck
+        threads[0] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 4, 0);
+        threads[1] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 8, c_threads_count * 4);
+        //threads[2] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 6, c_threads_count * 4);
+        //threads[3] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 8, c_threads_count * 6);
+        
+            
+        threads[0].join();
+        threads[1].join();
+        //threads[2].join();
+        //threads[3].join();
       
         if (P != 0) {
           puncture = 0;
@@ -715,6 +730,50 @@ for (int row = 0; row < ROWS; row++) { \
       return noutput_items;
     }
 
+    void dvb_ldpc_bb_impl::doParityCheck(unsigned char* p, const unsigned char* d, int counter, int start)
+    {
+         for (int j = start; j < counter; j += 36) {
+            // For faster check, enroll the For Loop
+            // The table is always a multiple of 360
+          p[ldpc_encode.sorted_p_d[j].first] ^= d[ldpc_encode.sorted_p_d[j].second]; 
+          p[ldpc_encode.sorted_p_d[j+1].first] ^= d[ldpc_encode.sorted_p_d[j+1].second]; 
+          p[ldpc_encode.sorted_p_d[j+2].first] ^= d[ldpc_encode.sorted_p_d[j+2].second]; 
+          p[ldpc_encode.sorted_p_d[j+3].first] ^= d[ldpc_encode.sorted_p_d[j+3].second]; 
+          p[ldpc_encode.sorted_p_d[j+4].first] ^= d[ldpc_encode.sorted_p_d[j+4].second]; 
+          p[ldpc_encode.sorted_p_d[j+5].first] ^= d[ldpc_encode.sorted_p_d[j+5].second]; 
+          p[ldpc_encode.sorted_p_d[j+6].first] ^= d[ldpc_encode.sorted_p_d[j+6].second]; 
+          p[ldpc_encode.sorted_p_d[j+7].first] ^= d[ldpc_encode.sorted_p_d[j+7].second]; 
+          p[ldpc_encode.sorted_p_d[j+8].first] ^= d[ldpc_encode.sorted_p_d[j+8].second]; 
+          p[ldpc_encode.sorted_p_d[j+9].first] ^= d[ldpc_encode.sorted_p_d[j+9].second]; 
+          p[ldpc_encode.sorted_p_d[j+10].first] ^= d[ldpc_encode.sorted_p_d[j+10].second]; 
+          p[ldpc_encode.sorted_p_d[j+11].first] ^= d[ldpc_encode.sorted_p_d[j+11].second]; 
+          p[ldpc_encode.sorted_p_d[j+12].first] ^= d[ldpc_encode.sorted_p_d[j+12].second]; 
+          p[ldpc_encode.sorted_p_d[j+13].first] ^= d[ldpc_encode.sorted_p_d[j+13].second]; 
+          p[ldpc_encode.sorted_p_d[j+14].first] ^= d[ldpc_encode.sorted_p_d[j+14].second]; 
+          p[ldpc_encode.sorted_p_d[j+15].first] ^= d[ldpc_encode.sorted_p_d[j+15].second]; 
+          p[ldpc_encode.sorted_p_d[j+16].first] ^= d[ldpc_encode.sorted_p_d[j+16].second]; 
+          p[ldpc_encode.sorted_p_d[j+17].first] ^= d[ldpc_encode.sorted_p_d[j+17].second]; 
+          p[ldpc_encode.sorted_p_d[j+18].first] ^= d[ldpc_encode.sorted_p_d[j+18].second]; 
+          p[ldpc_encode.sorted_p_d[j+19].first] ^= d[ldpc_encode.sorted_p_d[j+19].second]; 
+          p[ldpc_encode.sorted_p_d[j+20].first] ^= d[ldpc_encode.sorted_p_d[j+20].second]; 
+          p[ldpc_encode.sorted_p_d[j+21].first] ^= d[ldpc_encode.sorted_p_d[j+21].second]; 
+          p[ldpc_encode.sorted_p_d[j+22].first] ^= d[ldpc_encode.sorted_p_d[j+22].second]; 
+          p[ldpc_encode.sorted_p_d[j+23].first] ^= d[ldpc_encode.sorted_p_d[j+23].second]; 
+          p[ldpc_encode.sorted_p_d[j+24].first] ^= d[ldpc_encode.sorted_p_d[j+24].second]; 
+          p[ldpc_encode.sorted_p_d[j+25].first] ^= d[ldpc_encode.sorted_p_d[j+25].second]; 
+          p[ldpc_encode.sorted_p_d[j+26].first] ^= d[ldpc_encode.sorted_p_d[j+26].second]; 
+          p[ldpc_encode.sorted_p_d[j+27].first] ^= d[ldpc_encode.sorted_p_d[j+27].second]; 
+          p[ldpc_encode.sorted_p_d[j+28].first] ^= d[ldpc_encode.sorted_p_d[j+28].second]; 
+          p[ldpc_encode.sorted_p_d[j+29].first] ^= d[ldpc_encode.sorted_p_d[j+29].second]; 
+          p[ldpc_encode.sorted_p_d[j+30].first] ^= d[ldpc_encode.sorted_p_d[j+30].second]; 
+          p[ldpc_encode.sorted_p_d[j+31].first] ^= d[ldpc_encode.sorted_p_d[j+31].second]; 
+          p[ldpc_encode.sorted_p_d[j+32].first] ^= d[ldpc_encode.sorted_p_d[j+32].second]; 
+          p[ldpc_encode.sorted_p_d[j+33].first] ^= d[ldpc_encode.sorted_p_d[j+33].second]; 
+          p[ldpc_encode.sorted_p_d[j+34].first] ^= d[ldpc_encode.sorted_p_d[j+34].second]; 
+          p[ldpc_encode.sorted_p_d[j+35].first] ^= d[ldpc_encode.sorted_p_d[j+35].second]; 
+        }       
+    }
+    
     const int dvb_ldpc_bb_impl::ldpc_tab_1_4N[45][13]=
     {
       {12,23606,36098,1140,28859,18148,18510,6226,540,42014,20879,23802,47088},
