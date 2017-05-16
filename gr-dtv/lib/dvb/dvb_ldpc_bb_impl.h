@@ -23,11 +23,15 @@
 
 #include <gnuradio/dtv/dvb_ldpc_bb.h>
 #include "dvb_defines.h"
+#include <vector>
+#include <utility>
+#include <map>
 
 typedef struct{
     int table_length;
     int d[LDPC_ENCODE_TABLE_LENGTH];
     int p[LDPC_ENCODE_TABLE_LENGTH];
+    std::vector<std::pair<int, int> > sorted_p_d;
 }ldpc_encode_table;
 
 namespace gr {
@@ -36,6 +40,9 @@ namespace gr {
     class dvb_ldpc_bb_impl : public dvb_ldpc_bb
     {
      private:
+      boost::thread threads[4];
+      unsigned int c_threads_count;
+         
       unsigned int frame_size;
       unsigned int frame_size_real;
       unsigned int frame_size_type;
@@ -124,6 +131,8 @@ namespace gr {
                        gr_vector_int &ninput_items,
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items);
+      
+      void doParityCheck(unsigned char* p, const unsigned char* d, int counter, int start);
     };
 
   } // namespace dtv
