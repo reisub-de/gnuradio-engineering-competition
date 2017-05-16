@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Vv002 Cr35L
-# Generated: Mon Mar 13 09:09:58 2017
+# Generated: Mon May 15 16:24:56 2017
 ##################################################
 
 from gnuradio import blocks
@@ -84,6 +84,20 @@ def main(top_block_cls=vv002_cr35l, options=None):
     tb.start()
     tb.wait()
 
+    print "pilotgenerator:       {:10.0f}".format(tb.dtv_dvbt2_pilotgenerator_cc_0.pc_work_time_total())
+    print "p1insertion:          {:10.0f}".format(tb.dtv_dvbt2_p1insertion_cc_0.pc_work_time_total())
+    print "modulator:            {:10.0f}".format(tb.dtv_dvbt2_modulator_bc_0.pc_work_time_total())
+    print "interleaver:          {:10.0f}".format(tb.dtv_dvbt2_interleaver_bb_0.pc_work_time_total())
+    print "freqinterleaver:      {:10.0f}".format(tb.dtv_dvbt2_freqinterleaver_cc_0.pc_work_time_total())
+    print "framemapper:          {:10.0f}".format(tb.dtv_dvbt2_framemapper_cc_0.pc_work_time_total())
+    print "cellinterleaver:      {:10.0f}".format(tb.dtv_dvbt2_cellinterleaver_cc_0.pc_work_time_total())
+    print "ldpc:                 {:10.0f}".format(tb.dtv_dvb_ldpc_bb_0.pc_work_time_total())
+    print "bch:                  {:10.0f}".format(tb.dtv_dvb_bch_bb_0.pc_work_time_total())
+    print "bbscrambler:          {:10.0f}".format(tb.dtv_dvb_bbscrambler_bb_0.pc_work_time_total())
+    print "bbheader:             {:10.0f}".format(tb.dtv_dvb_bbheader_bb_0.pc_work_time_total())
+    print "ofdm_cyclic_prefixer: {:10.0f}".format(tb.digital_ofdm_cyclic_prefixer_0.pc_work_time_total())
+    print "file_source:          {:10.0f}".format(tb.blocks_file_source_0.pc_work_time_total())
+    print "file_sink:            {:10.0f}".format(tb.blocks_file_sink_1.pc_work_time_total())
 
 if __name__ == '__main__':
     main()
