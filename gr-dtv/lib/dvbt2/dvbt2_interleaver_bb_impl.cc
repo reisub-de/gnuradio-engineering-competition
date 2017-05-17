@@ -434,7 +434,8 @@ namespace gr {
                 tempu[index++] = c16[j];
               }
               index = 0;
-              for (int d = 0; d < frame_size / (mod * 2); d++) {
+              for( int d= frame_size / (mod * 2); d--; ) {
+              //for (int d = 0; d < frame_size / (mod * 2); d++) {
                 pack = 0;
                 for (int e = 0; e < (mod * 2); e++) {
                   offset = mux[e];
