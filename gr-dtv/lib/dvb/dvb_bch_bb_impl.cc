@@ -24,6 +24,8 @@
 
 #include <gnuradio/io_signature.h>
 #include "dvb_bch_bb_impl.h"
+#include <stdio.h>
+#include "fftw3.h"
 
 namespace gr {
   namespace dtv {
@@ -370,7 +372,7 @@ namespace gr {
             break;
         }
       }
-
+      
       bch_poly_build_tables();
       set_output_multiple(nbch);
     }
@@ -380,11 +382,13 @@ namespace gr {
      */
     dvb_bch_bb_impl::~dvb_bch_bb_impl()
     {
+		//printf("\nDestructor bch\n");
     }
 
     void
     dvb_bch_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
+	  //printf("\nforecast\n");		//debug
       ninput_items_required[0] = (noutput_items / nbch) * kbch;
     }
 
@@ -395,8 +399,16 @@ namespace gr {
     int
     dvb_bch_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
     {
+	  //printf("\npoly_mult\n");		//debug
       memset(out, 0, sizeof(int) * (lena + lenb));
-
+      //printf("\nDebugging\n");
+      //printf("Length poly1 = %d",lena);
+      //printf("Length poly2 = %d",lenb);
+      //printf("\n");
+      
+      //fftw3 poly mult
+      //fftw_real 
+      
       for (int i = 0; i < lena; i++) {
         for (int j = 0; j < lenb; j++) {
           if (ina[i] * inb[j] > 0 ) {
@@ -404,6 +416,14 @@ namespace gr {
           }
         }
       }
+      
+      //Print out variable
+      //printf("\nSys out variable\n");
+      //for (int i = 0; i < lena + lenb; i++){
+		//  printf("%d,", out[i]);
+	  //}
+	  //printf("\n");
+      
       int max = 0;
       for (int i = 0; i < lena + lenb; i++) {
         out[i] = out[i] & 1;    // If even ignore the term
@@ -411,9 +431,130 @@ namespace gr {
           max = i;
         }
       }
+      //printf("\nResult length = %d\n", max+1);
       // return the size of array to house the result.
       return max + 1;
     }
+    
+    /*
+     * Using fftw3 to multiply polynomials
+     */
+    int
+    dvb_bch_bb_impl::fft_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
+    {
+		//Variables
+		double *fft_ina;
+		double *fft_inb;
+		fftw_complex *fft_outa;
+		fftw_complex *fft_outb;
+		fftw_complex *fft_outc;
+		double *ifft_result;
+		//int Npoints = 17;
+		
+		//Calculating size/points for fft
+		int size = lena+lenb-1;
+		
+		//Allocating memory to variables, OR Definig arrays
+		//I can instead use CALLOC to initialize all to zero
+		fft_ina = (double*) fftw_malloc(sizeof(double)*size);
+		fft_inb = (double*) fftw_malloc(sizeof(double)*size);
+		fft_outa = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*size);
+		fft_outb = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*size);
+		fft_outc = (fftw_complex*) fftw_malloc(sizeof(fftw_complex)*size);
+		ifft_result = (double*) fftw_malloc(sizeof(double)*size);
+		
+		//Creating plan for fftw
+		fftw_plan forw_plan_a = fftw_plan_dft_r2c_1d(size, fft_ina, fft_outa, FFTW_MEASURE);
+		fftw_plan forw_plan_b = fftw_plan_dft_r2c_1d(size, fft_inb, fft_outb, FFTW_MEASURE);
+		fftw_plan back_plan_result = fftw_plan_dft_c2r_1d(size, fft_outc, ifft_result, FFTW_MEASURE);
+		
+		//Type casting int to double/fftw_complex
+		//printf("\nPrinting input data and conversion\n");
+		for(int i=0; i<lena; i++){
+			fft_ina[i] = (double) ina[i];
+			//printf("%f,%d\n",fft_ina[i],ina[i]);
+		}
+		//printf("\n\n");
+		for(int i=lena; i<size; i++){
+			fft_ina[i] = 0;
+		}
+		
+		for(int i=0; i<lenb; i++){
+			fft_inb[i] = (double) inb[i];
+			//printf("%f,%d\n",fft_inb[i],inb[i]);
+		}
+		for(int i=lenb; i<size; i++){ //I can instead use CALLOC to initialize all to zero
+			fft_inb[i] = 0;
+			//printf("%f,\n",fft_inb[i]);
+		}
+		/*for (int i=0; i<lena; i++) {
+			fft_ina[i] = (double) ina[i];
+			//printf("%f,%d\n",fft_ina[i],ina[i]);
+			fft_inb[i] = (double) inb[i];
+			ifft_result[i] = 0;
+		}
+		for (int i=17; i<33; i++) {
+			fft_ina[i] = 0;
+			fft_inb[i] = 0;
+			ifft_result[i] = 0;
+		}*/
+				
+		
+		//Execute fft
+		fftw_execute(forw_plan_a);
+		fftw_execute(forw_plan_b);
+		
+		//Multiplying in frequency domain i.e. element wise
+		for (int i=0; i<size; i++) {
+			//printf("\n%f,%f\t\t%f,%f", fft_outa[i][0], fft_outa[i][1], fft_outb[i][0], fft_outb[i][1]);
+			fft_outc[i][0] = (fft_outa[i][0] * fft_outb[i][0]) - (fft_outa[i][1] * fft_outb[i][1]);
+			fft_outc[i][1] = (fft_outa[i][0] * fft_outb[i][1]) + (fft_outa[i][1] * fft_outb[i][0]);
+			//printf("\n%f*%f + %f*%f = %f",fft_outa[i][0],fft_outb[i][1],fft_outa[i][1],fft_outb[i][0],fft_outc[i][1]);
+			//printf("\n%f,%f", fft_outa[i][0], fft_outa[i][1]);
+			
+		}
+		
+		//Execute ifft
+		fftw_execute(back_plan_result);
+		
+		//Printing result of ifft
+		/*printf("\nResult of IFFT\n");
+		for(int i=0; i<size; i++) {
+			printf("%f,", ifft_result[i]);
+		}
+		printf("\n"); */
+		
+		//Converting double to int and putting in out
+		//printf("\nMy int output\n");
+		for(int i=0; i<size; i++){
+			out[i] = (int) (ifft_result[i]+0.1);
+			//printf("%2.f\t%d\t",ifft_result[i],out[i]);
+			out[i] = out[i]/size;
+			//printf("%d,",out[i]);
+		}
+		
+		int max = 0;
+		for (int i = 0; i < lena + lenb; i++) {
+			out[i] = out[i] & 1;    // If even ignore the term
+			if(out[i]) {
+				max = i;
+			}
+		}
+		
+		//Freeing up space
+		fftw_destroy_plan(forw_plan_a);
+		fftw_destroy_plan(forw_plan_b);
+		fftw_destroy_plan(back_plan_result);
+		//fftw_free(fft_ina);
+		//fftw_free(fft_inb);
+		fftw_free(fft_outa);
+		fftw_free(fft_outb);
+		fftw_free(fft_outc);
+		//fftw_free(ifft_result);
+		//fftw_cleanup();
+		//printf("\nMy size = %d, Max = %d\n",size,max);
+		return size;
+	}
 
     /*
      * Pack the polynomial into a 32 bit array
@@ -421,6 +562,7 @@ namespace gr {
     void
     dvb_bch_bb_impl::poly_pack(const int *pin, unsigned int* pout, int len)
     {
+	  //printf("\npoly_pack\n");		//debug
       int lw = len / 32;
       int ptr = 0;
       unsigned int temp;
@@ -443,6 +585,7 @@ namespace gr {
     void
     dvb_bch_bb_impl::poly_reverse(int *pin, int *pout, int len)
     {
+	  //printf("\npoly_reverse\n");		//debug
       int c;
       c = len - 1;
 
@@ -457,6 +600,7 @@ namespace gr {
     inline void
     dvb_bch_bb_impl::reg_4_shift(unsigned int *sr)
     {
+	  //printf("\nreg_4_shift\n");		//debug
       sr[3] = (sr[3] >> 1) | (sr[2] << 31);
       sr[2] = (sr[2] >> 1) | (sr[1] << 31);
       sr[1] = (sr[1] >> 1) | (sr[0] << 31);
@@ -469,6 +613,7 @@ namespace gr {
     inline void
     dvb_bch_bb_impl::reg_5_shift(unsigned int *sr)
     {
+	  //printf("\nreg_5_shift\n");		//debug
       sr[4] = (sr[4] >> 1) | (sr[3] << 31);
       sr[3] = (sr[3] >> 1) | (sr[2] << 31);
       sr[2] = (sr[2] >> 1) | (sr[1] << 31);
@@ -482,6 +627,7 @@ namespace gr {
     inline void
     dvb_bch_bb_impl::reg_6_shift(unsigned int *sr)
     {
+	  //printf("\nreg_6_shift\n");		//debug
       sr[5] = (sr[5] >> 1) | (sr[4] << 31);
       sr[4] = (sr[4] >> 1) | (sr[3] << 31);
       sr[3] = (sr[3] >> 1) | (sr[2] << 31);
@@ -493,6 +639,7 @@ namespace gr {
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
     {
+	  //printf("\npoly_build_tables\n");		//debug
       // Normal polynomials
       const int polyn01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1};
       const int polyn02[]={1,1,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1};
@@ -537,48 +684,64 @@ namespace gr {
 
       int len;
       int polyout[2][200];
+		int tmp[2][200]; //debug
+		int tmp_size; //debug
+		
+		tmp_size = fft_mult(polyn01, 17, polyn02, 17, tmp[0]); //debug
+      //len = poly_mult(polyn01, 17, polyn02,    17,  polyout[0]);
+		tmp_size = fft_mult(polyn03, 17, tmp[0], tmp_size, tmp[1]); //debug
+      //len = poly_mult(polyn03, 17, polyout[0], len, polyout[1]);
+		tmp_size = fft_mult(polyn04, 17, tmp[1], tmp_size, tmp[0]); //debug
+      //len = poly_mult(polyn04, 17, polyout[1], len, polyout[0]);
+		tmp_size = fft_mult(polyn05, 17, tmp[0], tmp_size, tmp[1]); //debug
+      //len = poly_mult(polyn05, 17, polyout[0], len, polyout[1]);
+		tmp_size = fft_mult(polyn06, 17, tmp[1], tmp_size, tmp[0]); //debug
+      //len = poly_mult(polyn06, 17, polyout[1], len, polyout[0]);
+		tmp_size = fft_mult(polyn07, 17, tmp[0], tmp_size, tmp[1]); //debug
+      //len = poly_mult(polyn07, 17, polyout[0], len, polyout[1]);
+		tmp_size = fft_mult(polyn08, 17, tmp[1], tmp_size, tmp[0]); //debug
+      //len = poly_mult(polyn08, 17, polyout[1], len, polyout[0]);
+		poly_pack(tmp[0], m_poly_n_8, 128);
+      //poly_pack(polyout[0], m_poly_n_8, 128);
 
-      len = poly_mult(polyn01, 17, polyn02,    17,  polyout[0]);
-      len = poly_mult(polyn03, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn04, 17, polyout[1], len, polyout[0]);
-      len = poly_mult(polyn05, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn06, 17, polyout[1], len, polyout[0]);
-      len = poly_mult(polyn07, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn08, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_8, 128);
+		tmp_size = fft_mult(polyn09, 17, tmp[0], tmp_size, tmp[1]); //debug
+      //len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
+		tmp_size = fft_mult(polyn10, 17, tmp[1], tmp_size, tmp[0]); //debug
+      //len = poly_mult(polyn10, 17, polyout[1], len, polyout[0]);
+		poly_pack(tmp[0], m_poly_n_10, 160);
+      //poly_pack(polyout[0], m_poly_n_10, 160);
 
-      len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn10, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_10, 160);
+		tmp_size = fft_mult(polyn11, 17, tmp[0], tmp_size, tmp[1]); //debug
+      //len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
+		tmp_size = fft_mult(polyn12, 17, tmp[1], tmp_size, tmp[0]); //debug
+      //len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
+		poly_pack(tmp[0], m_poly_n_12, 192);
+      //poly_pack(polyout[0], m_poly_n_12, 192);
 
-      len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_12, 192);
-
-      len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
-      len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys04, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys05, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys06, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys07, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys08, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys09, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys10, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys11, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys12, 15, polyout[1], len, polyout[0]);
+      len = fft_mult(polys01, 15, polys02,    15,  polyout[0]);
+      len = fft_mult(polys03, 15, polyout[0], len, polyout[1]);
+      len = fft_mult(polys04, 15, polyout[1], len, polyout[0]);
+      len = fft_mult(polys05, 15, polyout[0], len, polyout[1]);
+      len = fft_mult(polys06, 15, polyout[1], len, polyout[0]);
+      len = fft_mult(polys07, 15, polyout[0], len, polyout[1]);
+      len = fft_mult(polys08, 15, polyout[1], len, polyout[0]);
+      len = fft_mult(polys09, 15, polyout[0], len, polyout[1]);
+      len = fft_mult(polys10, 15, polyout[1], len, polyout[0]);
+      len = fft_mult(polys11, 15, polyout[0], len, polyout[1]);
+      len = fft_mult(polys12, 15, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_s_12, 168);
 
-      len = poly_mult(polym01, 16, polym02,    16,  polyout[0]);
-      len = poly_mult(polym03, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym04, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym05, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym06, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym07, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym08, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym09, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym10, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
+      len = fft_mult(polym01, 16, polym02,    16,  polyout[0]);
+      len = fft_mult(polym03, 16, polyout[0], len, polyout[1]);
+      len = fft_mult(polym04, 16, polyout[1], len, polyout[0]);
+      len = fft_mult(polym05, 16, polyout[0], len, polyout[1]);
+      len = fft_mult(polym06, 16, polyout[1], len, polyout[0]);
+      len = fft_mult(polym07, 16, polyout[0], len, polyout[1]);
+      len = fft_mult(polym08, 16, polyout[1], len, polyout[0]);
+      len = fft_mult(polym09, 16, polyout[0], len, polyout[1]);
+      len = fft_mult(polym10, 16, polyout[1], len, polyout[0]);
+      len = fft_mult(polym11, 16, polyout[0], len, polyout[1]);
+      len = fft_mult(polym12, 16, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_m_12, 180);
     }
 
@@ -588,6 +751,7 @@ namespace gr {
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
+	  //printf("\ngeneral_work\n");		//debug
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
