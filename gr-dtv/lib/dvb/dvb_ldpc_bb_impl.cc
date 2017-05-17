@@ -681,15 +681,8 @@ for (int row = 0; row < ROWS; row++) { \
         // now do the parity checking
         // Each thread gets the half of the array for parityCheck
         threads[0] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 4, 0);
-        threads[1] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 8, c_threads_count * 4);
-        //threads[2] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 6, c_threads_count * 4);
-        //threads[3] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 8, c_threads_count * 6);
-        
-            
+        doParityCheck(p, d, c_threads_count * 8, c_threads_count * 4);
         threads[0].join();
-        threads[1].join();
-        //threads[2].join();
-        //threads[3].join();
       
         
         if (P != 0) {
