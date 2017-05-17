@@ -33,7 +33,11 @@ cmakeopts+=(
     '-DENABLE_GR_CTRLPORT=OFF'
 )
 
+# Use more Optimizations
+cmakeopts+=(
+    '-DCMAKE_BUILD_TYPE=RelOptimized'
+)
+
 export CXXFLAGS="-march=skylake -mtune=skylake"
 
 cmake ${cmakeopts[@]} $SRC
-

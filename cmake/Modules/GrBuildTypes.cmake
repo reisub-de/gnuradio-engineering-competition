@@ -39,6 +39,7 @@ set(__INCLUDED_GR_BUILD_TYPES_CMAKE TRUE)
 list(APPEND AVAIL_BUILDTYPES
   None Debug Release RelWithDebInfo MinSizeRel
   NoOptWithASM O2WithASM O3WithASM
+  RelOptimized RelWithDebInfoOfast
 )
 
 ########################################################################
@@ -157,4 +158,60 @@ if(NOT WIN32)
     CMAKE_C_FLAGS_O3WITHASM
     CMAKE_EXE_LINKER_FLAGS_O3WITHASM
     CMAKE_SHARED_LINKER_FLAGS_O3WITHASM)
+endif(NOT WIN32)
+
+
+########################################################################
+# For GCC and Clang, we can set a build type:
+#
+# -DCMAKE_BUILD_TYPE=RelWithDebInfoOFast
+#
+# This type uses fast optimization (-Ofast), outputs debug symbols (-g)
+# NOTE: This is not defined on Windows systems.
+########################################################################
+if(NOT WIN32)
+  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFOOFAST "-Wall -g -Ofast" CACHE STRING
+    "Flags used by the C++ compiler during RelWithDebInfoOFast builds." FORCE)
+  SET(CMAKE_C_FLAGS_RELWITHDEBINFOOFAST "-Wall -g -Ofast" CACHE STRING
+    "Flags used by the C compiler during RelWithDebInfoOFast builds." FORCE)
+  SET(CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFOOFAST
+    "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
+    "Flags used for linking binaries during RelWithDebInfoOFast builds." FORCE)
+  SET(CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFOOFAST
+    "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
+    "Flags used by the shared lib linker during RelWithDebInfoOFast builds." FORCE)
+
+  MARK_AS_ADVANCED(
+    CMAKE_CXX_FLAGS_RELWITHDEBINFOOFAST
+    CMAKE_C_FLAGS_RELWITHDEBINFOOFAST
+    CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFOOFAST
+    CMAKE_SHARED_LINKER_FLAGS_RELWITHDEBINFOOFAST)
+endif(NOT WIN32)
+
+
+########################################################################
+# For GCC and Clang, we can set a build type:
+#
+# -DCMAKE_BUILD_TYPE=RelOptimized
+#
+# This type uses fast optimization (-Ofast)
+# NOTE: This is not defined on Windows systems.
+########################################################################
+if(NOT WIN32)
+  SET(CMAKE_CXX_FLAGS_RELOPTIMIZED "-Wall -Ofast" CACHE STRING
+    "Flags used by the C++ compiler during RelOptimized builds." FORCE)
+  SET(CMAKE_C_FLAGS_RELOPTIMIZED "-Wall -Ofast" CACHE STRING
+    "Flags used by the C compiler during RelOptimized builds." FORCE)
+  SET(CMAKE_EXE_LINKER_FLAGS_RELOPTIMIZED
+    "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
+    "Flags used for linking binaries during RelOptimized builds." FORCE)
+  SET(CMAKE_SHARED_LINKER_FLAGS_RELOPTIMIZED
+    "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
+    "Flags used by the shared lib linker during RelOptimized builds." FORCE)
+
+  MARK_AS_ADVANCED(
+    CMAKE_CXX_FLAGS_RELOPTIMIZED
+    CMAKE_C_FLAGS_RELOPTIMIZED
+    CMAKE_EXE_LINKER_FLAGS_RELOPTIMIZED
+    CMAKE_SHARED_LINKER_FLAGS_RELOPTIMIZED)
 endif(NOT WIN32)
