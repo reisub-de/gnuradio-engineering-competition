@@ -38,6 +38,6 @@ cmakeopts+=(
     '-DCMAKE_BUILD_TYPE=RelOptimized'
 )
 
-export CXXFLAGS="-march=skylake -mtune=skylake"
+export CXXFLAGS="-march=skylake -mtune=skylake -mavx2"
 
 cmake ${cmakeopts[@]} $SRC
