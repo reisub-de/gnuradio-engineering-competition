@@ -392,9 +392,11 @@ namespace gr {
               c14 = &tempv[rows * 13];
               c15 = &tempv[rows * 14];
               c16 = &tempv[rows * 15];
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
+              in = in + nbch-1;
+              for (int k = nbch; k--; ) {
+                tempu[k] = *(in--);
               }
+              in = in + nbch + 1;
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
