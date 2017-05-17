@@ -198,9 +198,9 @@ endif(NOT WIN32)
 # NOTE: This is not defined on Windows systems.
 ########################################################################
 if(NOT WIN32)
-  SET(CMAKE_CXX_FLAGS_RELOPTIMIZED "-Wall -Ofast -flto -frename-registers -funroll-loops -DNDEBUG" CACHE STRING
+  SET(CMAKE_CXX_FLAGS_RELOPTIMIZED "-Wall -Ofast -flto -frename-registers -funroll-loops -fno-trapping-math -fassociative-math -freciprocal-math -fno-signed-zeros -DNDEBUG" CACHE STRING
     "Flags used by the C++ compiler during RelOptimized builds." FORCE)
-  SET(CMAKE_C_FLAGS_RELOPTIMIZED "-Wall -Ofast -flto -frename-registers -funroll-loops -DNDEBUG" CACHE STRING
+  SET(CMAKE_C_FLAGS_RELOPTIMIZED "-Wall -Ofast -flto -frename-registers -funroll-loops -fno-trapping-math -fassociative-math -freciprocal-math -fno-signed-zeros -DNDEBUG" CACHE STRING
     "Flags used by the C compiler during RelOptimized builds." FORCE)
   SET(CMAKE_EXE_LINKER_FLAGS_RELOPTIMIZED
     "-Wl,--warn-unresolved-symbols,--warn-once" CACHE STRING
