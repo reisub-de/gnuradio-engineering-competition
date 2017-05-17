@@ -398,8 +398,9 @@ namespace gr {
               }
               in = in + nbch + 1;
               for (int t = 0; t < q_val; t++) {
+                int r = 360 * t;
                 for (int s = 0; s < 360; s++) {
-                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
+                  tempu[nbch + r + s] = in[(q_val * s) + t];
                 }
               }
               in = in + (q_val * 360);
@@ -472,8 +473,9 @@ namespace gr {
                 tempu[k] = *in++;
               }
               for (int t = 0; t < q_val; t++) {
+                int r = 360 * t;
                 for (int s = 0; s < 360; s++) {
-                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
+                  tempu[nbch + r + s] = in[(q_val * s) + t];
                 }
               }
               in = in + (q_val * 360);
