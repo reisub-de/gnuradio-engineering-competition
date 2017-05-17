@@ -40,7 +40,7 @@ namespace gr {
      */
     dvb_ldpc_bb_impl::dvb_ldpc_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate, dvb_constellation_t constellation)
       : gr::block("dvb_ldpc_bb",
-              gr::io_signature::make(1, 1, sizeof(unsigned char)),
+              gr::io_signature::make(1, 1, sizeof(unsigned char)), // CA: ??
               gr::io_signature::make(1, 1, sizeof(unsigned char))),
       Xs(0),
       P(0),
@@ -611,7 +611,7 @@ for (int row = 0; row < ROWS; row++) { \
       // Calculate the number of parity bits
       int plen = (frame_size_real + Xp) - nbch;
       d = in;
-      p = &out[nbch];
+     // p = &out[nbch];
       int consumed = 0;
       int puncture, index;
 
@@ -626,6 +626,11 @@ for (int row = 0; row < ROWS; row++) { \
           p = &puncturing_buffer[nbch];
           b = &out[i + nbch];
         }
+        //CA: no need to reassign p
+        else{
+          p = &out[nbch];
+        }
+
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
         for (int j = 0; j < (int)nbch; j++) {
