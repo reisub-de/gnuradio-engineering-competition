@@ -680,10 +680,88 @@ for (int row = 0; row < ROWS; row++) { \
         
         // now do the parity checking
         // Each thread gets the half of the array for parityCheck
-        threads[0] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 4, 0);
-        doParityCheck(p, d, c_threads_count * 8, c_threads_count * 4);
-        threads[0].join();
+        //threads[0] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 4, 0);
+        //doParityCheck(p, d, c_threads_count * 8, c_threads_count * 4);
+        //doParityCheck(p, d, c_threads_count * 4, 0);
+        //threads[0].join();
       
+        for (int j = 0; j < ldpc_encode.table_length; j += 36) {
+            // For faster check, enroll the For Loop
+            // The table is always a multiple of 360
+          /*p[ldpc_encode.sorted_p_d[j].first] ^= d[ldpc_encode.sorted_p_d[j].second]; 
+          p[ldpc_encode.sorted_p_d[j+1].first] ^= d[ldpc_encode.sorted_p_d[j+1].second]; 
+          p[ldpc_encode.sorted_p_d[j+2].first] ^= d[ldpc_encode.sorted_p_d[j+2].second]; 
+          p[ldpc_encode.sorted_p_d[j+3].first] ^= d[ldpc_encode.sorted_p_d[j+3].second]; 
+          p[ldpc_encode.sorted_p_d[j+4].first] ^= d[ldpc_encode.sorted_p_d[j+4].second]; 
+          p[ldpc_encode.sorted_p_d[j+5].first] ^= d[ldpc_encode.sorted_p_d[j+5].second]; 
+          p[ldpc_encode.sorted_p_d[j+6].first] ^= d[ldpc_encode.sorted_p_d[j+6].second]; 
+          p[ldpc_encode.sorted_p_d[j+7].first] ^= d[ldpc_encode.sorted_p_d[j+7].second]; 
+          p[ldpc_encode.sorted_p_d[j+8].first] ^= d[ldpc_encode.sorted_p_d[j+8].second]; 
+          p[ldpc_encode.sorted_p_d[j+9].first] ^= d[ldpc_encode.sorted_p_d[j+9].second]; 
+          p[ldpc_encode.sorted_p_d[j+10].first] ^= d[ldpc_encode.sorted_p_d[j+10].second]; 
+          p[ldpc_encode.sorted_p_d[j+11].first] ^= d[ldpc_encode.sorted_p_d[j+11].second]; 
+          p[ldpc_encode.sorted_p_d[j+12].first] ^= d[ldpc_encode.sorted_p_d[j+12].second]; 
+          p[ldpc_encode.sorted_p_d[j+13].first] ^= d[ldpc_encode.sorted_p_d[j+13].second]; 
+          p[ldpc_encode.sorted_p_d[j+14].first] ^= d[ldpc_encode.sorted_p_d[j+14].second]; 
+          p[ldpc_encode.sorted_p_d[j+15].first] ^= d[ldpc_encode.sorted_p_d[j+15].second]; 
+          p[ldpc_encode.sorted_p_d[j+16].first] ^= d[ldpc_encode.sorted_p_d[j+16].second]; 
+          p[ldpc_encode.sorted_p_d[j+17].first] ^= d[ldpc_encode.sorted_p_d[j+17].second]; 
+          p[ldpc_encode.sorted_p_d[j+18].first] ^= d[ldpc_encode.sorted_p_d[j+18].second]; 
+          p[ldpc_encode.sorted_p_d[j+19].first] ^= d[ldpc_encode.sorted_p_d[j+19].second]; 
+          p[ldpc_encode.sorted_p_d[j+20].first] ^= d[ldpc_encode.sorted_p_d[j+20].second]; 
+          p[ldpc_encode.sorted_p_d[j+21].first] ^= d[ldpc_encode.sorted_p_d[j+21].second]; 
+          p[ldpc_encode.sorted_p_d[j+22].first] ^= d[ldpc_encode.sorted_p_d[j+22].second]; 
+          p[ldpc_encode.sorted_p_d[j+23].first] ^= d[ldpc_encode.sorted_p_d[j+23].second]; 
+          p[ldpc_encode.sorted_p_d[j+24].first] ^= d[ldpc_encode.sorted_p_d[j+24].second]; 
+          p[ldpc_encode.sorted_p_d[j+25].first] ^= d[ldpc_encode.sorted_p_d[j+25].second]; 
+          p[ldpc_encode.sorted_p_d[j+26].first] ^= d[ldpc_encode.sorted_p_d[j+26].second]; 
+          p[ldpc_encode.sorted_p_d[j+27].first] ^= d[ldpc_encode.sorted_p_d[j+27].second]; 
+          p[ldpc_encode.sorted_p_d[j+28].first] ^= d[ldpc_encode.sorted_p_d[j+28].second]; 
+          p[ldpc_encode.sorted_p_d[j+29].first] ^= d[ldpc_encode.sorted_p_d[j+29].second]; 
+          p[ldpc_encode.sorted_p_d[j+30].first] ^= d[ldpc_encode.sorted_p_d[j+30].second]; 
+          p[ldpc_encode.sorted_p_d[j+31].first] ^= d[ldpc_encode.sorted_p_d[j+31].second]; 
+          p[ldpc_encode.sorted_p_d[j+32].first] ^= d[ldpc_encode.sorted_p_d[j+32].second]; 
+          p[ldpc_encode.sorted_p_d[j+33].first] ^= d[ldpc_encode.sorted_p_d[j+33].second]; 
+          p[ldpc_encode.sorted_p_d[j+34].first] ^= d[ldpc_encode.sorted_p_d[j+34].second]; 
+          p[ldpc_encode.sorted_p_d[j+35].first] ^= d[ldpc_encode.sorted_p_d[j+35].second]; */
+          
+          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+          p[ldpc_encode.p[j+1]] ^= d[ldpc_encode.d[j+1]];
+          p[ldpc_encode.p[j+2]] ^= d[ldpc_encode.d[j+2]];
+          p[ldpc_encode.p[j+3]] ^= d[ldpc_encode.d[j+3]];
+          p[ldpc_encode.p[j+4]] ^= d[ldpc_encode.d[j+4]];
+          p[ldpc_encode.p[j+5]] ^= d[ldpc_encode.d[j+5]];
+          p[ldpc_encode.p[j+6]] ^= d[ldpc_encode.d[j+6]];
+          p[ldpc_encode.p[j+7]] ^= d[ldpc_encode.d[j+7]];
+          p[ldpc_encode.p[j+8]] ^= d[ldpc_encode.d[j+8]];
+          p[ldpc_encode.p[j+9]] ^= d[ldpc_encode.d[j+9]];
+          p[ldpc_encode.p[j+10]] ^= d[ldpc_encode.d[j+10]];
+          p[ldpc_encode.p[j+11]] ^= d[ldpc_encode.d[j+11]];
+          p[ldpc_encode.p[j+12]] ^= d[ldpc_encode.d[j+12]];
+          p[ldpc_encode.p[j+13]] ^= d[ldpc_encode.d[j+13]];
+          p[ldpc_encode.p[j+14]] ^= d[ldpc_encode.d[j+14]];
+          p[ldpc_encode.p[j+15]] ^= d[ldpc_encode.d[j+15]];
+          p[ldpc_encode.p[j+16]] ^= d[ldpc_encode.d[j+16]];
+          p[ldpc_encode.p[j+17]] ^= d[ldpc_encode.d[j+17]];
+          p[ldpc_encode.p[j+18]] ^= d[ldpc_encode.d[j+18]];
+          p[ldpc_encode.p[j+19]] ^= d[ldpc_encode.d[j+19]];
+          p[ldpc_encode.p[j+20]] ^= d[ldpc_encode.d[j+20]];
+          p[ldpc_encode.p[j+21]] ^= d[ldpc_encode.d[j+21]];
+          p[ldpc_encode.p[j+22]] ^= d[ldpc_encode.d[j+22]];
+          p[ldpc_encode.p[j+23]] ^= d[ldpc_encode.d[j+23]];
+          p[ldpc_encode.p[j+24]] ^= d[ldpc_encode.d[j+24]];
+          p[ldpc_encode.p[j+25]] ^= d[ldpc_encode.d[j+25]];
+          p[ldpc_encode.p[j+26]] ^= d[ldpc_encode.d[j+26]];
+          p[ldpc_encode.p[j+27]] ^= d[ldpc_encode.d[j+27]];
+          p[ldpc_encode.p[j+28]] ^= d[ldpc_encode.d[j+28]];
+          p[ldpc_encode.p[j+29]] ^= d[ldpc_encode.d[j+29]];
+          p[ldpc_encode.p[j+30]] ^= d[ldpc_encode.d[j+30]];
+          p[ldpc_encode.p[j+31]] ^= d[ldpc_encode.d[j+31]];
+          p[ldpc_encode.p[j+32]] ^= d[ldpc_encode.d[j+32]];
+          p[ldpc_encode.p[j+33]] ^= d[ldpc_encode.d[j+33]];
+          p[ldpc_encode.p[j+34]] ^= d[ldpc_encode.d[j+34]];
+          p[ldpc_encode.p[j+35]] ^= d[ldpc_encode.d[j+35]];
+        } 
         
         if (P != 0) {
           puncture = 0;
