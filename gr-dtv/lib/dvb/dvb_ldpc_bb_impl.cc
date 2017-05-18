@@ -611,7 +611,7 @@ for (int row = 0; row < ROWS; row++) { \
       // Calculate the number of parity bits
       int plen = (frame_size_real + Xp) - nbch;
       d = in;
-     // p = &out[nbch];
+
       int consumed = 0;
       int puncture, index;
 
@@ -638,7 +638,8 @@ for (int row = 0; row < ROWS; row++) { \
           consumed++;
         }
         // now do the parity checking
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
+        // CA: run loop backwards to use faster comparison with 0 
+        for (int j = ldpc_encode.table_length; j==0 ; j--) {
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
         }
         if (P != 0) {
@@ -650,16 +651,18 @@ for (int row = 0; row < ROWS; row++) { \
               break;
             }
           }
-          index = 0;
-          for (int j = 0; j < plen; j++) {
+          //CA: run loop backwards
+          index=6;
+          for (int j = plen; j == 0; j--) {
             if (p[j] != 0x55) {
-              b[index++] = p[j];
+              b[6-index--] = p[j];
             }
           }
           p = &out[nbch];
         }
         for (int j = 1; j < (plen - Xp); j++) {
           p[j] ^= p[j-1];
+          
         }
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
