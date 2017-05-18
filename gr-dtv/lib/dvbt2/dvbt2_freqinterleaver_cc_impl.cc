@@ -716,18 +716,17 @@ namespace gr {
         }
       }
       if (fftsize == FFTSIZE_32K || fftsize == FFTSIZE_32K_T2GI) {
-        for (int j = 0; j < q_odd; j++) {
-          int a;
+      	int a;
+
+      	for (int j = 0; j < q_odd; j++) {
           a = Hodd[j];
           Heven[a] = j;
         }
         for (int j = 0; j < q_oddP2; j++) {
-          int a;
           a = HoddP2[j];
           HevenP2[a] = j;
         }
         for (int j = 0; j < q_oddFC; j++) {
-          int a;
           a = HoddFC[j];
           HevenFC[a] = j;
         }
@@ -761,8 +760,8 @@ namespace gr {
       int symbol = 0;
       int *H;
 
-      for (int i = 0; i < noutput_items; i += interleaved_items) {
-        for (int j = 0; j < N_P2; j++) {
+      for (int i = noutput_items; i; i-= interleaved_items) {
+        for (int j = N_P2; j--; ) {
           if ((symbol % 2) == 0) {
             H = HevenP2;
           }
@@ -775,7 +774,7 @@ namespace gr {
           symbol++;
           in += C_P2;
         }
-        for (int j = 0; j < num_data_symbols; j++) {
+        for (int j = num_data_symbols; j--; ) {
           if ((symbol % 2) == 0) {
             H = Heven;
           }
