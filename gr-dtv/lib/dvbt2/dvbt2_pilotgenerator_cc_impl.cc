@@ -643,11 +643,11 @@ namespace gr {
       }
       if (miso == FALSE) {
         if (
-			(guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) ||
-			(guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) ||
-			(guardinterval == GI_1_16 && pilotpattern == PILOT_PP2)  ||
-			(guardinterval == GI_19_256 && pilotpattern == PILOT_PP2)
-		) {
+					(guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) ||
+					(guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) ||
+					(guardinterval == GI_1_16 && pilotpattern == PILOT_PP2)  ||
+					(guardinterval == GI_19_256 && pilotpattern == PILOT_PP2)
+				) {
           N_FC = 0;
           C_FC = 0;
         }
@@ -2592,12 +2592,16 @@ namespace gr {
           }
           break;
       }
+      int d_xy = dx * dy;
+      int d_x_sym_y = dx * (symbol % dy);
+      int d_x_symbol_kext_x_y = dx * ((symbol + (K_EXT / dx)) % dy);
+      bool symbol_odd = symbol % 2;
       for (int i = 0; i < C_PS; i++) {
-        remainder = (i - K_EXT) % (dx * dy);
+        remainder = (i - K_EXT) % (d_xy);
         if (remainder < 0) {
-          remainder += (dx * dy);
+          remainder += (d_xy);
         }
-        if (remainder == (dx * (symbol % dy))) {
+        if (remainder == (d_x_sym_y)) {
           if (miso == TRUE && miso_group == MISO_TX2) {
             if ((i / dx) % 2) {
               data_carrier_map[i] = SCATTERED_CARRIER_INVERTED;
@@ -2612,7 +2616,7 @@ namespace gr {
         }
       }
       if (miso == TRUE && miso_group == MISO_TX2) {
-        if (symbol % 2) {
+        if (symbol_odd) {
           data_carrier_map[0] = SCATTERED_CARRIER_INVERTED;
           data_carrier_map[C_PS - 1] = SCATTERED_CARRIER_INVERTED;
         }
@@ -2627,10 +2631,10 @@ namespace gr {
       }
       if (papr_mode == PAPR_TR || papr_mode == PAPR_BOTH) {
         if (carrier_mode == CARRIERS_NORMAL) {
-          shift = dx * (symbol % dy);
+          shift = d_x_sym_y;
         }
         else {
-          shift = dx * ((symbol + (K_EXT / dx)) % dy);
+          shift = d_x_symbol_kext_x_y;
         }
         switch (fft_size) {
           case FFTSIZE_1K:
@@ -2686,7 +2690,7 @@ namespace gr {
       if (N_FC != 0) {
         L_FC = 1;
       }
-      for (int i = 0; i < noutput_items; i += num_symbols) {
+      for (int i = noutput_items; i ; i -= num_symbols) {
         for (int j = 0; j < num_symbols; j++) {
           init_pilots(j);
           if (j < N_P2) {
