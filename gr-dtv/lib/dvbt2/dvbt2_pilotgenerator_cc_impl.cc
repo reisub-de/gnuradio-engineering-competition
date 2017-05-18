@@ -642,8 +642,12 @@ namespace gr {
           break;
       }
       if (miso == FALSE) {
-        if (guardinterval == GI_1_128 && pilotpattern == PILOT_PP7 || 	guardinterval == GI_1_32 && pilotpattern == PILOT_PP4 ||
-	    guardinterval == GI_1_16 && pilotpattern == PILOT_PP2  ||	guardinterval == GI_19_256 && pilotpattern == PILOT_PP2) {
+        if (
+			(guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) ||
+			(guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) ||
+			(guardinterval == GI_1_16 && pilotpattern == PILOT_PP2)  ||
+			(guardinterval == GI_19_256 && pilotpattern == PILOT_PP2)
+		) {
           N_FC = 0;
           C_FC = 0;
         }
