@@ -501,6 +501,94 @@ namespace gr {
         reg_5_shift(shift);
       }
     }
+
+    void 
+    dvb_bch_bb_impl::bch_code_n8_handler(   const unsigned char *in, 
+                                            unsigned char *out,
+                                            unsigned int val_kbch) {
+      unsigned char b, temp;
+      unsigned int shift[4];
+
+      memset(shift, 0, sizeof(unsigned int) * 4);
+
+      for (int j = 0; j < (int)val_kbch; j++) {
+        temp = *in++;
+        *out++ = temp;
+        b = (temp ^ (shift[3] & 1));
+        reg_4_shift(shift);
+        if (b) {
+          shift[0] ^= m_poly_n_8_0;
+          shift[1] ^= m_poly_n_8_1;
+          shift[2] ^= m_poly_n_8_2;
+          shift[3] ^= m_poly_n_8_3;
+        }
+      }
+      // Now add the parity bits to the output
+      for (int n = 0; n < 128; n++) {
+        *out++ = (shift[3] & 1);
+        reg_4_shift(shift);
+      }
+    }
+
+    void 
+    dvb_bch_bb_impl::bch_code_s12_handler(  const unsigned char *in, 
+                                            unsigned char *out,
+                                            unsigned int val_kbch) {
+      unsigned char b, temp;
+      unsigned int shift[6];
+
+      memset(shift, 0, sizeof(unsigned int) * 6);
+
+      for (int j = 0; j < (int)val_kbch; j++) {
+        temp = *in++;
+        *out++ = temp;
+        b = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
+        reg_6_shift(shift);
+        if (b) {
+          shift[0] ^= m_poly_s_12_0;
+          shift[1] ^= m_poly_s_12_1;
+          shift[2] ^= m_poly_s_12_2;
+          shift[3] ^= m_poly_s_12_3;
+          shift[4] ^= m_poly_s_12_4;
+          shift[5] ^= m_poly_s_12_5;
+        }
+      }
+      // Now add the parity bits to the output
+      for (int n = 0; n < 168; n++) {
+        *out++ = (shift[5] & 0x01000000) ? 1 : 0;
+        reg_6_shift(shift);
+      }
+    }
+
+    void 
+    dvb_bch_bb_impl::bch_code_m12_handler(   const unsigned char *in, 
+                                            unsigned char *out,
+                                            unsigned int val_kbch) {
+      unsigned char b, temp;
+      unsigned int shift[6];
+
+      memset(shift, 0, sizeof(unsigned int) * 6);
+
+      for (int j = 0; j < (int)val_kbch; j++) {
+        temp = *in++;
+        *out++ = temp;
+        b = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
+        reg_6_shift(shift);
+        if (b) {
+          shift[0] ^= m_poly_m_12_0;
+          shift[1] ^= m_poly_m_12_1;
+          shift[2] ^= m_poly_m_12_2;
+          shift[3] ^= m_poly_m_12_3;
+          shift[4] ^= m_poly_m_12_4;
+          shift[5] ^= m_poly_m_12_5;
+        }
+      }
+      // Now add the parity bits to the output
+      for (int n = 0; n < 180; n++) {
+        *out++ = (shift[5] & 0x00001000) ? 1 : 0;
+        reg_6_shift(shift);
+      }
+    }
 /*********** The end of function handle************/
 
     int
@@ -560,6 +648,7 @@ namespace gr {
             // }
 /**************************************************************/
 
+/************* The parallel code *****************/
             unsigned int max_thread_num = boost::thread::hardware_concurrency();
             unsigned int thead_needed = (noutput_items / nbch) > max_thread_num ? max_thread_num : 1;
             gr::dtv::ThreadPool thread_pool(thead_needed);
@@ -571,85 +660,140 @@ namespace gr {
               out += (int)kbch + 160;
               consumed += (int)kbch;
             }
+/**************************************************************/
           }
           break;
         case BCH_CODE_N8:
-          for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 4);
-            // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              *out++ = temp;
-              consumed++;
-              b = temp ^ (shift[3] & 1);
-              reg_4_shift(shift);
-              if (b) {
-                shift[0] ^= m_poly_n_8_0;
-                shift[1] ^= m_poly_n_8_1;
-                shift[2] ^= m_poly_n_8_2;
-                shift[3] ^= m_poly_n_8_3;
-              }
+          {
+/************* The code need to be paralleled *****************/
+            // for (int i = 0; i < noutput_items; i += nbch) {
+            //   //Zero the shift register
+            //   memset(shift, 0, sizeof(unsigned int) * 4);
+            //   // MSB of the codeword first
+            //   for (int j = 0; j < (int)kbch; j++) {
+            //     temp = *in++;
+            //     *out++ = temp;
+            //     consumed++;
+            //     b = temp ^ (shift[3] & 1);
+            //     reg_4_shift(shift);
+            //     if (b) {
+            //       shift[0] ^= m_poly_n_8_0;
+            //       shift[1] ^= m_poly_n_8_1;
+            //       shift[2] ^= m_poly_n_8_2;
+            //       shift[3] ^= m_poly_n_8_3;
+            //     }
+            //   }
+            //   // Now add the parity bits to the output
+            //   for (int n = 0; n < 128; n++) {
+            //     *out++ = shift[3] & 1;
+            //     reg_4_shift(shift);
+            //   }
+            // }
+/**************************************************************/
+
+/************* The parallel code *****************/
+            unsigned int max_thread_num = boost::thread::hardware_concurrency();
+            unsigned int thead_needed = (noutput_items / nbch) > max_thread_num ? max_thread_num : 1;
+            gr::dtv::ThreadPool thread_pool(thead_needed);
+
+            unsigned int val_kbch = kbch;
+            for (int i = 0; i < noutput_items; i += nbch) {
+              thread_pool.enqueue(boost::bind(bch_code_n8_handler, in, out, val_kbch));
+              in += (int)kbch;
+              out += (int)kbch + 128;
+              consumed += (int)kbch;
             }
-            // Now add the parity bits to the output
-            for (int n = 0; n < 128; n++) {
-              *out++ = shift[3] & 1;
-              reg_4_shift(shift);
-            }
+/**************************************************************/
           }
           break;
         case BCH_CODE_S12:
-          for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
-            // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              *out++ = temp;
-              consumed++;
-              b = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
-              reg_6_shift(shift);
-              if (b) {
-                shift[0] ^= m_poly_s_12_0;
-                shift[1] ^= m_poly_s_12_1;
-                shift[2] ^= m_poly_s_12_2;
-                shift[3] ^= m_poly_s_12_3;
-                shift[4] ^= m_poly_s_12_4;
-                shift[5] ^= m_poly_s_12_5;
-              }
+          {
+/************* The code need to be paralleled *****************/
+            // for (int i = 0; i < noutput_items; i += nbch) {
+            //   //Zero the shift register
+            //   memset(shift, 0, sizeof(unsigned int) * 6);
+            //   // MSB of the codeword first
+            //   for (int j = 0; j < (int)kbch; j++) {
+            //     temp = *in++;
+            //     *out++ = temp;
+            //     consumed++;
+            //     b = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
+            //     reg_6_shift(shift);
+            //     if (b) {
+            //       shift[0] ^= m_poly_s_12_0;
+            //       shift[1] ^= m_poly_s_12_1;
+            //       shift[2] ^= m_poly_s_12_2;
+            //       shift[3] ^= m_poly_s_12_3;
+            //       shift[4] ^= m_poly_s_12_4;
+            //       shift[5] ^= m_poly_s_12_5;
+            //     }
+            //   }
+            //   // Now add the parity bits to the output
+            //   for (int n = 0; n < 168; n++) {
+            //     *out++ = (shift[5] & 0x01000000) ? 1 : 0;
+            //     reg_6_shift(shift);
+            //   }
+            // }
+/**************************************************************/
+
+/************* The parallel code *****************/
+            unsigned int max_thread_num = boost::thread::hardware_concurrency();
+            unsigned int thead_needed = (noutput_items / nbch) > max_thread_num ? max_thread_num : 1;
+            gr::dtv::ThreadPool thread_pool(thead_needed);
+
+            unsigned int val_kbch = kbch;
+            for (int i = 0; i < noutput_items; i += nbch) {
+              thread_pool.enqueue(boost::bind(bch_code_s12_handler, in, out, val_kbch));
+              in += (int)kbch;
+              out += (int)kbch + 168;
+              consumed += (int)kbch;
             }
-            // Now add the parity bits to the output
-            for (int n = 0; n < 168; n++) {
-              *out++ = (shift[5] & 0x01000000) ? 1 : 0;
-              reg_6_shift(shift);
-            }
+/**************************************************************/
           }
           break;
         case BCH_CODE_M12:
-          for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
-            // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              *out++ = temp;
-              consumed++;
-              b = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
-              reg_6_shift(shift);
-              if (b) {
-                shift[0] ^= m_poly_m_12_0;
-                shift[1] ^= m_poly_m_12_1;
-                shift[2] ^= m_poly_m_12_2;
-                shift[3] ^= m_poly_m_12_3;
-                shift[4] ^= m_poly_m_12_4;
-                shift[5] ^= m_poly_m_12_5;
+          {
+/************* The code need to be paralleled *****************/
+            for (int i = 0; i < noutput_items; i += nbch) {
+              //Zero the shift register
+              memset(shift, 0, sizeof(unsigned int) * 6);
+              // MSB of the codeword first
+              for (int j = 0; j < (int)kbch; j++) {
+                temp = *in++;
+                *out++ = temp;
+                consumed++;
+                b = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
+                reg_6_shift(shift);
+                if (b) {
+                  shift[0] ^= m_poly_m_12_0;
+                  shift[1] ^= m_poly_m_12_1;
+                  shift[2] ^= m_poly_m_12_2;
+                  shift[3] ^= m_poly_m_12_3;
+                  shift[4] ^= m_poly_m_12_4;
+                  shift[5] ^= m_poly_m_12_5;
+                }
+              }
+              // Now add the parity bits to the output
+              for (int n = 0; n < 180; n++) {
+                *out++ = (shift[5] & 0x00001000) ? 1 : 0;
+                reg_6_shift(shift);
               }
             }
-            // Now add the parity bits to the output
-            for (int n = 0; n < 180; n++) {
-              *out++ = (shift[5] & 0x00001000) ? 1 : 0;
-              reg_6_shift(shift);
+/**************************************************************/
+
+/************* The parallel code *****************/
+            unsigned int max_thread_num = boost::thread::hardware_concurrency();
+            unsigned int thead_needed = (noutput_items / nbch) > max_thread_num ? max_thread_num : 1;
+            gr::dtv::ThreadPool thread_pool(thead_needed);
+
+            unsigned int val_kbch = kbch;
+            for (int i = 0; i < noutput_items; i += nbch) {
+              thread_pool.enqueue(boost::bind(bch_code_m12_handler, in, out, val_kbch));
+              in += (int)kbch;
+              out += (int)kbch + 180;
+              consumed += (int)kbch;
             }
+/**************************************************************/
           }
           break;
       }
