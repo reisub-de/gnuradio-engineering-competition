@@ -651,18 +651,16 @@ for (int row = 0; row < ROWS; row++) { \
               break;
             }
           }
-          //CA: run loop backwards
-          index=6;
-          for (int j = plen; j == 0; j--) {
+          index = 0;
+          for (int j = 0; j < plen; j++) {
             if (p[j] != 0x55) {
-              b[6-index--] = p[j];
+              b[index++] = p[j];
             }
           }
           p = &out[nbch];
         }
         for (int j = 1; j < (plen - Xp); j++) {
           p[j] ^= p[j-1];
-          
         }
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
