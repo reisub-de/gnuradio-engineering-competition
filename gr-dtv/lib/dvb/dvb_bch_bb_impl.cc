@@ -519,11 +519,11 @@ namespace gr {
 	* Shift 192 bits
 	*/
 	inline void
-		dvb_bch_bb_impl::reg_3_shift(unsigned long long *sr, unsigned char number_of_shifts)
+		dvb_bch_bb_impl::reg_3_shift(unsigned long long *sr)
 	{
-		sr[2] = (sr[2] >> number_of_shifts) | (sr[1] << (64 - number_of_shifts));
-		sr[1] = (sr[1] >> number_of_shifts) | (sr[0] << (64 - number_of_shifts));
-		sr[0] = (sr[0] >> number_of_shifts);
+		sr[2] = (sr[2] >> 1) | (sr[1] << 63);
+		sr[1] = (sr[1] >> 1) | (sr[0] << 63);
+		sr[0] = (sr[0] >> 1);
 	}
 
     void
@@ -627,10 +627,7 @@ namespace gr {
     {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
-      unsigned char temp;
-	  unsigned char b = 0;
-	  unsigned char t = 0;
-	  unsigned long long mask = 1;
+      unsigned char b, temp;
       unsigned int shift[6];
 	  unsigned long long shift_64[3];
       int consumed = 0;
@@ -643,51 +640,23 @@ namespace gr {
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
             memset(shift_64, 0, sizeof(unsigned long long) * 3);
-
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
-			  // copy the information bits and save the actual bit
-     		  temp = *in++;
-			  *out++ = temp;
-			  consumed++;
-
-			  // count how many bits shall be shifted - if a zero comes next: shift more
-			  b = ( temp ^ ((shift_64[2] & mask) >> t) );
-			  t++;
-			  mask = mask << 1;
-
-			  //do the parity calculation
-			  if (b) {
-				  reg_3_shift(shift_64, t);
-				  shift_64[0] ^= p1;
-				  shift_64[1] ^= p2;
-				  shift_64[2] ^= p3;
-				  b = 0;
-				  t = 0;
-				  mask = 1;
-			  }
-
-			  // a maximum of 64 bits can be shifted
-			  if (t == 64)
-			  {
-				  reg_3_shift(shift_64, t);
-				  t = 0;
-				  mask = 1;
-			  }
+              temp = *in++;
+              *out++ = temp;
+              consumed++;
+              b = (temp ^ (shift_64[2] & 1));
+              reg_3_shift(shift_64);
+              if (b) {
+				shift_64[0] ^= p1;
+				shift_64[1] ^= p2;
+				shift_64[2] ^= p3;
+              }
             }
-
-			// if last ones could not be shifted - shift in retrospect
-			if (t != 0)
-			{
-				reg_3_shift(shift_64, t);
-			}
-			t = 0;
-			mask = 1;
-
             // Now add the parity bits to the output
             for (int n = 0; n < 192; n++) {
               *out++ = (shift_64[2] & 1);
-              reg_3_shift(shift_64, 1);
+              reg_3_shift(shift_64);
             }
           }
           break;
