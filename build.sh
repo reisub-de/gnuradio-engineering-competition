@@ -33,7 +33,7 @@ cmakeopts+=(
     '-DENABLE_GR_CTRLPORT=OFF'
 )
 
-export CXXFLAGS="-march=skylake -mtune=skylake --param simulataneos-prefetches=4"
+export CXXFLAGS="-march=skylake -mtune=skylake --param simultaneous-prefetches=6"
 
 cmake ${cmakeopts[@]} $SRC
 
