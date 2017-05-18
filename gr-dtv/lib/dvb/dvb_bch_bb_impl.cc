@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -493,6 +493,34 @@ namespace gr {
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
     {
+      m_poly_n_8[0] = 0xD4669F20;
+      m_poly_n_8[1] = 0xAEB63F98;
+      m_poly_n_8[2] = 0xBDE9E48E;
+      m_poly_n_8[3] = 0xFAA4E038;
+      m_poly_n_10[0] = 0x89A6DD1D;
+      m_poly_n_10[1] = 0x80C48BF7;
+      m_poly_n_10[2] = 0xC0EA1E56;
+      m_poly_n_10[3] = 0xF8CC543F;
+      m_poly_n_10[4] = 0xB730A806;
+      m_poly_n_12[0] = 0xE7AA4066;
+      m_poly_n_12[1] = 0xEFA1E2C0;
+      m_poly_n_12[2] = 0x9110AC3B;
+      m_poly_n_12[3] = 0x1B34F30A;
+      m_poly_n_12[4] = 0x388A3A21;
+      m_poly_n_12[5] = 0xC1706472;
+      m_poly_s_12[0] = 0xA5A0988B;
+      m_poly_s_12[1] = 0xEBE7F14A;
+      m_poly_s_12[2] = 0x9609C5C4;
+      m_poly_s_12[3] = 0xB3464D96;
+      m_poly_s_12[4] = 0x1957DB46;
+      m_poly_s_12[5] = 0x02B06472;
+      m_poly_m_12[0] = 0xD0821BC3;
+      m_poly_m_12[1] = 0xF42EAC6A;
+      m_poly_m_12[2] = 0xCCA1056F;
+      m_poly_m_12[3] = 0xD9C04190;
+      m_poly_m_12[4] = 0xB1800DBE;
+      m_poly_m_12[5] = 0xDD215872;
+      /* Obsolete: use precalculated values instead to speed up initialization
       // Normal polynomials
       const int polyn01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1};
       const int polyn02[]={1,1,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1};
@@ -580,6 +608,25 @@ namespace gr {
       len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
       len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_m_12, 180);
+
+      // Use these precalculated values. This current function would then be
+      // obsolete. Should be faster, though not necessarily suitable for
+      // upstream.
+      for (int i = 0; i < 4; i++) {
+        printf("m_poly_n_8[%i] = 0x%08X;\n", i, m_poly_n_8[i]);
+      }
+      for (int i = 0; i < 5; i++) {
+        printf("m_poly_n_10[%i] = 0x%08X;\n", i, m_poly_n_10[i]);
+      }
+      for (int i = 0; i < 6; i++) {
+        printf("m_poly_n_12[%i] = 0x%08X;\n", i, m_poly_n_12[i]);
+      }
+      for (int i = 0; i < 6; i++) {
+        printf("m_poly_s_12[%i] = 0x%08X;\n", i, m_poly_s_12[i]);
+      }
+      for (int i = 0; i < 6; i++) {
+        printf("m_poly_m_12[%i] = 0x%08X;\n", i, m_poly_m_12[i]);
+      }*/
     }
 
     int
@@ -739,4 +786,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-
