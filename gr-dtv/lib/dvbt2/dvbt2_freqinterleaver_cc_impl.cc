@@ -664,19 +664,8 @@ namespace gr {
           break;
       }
       if ((preamble == PREAMBLE_T2_SISO) || (preamble == PREAMBLE_T2_LITE_SISO)) {
-        if (guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2) {
-          N_FC = 0;
-          C_FC = 0;
-        }
-        if (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2) {
+        if ((guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) || (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) ||
+	    (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2)  || (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2)){
           N_FC = 0;
           C_FC = 0;
         }
