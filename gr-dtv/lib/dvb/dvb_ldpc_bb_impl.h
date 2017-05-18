@@ -26,6 +26,9 @@
 #include <vector>
 #include <utility>
 #include <map>
+#include <boost/asio/io_service.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
 
 typedef struct{
     int table_length;
