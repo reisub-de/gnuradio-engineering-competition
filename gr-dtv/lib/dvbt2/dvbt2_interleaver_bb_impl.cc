@@ -411,7 +411,7 @@ namespace gr {
               for (int col = 0; col < (mod * 2); col++) {
                 offset = twist256n[col];
                 int f = rows * col;
-                for (int row = 0; row < rows; row++) {
+                for (int row = rows; row--; ) {
                   tempv[offset + f] = tempu[index++];
                   offset++;
                   if (offset == rows) {
@@ -440,7 +440,6 @@ namespace gr {
               }
               index = 0;
               for( int d= frame_size / (mod * 2); d--; ) {
-              //for (int d = 0; d < frame_size / (mod * 2); d++) {
                 pack = 0;
                 for (int e = 0; e < (mod * 2); e++) {
                   offset = mux[e];
@@ -462,9 +461,9 @@ namespace gr {
             else {
               mux = &mux256s[0];
             }
+            rows = frame_size / mod;
+						const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
             for (int i = 0; i < noutput_items; i += packed_items) {
-              rows = frame_size / mod;
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
               c1 = &tempv[0];
               c2 = &tempv[rows];
               c3 = &tempv[rows * 2];
@@ -473,9 +472,13 @@ namespace gr {
               c6 = &tempv[rows * 5];
               c7 = &tempv[rows * 6];
               c8 = &tempv[rows * 7];
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
+
+              in = in + nbch-1;
+              for (int k = nbch; k--; ) {
+                tempu[k] = *(in--);
               }
+              in = in + nbch + 1;
+
               for (int t = 0; t < q_val; t++) {
                 int r = 360 * t;
                 for (int s = 0; s < 360; s++) {
@@ -486,8 +489,9 @@ namespace gr {
               index = 0;
               for (int col = 0; col < mod; col++) {
                 offset = twist256s[col];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
+                int f = rows * col;
+                for (int row = rows; row--; ) {
+                  tempv[offset + f] = tempu[index++];
                   offset++;
                   if (offset == rows) {
                     offset = 0;
@@ -506,7 +510,7 @@ namespace gr {
                 tempu[index++] = c8[j];
               }
               index = 0;
-              for (int d = 0; d < frame_size / mod; d++) {
+              for( int d= frame_size / (mod * 2); d--; ) {
                 pack = 0;
                 for (int e = 0; e < mod; e++) {
                   offset = mux[e];
