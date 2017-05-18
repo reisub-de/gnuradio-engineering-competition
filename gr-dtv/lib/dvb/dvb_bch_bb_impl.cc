@@ -517,7 +517,9 @@ namespace gr {
             // } 
 /***************** End of the code need to be paralleledd **************/
 /************** New multithread code with boost asio *************/
-            gr::dtv::ThreadPool thread_pool(boost::thread::hardware_concurrency());
+            unsigned int max_thread_num = boost::thread::hardware_concurrency();
+            unsigned int thead_needed = noutput_items / nbch > max_thread_num ? max_thread_num : 1;
+            gr::dtv::ThreadPool thread_pool(thead_needed);
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
