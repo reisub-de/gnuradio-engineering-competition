@@ -639,23 +639,25 @@ namespace gr {
               
                 //offset = twist256n[0];
               //use given rotation function from std library instead of the loops
-                std::rotate_copy(tempu, tempu+twist256n[0], tempu+rows-1,tempv);
-                std::rotate_copy(tempu + (rows * 1), tempu + (rows * 1) + twist256n[1], tempu + (rows * 2) -1,tempv + (rows * 1));
-                std::rotate_copy(tempu + (rows * 2), tempu + (rows * 2) + twist256n[2], tempu + (rows * 3) -1,tempv + (rows * 2));
-                std::rotate_copy(tempu + (rows * 3), tempu + (rows * 3) + twist256n[3], tempu + (rows * 4)-1,tempv + (rows * 3));
-                std::rotate_copy(tempu + (rows * 4), tempu + (rows * 4) + twist256n[4], tempu + (rows * 5)-1,tempv + (rows * 4));
-                std::rotate_copy(tempu + (rows * 5), tempu + (rows * 5) + twist256n[5], tempu + (rows * 6)-1,tempv + (rows * 5));
-                std::rotate_copy(tempu + (rows * 6), tempu + (rows * 6) + twist256n[6], tempu + (rows * 7)-1,tempv + (rows * 6));
-                std::rotate_copy(tempu + (rows * 7), tempu + (rows * 7) + twist256n[7], tempu + (rows * 8)-1,tempv + (rows * 7));
-                std::rotate_copy(tempu + (rows * 8), tempu + (rows * 8) + twist256n[8], tempu + (rows * 9)-1,tempv + (rows * 8));
-                std::rotate_copy(tempu + (rows * 9), tempu + (rows * 9) + twist256n[9], tempu + (rows * 10)-1,tempv + (rows * 8));
-                std::rotate_copy(tempu + (rows * 10), tempu + (rows * 10) + twist256n[10], tempu + (rows * 11)-1,tempv + (rows * 10));
-                std::rotate_copy(tempu + (rows * 11), tempu + (rows * 11) + twist256n[11], tempu + (rows * 12)-1,tempv + (rows * 11));
-                std::rotate_copy(tempu + (rows * 12), tempu + (rows * 12) + twist256n[12], tempu + (rows * 13)-1,tempv + (rows * 12));
-                std::rotate_copy(tempu + (rows * 13), tempu + (rows * 13) + twist256n[13], tempu + (rows * 14)-1,tempv + (rows * 13));
-                std::rotate_copy(tempu + (rows * 14), tempu + (rows * 14) + twist256n[14], tempu + (rows * 15)-1,tempv + (rows * 14));
-                std::rotate_copy(tempu + (rows * 15), tempu + (rows * 15) + twist256n[15], tempu + (rows * 16)-1,tempv + (rows * 15));/**/
-                /*for (int row = 0; row < rows; row++) {
+                std::rotate_copy(tempu, tempu+ ((rows - twist256n[0])%rows), tempu+rows,tempv);
+                std::rotate_copy(tempu + (rows * 1), tempu + (rows * 1) + ((rows - twist256n[1])%rows), tempu + (rows * 2),tempv + (rows * 1));
+                std::rotate_copy(tempu + (rows * 2), tempu + (rows * 2) + ((rows - twist256n[2])%rows), tempu + (rows * 3),tempv + (rows * 2));
+                std::rotate_copy(tempu + (rows * 3), tempu + (rows * 3) + ((rows - twist256n[3])%rows), tempu + (rows * 4),tempv + (rows * 3));
+                std::rotate_copy(tempu + (rows * 4), tempu + (rows * 4) + ((rows - twist256n[4])%rows), tempu + (rows * 5),tempv + (rows * 4));
+                std::rotate_copy(tempu + (rows * 5), tempu + (rows * 5) + ((rows - twist256n[5])%rows), tempu + (rows * 6),tempv + (rows * 5));
+                std::rotate_copy(tempu + (rows * 6), tempu + (rows * 6) + ((rows - twist256n[6])%rows), tempu + (rows * 7),tempv + (rows * 6));
+                std::rotate_copy(tempu + (rows * 7), tempu + (rows * 7) + ((rows - twist256n[7])%rows), tempu + (rows * 8),tempv + (rows * 7));
+                std::rotate_copy(tempu + (rows * 8), tempu + (rows * 8) + ((rows - twist256n[8])%rows), tempu + (rows * 9),tempv + (rows * 8));
+                std::rotate_copy(tempu + (rows * 9), tempu + (rows * 9) + ((rows - twist256n[9])%rows), tempu + (rows * 10),tempv + (rows * 9));
+                std::rotate_copy(tempu + (rows * 10), tempu + (rows * 10) + ((rows - twist256n[10])%rows), tempu + (rows * 11),tempv + (rows * 10));
+                std::rotate_copy(tempu + (rows * 11), tempu + (rows * 11) + ((rows - twist256n[11])%rows), tempu + (rows * 12),tempv + (rows * 11));
+                std::rotate_copy(tempu + (rows * 12), tempu + (rows * 12) + ((rows - twist256n[12])%rows), tempu + (rows * 13),tempv + (rows * 12));
+                std::rotate_copy(tempu + (rows * 13), tempu + (rows * 13) + ((rows - twist256n[13])%rows), tempu + (rows * 14),tempv + (rows * 13));
+                std::rotate_copy(tempu + (rows * 14), tempu + (rows * 14) + ((rows - twist256n[14])%rows), tempu + (rows * 15),tempv + (rows * 14));
+                std::rotate_copy(tempu + (rows * 15), tempu + (rows * 15) + ((rows - twist256n[15])%rows), tempu + (rows * 16),tempv + (rows * 15));/**/
+                /*
+
+                for (int row = 0; row < rows; row++) {
                   tempv[offset + (rows * 0)] = tempu[index++];
                   offset++;
                   if (offset == rows) {
@@ -673,6 +675,10 @@ namespace gr {
                   }
                 }
 
+                //printf("%d\n", tempv[rows]);
+                //printf("%d\n", tempv[rows+1]);
+                //printf("%d\n", tempv[rows+2]);
+index+=(rows*2);
                 offset = twist256n[2];
                 for (int row = 0; row < rows; row++) {
                   tempv[offset + (rows * 2)] = tempu[index++];
@@ -682,7 +688,7 @@ namespace gr {
                   }
                 }
 
-                index+=(rows*3);
+                
                 offset = twist256n[3];
                 for (int row = 0; row < rows; row++) {
                   tempv[offset + (rows * 3)] = tempu[index++];
