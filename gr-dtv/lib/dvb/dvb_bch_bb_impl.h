@@ -23,6 +23,7 @@
 
 #include <gnuradio/dtv/dvb_bch_bb.h>
 #include "dvb_defines.h"
+#include <bitset>
 
 namespace gr {
   namespace dtv {
@@ -39,6 +40,7 @@ namespace gr {
       unsigned long long m_poly_n_12_64[3];
       unsigned int m_poly_s_12[6];
       unsigned int m_poly_m_12[6];
+	  std::bitset<192> polynome;
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
 	  void poly_pack_64(const int*, unsigned long long*, int);

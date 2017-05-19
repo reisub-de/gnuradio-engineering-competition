@@ -592,6 +592,10 @@ namespace gr {
       poly_pack(polyout[0], m_poly_n_12, 192);
 	  poly_pack_64(polyout[0], m_poly_n_12_64, 192);
 
+	  for (int i = 0; i < 192; i += 1) {
+		  polynome[i] = polyout[0][i];
+	  }
+
       len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
       len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
       len = poly_mult(polys04, 15, polyout[1], len, polyout[0]);
@@ -629,34 +633,27 @@ namespace gr {
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
       unsigned int shift[6];
-	  unsigned long long shift_64[3];
+	  std::bitset<192> parity_bits;
       int consumed = 0;
-      const unsigned long long p1 = m_poly_n_12_64[0];
-      const unsigned long long p2 = m_poly_n_12_64[1];
-      const unsigned long long p3 = m_poly_n_12_64[2];
 
       switch (bch_code) {
         case BCH_CODE_N12:
           for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift_64, 0, sizeof(unsigned long long) * 3);
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
-              b = (temp ^ (shift_64[2] & 1));
-              reg_3_shift(shift_64);
+              b = (temp ^ parity_bits[191]);
+			  parity_bits <<= 1;
               if (b) {
-				shift_64[0] ^= p1;
-				shift_64[1] ^= p2;
-				shift_64[2] ^= p3;
+				  parity_bits ^= polynome;
               }
             }
             // Now add the parity bits to the output
             for (int n = 0; n < 192; n++) {
-              *out++ = (shift_64[2] & 1);
-              reg_3_shift(shift_64);
+              *out++ = (char) parity_bits[191];
+			  parity_bits <<= 1;
             }
           }
           break;
