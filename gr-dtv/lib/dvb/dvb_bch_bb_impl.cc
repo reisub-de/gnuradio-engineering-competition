@@ -2240,27 +2240,12 @@ namespace gr {
               // todo: replace by sse instruction if possible
               reg_6_shift_8(shift);
 
-              // todo: precalculate
-              unsigned int tabval[6] = {0};
-              for (int i = 0; i < 8; i++) {
-                unsigned char ctrl_bit = ((b >> i) & 1) ^ (tabval[5] & 1);
-                reg_6_shift(tabval);
-                if (ctrl_bit){
-                  tabval[0] ^= m_poly_n_12[0];
-                  tabval[1] ^= m_poly_n_12[1];
-                  tabval[2] ^= m_poly_n_12[2];
-                  tabval[3] ^= m_poly_n_12[3];
-                  tabval[4] ^= m_poly_n_12[4];
-                  tabval[5] ^= m_poly_n_12[5];
-                }
-              }
-
-              shift[0] ^= tabval[0];
-              shift[1] ^= tabval[1];
-              shift[2] ^= tabval[2];
-              shift[3] ^= tabval[3];
-              shift[4] ^= tabval[4];
-              shift[5] ^= tabval[5];
+              shift[0] ^= m_lut_mod8_m_12[6*b + 0];
+              shift[1] ^= m_lut_mod8_m_12[6*b + 1];
+              shift[2] ^= m_lut_mod8_m_12[6*b + 2];
+              shift[3] ^= m_lut_mod8_m_12[6*b + 3];
+              shift[4] ^= m_lut_mod8_m_12[6*b + 4];
+              shift[5] ^= m_lut_mod8_m_12[6*b + 5];
             }
             consumed += kbch;
             // Now add the parity bits to the output
