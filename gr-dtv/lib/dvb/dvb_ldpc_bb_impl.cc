@@ -815,9 +815,7 @@ for (int row = 0; row < ROWS; row++) { \
       int consumed = 0;
 
       if (0 == Xs && 0 == P) {
-        unsigned int max_thread_num = boost::thread::hardware_concurrency();
-        unsigned int thead_needed = (noutput_items / frame_size) > max_thread_num ? max_thread_num : 1;
-        gr::dtv::ThreadPool thread_pool(thead_needed);
+        gr::dtv::ThreadPool thread_pool(boost::thread::hardware_concurrency());
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       
@@ -839,9 +837,7 @@ for (int row = 0; row < ROWS; row++) { \
       }
 
       if (0 != Xs && 0 == P) {
-        unsigned int max_thread_num = boost::thread::hardware_concurrency();
-        unsigned int thead_needed = (noutput_items / frame_size) > max_thread_num ? max_thread_num : 1;
-        gr::dtv::ThreadPool thread_pool(thead_needed);
+        gr::dtv::ThreadPool thread_pool(boost::thread::hardware_concurrency());
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       
@@ -863,9 +859,7 @@ for (int row = 0; row < ROWS; row++) { \
       }
 
       if (0 != Xs && 0 != P) {
-        unsigned int max_thread_num = boost::thread::hardware_concurrency();
-        unsigned int thead_needed = (noutput_items / frame_size) > max_thread_num ? max_thread_num : 1;
-        gr::dtv::ThreadPool thread_pool(thead_needed);
+        gr::dtv::ThreadPool thread_pool(boost::thread::hardware_concurrency());
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       
@@ -887,9 +881,7 @@ for (int row = 0; row < ROWS; row++) { \
       }
 
       if (0 == Xs && 0 != P) {
-        unsigned int max_thread_num = boost::thread::hardware_concurrency();
-        unsigned int thead_needed = (noutput_items / frame_size) > max_thread_num ? max_thread_num : 1;
-        gr::dtv::ThreadPool thread_pool(thead_needed);
+        gr::dtv::ThreadPool thread_pool(boost::thread::hardware_concurrency());
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       
