@@ -47,6 +47,7 @@ struct FuncHandlerDataStruct {
     const unsigned int arg_val_nbch,
     const int arg_val_Xp,
     const int arg_val_Xs,
+    const int arg_P, 
     const unsigned int arg_val_signal_constellation,
     const ldpc_encode_table *arg_ldpc_encode_table_ptr
   ):
@@ -58,6 +59,7 @@ struct FuncHandlerDataStruct {
     val_nbch(arg_val_nbch),
     val_Xp(arg_val_Xp),
     val_Xs(arg_val_Xs),
+    val_P(arg_P),
     val_signal_constellation(arg_val_signal_constellation),
     ldpc_encode_table_ptr(arg_ldpc_encode_table_ptr)
    {}
@@ -69,6 +71,7 @@ struct FuncHandlerDataStruct {
     const unsigned int val_nbch;
     const int val_Xp;
     const int val_Xs;
+    const int val_P;
     const unsigned int val_signal_constellation;
     const ldpc_encode_table *ldpc_encode_table_ptr;
 };
@@ -96,17 +99,9 @@ namespace gr {
 
 /************************** Function handler ********************/
       static void func_handler_nxs_np(FuncHandlerDataStruct data);
-      // static void func_handler_nxs_p(  
-      //                   const unsigned char *in,
-      //                   unsigned char *out,
-      //                   const int idx,
-      //                   const unsigned int val_frame_size,
-      //                   const int plen,
-      //                   const unsigned int val_nbch,
-      //                   const int val_Xp,
-      //                   const unsigned int val_signal_constellation,
-      //                   const ldpc_encode_table *ldpc_encode_table_ptr
-      // );
+      static void func_handler_xs_np(FuncHandlerDataStruct data);
+      static void func_handler_nxs_p(FuncHandlerDataStruct data);
+      static void func_handler_xs_p(FuncHandlerDataStruct data);
 
 /****************************************************/
 
