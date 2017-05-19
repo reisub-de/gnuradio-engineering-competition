@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -38,12 +38,14 @@ namespace gr {
       unsigned int m_poly_n_12[6];
       unsigned int m_poly_s_12[6];
       unsigned int m_poly_m_12[6];
+      unsigned int m_lut_mod8_m_12[256*6];
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
       void poly_reverse(int*, int*, int);
       inline void reg_4_shift(unsigned int*);
       inline void reg_5_shift(unsigned int*);
       inline void reg_6_shift(unsigned int*);
+      inline void reg_6_shift_8(unsigned int*);
       void bch_poly_build_tables(void);
 
      public:
@@ -62,4 +64,3 @@ namespace gr {
 } // namespace gr
 
 #endif /* INCLUDED_DTV_DVB_BCH_BB_IMPL_H */
-
