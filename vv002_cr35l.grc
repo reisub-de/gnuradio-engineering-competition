@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<?grc format='1' created='3.7.9'?>
+<?grc format='1' created='3.7.12'?>
 <flow_graph>
   <timestamp>Mon Feb 27 16:08:35 2017</timestamp>
   <block>
@@ -163,7 +163,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(952, 836)</value>
+      <value>(960, 836)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -300,7 +300,7 @@
     <key>dtv_dvb_bbheader_bb</key>
     <param>
       <key>mode</key>
-      <value>FECFRAME_NORMAL</value>
+      <value>INPUTMODE_HIEFF</value>
     </param>
     <param>
       <key>alias</key>
@@ -320,6 +320,10 @@
     </param>
     <param>
       <key>rate4</key>
+      <value>C1_5_MEDIUM</value>
+    </param>
+    <param>
+      <key>rate5</key>
       <value>C1_4</value>
     </param>
     <param>
@@ -339,12 +343,16 @@
       <value>168</value>
     </param>
     <param>
-      <key>framesize</key>
+      <key>framesize1</key>
+      <value>FECFRAME_NORMAL</value>
+    </param>
+    <param>
+      <key>framesize2</key>
       <value>FECFRAME_NORMAL</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(352, 96)</value>
+      <value>(352, 92)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -399,6 +407,10 @@
     </param>
     <param>
       <key>rate4</key>
+      <value>C1_5_MEDIUM</value>
+    </param>
+    <param>
+      <key>rate5</key>
       <value>C1_4</value>
     </param>
     <param>
@@ -414,7 +426,11 @@
       <value>True</value>
     </param>
     <param>
-      <key>framesize</key>
+      <key>framesize1</key>
+      <value>FECFRAME_NORMAL</value>
+    </param>
+    <param>
+      <key>framesize2</key>
       <value>FECFRAME_NORMAL</value>
     </param>
     <param>
@@ -462,6 +478,10 @@
     </param>
     <param>
       <key>rate4</key>
+      <value>C1_5_MEDIUM</value>
+    </param>
+    <param>
+      <key>rate5</key>
       <value>C1_4</value>
     </param>
     <param>
@@ -477,7 +497,11 @@
       <value>True</value>
     </param>
     <param>
-      <key>framesize</key>
+      <key>framesize1</key>
+      <value>FECFRAME_NORMAL</value>
+    </param>
+    <param>
+      <key>framesize2</key>
       <value>FECFRAME_NORMAL</value>
     </param>
     <param>
@@ -525,6 +549,10 @@
     </param>
     <param>
       <key>rate4</key>
+      <value>C1_5_MEDIUM</value>
+    </param>
+    <param>
+      <key>rate5</key>
       <value>C1_4</value>
     </param>
     <param>
@@ -544,7 +572,11 @@
       <value>True</value>
     </param>
     <param>
-      <key>framesize</key>
+      <key>framesize1</key>
+      <value>FECFRAME_NORMAL</value>
+    </param>
+    <param>
+      <key>framesize2</key>
       <value>FECFRAME_NORMAL</value>
     </param>
     <param>
@@ -631,7 +663,7 @@
     <key>dtv_dvbt2_framemapper_cc</key>
     <param>
       <key>inputmode</key>
-      <value>FECFRAME_NORMAL</value>
+      <value>INPUTMODE_NORMAL</value>
     </param>
     <param>
       <key>alias</key>
