@@ -510,9 +510,20 @@ namespace gr {
               }
               else {
                 b = *in++;
-                for (int n = 7; n >= 0; n--) {
+
+				/*for (int n = 7; n >= 0; n--) {
                   out[offset++] = b & (1 << n) ? 1 : 0;
-                }
+                }*/
+                //loop unrolling
+                out[offset++] = b & 0x80 ? 1 : 0;
+                out[offset++] = b & 0x40 ? 1 : 0;
+                out[offset++] = b & 0x20 ? 1 : 0;
+                out[offset++] = b & 0x10 ? 1 : 0;
+                out[offset++] = b & 0x08 ? 1 : 0;
+                out[offset++] = b & 0x04 ? 1 : 0;
+                out[offset++] = b & 0x02 ? 1 : 0;
+                out[offset++] = b & 0x01 ? 1 : 0;
+                
               }
               count = (count + 1) % 188;
               consumed++;
