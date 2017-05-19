@@ -399,7 +399,7 @@ namespace gr {
 
       for (int i = 0; i < lena; i++) {
         for (int j = 0; j < lenb; j++) {
-          if (ina[i] * inb[j] > 0 ) {
+          if (ina[i] && inb[j] ) {
             out[i + j]++;    // count number of terms for this pwr of x
           }
         }
