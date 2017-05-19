@@ -25,6 +25,11 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
 
+#include <stdio.h>
+#include <boost/asio/io_service.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
+
 namespace gr {
   namespace dtv {
 
@@ -596,6 +601,77 @@ for (int row = 0; row < ROWS; row++) { \
       ldpc_encode.table_length = index;
     }
 
+/************************** Function handler ********************/
+    void
+    dvb_ldpc_bb_impl::func_handler_nxs_np(FuncHandlerDataStruct data) {
+      const unsigned char *in = data.in;
+      unsigned char *out = data.out;
+      const int idx = data.idx;
+      const unsigned int val_frame_size = data.val_frame_size;
+      const int plen = data.plen;
+      const unsigned int val_nbch = data.val_nbch;
+      const int val_Xp = data.val_Xp;
+      const int val_Xs = val_Xs;
+      const unsigned int val_signal_constellation = data.val_signal_constellation;
+      const ldpc_encode_table *ldpc_encode_table_ptr = data.ldpc_encode_table_ptr;
+
+      unsigned char* p = &out[val_nbch] + idx * val_frame_size;
+      const unsigned char* d = in + idx * val_nbch;
+      const int consumed = (int)val_nbch * idx;
+
+      memset(p, 0, sizeof(unsigned char) * plen);
+      memcpy(&out[idx], &in[consumed], sizeof(unsigned char) * val_nbch);
+      for (int j = 0; j < ldpc_encode_table_ptr->table_length; j++) {
+          p[ldpc_encode_table_ptr->p[j]] ^= d[ldpc_encode_table_ptr->d[j]];
+      }
+      for (int j = 1; j < (plen - val_Xp); j++) {
+        p[j] ^= p[j-1];
+      }
+      if (val_signal_constellation == MOD_128APSK) {
+        for (int j = 0; j < 6; j++) {
+          p[j + plen] = 0;
+        }
+      }
+    }
+
+    // void
+    // dvb_ldpc_bb_impl::func_handler_xs_np(  
+    //   const unsigned char *in,
+    //   unsigned char *out,
+    //   const int idx,
+    //   const unsigned int val_frame_size,
+    //   const int plen,
+    //   const unsigned int val_nbch,
+    //   const int val_Xp,
+    //   const unsigned int val_signal_constellation,
+    //   const ldpc_encode_table *ldpc_encode_table_ptr
+    // ) {
+    //   unsigned char local_puncturing_buffer[FRAME_SIZE_NORMAL];
+    //   unsigned char* p = &out[val_nbch] + idx * val_frame_size;
+    //   const unsigned char* d = in + idx * val_nbch;
+    //   const int consumed = (int)val_nbch * idx;
+
+    //   s = &local_puncturing_buffer[0];
+    //   memset(s, 0, sizeof(unsigned char) * Xs);
+    //   memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
+    //   d = s;
+
+    //   memset(p, 0, sizeof(unsigned char) * plen);
+    //   memcpy(&out[idx], &in[consumed], sizeof(unsigned char) * val_nbch);
+    //   for (int j = 0; j < ldpc_encode_table_ptr->table_length; j++) {
+    //       p[ldpc_encode_table_ptr->p[j]] ^= d[ldpc_encode_table_ptr->d[j]];
+    //   }
+    //   for (int j = 1; j < (plen - val_Xp); j++) {
+    //     p[j] ^= p[j-1];
+    //   }
+    //   if (val_signal_constellation == MOD_128APSK) {
+    //     for (int j = 0; j < 6; j++) {
+    //       p[j + plen] = 0;
+    //     }
+    //   }
+    // }
+/****************************************************/
+
     int
     dvb_ldpc_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -615,56 +691,160 @@ for (int row = 0; row < ROWS; row++) { \
       int consumed = 0;
       int puncture, index;
 
-      for (int i = 0; i < noutput_items; i += frame_size) {
-        if (Xs != 0) {
-          s = &shortening_buffer[0];
-          memset(s, 0, sizeof(unsigned char) * Xs);
-          memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
-          d = s;
-        }
-        if (P != 0) {
-          p = &puncturing_buffer[nbch];
-          b = &out[i + nbch];
-        }
-        // First zero all the parity bits
-        memset(p, 0, sizeof(unsigned char) * plen);
-        for (int j = 0; j < (int)nbch; j++) {
-          out[i + j] = in[consumed];
-          consumed++;
-        }
-        // now do the parity checking
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
-        }
-        if (P != 0) {
-          puncture = 0;
-          for (int j = 0; j < plen; j += P) {
-            p[j] = 0x55;
-            puncture++;
-            if (puncture == Xp) {
-              break;
-            }
-          }
-          index = 0;
-          for (int j = 0; j < plen; j++) {
-            if (p[j] != 0x55) {
-              b[index++] = p[j];
-            }
-          }
-          p = &out[nbch];
-        }
-        for (int j = 1; j < (plen - Xp); j++) {
-          p[j] ^= p[j-1];
-        }
-        if (signal_constellation == MOD_128APSK) {
-          for (int j = 0; j < 6; j++) {
-            p[j + plen] = 0;
-          }
-        }
-        d += nbch;
-        p += frame_size;
-      }
+      if (0 == Xs && 0 == p) {
+        unsigned int max_thread_num = boost::thread::hardware_concurrency();
+        unsigned int thead_needed = (noutput_items / frame_size) > max_thread_num ? max_thread_num : 1;
+        gr::dtv::ThreadPool thread_pool(thead_needed);
 
+        for (int i = 0; i < noutput_items; i += frame_size) {
+          FuncHandlerDataStruct data(       
+                                        in, 
+                                        out, 
+                                        i,
+                                        frame_size,
+                                        plen,
+                                        nbch,
+                                        Xp,
+                                        Xs,
+                                        signal_constellation,
+                                        &ldpc_encode
+                                    );
+          thread_pool.enqueue(boost::bind(func_handler_nxs_np, data));
+          p += frame_size;
+          d += nbch;
+          consumed += (int)nbch;
+        }
+      }
+      // else if (0 != Xs && 0 == P) {
+      //   unsigned int max_thread_num = boost::thread::hardware_concurrency();
+      //   unsigned int thead_needed = (noutput_items / frame_size) > max_thread_num ? max_thread_num : 1;
+      //   gr::dtv::ThreadPool thread_pool(thead_needed);
+
+      //   const unsigned int val_frame_size = frame_size;
+      //   unsigned int val_nbch = nbch;
+      //   int val_Xp = Xp;
+      //   unsigned int val_signal_constellation = signal_constellation;
+      //   for (int i = 0; i < noutput_items; i += frame_size) {
+      //     thread_pool.enqueue(boost::bind(  
+      //                               func_handler_xs_np,
+      //                               in, 
+      //                               out, 
+      //                               i,
+      //                               val_frame_size,
+      //                               plen,
+      //                               val_nbch,
+      //                               val_Xp,
+      //                               val_signal_constellation,
+      //                               &ldpc_encode
+      //     ));
+      //     p += frame_size;
+      //     d += nbch;
+      //     consumed += (int)nbch;
+      //   }
+      // }
+      else {
+        for (int i = 0; i < noutput_items; i += frame_size) {
+          if (Xs != 0) {
+            s = &shortening_buffer[0];
+            memset(s, 0, sizeof(unsigned char) * Xs);
+            memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
+            d = s;
+          }
+          if (P != 0) {
+            p = &puncturing_buffer[nbch];
+            b = &out[i + nbch];
+          }
+          // First zero all the parity bits
+          memset(p, 0, sizeof(unsigned char) * plen);
+
+          memcpy(&out[i], &in[consumed], sizeof(unsigned char) * nbch);
+          consumed += (int)nbch;
+
+          // now do the parity checking
+          for (int j = 0; j < ldpc_encode.table_length; j++) {
+            p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+          }
+          if (P != 0) {
+            puncture = 0;
+            for (int j = 0; j < plen; j += P) {
+              p[j] = 0x55;
+              puncture++;
+              if (puncture == Xp) {
+                break;
+              }
+            }
+            index = 0;
+            for (int j = 0; j < plen; j++) {
+              if (p[j] != 0x55) {
+                b[index++] = p[j];
+              }
+            }
+            p = &out[nbch];
+          }
+          for (int j = 1; j < (plen - Xp); j++) {
+            p[j] ^= p[j-1];
+          }
+          if (signal_constellation == MOD_128APSK) {
+            for (int j = 0; j < 6; j++) {
+              p[j + plen] = 0;
+            }
+          }
+          d += nbch;
+          p += frame_size;
+        }
+      }
+/************************** The code need to be paralleled ********************/
+      // for (int i = 0; i < noutput_items; i += frame_size) {
+      //   if (Xs != 0) {
+      //     s = &shortening_buffer[0];
+      //     memset(s, 0, sizeof(unsigned char) * Xs);
+      //     memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
+      //     d = s;
+      //   }
+      //   if (P != 0) {
+      //     p = &puncturing_buffer[nbch];
+      //     b = &out[i + nbch];
+      //   }
+      //   // First zero all the parity bits
+      //   memset(p, 0, sizeof(unsigned char) * plen);
+
+      //   memcpy(&out[i], &in[consumed], sizeof(unsigned char) * nbch);
+      //   consumed += (int)nbch;
+
+      //   // now do the parity checking
+      //   for (int j = 0; j < ldpc_encode.table_length; j++) {
+      //     p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+      //   }
+      //   if (P != 0) {
+      //     puncture = 0;
+      //     for (int j = 0; j < plen; j += P) {
+      //       p[j] = 0x55;
+      //       puncture++;
+      //       if (puncture == Xp) {
+      //         break;
+      //       }
+      //     }
+      //     index = 0;
+      //     for (int j = 0; j < plen; j++) {
+      //       if (p[j] != 0x55) {
+      //         b[index++] = p[j];
+      //       }
+      //     }
+      //     p = &out[nbch];
+      //   }
+      //   for (int j = 1; j < (plen - Xp); j++) {
+      //     p[j] ^= p[j-1];
+      //   }
+      //   if (signal_constellation == MOD_128APSK) {
+      //     for (int j = 0; j < 6; j++) {
+      //       p[j + plen] = 0;
+      //     }
+      //   }
+      //   d += nbch;
+      //   p += frame_size;
+      // }
+
+/****************************************************/
       // Tell runtime system how many input items we consumed on
       // each input stream.
       consume_each (consumed);

@@ -25,7 +25,6 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_bch_bb_impl.h"
 
-#include <stdio.h>
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
@@ -452,9 +451,10 @@ namespace gr {
 
       memset(shift, 0, sizeof(unsigned int) * 6);
 
+      memcpy(out, in, sizeof(unsigned char) * val_kbch);
+      out += val_kbch;
       for (int j = 0; j < (int)val_kbch; j++) {
         temp = *in++;
-        *out++ = temp;
         b = (temp ^ (shift[5] & 1));
         reg_6_shift(shift);
         if (b) {
@@ -482,9 +482,10 @@ namespace gr {
 
       memset(shift, 0, sizeof(unsigned int) * 5);
 
+      memcpy(out, in, sizeof(unsigned char) * val_kbch);
+      out += val_kbch;
       for (int j = 0; j < (int)val_kbch; j++) {
         temp = *in++;
-        *out++ = temp;
         b = (temp ^ (shift[4] & 1));
         reg_5_shift(shift);
         if (b) {
@@ -511,9 +512,10 @@ namespace gr {
 
       memset(shift, 0, sizeof(unsigned int) * 4);
 
+      memcpy(out, in, sizeof(unsigned char) * val_kbch);
+      out += val_kbch;
       for (int j = 0; j < (int)val_kbch; j++) {
         temp = *in++;
-        *out++ = temp;
         b = (temp ^ (shift[3] & 1));
         reg_4_shift(shift);
         if (b) {
@@ -539,9 +541,10 @@ namespace gr {
 
       memset(shift, 0, sizeof(unsigned int) * 6);
 
+      memcpy(out, in, sizeof(unsigned char) * val_kbch);
+      out += val_kbch;
       for (int j = 0; j < (int)val_kbch; j++) {
         temp = *in++;
-        *out++ = temp;
         b = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
         reg_6_shift(shift);
         if (b) {
@@ -569,9 +572,10 @@ namespace gr {
 
       memset(shift, 0, sizeof(unsigned int) * 6);
 
+      memcpy(out, in, sizeof(unsigned char) * val_kbch);
+      out += val_kbch;
       for (int j = 0; j < (int)val_kbch; j++) {
         temp = *in++;
-        *out++ = temp;
         b = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
         reg_6_shift(shift);
         if (b) {
