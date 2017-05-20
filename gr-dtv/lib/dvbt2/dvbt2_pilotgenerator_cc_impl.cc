@@ -2700,14 +2700,14 @@ namespace gr {
           if (j < N_P2) {
 
 			  //copying zeros is faster than initializing?
-			  __m256i in_m256i = _mm256_setzero_si256();
-			  for ( int loop_i = 0; loop_i < left_nulls / 32; loop_i++) {//1215
-				  _mm256_store_si256((__m256i*)out, in_m256i);
-				  out += 32;
-			  }
-    /*        for (int n = 0; n < left_nulls; n++) {
+			  //__m256i in_m256i = _mm256_setzero_si256();
+			  //for ( int loop_i = 0; loop_i < left_nulls / 32; loop_i++) {//1215
+				 // _mm256_store_si256((__m256i*)out, in_m256i);
+				 // out += 32;
+			  //}
+            for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
-            }*/
+            }
 
 
 
