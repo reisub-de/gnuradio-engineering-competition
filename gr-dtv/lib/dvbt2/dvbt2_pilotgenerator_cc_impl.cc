@@ -2759,7 +2759,7 @@ namespace gr {
         L_FC = 1;
       }
       int num_iter = C_PS - C_PS % 4;
-      int remaining = C_PS - num_iter;
+      //int remaining = C_PS - num_iter;
       // Switch instead of if-else-structure, while instead of for
       // Loop unrolling 2nd order
       int *index = (int *) malloc(4 * sizeof(int));
