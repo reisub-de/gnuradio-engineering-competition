@@ -2754,22 +2754,18 @@ namespace gr {
       gr_complex zero;
       gr_complex *dst;
       int L_FC = 0;
-
-      struct mycomplextype {
-        float real;
-        float imag;
-      };
-
       zero = gr_complex(0.0, 0.0);
       if (N_FC != 0) {
         L_FC = 1;
       }
+      int num_iter = C_PS - C_PS % 4;
+      int remaining = C_PS - num_iter;
       // Switch instead of if-else-structure, while instead of for
       // Loop unrolling 2nd order
       int *index = (int *) malloc(4 * sizeof(int));
       for (int i = 0; i < noutput_items; i += num_symbols) {
         int j = 0;
-        while (j < num_symbols) { // for every OFDM symbol j in output item i
+        while (j < num_symbols) { // iteration over every OFDM symbol j in output item i
         //for (int j = 0; j < num_symbols; j++) {
           init_pilots(j);
           int n = 0;
@@ -2777,7 +2773,7 @@ namespace gr {
             *out++ = zero;
             ++n;
           }
-          // XOR processing with 16 byte-blocks
+          // XOR processing in 128-bit-blocks (4x 32 bit int)
           // Attention: C_PS not necessarily a multiple of 4 (TO DO!)
           int xor_op_int_array[4] = {pn_sequence[j], pn_sequence[j], pn_sequence[j], pn_sequence[j]};
           __m128i prbs_offs_128, index_128;
@@ -2785,7 +2781,7 @@ namespace gr {
           // index[n] = prbs[n + K_OFFSET] ^ pn_sequence[j]
           if (j < N_P2) {
             n = 0;
-            while (n < C_PS) {
+            while (n < num_iter) {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
@@ -2810,7 +2806,7 @@ namespace gr {
           }
           else if (j != (num_symbols - L_FC)) {
             n = 0;
-            while (n < C_PS) {
+            while (n < num_iter) {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
@@ -2841,7 +2837,7 @@ namespace gr {
           }
           else {
             n = 0;
-            while (n > C_PS) {
+            while (n < num_iter) {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
@@ -2895,7 +2891,7 @@ namespace gr {
           // index[n] = prbs[n + K_OFFSET] ^ pn_sequence[j]
           if (j < N_P2) {
             n = 0;
-            while (n < C_PS) {
+            while (n < num_iter) {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
@@ -2920,7 +2916,7 @@ namespace gr {
           }
           else if (j != (num_symbols - L_FC)) {
             n = 0;
-            while (n < C_PS) {
+            while (n < num_iter) {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
@@ -2951,7 +2947,7 @@ namespace gr {
           }
           else {
             n = 0;
-            while (n > C_PS) {
+            while (n < num_iter) {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
@@ -2992,7 +2988,7 @@ namespace gr {
 
           ++j;
 
-        } // end for every OFDM symbol j
+        } // end iteration over every OFDM symbol j in output item i
       }
 
       // Tell runtime system how many input items we consumed on
