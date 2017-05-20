@@ -179,6 +179,8 @@ namespace gr {
                        gr_vector_void_star &output_items);
     };
 
+    #ifndef THREAD_POOL_DEF
+    #define THREAD_POOL_DEF
     // The definition of boost_asio based thread pool
     struct ThreadPool {
         typedef boost::scoped_ptr<boost::asio::io_service::work> boost_asio_worker;
@@ -204,6 +206,7 @@ namespace gr {
         boost_asio_worker m_working;
         boost::thread_group m_thread_group; //< need to keep track of threads so we can join them
     };
+    #endif
   } // namespace dtv
 } // namespace gr
 
