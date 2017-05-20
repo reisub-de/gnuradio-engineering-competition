@@ -630,7 +630,7 @@ for (int row = 0; row < ROWS; row++) { \
         memset(p, 0, sizeof(unsigned char) * plen);
 
 		//tryping to use memcpy instead of the for loop
-		memcpy(&out[i],in[consumed],sizeof(unsigned char) * (int)nbch);
+		memcpy(&out[i],&in[consumed],sizeof(unsigned char) * (int)nbch);
 		consumend += (int)nbch;
         //for (int j = 0; j < (int)nbch; j++) {
         //  out[i + j] = in[consumed];
