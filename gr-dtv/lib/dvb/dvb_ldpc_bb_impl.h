@@ -93,8 +93,6 @@ namespace gr {
       int Xs;
       int P;
       int Xp;
-      unsigned char puncturing_buffer[FRAME_SIZE_NORMAL];
-      unsigned char shortening_buffer[FRAME_SIZE_NORMAL];
       void ldpc_lookup_generate(void);
 
 /************************** Function handler ********************/
