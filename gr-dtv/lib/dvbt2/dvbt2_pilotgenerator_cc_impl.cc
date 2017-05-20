@@ -2700,14 +2700,14 @@ namespace gr {
           if (j < N_P2) {
 
 			  //copying zeros is faster than initializing?
-			  __m256 in_m256 = _mm256_setzero_ps();
-			  for ( int loop_i = 0; loop_i < left_nulls / 4; loop_i++) {//1215
-				  _mm256_store_ps((float*)out, in_m256);
-				  out ++;
-				  out++;
-				  out++;
-				  out++;
-			  }
+			  //__m256 in_m256 = _mm256_setzero_ps();
+			  //for ( int loop_i = 0; loop_i < left_nulls / 4; loop_i++) {//1215
+				 // _mm256_store_ps((float*)out, in_m256);
+				 // out ++;
+				 // out++;
+				 // out++;
+				 // out++;
+			  //}
 
 
 			  //__m256i *in_m256i;
@@ -2718,9 +2718,9 @@ namespace gr {
 			  //}
 
 
-            //for (int n = 0; n < left_nulls; n++) {
-            //  *out++ = zero;
-            //}
+            for (int n = 0; n < left_nulls; n++) {
+              *out++ = zero;
+            }
 
 
 
