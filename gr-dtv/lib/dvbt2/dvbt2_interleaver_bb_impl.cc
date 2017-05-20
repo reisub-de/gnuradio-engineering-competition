@@ -423,7 +423,7 @@ namespace gr {
       /*         for (int k = 0; k < nbch; k++) {
                  tempu[k] = *in++;
                }*/
-			  memcpy(&tempu[k],in,sizeof(unsigned char)*nbch);
+			  memcpy(tempu,in,sizeof(unsigned char)*nbch);
 			  in += nbch;
 			  
 			  
