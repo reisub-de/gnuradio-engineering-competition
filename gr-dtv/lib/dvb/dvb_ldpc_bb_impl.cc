@@ -373,9 +373,9 @@ namespace gr {
     }
 
 #define LDPC_BF(TABLE_NAME, ROWS) \
-for (int row = 0; row < ROWS; row++) { \
-  for (int n = 0; n < 360; n++) { \
-    for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
+for (row = 0; row < ROWS; row++) { \
+  for (n = 0; n < 360; n++) { \
+    for (col = 1; col <= TABLE_NAME[row][0]; col++) { \
       ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
       ldpc_encode.d[index] = im; \
       index++; \
@@ -393,6 +393,12 @@ for (int row = 0; row < ROWS; row++) { \
       int q;
       index = 0;
       im = 0;
+
+      //change opt daniel
+      unsigned char row;
+      int n;
+      int col;
+
 
       pbits = (frame_size_real + Xp) - nbch;    //number of parity bits
       q = q_val;
