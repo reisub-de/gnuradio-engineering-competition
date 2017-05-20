@@ -628,10 +628,17 @@ for (int row = 0; row < ROWS; row++) { \
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
-        for (int j = 0; j < (int)nbch; j++) {
-          out[i + j] = in[consumed];
-          consumed++;
-        }
+
+		//tryping to use memcpy instead of the for loop
+		memcpy(&out[i],in[consumed],sizeof(unsigned char) * (int)nbch);
+		consumend += (int)nbch;
+        //for (int j = 0; j < (int)nbch; j++) {
+        //  out[i + j] = in[consumed];
+        //  consumed++;
+        //}
+
+
+
         // now do the parity checking
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
