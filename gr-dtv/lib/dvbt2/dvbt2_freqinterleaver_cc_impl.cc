@@ -815,7 +815,7 @@ namespace gr {
           }
           in += C_DATA;
         }
-   //     if (N_FC != 0) {
+        if (N_FC != 0) {
 			//if (even_odd) {
 			//	H = HevenFC;
 			//}
