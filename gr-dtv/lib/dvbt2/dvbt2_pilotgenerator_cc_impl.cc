@@ -2690,7 +2690,8 @@ namespace gr {
       gr_complex *dst;
       int L_FC = 0;
 
-      zero = gr_complex(0.0, 0.0);
+      //zero = gr_complex(0.0, 0.0);
+	  __m256 zero_m256 = _mm256_setzero_ps();
       if (N_FC != 0) {
         L_FC = 1;
       }
@@ -2700,13 +2701,9 @@ namespace gr {
           if (j < N_P2) {
 
 			  //copying zeros is faster than initializing?
-			  __m256 in_m256 = _mm256_setzero_ps();
-			  for ( int loop_i = 0; loop_i < left_nulls / 4; loop_i++) {//1215
-				  _mm256_store_ps((float*)out, in_m256);
-				  out ++;
-				  out++;
-				  out++;
-				  out++;
+			  for ( int loop_i = 0; loop_i < left_nulls / 4; loop_i++) {
+				  _mm256_store_ps((float*)out, zero_m256);
+				  out += 4;
 			  }
 
 
@@ -2738,14 +2735,28 @@ namespace gr {
                 *out++ = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
+
+			for (int loop_i = 0; loop_i < right_nulls / 4; loop_i++) {
+				_mm256_store_ps((float*)out, zero_m256);
+				out += 4;
+			}
+          /*  for (int n = 0; n < right_nulls; n++) {
               *out++ = zero;
-            }
+            }*/
+
+
           }
           else if (j == (num_symbols - L_FC)) {
-            for (int n = 0; n < left_nulls; n++) {
+          /*  for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
-            }
+            }*/
+			for (int loop_i = 0; loop_i < left_nulls / 4; loop_i++) {
+				_mm256_store_ps((float*)out, zero_m256);
+				out += 4;
+			}
+
+
+
             for (int n = 0; n < C_PS; n++) {
               if (fc_carrier_map[n] == SCATTERED_CARRIER) {
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
@@ -2760,14 +2771,26 @@ namespace gr {
                 *out++ = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
+           /* for (int n = 0; n < right_nulls; n++) {
               *out++ = zero;
-            }
+            }*/
+			for (int loop_i = 0; loop_i < right_nulls / 4; loop_i++) {
+				_mm256_store_ps((float*)out, zero_m256);
+				out += 4;
+			}
+
+
           }
           else {
-            for (int n = 0; n < left_nulls; n++) {
+           /* for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
-            }
+            }*/
+			for (int loop_i = 0; loop_i < left_nulls / 4; loop_i++) {
+				_mm256_store_ps((float*)out, zero_m256);
+				out += 4;
+			}
+
+
             for (int n = 0; n < C_PS; n++) {
               if (data_carrier_map[n] == SCATTERED_CARRIER) {
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
@@ -2788,9 +2811,16 @@ namespace gr {
                 *out++ = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
+
+        /*    for (int n = 0; n < right_nulls; n++) {
               *out++ = zero;
-            }
+            }*/
+			for (int loop_i = 0; loop_i < right_nulls / 4; loop_i++) {
+				_mm256_store_ps((float*)out, zero_m256);
+				out += 4;
+			}
+
+
           }
           out -= ofdm_fft_size;
           if (equalization_enable == EQUALIZATION_ON) {
