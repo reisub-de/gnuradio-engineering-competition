@@ -535,18 +535,13 @@ namespace gr {
                   }
                 }
               }
-              index = 0;
-			  
-			  
-			  
-			  //Not verified, if there is any benefit, but maybe now better to optimize.
-			  // the c s are not necessary
-			  for (int j = 0; j < rows; j++) {
-				for(unsigned short int i =0;i<16;i++){
-					tempu[index++] = tempv[i*rows+j];
-				}
-              }
-			  
+
+
+
+
+
+
+
               // for (int j = 0; j < rows; j++) {
                 // tempu[index++] = c1[j];
                 // tempu[index++] = c2[j];
@@ -566,14 +561,25 @@ namespace gr {
                 // tempu[index++] = c16[j];
               // }
 			  
-			  
+
+			  //d=j;
+
+			  index = 0;
+			  //Not verified, if there is any benefit, but maybe now better to optimize.
+			  // the c s are not necessary
+			  //for (int j = 0; j < rows; j++) {
+				 // for (unsigned short int i = 0; i<(mod *2); i++) {
+					//  tempu[index++] = tempv[i*rows + j];
+				 // }
+			  //}
+
 			  
               index = 0;
-              for (int d = 0; d < frame_size / (mod * 2); d++) {
+              for (int d = 0; d < rows; d++) {
                 pack = 0;
                 for (int e = 0; e < (mod * 2); e++) {
                   //offset = mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - mux[e]);
+                  pack |= tempv[e*rows + d] << (((mod * 2) - 1) - mux[e]);
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
