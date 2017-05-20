@@ -817,8 +817,16 @@ for (int row = 0; row < ROWS; row++) { \
 
       if (0 == Xs && 0 == P) {
         unsigned int max_thread_num = boost::thread::hardware_concurrency();
-        unsigned int thead_needed = (noutput_items / frame_size) > max_thread_num ? max_thread_num : (noutput_items / frame_size);
-        gr::dtv::ThreadPool thread_pool(thead_needed);
+        unsigned int loop_times = noutput_items / frame_size;
+        unsigned int thread_needed;
+        if (loop_times < max_thread_num) {
+          thread_needed = loop_times;
+        }
+        else {
+          thread_needed = max_thread_num;
+        }
+
+        gr::dtv::ThreadPool thread_pool(thread_needed);
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       
@@ -841,8 +849,16 @@ for (int row = 0; row < ROWS; row++) { \
 
       if (0 != Xs && 0 == P) {
         unsigned int max_thread_num = boost::thread::hardware_concurrency();
-        unsigned int thead_needed = (noutput_items / frame_size) > max_thread_num ? max_thread_num : (noutput_items / frame_size);
-        gr::dtv::ThreadPool thread_pool(thead_needed);
+        unsigned int loop_times = noutput_items / frame_size;
+        unsigned int thread_needed;
+        if (loop_times < max_thread_num) {
+          thread_needed = loop_times;
+        }
+        else {
+          thread_needed = max_thread_num;
+        }
+
+        gr::dtv::ThreadPool thread_pool(thread_needed);
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       
@@ -865,8 +881,16 @@ for (int row = 0; row < ROWS; row++) { \
 
       if (0 != Xs && 0 != P) {
         unsigned int max_thread_num = boost::thread::hardware_concurrency();
-        unsigned int thead_needed = (noutput_items / frame_size) > max_thread_num ? max_thread_num : (noutput_items / frame_size);
-        gr::dtv::ThreadPool thread_pool(thead_needed);
+        unsigned int loop_times = noutput_items / frame_size;
+        unsigned int thread_needed;
+        if (loop_times < max_thread_num) {
+          thread_needed = loop_times;
+        }
+        else {
+          thread_needed = max_thread_num;
+        }
+
+        gr::dtv::ThreadPool thread_pool(thread_needed);
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       
@@ -889,8 +913,16 @@ for (int row = 0; row < ROWS; row++) { \
 
       if (0 == Xs && 0 != P) {
         unsigned int max_thread_num = boost::thread::hardware_concurrency();
-        unsigned int thead_needed = (noutput_items / frame_size) > max_thread_num ? max_thread_num : (noutput_items / frame_size);
-        gr::dtv::ThreadPool thread_pool(thead_needed);
+        unsigned int loop_times = noutput_items / frame_size;
+        unsigned int thread_needed;
+        if (loop_times < max_thread_num) {
+          thread_needed = loop_times;
+        }
+        else {
+          thread_needed = max_thread_num;
+        }
+
+        gr::dtv::ThreadPool thread_pool(thread_needed);
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       

@@ -609,8 +609,11 @@ namespace gr {
         case BCH_CODE_N12:
           {
             unsigned int max_thread_num = boost::thread::hardware_concurrency();
-            unsigned int thead_needed = (noutput_items / nbch) > max_thread_num ? max_thread_num : (noutput_items / nbch);
-            gr::dtv::ThreadPool thread_pool(thead_needed);
+            unsigned int thread_needed;
+            unsigned int num_loop = noutput_items / nbch;
+            if (num_loop >= max_thread_num) thread_needed = max_thread_num;
+            else thread_needed = num_loop;
+            gr::dtv::ThreadPool thread_pool(thread_needed);
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
@@ -624,8 +627,11 @@ namespace gr {
         case BCH_CODE_N10:
           {
             unsigned int max_thread_num = boost::thread::hardware_concurrency();
-            unsigned int thead_needed = (noutput_items / nbch) > max_thread_num ? max_thread_num : (noutput_items / nbch);
-            gr::dtv::ThreadPool thread_pool(thead_needed);
+            unsigned int thread_needed;
+            unsigned int num_loop = noutput_items / nbch;
+            if (num_loop >= max_thread_num) thread_needed = max_thread_num;
+            else thread_needed = num_loop;
+            gr::dtv::ThreadPool thread_pool(thread_needed);
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
@@ -639,8 +645,11 @@ namespace gr {
         case BCH_CODE_N8:
           {
             unsigned int max_thread_num = boost::thread::hardware_concurrency();
-            unsigned int thead_needed = (noutput_items / nbch) > max_thread_num ? max_thread_num : (noutput_items / nbch);
-            gr::dtv::ThreadPool thread_pool(thead_needed);
+            unsigned int thread_needed;
+            unsigned int num_loop = noutput_items / nbch;
+            if (num_loop >= max_thread_num) thread_needed = max_thread_num;
+            else thread_needed = num_loop;
+            gr::dtv::ThreadPool thread_pool(thread_needed);
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
@@ -654,8 +663,11 @@ namespace gr {
         case BCH_CODE_S12:
           {
             unsigned int max_thread_num = boost::thread::hardware_concurrency();
-            unsigned int thead_needed = (noutput_items / nbch) > max_thread_num ? max_thread_num : (noutput_items / nbch);
-            gr::dtv::ThreadPool thread_pool(thead_needed);
+            unsigned int thread_needed;
+            unsigned int num_loop = noutput_items / nbch;
+            if (num_loop >= max_thread_num) thread_needed = max_thread_num;
+            else thread_needed = num_loop;
+            gr::dtv::ThreadPool thread_pool(thread_needed);
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
@@ -669,8 +681,11 @@ namespace gr {
         case BCH_CODE_M12:
           {
             unsigned int max_thread_num = boost::thread::hardware_concurrency();
-            unsigned int thead_needed = (noutput_items / nbch) > max_thread_num ? max_thread_num : (noutput_items / nbch);
-            gr::dtv::ThreadPool thread_pool(thead_needed);
+            unsigned int thread_needed;
+            unsigned int num_loop = noutput_items / nbch;
+            if (num_loop >= max_thread_num) thread_needed = max_thread_num;
+            else thread_needed = num_loop;
+            gr::dtv::ThreadPool thread_pool(thread_needed);
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
