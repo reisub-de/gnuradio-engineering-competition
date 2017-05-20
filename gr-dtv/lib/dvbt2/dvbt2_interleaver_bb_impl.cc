@@ -484,11 +484,10 @@ namespace gr {
 
 
 			  __m256i *in_m256i;
-			  unsigned int used = 0;
 			  for (unsigned int loop_i = 0; loop_i< nbch / 32; loop_i++) {//1215
-				  in_m256i = (__m256i*)&in[used];
-				  _mm256_store_si256((__m256i*)&tempu[i + 32 * loop_i], *in_m256i);
-				  used += 32;
+				  in_m256i = (__m256i*)in;
+				  _mm256_store_si256((__m256i*)&tempu[32 * loop_i], *in_m256i);
+				  in += 32;
 			  }
 
 
