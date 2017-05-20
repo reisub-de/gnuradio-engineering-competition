@@ -89,12 +89,14 @@ namespace gr {
       const static int mux256s_13[8];
       const static int mux256s_25[8];
 
+/************** Function handler **************/
       static void func_handler_mod_qpsk_c13_c25(FuncHandlerDataStruct);
       static void func_handler_mod_qpsk_rest(FuncHandlerDataStruct);
       static void func_handler_mod_16qam(FuncHandlerDataStruct, const int, const int*, const int*);
       static void func_handler_mod_64qam(FuncHandlerDataStruct, const int, const int*, const int*);
       static void func_handler_mod_256qam_frame_size_norm(FuncHandlerDataStruct, const int, const int*, const int*);
       static void func_handler_mod_256qam_rest(FuncHandlerDataStruct, const int, const int*, const int*);
+/********************************************************/
 
      public:
       dvbt2_interleaver_bb_impl(dvb_framesize_t framesize, dvb_code_rate_t rate, dvb_constellation_t constellation);
