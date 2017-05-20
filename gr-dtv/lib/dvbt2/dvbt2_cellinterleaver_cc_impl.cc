@@ -171,7 +171,7 @@ namespace gr {
 			  lfsr = 1;
 		  }
 		  else {
-			  lsfr = 0; 
+			  lfsr = 0; 
 		  }
 		  lfsr |= (i % 2) << (pn_degree - 1);
 		  if (lfsr < cell_size) {
