@@ -631,7 +631,7 @@ for (int row = 0; row < ROWS; row++) { \
 
 		//tryping to use memcpy instead of the for loop
 		memcpy(&out[i],&in[consumed],sizeof(unsigned char) * (int)nbch);
-		consumend += (int)nbch;
+		consumed += (int)nbch;
         //for (int j = 0; j < (int)nbch; j++) {
         //  out[i + j] = in[consumed];
         //  consumed++;
@@ -660,8 +660,16 @@ for (int row = 0; row < ROWS; row++) { \
           }
           p = &out[nbch];
         }
-        for (int j = 1; j < (plen - Xp); j++) {
-          p[j] ^= p[j-1];
+
+		//
+		for (int j = 1; j < (plen - Xp); j++) {
+			//if (p[j - 1] && 255) {
+			//	j = plen - Xp ;
+			//}
+			//else {
+				p[j] ^= p[j - 1];
+			//}
+          
         }
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
