@@ -660,16 +660,14 @@ namespace gr {
         }
       }
       init_prbs();
-      for (int i = 0; i < C_PS; i++) { // Jiaxin Fan
-        p2_carrier_map[i] = DATA_CARRIER;
-      }
+      memset(p2_carrier_map, DATA_CARRIER, C_PS);
       if ((fftsize == FFTSIZE_32K || fftsize == FFTSIZE_32K_T2GI) && (miso == FALSE)) {
         step = 6;
       }
       else {
         step = 3;
       }
-      for (int i = 0; i < C_PS; i += step) { // Jiaxin Fan
+      for (int i = 0; i < C_PS; i += step) {
         if (miso == TRUE && miso_group == MISO_TX2) {
           if (((i / 3) % 2) && (i % 3 == 0)) {
             p2_carrier_map[i] = P2PILOT_CARRIER_INVERTED;
@@ -985,9 +983,7 @@ namespace gr {
           dy = 16;
           break;
       }
-      for (int i = 0; i < C_PS; i++) { // Jiaxin Fan
-        fc_carrier_map[i] = DATA_CARRIER;
-      }
+      memset((void*)fc_carrier_map, DATA_CARRIER, C_PS);
       for (int i = 0; i < C_PS; i++) {
         if (i % dx == 0) {
           if (miso == TRUE && miso_group == MISO_TX2) {
