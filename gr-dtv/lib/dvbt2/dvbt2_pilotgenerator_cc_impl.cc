@@ -660,7 +660,7 @@ namespace gr {
         }
       }
       init_prbs();
-      for (int i = 0; i < C_PS; i++) {
+      for (int i = 0; i < C_PS; i++) { // Jiaxin Fan
         p2_carrier_map[i] = DATA_CARRIER;
       }
       if ((fftsize == FFTSIZE_32K || fftsize == FFTSIZE_32K_T2GI) && (miso == FALSE)) {
@@ -669,7 +669,7 @@ namespace gr {
       else {
         step = 3;
       }
-      for (int i = 0; i < C_PS; i += step) {
+      for (int i = 0; i < C_PS; i += step) { // Jiaxin Fan
         if (miso == TRUE && miso_group == MISO_TX2) {
           if (((i / 3) % 2) && (i % 3 == 0)) {
             p2_carrier_map[i] = P2PILOT_CARRIER_INVERTED;
@@ -985,7 +985,7 @@ namespace gr {
           dy = 16;
           break;
       }
-      for (int i = 0; i < C_PS; i++) {
+      for (int i = 0; i < C_PS; i++) { // Jiaxin Fan
         fc_carrier_map[i] = DATA_CARRIER;
       }
       for (int i = 0; i < C_PS; i++) {
@@ -1181,7 +1181,7 @@ namespace gr {
     dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
     {
       int remainder, shift;
-      for (int i = 0; i < C_PS; i++) {
+      for (int i = 0; i < C_PS; i++) { // Jiaxin Fan
         data_carrier_map[i] = DATA_CARRIER;
       }
       switch (fft_size) {
