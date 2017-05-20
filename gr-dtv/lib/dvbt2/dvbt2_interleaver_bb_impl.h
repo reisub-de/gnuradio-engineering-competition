@@ -24,6 +24,32 @@
 #include <gnuradio/dtv/dvbt2_interleaver_bb.h>
 #include "dvb/dvb_defines.h"
 
+// ThreadPool dependencies
+#include <boost/array.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/scoped_ptr.hpp>
+
+struct FuncHandlerDataStruct {
+  FuncHandlerDataStruct(  
+                          const unsigned char *d_in,
+                          unsigned char *d_out,
+                          const int d_rows,
+                          const int d_val_nbch,
+                          const int d_val_q_val) :
+        in(d_in),
+        out(d_out),
+        rows(d_rows),
+        val_nbch(d_val_nbch),
+        val_q_val(d_val_q_val) {}
+  const unsigned char *in;
+  unsigned char *out;
+  const int rows;
+  const int val_nbch;
+  const int val_q_val;
+};
+
 namespace gr {
   namespace dtv {
 
@@ -65,6 +91,13 @@ namespace gr {
       const static int mux256s_13[8];
       const static int mux256s_25[8];
 
+      static void func_handler_mod_qpsk_c13_c25(FuncHandlerDataStruct);
+      static void func_handler_mod_qpsk_rest(FuncHandlerDataStruct);
+      static void func_handler_mod_16qam(FuncHandlerDataStruct, const int, const int*, const int*);
+      static void func_handler_mod_64qam(FuncHandlerDataStruct, const int, const int*, const int*);
+      static void func_handler_mod_256qam_frame_size_norm(FuncHandlerDataStruct, const int, const int*, const int*);
+      static void func_handler_mod_256qam_rest(FuncHandlerDataStruct, const int, const int*, const int*);
+
      public:
       dvbt2_interleaver_bb_impl(dvb_framesize_t framesize, dvb_code_rate_t rate, dvb_constellation_t constellation);
       ~dvbt2_interleaver_bb_impl();
@@ -77,6 +110,34 @@ namespace gr {
                        gr_vector_void_star &output_items);
     };
 
+    #ifndef THREAD_POOL_DEF
+    #define THREAD_POOL_DEF
+    // The definition of boost_asio based thread pool
+    struct ThreadPool {
+        typedef boost::scoped_ptr<boost::asio::io_service::work> boost_asio_worker;
+
+        ThreadPool(size_t pool_size) :m_service(), m_working(new boost::asio::io_service::work(m_service)) {
+            while(pool_size--)
+            {
+                m_thread_group.create_thread(boost::bind(&boost::asio::io_service::run, &(this->m_service)));
+            }
+        }
+
+        template<class F>
+            void enqueue(F f){m_service.post(f);}
+
+        ~ThreadPool() {
+            m_working.reset(); //allow run() to exit
+            m_thread_group.join_all();
+            m_service.stop();
+        }
+
+        private:
+        boost::asio::io_service m_service; //< the io_service we are wrapping
+        boost_asio_worker m_working;
+        boost::thread_group m_thread_group; //< need to keep track of threads so we can join them
+    };
+    #endif
   } // namespace dtv
 } // namespace gr
 
