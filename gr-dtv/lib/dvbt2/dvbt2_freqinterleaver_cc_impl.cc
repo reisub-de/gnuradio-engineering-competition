@@ -766,27 +766,27 @@ namespace gr {
     {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
-	  bool even_odd = true;
-      //int symbol = 0;
+	  //bool even_odd = true;
+      int symbol = 0;
       int *H;
 
       for (int i = 0; i < noutput_items; i += interleaved_items) {
         for (int j = 0; j < N_P2; j++) {
-          /*if ((symbol % 2) == 0) {
+          if ((symbol % 2) == 0) {
             H = HevenP2;
           }
           else {
             H = HoddP2;
           }
 		  symbol++;
-		  */
-			if (even_odd) {
+		  
+			/*if (even_odd) {
 				H = HevenP2;
 			}
 			else {
 				H = HoddP2;
 			}
-			even_odd != even_odd ;
+			even_odd != even_odd ;*/
 
 
           for (int j = 0; j < C_P2; j++) {
@@ -795,46 +795,46 @@ namespace gr {
           in += C_P2;
         }
         for (int j = 0; j < num_data_symbols; j++) {
-          //if ((symbol % 2) == 0) {
-          //  H = Heven;
-          //}
-          //else {
-          //  H = Hodd;
-          //}
-			//symbol++;
-			if (even_odd) {
+          if ((symbol % 2) == 0) {
+            H = Heven;
+          }
+          else {
+            H = Hodd;
+          }
+			symbol++;
+			/*if (even_odd) {
 				H = Heven;
 			}
 			else {
 				H = Hodd;
 			}
-			even_odd != even_odd;
+			even_odd != even_odd;*/
 
           for (int j = 0; j < C_DATA; j++) {
             *out++ = in[H[j]];
           }
           in += C_DATA;
         }
-        if (N_FC != 0) {
-			if (even_odd) {
-				H = HevenFC;
-			}
-			else {
-				H = HoddFC;
-			}
-			even_odd != even_odd;
+   //     if (N_FC != 0) {
+			//if (even_odd) {
+			//	H = HevenFC;
+			//}
+			//else {
+			//	H = HoddFC;
+			//}
+			//even_odd != even_odd;
 
 
-      /*    if ((symbol % 2) == 0) {
+          if ((symbol % 2) == 0) {
             H = HevenFC;
           }
           else {
             H = HoddFC;
-          }*/
+          }
           for (int j = 0; j < N_FC; j++) {
             *out++ = in[H[j]];
           }
-          //symbol++;
+          symbol++;
           in += N_FC;
         }
       }
