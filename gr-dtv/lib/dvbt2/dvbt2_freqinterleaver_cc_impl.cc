@@ -766,7 +766,7 @@ namespace gr {
     {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
-	  bool even_odd = false;
+	  bool even_odd = true;
       //int symbol = 0;
       int *H;
 
