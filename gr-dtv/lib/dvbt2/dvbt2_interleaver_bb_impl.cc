@@ -22,6 +22,8 @@
 #include "config.h"
 #endif
 
+#include <immintrin.h>
+
 #include <gnuradio/io_signature.h>
 #include "dvbt2_interleaver_bb_impl.h"
 
@@ -160,6 +162,59 @@ namespace gr {
     {
       ninput_items_required[0] = noutput_items * mod;
     }
+
+
+
+//	//___________________________________________________________________________________________
+//	void saxpy(float* y, float* x, size_t length, float a)
+//	{
+//		saxpy_kernel op(a);
+//		for (int n = 0; n < length; n++) op(y + n, x + n);
+//	}
+//
+//#define ROUND_DOWN(x, s) ((x) & ~((s)-1)) // rounds down x to a multiple of s (i.e. ROUND_DOWN(5, 4) becomes 4)
+//	template<class OutputPointer, class InputPointer, class Operation>
+//	void transform_n(OutputPointer dst, InputPointer src, size_t length, Operation op)
+//	{
+//		size_t n;
+//		// execute op on array elements block-wise
+//		for (n = 0; n < ROUND_DOWN(length, op.BLOCK_SIZE); n += op.BLOCK_SIZE)
+//			op.block(dst + n, src + n);
+//		// execute the remaining array elements one by one
+//		for (; n < length; n++) op(dst + n, src + n);
+//	}
+//
+//
+//	struct saxpy_kernel
+//	{
+//	public:
+//		enum { BLOCK_SIZE = 8 }; // note that instead of 4, we now process 8 elements
+//		saxpy_kernel(float a) : a(a) {}
+//		inline void operator()(float* y, const float* x) const {
+//			(*y) += a * (*x);
+//		}
+//		inline void block(float* y, const float* x) const {
+//			// load 8 data elements at a time
+//			__m128 X1 = _mm_loadu_ps(x + 0);
+//			__m128 X2 = _mm_loadu_ps(x + 4);
+//			__m128 Y1 = _mm_loadu_ps(y + 0);
+//			__m128 Y2 = _mm_loadu_ps(y + 4);
+//			// do the computations
+//			__m128 result0 = _mm_add_ps(Y1, _mm_mul_ps(X1, _mm_set1_ps(a)));
+//			__m128 result1 = _mm_add_ps(Y2, _mm_mul_ps(X2, _mm_set1_ps(a)));
+//			// store the results
+//			_mm_storeu_ps(y + 0, result1);
+//			_mm_storeu_ps(y + 4, result2);
+//		}
+//	protected:
+//		float a;
+//	};
+//
+//
+//	//________________________________________________________________________________________
+
+
+
 
     int
     dvbt2_interleaver_bb_impl::general_work (int noutput_items,
@@ -355,7 +410,6 @@ namespace gr {
 					tempu[index++] = tempv[i*rows+j];
 				}
 			}
-
             // index = 0;
             // for (int j = 0; j < rows; j++) {
               // tempu[index++] = c1[j];
@@ -378,8 +432,8 @@ namespace gr {
             for (int d = 0; d < frame_size / (mod * 2); d++) {
               pack = 0;
               for (int e = 0; e < (mod * 2); e++) {
-                offset = mux[e];
-                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+                //offset = mux[e];
+                pack |= tempu[index++] << (((mod * 2) - 1) - mux[e]);
               }
               out[produced++] = pack >> 6;
               out[produced++] = pack & 0x3f;
@@ -423,10 +477,39 @@ namespace gr {
       /*         for (int k = 0; k < nbch; k++) {
                  tempu[k] = *in++;
                }*/
-			  memcpy(tempu,in,sizeof(unsigned char)*nbch);
-			  in += nbch;
+
+
+
+
+
+
+			  __m256i *in_m256i;
+			  unsigned int used = 0;
+			  for (unsigned int loop_i = 0; loop_i< nbch / 32; loop_i++) {//1215
+				  in_m256i = (__m256i*)&in[used];
+				  _mm256_store_si256((__m256i*)&tempu[i + 32 * loop_i], *in_m256i);
+				  used += 32;
+			  }
+
+
+
+			  //memcpy(tempu,in,sizeof(unsigned char)*nbch);
+			  //in += nbch;
 			  
 			  
+
+
+
+
+
+
+
+
+
+
+
+
+
 			  //Not sure if there is any benefit, but maybe the loop can be better optimized.
 			  // for(unsigned long int a = 0; a < q_val*360; a++){
 				  // tempu[nbch+a] = in[  (a%360)*q_val + (a/360)  ];
@@ -490,8 +573,8 @@ namespace gr {
               for (int d = 0; d < frame_size / (mod * 2); d++) {
                 pack = 0;
                 for (int e = 0; e < (mod * 2); e++) {
-                  offset = mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+                  //offset = mux[e];
+                  pack |= tempu[index++] << (((mod * 2) - 1) - mux[e]);
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;

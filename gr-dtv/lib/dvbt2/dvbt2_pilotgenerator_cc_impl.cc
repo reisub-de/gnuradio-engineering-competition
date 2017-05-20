@@ -22,6 +22,8 @@
 #include "config.h"
 #endif
 
+#include <immintrin.h>
+
 #include <gnuradio/io_signature.h>
 #include "dvbt2_pilotgenerator_cc_impl.h"
 #include <volk/volk.h>
@@ -2696,9 +2698,19 @@ namespace gr {
         for (int j = 0; j < num_symbols; j++) {
           init_pilots(j);
           if (j < N_P2) {
-            for (int n = 0; n < left_nulls; n++) {
+
+			  //copying zeros is faster than initializing?
+			  __m256i *in_m256i = _mm256_setzero_ps();
+			  for (unsigned int loop_i = 0; loop_i < nbch / 32; loop_i++) {//1215
+				  _mm256_store_si256((__m256i*)out, *in_m256i);
+				  out += 32;
+			  }
+    /*        for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
-            }
+            }*/
+
+
+
             for (int n = 0; n < C_PS; n++) {
               if (p2_carrier_map[n] == P2PILOT_CARRIER) {
                 *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];

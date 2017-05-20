@@ -651,23 +651,6 @@ for (int row = 0; row < ROWS; row++) { \
 			consumed += (int)32;
 		}
 
-
-		
-		
-
-
-
-
-		
-
-
-
-
-
-
-
-
-
         //for (int j = 0; j < (int)nbch; j++) {
         //  out[i + j] = in[consumed];
         //  consumed++;
