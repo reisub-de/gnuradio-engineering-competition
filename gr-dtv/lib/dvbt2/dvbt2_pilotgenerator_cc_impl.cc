@@ -2690,7 +2690,7 @@ namespace gr {
       gr_complex *dst;
       int L_FC = 0;
 
-      //zero = gr_complex(0.0, 0.0);
+      zero = gr_complex(0.0, 0.0);
 	  __m256 zero_m256 = _mm256_setzero_ps();
       if (N_FC != 0) {
         L_FC = 1;
@@ -2736,10 +2736,13 @@ namespace gr {
               }
             }
 
-			for (int loop_i = 0; loop_i < right_nulls / 4; loop_i++) {
+			for (int loop_i = 0; loop_i < right_nulls / 4 - 1; loop_i++) {
 				_mm256_store_ps((float*)out, zero_m256);
 				out += 4;
 			}
+			*out++ = zero;
+			*out++ = zero;
+			*out++ = zero;
           /*  for (int n = 0; n < right_nulls; n++) {
               *out++ = zero;
             }*/
@@ -2774,10 +2777,13 @@ namespace gr {
            /* for (int n = 0; n < right_nulls; n++) {
               *out++ = zero;
             }*/
-			for (int loop_i = 0; loop_i < right_nulls / 4; loop_i++) {
+			for (int loop_i = 0; loop_i < right_nulls / 4 - 1; loop_i++) {
 				_mm256_store_ps((float*)out, zero_m256);
 				out += 4;
 			}
+			*out++ = zero;
+			*out++ = zero;
+			*out++ = zero;
 
 
           }
@@ -2815,10 +2821,13 @@ namespace gr {
         /*    for (int n = 0; n < right_nulls; n++) {
               *out++ = zero;
             }*/
-			for (int loop_i = 0; loop_i < right_nulls / 4; loop_i++) {
+			for (int loop_i = 0; loop_i < right_nulls / 4 -1; loop_i++) {
 				_mm256_store_ps((float*)out, zero_m256);
 				out += 4;
 			}
+			*out++ = zero;
+			*out++ = zero;
+			*out++ = zero;
 
 
           }
