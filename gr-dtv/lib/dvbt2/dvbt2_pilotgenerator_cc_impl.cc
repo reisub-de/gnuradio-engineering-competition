@@ -1177,7 +1177,7 @@ namespace gr {
       __m128i pn_128, result_128;
       __m128i and_op_128 = _mm_loadu_si128((__m128i*) and_op_char_array);
       int i = 0;
-      while (i < (CHIPS / 8)) {
+      while (i < 328) { // CHIPS = 2624, (CHIPS / 8) = 328
         pn_sequence[++j] = (pn_sequence_table[i] >> 7);
         pn_sequence[++j] = (pn_sequence_table[i] >> 6);
         pn_sequence[++j] = (pn_sequence_table[i] >> 5);
@@ -2749,26 +2749,32 @@ namespace gr {
       if (N_FC != 0) {
         L_FC = 1;
       }
-      // Switch instead of if-else-structure
+      // Switch instead of if-else-structure, while instead of for
+      // Loop unrolling 2nd order
+      int *index = (int *) malloc(4 * sizeof(int));
       for (int i = 0; i < noutput_items; i += num_symbols) {
-        for (int j = 0; j < num_symbols; j++) { // for every OFDM symbol j in output item i
+        int j = 0;
+        while (j < num_symbols) { // for every OFDM symbol j in output item i
+        //for (int j = 0; j < num_symbols; j++) {
           init_pilots(j);
-          for (int n = 0; n < left_nulls; n++) {
+          int n = 0;
+          while (n < left_nulls) {
             *out++ = zero;
+            ++n;
           }
           // XOR processing with 16 byte-blocks
-          // Attention: C_PS not necessarily a multiple of 16
-          int *index = (int *) malloc(4 * sizeof(int));
+          // Attention: C_PS not necessarily a multiple of 4 (TO DO!)
           int xor_op_int_array[4] = {pn_sequence[j], pn_sequence[j], pn_sequence[j], pn_sequence[j]};
           __m128i prbs_offs_128, index_128;
           __m128i xor_op_128 = _mm_loadu_si128((__m128i*) xor_op_int_array);
           // index[n] = prbs[n + K_OFFSET] ^ pn_sequence[j]
           if (j < N_P2) {
-            for (int n = 0; n < C_PS; n += 4) {
+            n = 0;
+            while (n < C_PS) {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
-              for (int p = 0; p < 16; p++) {
+              for (int p = 0; p < 4; p++) {
                 switch (p2_carrier_map[n + p]) {
                   case P2PILOT_CARRIER:
                     *out++ = p2_bpsk[index[p]];
@@ -2784,14 +2790,16 @@ namespace gr {
                     break;
                 }
               }
+              n += 4;
             }
           }
           else if (j != (num_symbols - L_FC)) {
-            for (int n = 0; n < C_PS; n += 4) {
+            n = 0;
+            while (n < C_PS) {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
-              for (int p = 0; p < 16; p++) {
+              for (int p = 0; p < 4; p++) {
                 switch (p2_carrier_map[n + p]) {
                   case SCATTERED_CARRIER:
                     *out++ = sp_bpsk[index[p]];
@@ -2813,14 +2821,16 @@ namespace gr {
                     break;
                 }
               }
+              n += 4;
             }
           }
           else {
-            for (int n = 0; n < C_PS; n += 4) {
+            n = 0;
+            while (n > C_PS) {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
-              for (int p = 0; p < 16; p++) {
+              for (int p = 0; p < 4; p++) {
                 switch (fc_carrier_map[n + p]) {
                   case SCATTERED_CARRIER:
                     *out++ = sp_bpsk[index[p]];
@@ -2836,10 +2846,13 @@ namespace gr {
                     break;
                 }
               }
+              n += 4;
             }
           }
-          for (int n = 0; n < right_nulls; n++) {
+          n = 0;
+          while (n < right_nulls) {
             *out++ = zero;
+            ++n;
           }
           out -= ofdm_fft_size;
           if (equalization_enable == EQUALIZATION_ON) {
@@ -2851,6 +2864,119 @@ namespace gr {
           ofdm_fft->execute();
           volk_32fc_s32fc_multiply_32fc(out, ofdm_fft->get_outbuf(), normalization, ofdm_fft_size);
           out += ofdm_fft_size;
+
+          ++j;
+
+          init_pilots(j);
+          n = 0;
+          while (n < left_nulls) {
+            *out++ = zero;
+            ++n;
+          }
+          // XOR processing with 16 byte-blocks
+          // Attention: C_PS not necessarily a multiple of 4 (TO DO!)
+          int xor_op_int_array2[4] = {pn_sequence[j], pn_sequence[j], pn_sequence[j], pn_sequence[j]};
+          xor_op_128 = _mm_loadu_si128((__m128i*) xor_op_int_array2);
+          // index[n] = prbs[n + K_OFFSET] ^ pn_sequence[j]
+          if (j < N_P2) {
+            n = 0;
+            while (n < C_PS) {
+              prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
+              index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
+              _mm_storeu_si128((__m128i*)index, index_128);
+              for (int p = 0; p < 4; p++) {
+                switch (p2_carrier_map[n + p]) {
+                  case P2PILOT_CARRIER:
+                    *out++ = p2_bpsk[index[p]];
+                    break;
+                  case P2PILOT_CARRIER_INVERTED:
+                    *out++ = p2_bpsk_inverted[index[p]];
+                    break;
+                  case P2PAPR_CARRIER:
+                    *out++ = zero;
+                    break;
+                  default:
+                    *out++ = *in++;
+                    break;
+                }
+              }
+              n += 4;
+            }
+          }
+          else if (j != (num_symbols - L_FC)) {
+            n = 0;
+            while (n < C_PS) {
+              prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
+              index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
+              _mm_storeu_si128((__m128i*)index, index_128);
+              for (int p = 0; p < 4; p++) {
+                switch (p2_carrier_map[n + p]) {
+                  case SCATTERED_CARRIER:
+                    *out++ = sp_bpsk[index[p]];
+                    break;
+                  case SCATTERED_CARRIER_INVERTED:
+                    *out++ = sp_bpsk_inverted[index[p]];
+                    break;
+                  case CONTINUAL_CARRIER:
+                    *out++ = cp_bpsk[index[p]];
+                    break;
+                  case CONTINUAL_CARRIER_INVERTED:
+                    *out++ = cp_bpsk_inverted[index[p]];
+                    break;
+                  case TRPAPR_CARRIER:
+                    *out++ = zero;
+                    break;
+                  default:
+                    *out++ = *in++;
+                    break;
+                }
+              }
+              n += 4;
+            }
+          }
+          else {
+            n = 0;
+            while (n > C_PS) {
+              prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
+              index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
+              _mm_storeu_si128((__m128i*)index, index_128);
+              for (int p = 0; p < 4; p++) {
+                switch (fc_carrier_map[n + p]) {
+                  case SCATTERED_CARRIER:
+                    *out++ = sp_bpsk[index[p]];
+                    break;
+                  case SCATTERED_CARRIER_INVERTED:
+                    *out++ = sp_bpsk_inverted[index[p]];
+                    break;
+                  case TRPAPR_CARRIER:
+                    *out++ = zero;
+                    break;
+                  default:
+                    *out++ = *in++;
+                    break;
+                }
+              }
+              n += 4;
+            }
+          }
+          n = 0;
+          while (n < right_nulls) {
+            *out++ = zero;
+            ++n;
+          }
+          out -= ofdm_fft_size;
+          if (equalization_enable == EQUALIZATION_ON) {
+            volk_32fc_x2_multiply_32fc(out, out, inverse_sinc, ofdm_fft_size);
+          }
+          dst = ofdm_fft->get_inbuf();
+          memcpy(&dst[ofdm_fft_size / 2], &out[0], sizeof(gr_complex) * ofdm_fft_size / 2);
+          memcpy(&dst[0], &out[ofdm_fft_size / 2], sizeof(gr_complex) * ofdm_fft_size / 2);
+          ofdm_fft->execute();
+          volk_32fc_s32fc_multiply_32fc(out, ofdm_fft->get_outbuf(), normalization, ofdm_fft_size);
+          out += ofdm_fft_size;
+
+          ++j;
+
         } // end for every OFDM symbol j
       }
 
