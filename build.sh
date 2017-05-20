@@ -3,9 +3,9 @@
 set -e
 # Disable the GUI
 cmakeopts=(
-    '-DENABLE_GRC=OFF'
-    '-DENABLE_GR_QTGUI=OFF'
-    '-DENABLE_GR_WXGUI=OFF'
+    '-DENABLE_GRC=ON'
+    '-DENABLE_GR_QTGUI=ON'
+    '-DENABLE_GR_WXGUI=ON'
 )
 
 # Disable the Testsuite
@@ -33,7 +33,7 @@ cmakeopts+=(
     '-DENABLE_GR_CTRLPORT=OFF'
 )
 
-export CXXFLAGS="-march=skylake -mtune=skylake"
+#export CXXFLAGS="-march=skylake -mtune=skylake"
 
 cmake ${cmakeopts[@]} $SRC
 
