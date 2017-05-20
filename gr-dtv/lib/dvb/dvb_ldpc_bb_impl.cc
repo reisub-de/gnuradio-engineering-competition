@@ -657,7 +657,7 @@ for (int row = 0; row < ROWS; row++) { \
           p[j] ^= p[j-1];
         }
         if (signal_constellation == MOD_128APSK) {
-          for (int j = 0; j < 6; j++) {
+          for (char j = 0; j < 6; j++) {
             p[j + plen] = 0;
           }
         }
