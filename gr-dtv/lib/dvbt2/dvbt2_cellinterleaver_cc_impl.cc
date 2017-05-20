@@ -155,7 +155,60 @@ namespace gr {
 		  }
 
       }
-      for (int i = 0; i < max_states; i++) {
+
+
+	  for (int i = 0; i < max_states; i++) {
+		  if (i>2) {
+			  result = 0;
+			  for (int k = 0; k < xor_size; k++) {
+				  result ^= (lfsr >> logic[k]) & 1;
+			  }
+			  lfsr &= pn_mask;
+			  lfsr >>= 1;
+			  lfsr |= result << (pn_degree - 2);
+		  }
+		  else if (i == 2) {
+			  lfsr = 1;
+		  }
+		  else {
+			  lsfr = 0; 
+		  }
+		  lfsr |= (i % 2) << (pn_degree - 1);
+		  if (lfsr < cell_size) {
+			  permutations[q++] = lfsr;
+		  }
+	  }
+	  if (tiblocks == 0) {
+		  FECBlocksPerSmallTIBlock = 1;
+		  FECBlocksPerBigTIBlock = 1;
+		  numBigTIBlocks = 0;
+		  numSmallTIBlocks = fecblocks;
+	  }
+	  else {
+		  FECBlocksPerSmallTIBlock = floor(((float)fecblocks) / ((float)tiblocks));
+		  FECBlocksPerBigTIBlock = ceil(((float)fecblocks) / ((float)tiblocks));
+		  numBigTIBlocks = fecblocks % tiblocks;
+		  numSmallTIBlocks = tiblocks - numBigTIBlocks;
+	  }
+	  time_interleave = (gr_complex *)malloc(sizeof(gr_complex) * cell_size * fecblocks);
+	  if (time_interleave == NULL) {
+		  GR_LOG_FATAL(d_logger, "Cell/Time Interleaver, cannot allocate memory for time_interleave.");
+		  throw std::bad_alloc();
+	  }
+	  cols = (gr_complex **)malloc(sizeof(gr_complex *) * FECBlocksPerBigTIBlock * 5);
+	  if (cols == NULL) {
+		  free(time_interleave);
+		  GR_LOG_FATAL(d_logger, "Cell/Time Interleaver, cannot allocate memory for cols.");
+		  throw std::bad_alloc();
+	  }
+	  ti_blocks = tiblocks;
+	  fec_blocks = fecblocks;
+	  set_output_multiple(cell_size * fecblocks);
+	  interleaved_items = cell_size * fecblocks;
+	}
+
+
+      /*for (int i = 0; i < max_states; i++) {
         if (i == 0 || i == 1) {
           lfsr = 0;
         }
@@ -203,7 +256,7 @@ namespace gr {
       fec_blocks = fecblocks;
       set_output_multiple(cell_size * fecblocks);
       interleaved_items = cell_size * fecblocks;
-    }
+    }*/
 
     /*
      * Our virtual destructor.
