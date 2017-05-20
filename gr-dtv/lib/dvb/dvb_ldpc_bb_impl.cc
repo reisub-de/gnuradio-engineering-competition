@@ -640,8 +640,8 @@ for (int row = 0; row < ROWS; row++) { \
 
 		//__m256i in_m256i = _mm256_set_epi64(&in[consumed],&in[consumed + 16]);
 		//__m256i out_m256i = _mm256_set_epi64(&out[i], &out[i+16]);
-
-		_mm256_store_si256((__m256i*)&in[consumed], (__m256i*)&out[i]);
+		__m256i in_m256i* = (__m256i*)&in[consumed];
+		_mm256_store_si256((__m256i*)&out[i],in_m256i* );
 		consumed += (int)nbch;
 
 
