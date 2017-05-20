@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -2691,7 +2691,11 @@ namespace gr {
       int L_FC = 0;
 
       zero = gr_complex(0.0, 0.0);
-	  __m256 zero_m256 = _mm256_setzero_ps();
+
+      #ifdef False
+	     __m256 zero_m256 = _mm256_setzero_ps();
+      #endif
+
       if (N_FC != 0) {
         L_FC = 1;
       }
@@ -2700,11 +2704,16 @@ namespace gr {
           init_pilots(j);
           if (j < N_P2) {
 
-			  //copying zeros is faster than initializing?
-			  for ( int loop_i = 0; loop_i < left_nulls / 4; loop_i++) {
-				  _mm256_store_ps((float*)out, zero_m256);
-				  out += 4;
-			  }
+        #if False && defined(__AVX2__)
+  			  //copying zeros is faster than initializing?
+  			  for ( int loop_i = 0; loop_i < left_nulls / 4; loop_i++) {
+  				  _mm256_store_ps((float*)out, zero_m256);
+  				  out += 4;
+  			  }
+        #else
+          memset(out, 0, sizeof(gr_complex) * left_nulls);
+          out += left_nulls;
+        #endif
 
 
 			  //__m256i *in_m256i;
@@ -2856,7 +2865,7 @@ namespace gr {
       return noutput_items;
     }
 
-    const unsigned char dvbt2_pilotgenerator_cc_impl::pn_sequence_table[CHIPS / 8] = 
+    const unsigned char dvbt2_pilotgenerator_cc_impl::pn_sequence_table[CHIPS / 8] =
     {
       0x4D, 0xC2, 0xAF, 0x7B, 0xD8, 0xC3, 0xC9, 0xA1, 0xE7, 0x6C, 0x9A, 0x09, 0x0A, 0xF1, 0xC3, 0x11,
       0x4F, 0x07, 0xFC, 0xA2, 0x80, 0x8E, 0x94, 0x62, 0xE9, 0xAD, 0x7B, 0x71, 0x2D, 0x6F, 0x4A, 0xC8,
@@ -2881,25 +2890,25 @@ namespace gr {
       0x79, 0xA5, 0x37, 0x0C, 0xCB, 0x3E, 0x19, 0x7F
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_1k[10] = 
+    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_1k[10] =
     {
       116, 130, 134, 157, 182, 256, 346, 478, 479, 532
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_2k[18] = 
+    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_2k[18] =
     {
       113, 124, 262, 467, 479, 727, 803, 862, 910, 946,
       980, 1201, 1322, 1342, 1396, 1397, 1562, 1565
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_4k[36] = 
+    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_4k[36] =
     {
       104, 116, 119, 163, 170, 173, 664, 886, 1064, 1151, 1196, 1264, 1531,
       1736, 1951, 1960, 2069, 2098, 2311, 2366, 2473, 2552, 2584, 2585, 2645,
       2774, 2846, 2882, 3004, 3034, 3107, 3127, 3148, 3191, 3283, 3289
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_8k[72] = 
+    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_8k[72] =
     {
       106, 109, 110, 112, 115, 118, 133, 142, 163, 184, 206, 247, 445, 461,
       503, 565, 602, 656, 766, 800, 922, 1094, 1108, 1199, 1258, 1726, 1793,
@@ -2909,7 +2918,7 @@ namespace gr {
       6556, 6611, 6674, 6685, 6689, 6691, 6695, 6698, 6701
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_16k[144] = 
+    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_16k[144] =
     {
       104, 106, 107, 109, 110, 112, 113, 115, 116, 118, 119, 121, 122, 125, 128,
       131, 134, 137, 140, 143, 161, 223, 230, 398, 482, 497, 733, 809, 850, 922,
@@ -2925,7 +2934,7 @@ namespace gr {
       13502, 13504, 13507, 13510, 13513, 13514, 13516
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_32k[288] = 
+    const int dvbt2_pilotgenerator_cc_impl::p2_papr_map_32k[288] =
     {
       104, 106, 107, 109, 110, 112, 113, 115, 118, 121, 124, 127, 130, 133, 136,
       139, 142, 145, 148, 151, 154, 157, 160, 163, 166, 169, 172, 175, 178, 181,
@@ -2952,25 +2961,25 @@ namespace gr {
       27130, 27133, 27134, 27140, 27143, 27145, 27146, 27148, 27149
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_1k[10] = 
+    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_1k[10] =
     {
       109, 117, 122, 129, 139, 321, 350, 403, 459, 465
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_2k[18] = 
+    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_2k[18] =
     {
       250, 404, 638, 677, 700, 712, 755, 952, 1125, 1145,
       1190, 1276, 1325, 1335, 1406, 1431, 1472, 1481
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_4k[36] = 
+    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_4k[36] =
     {
       170, 219, 405, 501, 597, 654, 661, 745, 995, 1025, 1319, 1361, 1394,
       1623, 1658, 1913, 1961, 1971, 2106, 2117, 2222, 2228, 2246, 2254, 2361,
       2468, 2469, 2482, 2637, 2679, 2708, 2825, 2915, 2996, 3033, 3119
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_8k[72] = 
+    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_8k[72] =
     {
       111, 115, 123, 215, 229, 392, 613, 658, 831, 842, 997, 1503, 1626, 1916,
       1924, 1961, 2233, 2246, 2302, 2331, 2778, 2822, 2913, 2927, 2963, 2994,
@@ -2980,7 +2989,7 @@ namespace gr {
       6174, 6227, 6245, 6314, 6316, 6327, 6503, 6507, 6545, 6565
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_16k[144] = 
+    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_16k[144] =
     {
       109, 122, 139, 171, 213, 214, 251, 585, 763, 1012, 1021, 1077, 1148, 1472,
       1792, 1883, 1889, 1895, 1900, 2013, 2311, 2582, 2860, 2980, 3011, 3099, 3143,
@@ -2996,7 +3005,7 @@ namespace gr {
       12939, 13050, 13103, 13147, 13256, 13339, 13409
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_32k[288] = 
+    const int dvbt2_pilotgenerator_cc_impl::tr_papr_map_32k[288] =
     {
       164, 320, 350, 521, 527, 578, 590, 619, 635, 651, 662, 664, 676, 691, 723,
       940, 1280, 1326, 1509, 1520, 1638, 1682, 1805, 1833, 1861, 1891, 1900, 1902,
@@ -3024,19 +3033,19 @@ namespace gr {
       27039
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp1_cp1[20] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp1_cp1[20] =
     {
       116, 255, 285, 430, 518, 546, 601, 646, 744, 1662, 1893, 1995, 2322, 3309, 3351,
       3567, 3813, 4032, 5568, 5706
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp1_cp2[25] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp1_cp2[25] =
     {
       1022, 1224, 1302, 1371, 1495, 2261, 2551, 2583, 2649, 2833, 2925, 3192, 4266, 5395,
       5710, 5881, 8164, 10568, 11069, 11560, 12631, 12946, 13954, 16745, 21494
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp1_cp5[44] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp1_cp5[44] =
     {
       1369, 7013, 7215, 7284, 7649, 7818, 8025, 8382, 8733, 8880, 9249, 9432, 9771, 10107,
       10110, 10398, 10659, 10709, 10785, 10872, 11115, 11373, 11515, 11649, 11652, 12594,
@@ -3044,29 +3053,29 @@ namespace gr {
       22867, 23239, 24934, 25879, 26308, 26674
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp2_cp1[20] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp2_cp1[20] =
     {
       116, 318, 390, 430, 474, 518, 601, 646, 708, 726, 1752, 1758, 1944, 2100, 2208, 2466,
       3792, 5322, 5454, 5640
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp2_cp2[22] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp2_cp2[22] =
     {
       1022, 1092, 1369, 1416, 1446, 1495, 2598, 2833, 2928, 3144, 4410, 4800, 5710, 5881,
       6018, 6126, 10568, 11515, 12946, 13954, 15559, 16681
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp2_cp3[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp2_cp3[2] =
     {
       2261, 8164
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp2_cp4[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp2_cp4[2] =
     {
       10709, 19930
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp2_cp5[41] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp2_cp5[41] =
     {
       6744, 7013, 7020, 7122, 7308, 7649, 7674, 7752, 7764, 8154, 8190, 8856, 8922, 9504,
       9702, 9882, 9924, 10032, 10092, 10266, 10302, 10494, 10530, 10716, 11016, 11076,
@@ -3074,7 +3083,7 @@ namespace gr {
       24934, 25879, 26308
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp2_cp6[88] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp2_cp6[88] =
     {
       13164, 13206, 13476, 13530, 13536, 13764, 13848, 13938, 13968, 14028, 14190, 14316,
       14526, 14556, 14562, 14658, 14910, 14946, 15048, 15186, 15252, 15468, 15540, 15576,
@@ -3086,24 +3095,24 @@ namespace gr {
       25260, 25566, 26674, 26944
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp3_cp1[22] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp3_cp1[22] =
     {
       116, 318, 342, 426, 430, 518, 582, 601, 646, 816, 1758, 1764, 2400, 3450, 3504,
       3888, 4020, 4932, 5154, 5250, 5292, 5334
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp3_cp2[20] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp3_cp2[20] =
     {
       1022, 1495, 2261, 2551, 2802, 2820, 2833, 2922, 4422, 4752, 4884, 5710, 8164,
       10568, 11069, 11560, 12631, 12946, 16745, 21494
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp3_cp3[1] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp3_cp3[1] =
     {
       13954
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp3_cp5[44] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp3_cp5[44] =
     {
       1369, 5395, 5881, 6564, 6684, 7013, 7649, 8376, 8544, 8718, 8856, 9024, 9132, 9498,
       9774, 9840, 10302, 10512, 10566, 10770, 10914, 11340, 11418, 11730, 11742, 12180,
@@ -3111,7 +3120,7 @@ namespace gr {
       22867, 23239, 24934, 25879, 26308, 26674
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp3_cp6[49] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp3_cp6[49] =
     {
       13320, 13350, 13524, 13566, 13980, 14148, 14340, 14964, 14982, 14994, 15462, 15546,
       15984, 16152, 16314, 16344, 16488, 16614, 16650, 16854, 17028, 17130, 17160, 17178,
@@ -3120,29 +3129,29 @@ namespace gr {
       21468
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp4_cp1[20] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp4_cp1[20] =
     {
       108, 116, 144, 264, 288, 430, 518, 564, 636, 646, 828, 2184, 3360, 3396, 3912, 4032,
       4932, 5220, 5676, 5688
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp4_cp2[23] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp4_cp2[23] =
     {
       601, 1022, 1092, 1164, 1369, 1392, 1452, 1495, 2261, 2580, 2833, 3072, 4320, 4452,
       5710, 5881, 6048, 10568, 11515, 12946, 13954, 15559, 16681
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp4_cp3[1] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp4_cp3[1] =
     {
       8164
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp4_cp4[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp4_cp4[2] =
     {
       10709, 19930
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp4_cp5[44] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp4_cp5[44] =
     {
       6612, 6708, 7013, 7068, 7164, 7224, 7308, 7464, 7649, 7656, 7716, 7752, 7812, 7860,
       8568, 8808, 8880, 9072, 9228, 9516, 9696, 9996, 10560, 10608, 10728, 11148, 11232,
@@ -3150,7 +3159,7 @@ namespace gr {
       23239, 24073, 24934, 25879, 26308
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp4_cp6[86] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp4_cp6[86] =
     {
       13080, 13152, 13260, 13380, 13428, 13572, 13884, 13956, 14004, 14016, 14088, 14232,
       14304, 14532, 14568, 14760, 14940, 15168, 15288, 15612, 15684, 15888, 16236, 16320,
@@ -3162,29 +3171,29 @@ namespace gr {
       26674, 26944
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp5_cp1[19] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp5_cp1[19] =
     {
       108, 116, 228, 430, 518, 601, 646, 804, 1644, 1680, 1752, 1800, 1836, 3288, 3660,
       4080, 4932, 4968, 5472
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp5_cp2[23] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp5_cp2[23] =
     {
       852, 1022, 1495, 2508, 2551, 2604, 2664, 2736, 2833, 3120, 4248, 4512, 4836, 5710,
       5940, 6108, 8164, 10568, 11069, 11560, 12946, 13954, 21494
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp5_cp3[3] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp5_cp3[3] =
     {
       648, 4644, 16745
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp5_cp4[1] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp5_cp4[1] =
     {
       12631
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp5_cp5[44] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp5_cp5[44] =
     {
       1369, 2261, 5395, 5881, 6552, 6636, 6744, 6900, 7032, 7296, 7344, 7464, 7644, 7649,
       7668, 7956, 8124, 8244, 8904, 8940, 8976, 9216, 9672, 9780, 10224, 10332, 10709,
@@ -3192,7 +3201,7 @@ namespace gr {
       16612, 17500, 19078, 22867, 25879
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp6_cp5[88] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp6_cp5[88] =
     {
       116, 384, 408, 518, 601, 646, 672, 960, 1022, 1272, 1344, 1369, 1495, 1800, 2040,
       2261, 2833, 3192, 3240, 3768, 3864, 3984, 4104, 4632, 4728, 4752, 4944, 5184, 5232,
@@ -3203,7 +3212,7 @@ namespace gr {
       21284, 22124, 23239, 24934, 25879, 26308, 26674
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp6_cp6[88] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp6_cp6[88] =
     {
       13080, 13368, 13464, 13536, 13656, 13728, 13824, 14112, 14232, 14448, 14472, 14712,
       14808, 14952, 15000, 15336, 15360, 15408, 15600, 15624, 15648, 16128, 16296, 16320,
@@ -3215,37 +3224,37 @@ namespace gr {
       25680, 25752, 25992, 26016
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp7_cp1[15] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp7_cp1[15] =
     {
       264, 360, 1848, 2088, 2112, 2160, 2256, 2280, 3936, 3960, 3984, 5016, 5136, 5208,
       5664
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp7_cp2[30] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp7_cp2[30] =
     {
       116, 430, 518, 601, 646, 1022, 1296, 1368, 1369, 1495, 2833, 3024, 4416, 4608,
       4776, 5710, 5881, 6168, 7013, 8164, 10568, 10709, 11515, 12946, 15559, 23239,
       24934, 25879, 26308, 26674
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp7_cp3[5] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp7_cp3[5] =
     {
       456, 480, 2261, 6072, 17500
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp7_cp4[3] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp7_cp4[3] =
     {
       1008, 6120, 13954
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp7_cp5[35] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp7_cp5[35] =
     {
       6984, 7032, 7056, 7080, 7152, 7320, 7392, 7536, 7649, 7704, 7728, 7752, 8088, 8952,
       9240, 9288, 9312, 9480, 9504, 9840, 9960, 10320, 10368, 10728, 10752, 11448, 11640,
       11688, 11808, 12192, 12240, 12480, 12816, 16681, 22124
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp7_cp6[92] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp7_cp6[92] =
     {
       13416, 13440, 13536, 13608, 13704, 13752, 14016, 14040, 14112, 14208, 14304, 14376,
       14448, 14616, 14712, 14760, 14832, 14976, 15096, 15312, 15336, 15552, 15816, 15984,
@@ -3257,7 +3266,7 @@ namespace gr {
       25224, 25320, 25344, 25584, 25680, 25824, 26064, 26944
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp8_cp4[47] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp8_cp4[47] =
     {
       116, 132, 180, 430, 518, 601, 646, 1022, 1266, 1369, 1495, 2261, 2490, 2551, 2712,
       2833, 3372, 3438, 4086, 4098, 4368, 4572, 4614, 4746, 4830, 4968, 5395, 5710, 5881,
@@ -3265,7 +3274,7 @@ namespace gr {
       19078, 19930, 21494, 22867, 25879, 26308
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp8_cp5[39] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp8_cp5[39] =
     {
       6720, 6954, 7013, 7026, 7092, 7512, 7536, 7596, 7746, 7758, 7818, 7986, 8160, 8628,
       9054, 9096, 9852, 9924, 10146, 10254, 10428, 10704, 11418, 11436, 11496, 11550,
@@ -3273,7 +3282,7 @@ namespace gr {
       23239, 24934
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp8_cp6[89] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp8_cp6[89] =
     {
       10709, 11515, 13254, 13440, 13614, 13818, 14166, 14274, 14304, 14364, 14586, 14664,
       15030, 15300, 15468, 15474, 15559, 15732, 15774, 16272, 16302, 16428, 16500, 16662,
@@ -3285,92 +3294,92 @@ namespace gr {
       25974, 26076, 26674, 26753, 26944
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp2_8k[4] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp2_8k[4] =
     {
       6820, 6847, 6869, 6898
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp3_8k[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp3_8k[2] =
     {
       6820, 6869
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp4_8k[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp4_8k[2] =
     {
       6820, 6869
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp7_8k[5] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp7_8k[5] =
     {
       6820, 6833, 6869, 6887, 6898
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp8_8k[5] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp8_8k[5] =
     {
       6820, 6833, 6869, 6887, 6898
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp1_16k[4] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp1_16k[4] =
     {
       3636, 13724, 13790, 13879
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp2_16k[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp2_16k[2] =
     {
       13636, 13790
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp3_16k[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp3_16k[2] =
     {
       13636, 13790
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp4_16k[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp4_16k[2] =
     {
       13636, 13790
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp5_16k[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp5_16k[2] =
     {
       13636, 13790
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp6_16k[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp6_16k[2] =
     {
       13636, 13790
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp7_16k[3] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp7_16k[3] =
     {
       13636, 13724, 13879
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp8_16k[3] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp8_16k[3] =
     {
       13636, 13724, 13879
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp2_32k[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp2_32k[2] =
     {
       27268, 27688
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp4_32k[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp4_32k[2] =
     {
       27268, 27688
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp6_32k[4] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp6_32k[4] =
     {
       27268, 27448, 27688, 27758
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp7_32k[2] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp7_32k[2] =
     {
       27268, 27688
     };
 
-    const int dvbt2_pilotgenerator_cc_impl::pp8_32k[6] = 
+    const int dvbt2_pilotgenerator_cc_impl::pp8_32k[6] =
     {
       27268, 27368, 27448, 27580, 27688, 27758
     };
