@@ -22,6 +22,8 @@
 #include "config.h"
 #endif
 
+#include <immintrin.h>
+
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
 
@@ -630,8 +632,26 @@ for (int row = 0; row < ROWS; row++) { \
         memset(p, 0, sizeof(unsigned char) * plen);
 
 		//use memcpy instead of the for loop
-		memcpy(&out[i],&in[consumed],sizeof(unsigned char) * (int)nbch);
+		//memcpy(&out[i],&in[consumed],sizeof(unsigned char) * (int)nbch);
+		//consumed += (int)nbch;
+
+
+
+
+		//__m256i in_m256i = _mm256_set_epi64(&in[consumed],&in[consumed + 16]);
+		//__m256i out_m256i = _mm256_set_epi64(&out[i], &out[i+16]);
+
+		_mm256_store_si256((__m256i*)&in[consumed], (__m256i*)&out[i]);
 		consumed += (int)nbch;
+
+
+
+
+
+
+
+
+
         //for (int j = 0; j < (int)nbch; j++) {
         //  out[i + j] = in[consumed];
         //  consumed++;
@@ -661,7 +681,7 @@ for (int row = 0; row < ROWS; row++) { \
           p = &out[nbch];
         }
 
-		//check if it makes sense to continue
+
 		for (int j = 1; j < (plen - Xp); j++) {
 			p[j] ^= p[j - 1];
         }
