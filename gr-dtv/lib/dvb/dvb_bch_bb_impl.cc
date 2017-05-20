@@ -395,17 +395,18 @@ namespace gr {
     int
     dvb_bch_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
     {
-      memset(out, 0, sizeof(int) * (lena + lenb));
+    	int totlen = lena + lenb;
+      memset(out, 0, sizeof(int) * (totlen));
 
       for (int i = 0; i < lena; i++) {
         for (int j = 0; j < lenb; j++) {
-          if (ina[i] & inb[j] ) {
+          if (ina[i] * inb[j] > 0 ) {
             out[i + j]++;    // count number of terms for this pwr of x
           }
         }
       }
       int max = 0;
-      for (int i = 0; i < lena + lenb; i++) {
+      for (int i = 0; i < totlen; i++) {
         out[i] = out[i] & 1;    // If even ignore the term
         if(out[i]) {
           max = i;
