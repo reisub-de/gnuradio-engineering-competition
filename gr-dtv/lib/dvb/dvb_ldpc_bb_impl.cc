@@ -640,12 +640,25 @@ for (int row = 0; row < ROWS; row++) { \
 
 		//__m256i in_m256i = _mm256_set_epi64(&in[consumed],&in[consumed + 16]);
 		//__m256i out_m256i = _mm256_set_epi64(&out[i], &out[i+16]);
-		__m256i *in_m256i = (__m256i*)&in[consumed];
-		_mm256_store_si256((__m256i*)&out[i],*in_m256i );
-		consumed += (int)nbch;
+		__m256i *in_m256i;
+		for (unsigned int loop_i = 0; i < nbch / 32; i++) {//1215
+			in_m256i = (__m256i*)&in[consumed];
+			_mm256_store_si256((__m256i*)&out[i+32*loop_i], *in_m256i);
+			consumed += (int)32;
+		}
+
+
+		
+		
 
 
 
+
+		
+
+
+		//nbch = 38880;
+		// frame_size = 64800;
 
 
 
