@@ -167,23 +167,23 @@ namespace gr {
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
       const int rows = data.rows;
-      const int val_nbch = data.val_nbch;
-      const int val_q_val = data.val_q_val;
+      const int local_nbch = data.local_nbch;
+      const int local_q_val = data.local_q_val;
 
-      unsigned char val_tempu[FRAME_SIZE_NORMAL];
-      unsigned char *val_tempu_ptr = val_tempu;
+      unsigned char local_tempu[FRAME_SIZE_NORMAL];
+      unsigned char *local_tempu_ptr = local_tempu;
 
-      memcpy((void*)val_tempu, (void*)in, val_nbch);
-      in += val_nbch;
+      memcpy((void*)local_tempu, (void*)in, local_nbch);
+      in += local_nbch;
 
-      for (int t = 0; t < val_q_val; t++) {
+      for (int t = 0; t < local_q_val; t++) {
         for (int s = 0; s < 360; s++) {
-          val_tempu[val_nbch + (360 * t) + s] = in[(val_q_val * s) + t];
+          local_tempu[local_nbch + (360 * t) + s] = in[(local_q_val * s) + t];
         }
       }
 
       for (int j = 0; j < rows; j++) {
-        *out++ = (*val_tempu_ptr++ << 1) | *val_tempu_ptr++;
+        *out++ = (*local_tempu_ptr++ << 1) | *local_tempu_ptr++;
       }
     }
 
@@ -201,48 +201,48 @@ namespace gr {
     void
     dvbt2_interleaver_bb_impl::func_handler_mod_16qam( 
                             FuncHandlerDataStruct data,
-                            const int val_mod,
+                            const int local_mod,
                             const int* twist,
                             const int* mux
     ) {
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
       const int rows = data.rows;
-      const int val_nbch = data.val_nbch;
-      const int val_q_val = data.val_q_val;
+      const int local_nbch = data.local_nbch;
+      const int local_q_val = data.local_q_val;
 
-      unsigned char local_tempu[FRAME_SIZE_NORMAL];
-      unsigned char local_tempv[FRAME_SIZE_NORMAL];
+      unsigned char tempu[FRAME_SIZE_NORMAL];
+      unsigned char tempv[FRAME_SIZE_NORMAL];
 
       int index, offset;
       unsigned int pack;  
 
       const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-      c1 = &local_tempv[0];
-      c2 = &local_tempv[rows];
-      c3 = &local_tempv[rows * 2];
-      c4 = &local_tempv[rows * 3];
-      c5 = &local_tempv[rows * 4];
-      c6 = &local_tempv[rows * 5];
-      c7 = &local_tempv[rows * 6];
-      c8 = &local_tempv[rows * 7];
+      c1 = &tempv[0];
+      c2 = &tempv[rows];
+      c3 = &tempv[rows * 2];
+      c4 = &tempv[rows * 3];
+      c5 = &tempv[rows * 4];
+      c6 = &tempv[rows * 5];
+      c7 = &tempv[rows * 6];
+      c8 = &tempv[rows * 7];
 
-      memcpy((void*)local_tempu, (void*)in, val_nbch);
-      in += val_nbch;
+      memcpy((void*)tempu, (void*)in, local_nbch);
+      in += local_nbch;
 
-      for (int t = 0; t < val_q_val; t++) {
+      for (int t = 0; t < local_q_val; t++) {
         for (int s = 0; s < 360; s++) {
-          local_tempu[val_nbch + (360 * t) + s] = in[(val_q_val * s) + t];
+          tempu[local_nbch + (360 * t) + s] = in[(local_q_val * s) + t];
         }
       }
 
-      in += (val_q_val * 360);
+      in += (local_q_val * 360);
 
       index = 0;
-      for (int col = 0; col < (val_mod * 2); col++) {
+      for (int col = 0; col < (local_mod * 2); col++) {
         offset = twist[col];
         for (int row = 0; row < rows; row++) {
-          local_tempv[offset + (rows * col)] = local_tempu[index++];
+          tempv[offset + (rows * col)] = tempu[index++];
           offset++;
           if (offset == rows) {
             offset = 0;
@@ -252,22 +252,22 @@ namespace gr {
 
       index = 0;
       for (int j = 0; j < rows; j++) {
-        local_tempu[index++] = c1[j];
-        local_tempu[index++] = c2[j];
-        local_tempu[index++] = c3[j];
-        local_tempu[index++] = c4[j];
-        local_tempu[index++] = c5[j];
-        local_tempu[index++] = c6[j];
-        local_tempu[index++] = c7[j];
-        local_tempu[index++] = c8[j];
+        tempu[index++] = c1[j];
+        tempu[index++] = c2[j];
+        tempu[index++] = c3[j];
+        tempu[index++] = c4[j];
+        tempu[index++] = c5[j];
+        tempu[index++] = c6[j];
+        tempu[index++] = c7[j];
+        tempu[index++] = c8[j];
       }
 
       index = 0;
       for (int d = 0; d < rows; d++) {
         pack = 0;
-        for (int e = 0; e < (val_mod * 2); e++) {
+        for (int e = 0; e < (local_mod * 2); e++) {
           offset = mux[e];
-          pack |= local_tempu[index++] << (((val_mod * 2) - 1) - offset);
+          pack |= tempu[index++] << (((local_mod * 2) - 1) - offset);
         }
         *out++ = pack >> 4;
         *out++ = pack & 0xf;
@@ -277,52 +277,52 @@ namespace gr {
     void
     dvbt2_interleaver_bb_impl::func_handler_mod_64qam( 
                             FuncHandlerDataStruct data,
-                            const int val_mod,
+                            const int local_mod,
                             const int* twist,
                             const int* mux
     ) {
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
       const int rows = data.rows;
-      const int val_nbch = data.val_nbch;
-      const int val_q_val = data.val_q_val;
+      const int local_nbch = data.local_nbch;
+      const int local_q_val = data.local_q_val;
 
-      unsigned char local_tempu[FRAME_SIZE_NORMAL];
-      unsigned char local_tempv[FRAME_SIZE_NORMAL];
+      unsigned char tempu[FRAME_SIZE_NORMAL];
+      unsigned char tempv[FRAME_SIZE_NORMAL];
 
       int index, offset;
       unsigned int pack;  
 
       const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
-      c1 = &local_tempv[0];
-      c2 = &local_tempv[rows];
-      c3 = &local_tempv[rows * 2];
-      c4 = &local_tempv[rows * 3];
-      c5 = &local_tempv[rows * 4];
-      c6 = &local_tempv[rows * 5];
-      c7 = &local_tempv[rows * 6];
-      c8 = &local_tempv[rows * 7];
-      c9 = &local_tempv[rows * 8];
-      c10 = &local_tempv[rows * 9];
-      c11 = &local_tempv[rows * 10];
-      c12 = &local_tempv[rows * 11];
+      c1 = &tempv[0];
+      c2 = &tempv[rows];
+      c3 = &tempv[rows * 2];
+      c4 = &tempv[rows * 3];
+      c5 = &tempv[rows * 4];
+      c6 = &tempv[rows * 5];
+      c7 = &tempv[rows * 6];
+      c8 = &tempv[rows * 7];
+      c9 = &tempv[rows * 8];
+      c10 = &tempv[rows * 9];
+      c11 = &tempv[rows * 10];
+      c12 = &tempv[rows * 11];
 
-      memcpy((void*)local_tempu, (void*)in, val_nbch);
-      in += val_nbch;
+      memcpy((void*)tempu, (void*)in, local_nbch);
+      in += local_nbch;
 
-      for (int t = 0; t < val_q_val; t++) {
+      for (int t = 0; t < local_q_val; t++) {
         for (int s = 0; s < 360; s++) {
-          local_tempu[val_nbch + (360 * t) + s] = in[(val_q_val * s) + t];
+          tempu[local_nbch + (360 * t) + s] = in[(local_q_val * s) + t];
         }
       }
 
-      in += (val_q_val * 360);
+      in += (local_q_val * 360);
 
       index = 0;
-      for (int col = 0; col < (val_mod * 2); col++) {
+      for (int col = 0; col < (local_mod * 2); col++) {
         offset = twist[col];
         for (int row = 0; row < rows; row++) {
-          local_tempv[offset + (rows * col)] = local_tempu[index++];
+          tempv[offset + (rows * col)] = tempu[index++];
           offset++;
           if (offset == rows) {
             offset = 0;
@@ -332,26 +332,26 @@ namespace gr {
 
       index = 0;
       for (int j = 0; j < rows; j++) {
-        local_tempu[index++] = c1[j];
-        local_tempu[index++] = c2[j];
-        local_tempu[index++] = c3[j];
-        local_tempu[index++] = c4[j];
-        local_tempu[index++] = c5[j];
-        local_tempu[index++] = c6[j];
-        local_tempu[index++] = c7[j];
-        local_tempu[index++] = c8[j];
-        local_tempu[index++] = c9[j];
-        local_tempu[index++] = c10[j];
-        local_tempu[index++] = c11[j];
-        local_tempu[index++] = c12[j];
+        tempu[index++] = c1[j];
+        tempu[index++] = c2[j];
+        tempu[index++] = c3[j];
+        tempu[index++] = c4[j];
+        tempu[index++] = c5[j];
+        tempu[index++] = c6[j];
+        tempu[index++] = c7[j];
+        tempu[index++] = c8[j];
+        tempu[index++] = c9[j];
+        tempu[index++] = c10[j];
+        tempu[index++] = c11[j];
+        tempu[index++] = c12[j];
       }
 
       index = 0;
       for (int d = 0; d < rows; d++) {
         pack = 0;
-        for (int e = 0; e < (val_mod * 2); e++) {
+        for (int e = 0; e < (local_mod * 2); e++) {
           offset = mux[e];
-          pack |= local_tempu[index++] << (((val_mod * 2) - 1) - offset);
+          pack |= tempu[index++] << (((local_mod * 2) - 1) - offset);
         }
         *out++ = pack >> 6;
         *out++ = pack & 0x3f;
@@ -361,57 +361,57 @@ namespace gr {
     void
     dvbt2_interleaver_bb_impl::func_handler_mod_256qam_frame_size_norm( 
                             FuncHandlerDataStruct data,
-                            const int val_mod,
+                            const int local_mod,
                             const int* twist,
                             const int* mux
     ) {
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
       const int rows = data.rows;
-      const int val_nbch = data.val_nbch;
-      const int val_q_val = data.val_q_val;
+      const int local_nbch = data.local_nbch;
+      const int local_q_val = data.local_q_val;
 
-      unsigned char local_tempu[FRAME_SIZE_NORMAL];
-      unsigned char local_tempv[FRAME_SIZE_NORMAL];
+      unsigned char tempu[FRAME_SIZE_NORMAL];
+      unsigned char tempv[FRAME_SIZE_NORMAL];
 
       int index, offset;
       unsigned int pack;  
 
       const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
       const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-      c1 = &local_tempv[0];
-      c2 = &local_tempv[rows];
-      c3 = &local_tempv[rows * 2];
-      c4 = &local_tempv[rows * 3];
-      c5 = &local_tempv[rows * 4];
-      c6 = &local_tempv[rows * 5];
-      c7 = &local_tempv[rows * 6];
-      c8 = &local_tempv[rows * 7];
-      c9 = &local_tempv[rows * 8];
-      c10 = &local_tempv[rows * 9];
-      c11 = &local_tempv[rows * 10];
-      c12 = &local_tempv[rows * 11];
-      c13 = &local_tempv[rows * 12];
-      c14 = &local_tempv[rows * 13];
-      c15 = &local_tempv[rows * 14];
-      c16 = &local_tempv[rows * 15];
+      c1 = &tempv[0];
+      c2 = &tempv[rows];
+      c3 = &tempv[rows * 2];
+      c4 = &tempv[rows * 3];
+      c5 = &tempv[rows * 4];
+      c6 = &tempv[rows * 5];
+      c7 = &tempv[rows * 6];
+      c8 = &tempv[rows * 7];
+      c9 = &tempv[rows * 8];
+      c10 = &tempv[rows * 9];
+      c11 = &tempv[rows * 10];
+      c12 = &tempv[rows * 11];
+      c13 = &tempv[rows * 12];
+      c14 = &tempv[rows * 13];
+      c15 = &tempv[rows * 14];
+      c16 = &tempv[rows * 15];
 
-      memcpy((void*)local_tempu, (void*)in, val_nbch);
-      in += val_nbch;
+      memcpy((void*)tempu, (void*)in, local_nbch);
+      in += local_nbch;
 
-      for (int t = 0; t < val_q_val; t++) {
+      for (int t = 0; t < local_q_val; t++) {
         for (int s = 0; s < 360; s++) {
-          local_tempu[val_nbch + (360 * t) + s] = in[(val_q_val * s) + t];
+          tempu[local_nbch + (360 * t) + s] = in[(local_q_val * s) + t];
         }
       }
 
-      in += (val_q_val * 360);
+      in += (local_q_val * 360);
 
       index = 0;
-      for (int col = 0; col < (val_mod * 2); col++) {
+      for (int col = 0; col < (local_mod * 2); col++) {
         offset = twist256n[col];
         for (int row = 0; row < rows; row++) {
-          local_tempv[offset + (rows * col)] = local_tempu[index++];
+          tempv[offset + (rows * col)] = tempu[index++];
           offset++;
           if (offset == rows) {
             offset = 0;
@@ -421,30 +421,30 @@ namespace gr {
 
       index = 0;
       for (int j = 0; j < rows; j++) {
-        local_tempu[index++] = c1[j];
-        local_tempu[index++] = c2[j];
-        local_tempu[index++] = c3[j];
-        local_tempu[index++] = c4[j];
-        local_tempu[index++] = c5[j];
-        local_tempu[index++] = c6[j];
-        local_tempu[index++] = c7[j];
-        local_tempu[index++] = c8[j];
-        local_tempu[index++] = c9[j];
-        local_tempu[index++] = c10[j];
-        local_tempu[index++] = c11[j];
-        local_tempu[index++] = c12[j];
-        local_tempu[index++] = c13[j];
-        local_tempu[index++] = c14[j];
-        local_tempu[index++] = c15[j];
-        local_tempu[index++] = c16[j];
+        tempu[index++] = c1[j];
+        tempu[index++] = c2[j];
+        tempu[index++] = c3[j];
+        tempu[index++] = c4[j];
+        tempu[index++] = c5[j];
+        tempu[index++] = c6[j];
+        tempu[index++] = c7[j];
+        tempu[index++] = c8[j];
+        tempu[index++] = c9[j];
+        tempu[index++] = c10[j];
+        tempu[index++] = c11[j];
+        tempu[index++] = c12[j];
+        tempu[index++] = c13[j];
+        tempu[index++] = c14[j];
+        tempu[index++] = c15[j];
+        tempu[index++] = c16[j];
       }
 
       index = 0;
       for (int d = 0; d < rows; d++) {
         pack = 0;
-        for (int e = 0; e < (val_mod * 2); e++) {
+        for (int e = 0; e < (local_mod * 2); e++) {
           offset = mux[e];
-          pack |= local_tempu[index++] << (((val_mod * 2) - 1) - offset);
+          pack |= tempu[index++] << (((local_mod * 2) - 1) - offset);
         }
         *out++ = pack >> 8;
         *out++ = pack & 0xff;
@@ -454,48 +454,48 @@ namespace gr {
     void
     dvbt2_interleaver_bb_impl::func_handler_mod_256qam_rest( 
                             FuncHandlerDataStruct data,
-                            const int val_mod,
+                            const int local_mod,
                             const int* twist,
                             const int* mux
     ) {
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
       const int rows = data.rows;
-      const int val_nbch = data.val_nbch;
-      const int val_q_val = data.val_q_val;
+      const int local_nbch = data.local_nbch;
+      const int local_q_val = data.local_q_val;
 
-      unsigned char local_tempu[FRAME_SIZE_NORMAL];
-      unsigned char local_tempv[FRAME_SIZE_NORMAL];
+      unsigned char tempu[FRAME_SIZE_NORMAL];
+      unsigned char tempv[FRAME_SIZE_NORMAL];
 
       int index, offset;
       unsigned int pack;  
 
       const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-      c1 = &local_tempv[0];
-      c2 = &local_tempv[rows];
-      c3 = &local_tempv[rows * 2];
-      c4 = &local_tempv[rows * 3];
-      c5 = &local_tempv[rows * 4];
-      c6 = &local_tempv[rows * 5];
-      c7 = &local_tempv[rows * 6];
-      c8 = &local_tempv[rows * 7];
+      c1 = &tempv[0];
+      c2 = &tempv[rows];
+      c3 = &tempv[rows * 2];
+      c4 = &tempv[rows * 3];
+      c5 = &tempv[rows * 4];
+      c6 = &tempv[rows * 5];
+      c7 = &tempv[rows * 6];
+      c8 = &tempv[rows * 7];
 
-      memcpy((void*)local_tempu, (void*)in, val_nbch);
-      in += val_nbch;
+      memcpy((void*)tempu, (void*)in, local_nbch);
+      in += local_nbch;
 
-      for (int t = 0; t < val_q_val; t++) {
+      for (int t = 0; t < local_q_val; t++) {
         for (int s = 0; s < 360; s++) {
-          local_tempu[val_nbch + (360 * t) + s] = in[(val_q_val * s) + t];
+          tempu[local_nbch + (360 * t) + s] = in[(local_q_val * s) + t];
         }
       }
 
-      in += (val_q_val * 360);
+      in += (local_q_val * 360);
 
       index = 0;
-      for (int col = 0; col < val_mod; col++) {
+      for (int col = 0; col < local_mod; col++) {
         offset = twist256s[col];
         for (int row = 0; row < rows; row++) {
-          local_tempv[offset + (rows * col)] = local_tempu[index++];
+          tempv[offset + (rows * col)] = tempu[index++];
           offset++;
           if (offset == rows) {
             offset = 0;
@@ -505,22 +505,22 @@ namespace gr {
 
       index = 0;
       for (int j = 0; j < rows; j++) {
-        local_tempu[index++] = c1[j];
-        local_tempu[index++] = c2[j];
-        local_tempu[index++] = c3[j];
-        local_tempu[index++] = c4[j];
-        local_tempu[index++] = c5[j];
-        local_tempu[index++] = c6[j];
-        local_tempu[index++] = c7[j];
-        local_tempu[index++] = c8[j];
+        tempu[index++] = c1[j];
+        tempu[index++] = c2[j];
+        tempu[index++] = c3[j];
+        tempu[index++] = c4[j];
+        tempu[index++] = c5[j];
+        tempu[index++] = c6[j];
+        tempu[index++] = c7[j];
+        tempu[index++] = c8[j];
       }
 
       index = 0;
       for (int d = 0; d < rows; d++) {
         pack = 0;
-        for (int e = 0; e < val_mod; e++) {
+        for (int e = 0; e < local_mod; e++) {
           offset = mux[e];
-          pack |= local_tempu[index++] << ((val_mod - 1) - offset);
+          pack |= tempu[index++] << ((local_mod - 1) - offset);
         }
         *out++ = pack & 0xff;
       }
@@ -640,7 +640,7 @@ namespace gr {
             gr::dtv::ThreadPool thread_pool(thread_needed);
 
             for (int i = 0; i < noutput_items; i += packed_items) {
-                int val_mod = mod;
+                int local_mod = mod;
                 FuncHandlerDataStruct data(
                                             in,
                                             out,
@@ -651,7 +651,7 @@ namespace gr {
                 thread_pool.enqueue(boost::bind(
                                                   func_handler_mod_16qam, 
                                                   data, 
-                                                  val_mod,
+                                                  local_mod,
                                                   twist, 
                                                   mux
                 ));
@@ -763,7 +763,7 @@ namespace gr {
             else thread_needed = num_loop;
             gr::dtv::ThreadPool thread_pool(thread_needed);
 
-            int val_mod = mod;
+            int local_mod = mod;
             for (int i = 0; i < noutput_items; i += packed_items) {
                 FuncHandlerDataStruct data(
                                             in,
@@ -775,7 +775,7 @@ namespace gr {
                 thread_pool.enqueue(boost::bind(
                                                   func_handler_mod_64qam, 
                                                   data, 
-                                                  val_mod,
+                                                  local_mod,
                                                   twist, 
                                                   mux
                 ));
@@ -886,7 +886,7 @@ namespace gr {
 
               rows = frame_size / (mod * 2);
 
-              int val_mod = mod;
+              int local_mod = mod;
               for (int i = 0; i < noutput_items; i += packed_items) {
                   FuncHandlerDataStruct data(
                                               in,
@@ -898,7 +898,7 @@ namespace gr {
                   thread_pool.enqueue(boost::bind(
                                                     func_handler_mod_256qam_frame_size_norm, 
                                                     data, 
-                                                    val_mod,
+                                                    local_mod,
                                                     twist, 
                                                     mux
                   ));
@@ -920,7 +920,7 @@ namespace gr {
 
               rows = frame_size / mod;
 
-              int val_mod = mod;
+              int local_mod = mod;
               for (int i = 0; i < noutput_items; i += packed_items) {
                   FuncHandlerDataStruct data(
                                               in,
@@ -932,7 +932,7 @@ namespace gr {
                   thread_pool.enqueue(boost::bind(
                                                     func_handler_mod_256qam_rest, 
                                                     data, 
-                                                    val_mod,
+                                                    local_mod,
                                                     twist, 
                                                     mux
                   ));
