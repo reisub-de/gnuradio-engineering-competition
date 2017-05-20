@@ -483,17 +483,17 @@ namespace gr {
 
 
 
-			  __m256i *in_m256i;
-			  for (unsigned int loop_i = 0; loop_i< nbch / 32; loop_i++) {//1215
-				  in_m256i = (__m256i*)in;
-				  _mm256_store_si256((__m256i*)&tempu[32 * loop_i], *in_m256i);
-				  in += 32;
-			  }
+			  //__m256i *in_m256i;
+			  //for (unsigned int loop_i = 0; loop_i< nbch / 32; loop_i++) {//1215
+				 // in_m256i = (__m256i*)in;
+				 // _mm256_store_si256((__m256i*)&tempu[32 * loop_i], *in_m256i);
+				 // in += 32;
+			  //}
 
 
 
-			  //memcpy(tempu,in,sizeof(unsigned char)*nbch);
-			  //in += nbch;
+			  memcpy(tempu,in,sizeof(unsigned char)*nbch);
+			  in += nbch;
 			  
 			  
 

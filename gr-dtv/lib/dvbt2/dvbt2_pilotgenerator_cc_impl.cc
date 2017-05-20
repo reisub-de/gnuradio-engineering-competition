@@ -2705,6 +2705,8 @@ namespace gr {
 				 // _mm256_store_si256((__m256i*)out, in_m256i);
 				 // out += 32;
 			  //}
+
+
             for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
             }
