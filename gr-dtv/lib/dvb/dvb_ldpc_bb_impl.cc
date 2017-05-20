@@ -661,15 +661,9 @@ for (int row = 0; row < ROWS; row++) { \
           p = &out[nbch];
         }
 
-		//
+		//check if it makes sense to continue
 		for (int j = 1; j < (plen - Xp); j++) {
-			if (p[j - 1] && 255) {
-				j = plen - Xp ;
-			}
-			else {
-				p[j] ^= p[j - 1];
-			}
-          
+			p[j] ^= p[j - 1];
         }
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
