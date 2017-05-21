@@ -2901,6 +2901,7 @@ namespace gr {
                     *out++ = *in++;
                     break;
                 }
+                ++p;
               }
               n += 4;
             }
