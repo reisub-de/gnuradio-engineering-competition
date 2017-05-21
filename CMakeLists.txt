@@ -65,7 +65,7 @@ set(CLANG_MIN_VERSION "3.3.0")
 set(APPLECLANG_MIN_VERSION "500")
 
 #linking fftw3
-set (CMAKE_SHARED_LINKER_FLAGS "-lm -lfftw3")
+#set (CMAKE_SHARED_LINKER_FLAGS "-lm -lfftw3")
 
 ########################################################################
 # Configure CMake policies
