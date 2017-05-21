@@ -2754,6 +2754,7 @@ namespace gr {
       gr_complex zero;
       gr_complex *dst;
       int L_FC = 0;
+
       zero = gr_complex(0.0, 0.0);
       if (N_FC != 0) {
         L_FC = 1;
@@ -2784,7 +2785,8 @@ namespace gr {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
-              for (int p = 0; p < 4; p++) {
+              int p = 0;
+              while (p < 4) {
                 switch (p2_carrier_map[n + p]) {
                   case P2PILOT_CARRIER:
                     *out++ = p2_bpsk[index[p]];
@@ -2799,6 +2801,7 @@ namespace gr {
                     *out++ = *in++;
                     break;
                 }
+                ++p;
               }
               n += 4;
             }
@@ -2826,8 +2829,9 @@ namespace gr {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
-              for (int p = 0; p < 4; p++) {
-                switch (p2_carrier_map[n + p]) {
+              int p = 0;
+              while (p < 4) {
+                switch (data_carrier_map[n + p]) {
                   case SCATTERED_CARRIER:
                     *out++ = sp_bpsk[index[p]];
                     break;
@@ -2847,11 +2851,12 @@ namespace gr {
                     *out++ = *in++;
                     break;
                 }
+                ++p;
               }
               n += 4;
             }
             while (n < C_PS) {
-              switch (p2_carrier_map[n]) {
+              switch (data_carrier_map[n]) {
                 case SCATTERED_CARRIER:
                   *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                   break;
@@ -2874,13 +2879,14 @@ namespace gr {
               ++n;
             }
           }
-          else {
+          else { // j == (num_symbols - L_FC)
             n = 0;
             while (n < num_iter) {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
-              for (int p = 0; p < 4; p++) {
+              int p = 0;
+              while (p < 4) {
                 switch (fc_carrier_map[n + p]) {
                   case SCATTERED_CARRIER:
                     *out++ = sp_bpsk[index[p]];
@@ -2951,7 +2957,8 @@ namespace gr {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
-              for (int p = 0; p < 4; p++) {
+              int p = 0;
+              while (p < 4) {
                 switch (p2_carrier_map[n + p]) {
                   case P2PILOT_CARRIER:
                     *out++ = p2_bpsk[index[p]];
@@ -2966,6 +2973,7 @@ namespace gr {
                     *out++ = *in++;
                     break;
                 }
+                ++p;
               }
               n += 4;
             }
@@ -2993,8 +3001,9 @@ namespace gr {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
-              for (int p = 0; p < 4; p++) {
-                switch (p2_carrier_map[n + p]) {
+              int p = 0;
+              while (p < 4) {
+                switch (data_carrier_map[n + p]) {
                   case SCATTERED_CARRIER:
                     *out++ = sp_bpsk[index[p]];
                     break;
@@ -3014,11 +3023,12 @@ namespace gr {
                     *out++ = *in++;
                     break;
                 }
+                ++p;
               }
               n += 4;
             }
             while (n < C_PS) {
-              switch (p2_carrier_map[n]) {
+              switch (data_carrier_map[n]) {
                 case SCATTERED_CARRIER:
                   *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                   break;
@@ -3041,13 +3051,14 @@ namespace gr {
               ++n;
             }
           }
-          else {
+          else { // j == (num_symbols - L_FC)
             n = 0;
             while (n < num_iter) {
               prbs_offs_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
               index_128 = _mm_xor_si128(prbs_offs_128, xor_op_128);
               _mm_storeu_si128((__m128i*)index, index_128);
-              for (int p = 0; p < 4; p++) {
+              int p = 0;
+              while (p < 4) {
                 switch (fc_carrier_map[n + p]) {
                   case SCATTERED_CARRIER:
                     *out++ = sp_bpsk[index[p]];
@@ -3062,6 +3073,7 @@ namespace gr {
                     *out++ = *in++;
                     break;
                 }
+                ++p;
               }
               n += 4;
             }
