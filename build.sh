@@ -3,9 +3,9 @@
 set -e
 # Disable the GUI
 cmakeopts=(
-    '-DENABLE_GRC=ON'
-    '-DENABLE_GR_QTGUI=ON'
-    '-DENABLE_GR_WXGUI=ON'
+    '-DENABLE_GRC=OFF'
+    '-DENABLE_GR_QTGUI=OFF'
+    '-DENABLE_GR_WXGUI=OFF'
 )
 
 # Disable the Testsuite
@@ -15,7 +15,7 @@ cmakeopts+=(
 
 # Disable these components because the build system is missing dependencies or we don't need them
 cmakeopts+=(
-    '-DENABLE_PERFORMANCE_COUNTERS=OFF'
+    '-DENABLE_PERFORMANCE_COUNTERS=ON'
     '-DENABLE_DOXYGEN=OFF'
     '-DENABLE_SPHINX=OFF'
     '-DENABLE_GR_COMEDI=OFF'
@@ -36,4 +36,3 @@ cmakeopts+=(
 #export CXXFLAGS="-march=skylake -mtune=skylake"
 
 cmake ${cmakeopts[@]} $SRC
-
