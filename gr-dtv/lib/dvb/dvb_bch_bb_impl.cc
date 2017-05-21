@@ -641,19 +641,22 @@ namespace gr {
           for (int i = 0; i < noutput_items; i += nbch) {
 			for (int j = 0; j < (int)kbch; j++) {
 			  *out++ = in[consumed];
-			  consumed++;
+		      consumed++;
 			}
+
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
-              b = (*in++ ^ parity_bits[191]);
+              temp = *in++;
+              b = (temp ^ parity_bits[191]);
 			  parity_bits <<= 1;
               if (b) {
 				  parity_bits ^= polynome;
               }
             }
             // Now add the parity bits to the output
-            for (int n = 191; n > 0; n--) {
-              *out++ = (char) parity_bits[n];
+            for (int n = 0; n < 192; n++) {
+              *out++ = (char) parity_bits[191];
+			  parity_bits <<= 1;
             }
           }
           break;
