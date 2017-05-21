@@ -24,69 +24,27 @@
 #include <gnuradio/dtv/dvb_bch_bb.h>
 #include "dvb_defines.h"
 
-// ThreadPool dependencies
-#include <boost/array.hpp>
-#include <boost/asio/io_service.hpp>
-#include <boost/bind.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/scoped_ptr.hpp>
-
 namespace gr {
   namespace dtv {
-    // Bch main component
+
     class dvb_bch_bb_impl : public dvb_bch_bb
     {
      private:
       unsigned int kbch;
       unsigned int nbch;
       unsigned int bch_code;
-      // Polynomial product init
-      const static unsigned int m_poly_n_8_0 = 0xd4669f20;
-      const static unsigned int m_poly_n_8_1 = 0xaeb63f98;
-      const static unsigned int m_poly_n_8_2 = 0xbde9e48e;
-      const static unsigned int m_poly_n_8_3 = 0xfaa4e038;
-
-      const static unsigned int m_poly_n_10_0 = 0x89a6dd1d;
-      const static unsigned int m_poly_n_10_1 = 0x80c48bf7;
-      const static unsigned int m_poly_n_10_2 = 0xc0ea1e56;
-      const static unsigned int m_poly_n_10_3 = 0xf8cc543f;
-      const static unsigned int m_poly_n_10_4 = 0xb730a806;
-
-      const static unsigned int m_poly_n_12_0 = 0xe7aa4066;
-      const static unsigned int m_poly_n_12_1 = 0xefa1e2c0;
-      const static unsigned int m_poly_n_12_2 = 0x9110ac3b;
-      const static unsigned int m_poly_n_12_3 = 0x1b34f30a;
-      const static unsigned int m_poly_n_12_4 = 0x388a3a21;
-      const static unsigned int m_poly_n_12_5 = 0xc1706472;
-
-      const static unsigned int m_poly_s_12_0 = 0xa5a0988b;
-      const static unsigned int m_poly_s_12_1 = 0xebe7f14a;
-      const static unsigned int m_poly_s_12_2 = 0x9609c5c4;
-      const static unsigned int m_poly_s_12_3 = 0xb3464d96;
-      const static unsigned int m_poly_s_12_4 = 0x1957db46;
-      const static unsigned int m_poly_s_12_5 = 0x2b06472;
-
-      const static unsigned int m_poly_m_12_0 = 0xd0821bc3;
-      const static unsigned int m_poly_m_12_1 = 0xf42eac6a;
-      const static unsigned int m_poly_m_12_2 = 0xcca1056f;
-      const static unsigned int m_poly_m_12_3 = 0xd9c04190;
-      const static unsigned int m_poly_m_12_4 = 0xb1800dbe;
-      const static unsigned int m_poly_m_12_5 = 0xdd215872;
-
-     private:
-      // Class member function
+      unsigned int m_poly_n_8[4];
+      unsigned int m_poly_n_10[5];
+      unsigned int m_poly_n_12[6];
+      unsigned int m_poly_s_12[6];
+      unsigned int m_poly_m_12[6];
+      int poly_mult(const int*, int, const int*, int, int*);
+      void poly_pack(const int*, unsigned int*, int);
       void poly_reverse(int*, int*, int);
-      static inline void reg_4_shift(unsigned int*);
-      static inline void reg_5_shift(unsigned int*);
-      static inline void reg_6_shift(unsigned int*);
-
-      // Multi-thread handler
-      static void bch_code_n12_handler(const unsigned char*, unsigned char*, unsigned int);
-      static void bch_code_n10_handler(const unsigned char*, unsigned char*, unsigned int);
-      static void bch_code_n8_handler(const unsigned char*, unsigned char*, unsigned int);
-      static void bch_code_s12_handler(const unsigned char*, unsigned char*, unsigned int);
-      static void bch_code_m12_handler(const unsigned char*, unsigned char*, unsigned int);
-
+      inline void reg_4_shift(unsigned int*);
+      inline void reg_5_shift(unsigned int*);
+      inline void reg_6_shift(unsigned int*);
+      void bch_poly_build_tables(void);
 
      public:
       dvb_bch_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate);
@@ -100,36 +58,7 @@ namespace gr {
                        gr_vector_void_star &output_items);
     };
 
-    #ifndef THREAD_POOL_DEF
-    #define THREAD_POOL_DEF
-    // The definition of boost_asio based thread pool
-    struct ThreadPool {
-        typedef boost::scoped_ptr<boost::asio::io_service::work> boost_asio_worker;
-
-        ThreadPool(size_t pool_size) :m_service(), m_working(new boost::asio::io_service::work(m_service)) {
-            while(pool_size--)
-            {
-                m_thread_group.create_thread(boost::bind(&boost::asio::io_service::run, &(this->m_service)));
-            }
-        }
-
-        template<class F>
-            void enqueue(F f){m_service.post(f);}
-
-        ~ThreadPool() {
-            m_working.reset(); //allow run() to exit
-            m_thread_group.join_all();
-            m_service.stop();
-        }
-
-        private:
-        boost::asio::io_service m_service; //< the io_service we are wrapping
-        boost_asio_worker m_working;
-        boost::thread_group m_thread_group; //< need to keep track of threads so we can join them
-    };
-    #endif
   } // namespace dtv
 } // namespace gr
 
 #endif /* INCLUDED_DTV_DVB_BCH_BB_IMPL_H */
-
