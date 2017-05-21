@@ -24,6 +24,12 @@
 #include <gnuradio/dtv/dvb_bch_bb.h>
 #include "dvb_defines.h"
 
+#include <ctime>
+#include <sstream>
+#include <string>
+#include <fstream>
+#include <iostream>
+
 namespace gr {
   namespace dtv {
 
@@ -34,10 +40,40 @@ namespace gr {
       unsigned int nbch;
       unsigned int bch_code;
       unsigned int m_poly_n_8[4];
+/*
       unsigned int m_poly_n_10[5];
       unsigned int m_poly_n_12[6];
       unsigned int m_poly_s_12[6];
       unsigned int m_poly_m_12[6];
+*/
+      #define m_poly_n_8_0 3563495200u
+      #define m_poly_n_8_1 2931179416u
+      #define m_poly_n_8_2 3186222222u
+      #define m_poly_n_8_3 4205109304u
+      #define m_poly_n_10_0 2309414173u
+      #define m_poly_n_10_1 2160364535u
+      #define m_poly_n_10_2 3236568662u
+      #define m_poly_n_10_3 4174140479u
+      #define m_poly_n_10_4 3073419270u
+      #define m_poly_n_12_0 3886694502u
+      #define m_poly_n_12_1 4020363968u
+      #define m_poly_n_12_2 2433788987u
+      #define m_poly_n_12_3 456454922u
+      #define m_poly_n_12_4 948582945u
+      #define m_poly_n_12_5 3245368434u
+      #define m_poly_s_12_0 2778765451u
+      #define m_poly_s_12_1 3957846346u
+      #define m_poly_s_12_2 2517222852u
+      #define m_poly_s_12_3 3007729046u
+      #define m_poly_s_12_4 425188166u
+      #define m_poly_s_12_5 45114482u
+      #define m_poly_m_12_0 3498187715u
+      #define m_poly_m_12_1 4096699498u
+      #define m_poly_m_12_2 3433104751u
+      #define m_poly_m_12_3 3653255568u
+      #define m_poly_m_12_4 2977959358u
+      #define m_poly_m_12_5 3709950066u
+
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
       void poly_reverse(int*, int*, int);

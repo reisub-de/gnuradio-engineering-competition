@@ -451,6 +451,7 @@ namespace gr {
       }
     }
 
+    //Ordering of bits: MSB(sr[0]) ... LSB(sr[0]) MSB(sr[1]) ... LSB(sr[1]) ... LSB(sr[3, 4 or 5])
     /*
      *Shift a 128 bit register
      */
@@ -493,6 +494,31 @@ namespace gr {
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
     {
+      /*
+      std::stringstream ss1;
+      ss1 << "starting poly_build " << clock();
+      GR_LOG_DEBUG(LOG, ss1.str());
+      
+      std::ifstream cache_file_r("bchCache.bin");
+      if(cache_file_r.good())
+      {
+        cache_file_r.seekg(0, std::ios::beg);
+        cache_file_r.read((char*)m_poly_n_8, (int)sizeof(m_poly_n_8));
+        cache_file_r.read((char*)m_poly_n_10, (int)sizeof(m_poly_n_10));
+        cache_file_r.read((char*)m_poly_n_12, (int)sizeof(m_poly_n_12));
+        cache_file_r.read((char*)m_poly_s_12, (int)sizeof(m_poly_s_12));
+        cache_file_r.read((char*)m_poly_m_12, (int)sizeof(m_poly_m_12));
+        cache_file_r.close();
+
+        std::stringstream ss2;
+        ss2 << "end poly_build read cache " << clock();
+        GR_LOG_DEBUG(LOG, ss2.str());
+      
+
+        return;
+      }
+
+
       // Normal polynomials
       const int polyn01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1};
       const int polyn02[]={1,1,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1};
@@ -580,6 +606,58 @@ namespace gr {
       len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
       len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_m_12, 180);
+
+      std::stringstream ss3;
+      ss3 << "ending poly_build calc values " << clock();
+      GR_LOG_DEBUG(LOG, ss3.str());
+      
+      std::ofstream cache_file_w;
+      cache_file_w.open("bchCache.bin", std::ios::out | std::ios::app | std::ios::binary);
+      if(cache_file_w.is_open())
+      {
+        cache_file_w.write((char*)m_poly_n_8, (int)sizeof(m_poly_n_8));
+        cache_file_w.write((char*)m_poly_n_10, (int)sizeof(m_poly_n_10));
+        cache_file_w.write((char*)m_poly_n_12, (int)sizeof(m_poly_n_12));
+        cache_file_w.write((char*)m_poly_s_12, (int)sizeof(m_poly_s_12));
+        cache_file_w.write((char*)m_poly_m_12, (int)sizeof(m_poly_m_12));
+        cache_file_w.close();
+      }
+      else
+        GR_LOG_ERROR(LOG, "failed to write cache file");
+
+      std::stringstream ss4;
+      ss4 << "ending poly_build writing cache" << clock();
+      GR_LOG_DEBUG(LOG, ss4.str());
+      
+
+      m_poly_n_8_0 = 3563495200;
+      m_poly_n_8_1 = 2931179416;
+      m_poly_n_8_2 = 3186222222;
+      m_poly_n_8_3 = 4205109304;
+      m_poly_n_10_0 = 2309414173;
+      m_poly_n_10_1 = 2160364535;
+      m_poly_n_10_2 = 3236568662;
+      m_poly_n_10_3 = 4174140479;
+      m_poly_n_10_4 = 3073419270;
+      m_poly_n_12_0 = 3886694502;
+      m_poly_n_12_1 = 4020363968;
+      m_poly_n_12_2 = 2433788987;
+      m_poly_n_12_3 = 456454922;
+      m_poly_n_12_4 = 948582945;
+      m_poly_n_12_5 = 3245368434;
+      m_poly_s_12_0 = 2778765451;
+      m_poly_s_12_1 = 3957846346;
+      m_poly_s_12_2 = 2517222852;
+      m_poly_s_12_3 = 3007729046;
+      m_poly_s_12_4 = 425188166;
+      m_poly_s_12_5 = 45114482;
+      m_poly_m_12_0 = 3498187715;
+      m_poly_m_12_1 = 4096699498;
+      m_poly_m_12_2 = 3433104751;
+      m_poly_m_12_3 = 3653255568;
+      m_poly_m_12_4 = 2977959358;
+      m_poly_m_12_5 = 3709950066;
+*/
     }
 
     int
@@ -588,6 +666,13 @@ namespace gr {
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
+
+     /* std::stringstream ss1;
+      ss1 << "starting general_work " << clock();
+      GR_LOG_DEBUG(LOG, ss1.str());
+     */ 
+      
+      
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
@@ -604,15 +689,17 @@ namespace gr {
               temp = *in++;
               *out++ = temp;
               consumed++;
+              
+              //          vvvvv LSB vvvv
               b = (temp ^ (shift[5] & 1));
               reg_6_shift(shift);
               if (b) {
-                shift[0] ^= m_poly_n_12[0];
-                shift[1] ^= m_poly_n_12[1];
-                shift[2] ^= m_poly_n_12[2];
-                shift[3] ^= m_poly_n_12[3];
-                shift[4] ^= m_poly_n_12[4];
-                shift[5] ^= m_poly_n_12[5];
+                shift[0] ^= m_poly_n_12_0;
+                shift[1] ^= m_poly_n_12_1;
+                shift[2] ^= m_poly_n_12_2;
+                shift[3] ^= m_poly_n_12_3;
+                shift[4] ^= m_poly_n_12_4;
+                shift[5] ^= m_poly_n_12_5;
               }
             }
             // Now add the parity bits to the output
@@ -634,11 +721,11 @@ namespace gr {
               b = (temp ^ (shift[4] & 1));
               reg_5_shift(shift);
               if (b) {
-                shift[0] ^= m_poly_n_10[0];
-                shift[1] ^= m_poly_n_10[1];
-                shift[2] ^= m_poly_n_10[2];
-                shift[3] ^= m_poly_n_10[3];
-                shift[4] ^= m_poly_n_10[4];
+                shift[0] ^= m_poly_n_10_0;
+                shift[1] ^= m_poly_n_10_1;
+                shift[2] ^= m_poly_n_10_2;
+                shift[3] ^= m_poly_n_10_3;
+                shift[4] ^= m_poly_n_10_4;
               }
             }
             // Now add the parity bits to the output
@@ -660,10 +747,10 @@ namespace gr {
               b = temp ^ (shift[3] & 1);
               reg_4_shift(shift);
               if (b) {
-                shift[0] ^= m_poly_n_8[0];
-                shift[1] ^= m_poly_n_8[1];
-                shift[2] ^= m_poly_n_8[2];
-                shift[3] ^= m_poly_n_8[3];
+                shift[0] ^= m_poly_n_8_0;
+                shift[1] ^= m_poly_n_8_1;
+                shift[2] ^= m_poly_n_8_2;
+                shift[3] ^= m_poly_n_8_3;
               }
             }
             // Now add the parity bits to the output
@@ -685,12 +772,12 @@ namespace gr {
               b = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
               reg_6_shift(shift);
               if (b) {
-                shift[0] ^= m_poly_s_12[0];
-                shift[1] ^= m_poly_s_12[1];
-                shift[2] ^= m_poly_s_12[2];
-                shift[3] ^= m_poly_s_12[3];
-                shift[4] ^= m_poly_s_12[4];
-                shift[5] ^= m_poly_s_12[5];
+                shift[0] ^= m_poly_s_12_0;
+                shift[1] ^= m_poly_s_12_1;
+                shift[2] ^= m_poly_s_12_2;
+                shift[3] ^= m_poly_s_12_3;
+                shift[4] ^= m_poly_s_12_4;
+                shift[5] ^= m_poly_s_12_5;
               }
             }
             // Now add the parity bits to the output
@@ -712,12 +799,12 @@ namespace gr {
               b = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
               reg_6_shift(shift);
               if (b) {
-                shift[0] ^= m_poly_m_12[0];
-                shift[1] ^= m_poly_m_12[1];
-                shift[2] ^= m_poly_m_12[2];
-                shift[3] ^= m_poly_m_12[3];
-                shift[4] ^= m_poly_m_12[4];
-                shift[5] ^= m_poly_m_12[5];
+                shift[0] ^= m_poly_m_12_0;
+                shift[1] ^= m_poly_m_12_1;
+                shift[2] ^= m_poly_m_12_2;
+                shift[3] ^= m_poly_m_12_3;
+                shift[4] ^= m_poly_m_12_4;
+                shift[5] ^= m_poly_m_12_5;
               }
             }
             // Now add the parity bits to the output
@@ -732,6 +819,11 @@ namespace gr {
       // Tell runtime system how many input items we consumed on
       // each input stream.
       consume_each (consumed);
+/*
+      std::stringstream ss2;
+      ss2 << "ending general_work" << clock();
+      GR_LOG_DEBUG(LOG, ss2.str());
+    */  
 
       // Tell runtime system how many output items we produced.
       return noutput_items;
