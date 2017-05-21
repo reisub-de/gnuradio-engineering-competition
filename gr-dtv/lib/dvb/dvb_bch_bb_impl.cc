@@ -371,7 +371,6 @@ namespace gr {
         }
       }
 
-      bch_poly_build_tables();
       set_output_multiple(nbch);
     }
 
@@ -491,175 +490,6 @@ namespace gr {
       sr[0] = (sr[0] >> 1);
     }
 
-    void
-    dvb_bch_bb_impl::bch_poly_build_tables(void)
-    {
-      /*
-      std::stringstream ss1;
-      ss1 << "starting poly_build " << clock();
-      GR_LOG_DEBUG(LOG, ss1.str());
-      
-      std::ifstream cache_file_r("bchCache.bin");
-      if(cache_file_r.good())
-      {
-        cache_file_r.seekg(0, std::ios::beg);
-        cache_file_r.read((char*)m_poly_n_8, (int)sizeof(m_poly_n_8));
-        cache_file_r.read((char*)m_poly_n_10, (int)sizeof(m_poly_n_10));
-        cache_file_r.read((char*)m_poly_n_12, (int)sizeof(m_poly_n_12));
-        cache_file_r.read((char*)m_poly_s_12, (int)sizeof(m_poly_s_12));
-        cache_file_r.read((char*)m_poly_m_12, (int)sizeof(m_poly_m_12));
-        cache_file_r.close();
-
-        std::stringstream ss2;
-        ss2 << "end poly_build read cache " << clock();
-        GR_LOG_DEBUG(LOG, ss2.str());
-      
-
-        return;
-      }
-
-
-      // Normal polynomials
-      const int polyn01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1};
-      const int polyn02[]={1,1,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1};
-      const int polyn03[]={1,0,1,1,1,1,0,1,1,1,1,1,0,0,0,0,1};
-      const int polyn04[]={1,0,1,0,1,0,1,0,0,1,0,1,1,0,1,0,1};
-      const int polyn05[]={1,1,1,1,0,1,0,0,1,1,1,1,1,0,0,0,1};
-      const int polyn06[]={1,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1};
-      const int polyn07[]={1,0,1,0,0,1,1,0,1,1,1,1,0,1,0,1,1};
-      const int polyn08[]={1,1,1,0,0,1,1,0,1,1,0,0,1,1,1,0,1};
-      const int polyn09[]={1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,1};
-      const int polyn10[]={1,1,1,0,0,1,0,1,1,0,1,0,1,1,1,0,1};
-      const int polyn11[]={1,0,1,1,0,1,0,0,0,1,0,1,1,1,0,0,1};
-      const int polyn12[]={1,1,0,0,0,1,1,1,0,1,0,1,1,0,0,0,1};
-
-      // Medium polynomials
-      const int polym01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,1};
-      const int polym02[]={1,1,0,0,1,0,0,1,0,0,1,1,0,0,0,1};
-      const int polym03[]={1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1};
-      const int polym04[]={1,0,1,1,0,1,1,0,1,0,1,1,0,0,0,1};
-      const int polym05[]={1,1,1,0,1,0,1,1,0,0,1,0,1,0,0,1};
-      const int polym06[]={1,0,0,0,1,0,1,1,0,0,0,0,1,1,0,1};
-      const int polym07[]={1,0,1,0,1,1,0,1,0,0,0,1,1,0,1,1};
-      const int polym08[]={1,0,1,0,1,0,1,0,1,1,0,1,0,0,1,1};
-      const int polym09[]={1,1,1,0,1,1,0,1,0,1,0,1,1,1,0,1};
-      const int polym10[]={1,1,1,1,1,0,0,1,0,0,1,1,1,1,0,1};
-      const int polym11[]={1,1,1,0,1,0,0,0,0,1,0,1,0,0,0,1};
-      const int polym12[]={1,0,1,0,1,0,0,0,1,0,1,1,0,1,1,1};
-
-      // Short polynomials
-      const int polys01[]={1,1,0,1,0,1,0,0,0,0,0,0,0,0,1};
-      const int polys02[]={1,0,0,0,0,0,1,0,1,0,0,1,0,0,1};
-      const int polys03[]={1,1,1,0,0,0,1,0,0,1,1,0,0,0,1};
-      const int polys04[]={1,0,0,0,1,0,0,1,1,0,1,0,1,0,1};
-      const int polys05[]={1,0,1,0,1,0,1,0,1,1,0,1,0,1,1};
-      const int polys06[]={1,0,0,1,0,0,0,1,1,1,0,0,0,1,1};
-      const int polys07[]={1,0,1,0,0,1,1,1,0,0,1,1,0,1,1};
-      const int polys08[]={1,0,0,0,0,1,0,0,1,1,1,1,0,0,1};
-      const int polys09[]={1,1,1,1,0,0,0,0,0,1,1,0,0,0,1};
-      const int polys10[]={1,0,0,1,0,0,1,0,0,1,0,1,1,0,1};
-      const int polys11[]={1,0,0,0,1,0,0,0,0,0,0,1,1,0,1};
-      const int polys12[]={1,1,1,1,0,1,1,1,1,0,1,0,0,1,1};
-
-      int len;
-      int polyout[2][200];
-
-      len = poly_mult(polyn01, 17, polyn02,    17,  polyout[0]);
-      len = poly_mult(polyn03, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn04, 17, polyout[1], len, polyout[0]);
-      len = poly_mult(polyn05, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn06, 17, polyout[1], len, polyout[0]);
-      len = poly_mult(polyn07, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn08, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_8, 128);
-
-      len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn10, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_10, 160);
-
-      len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
-      len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_12, 192);
-
-      len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
-      len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys04, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys05, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys06, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys07, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys08, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys09, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys10, 15, polyout[1], len, polyout[0]);
-      len = poly_mult(polys11, 15, polyout[0], len, polyout[1]);
-      len = poly_mult(polys12, 15, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_s_12, 168);
-
-      len = poly_mult(polym01, 16, polym02,    16,  polyout[0]);
-      len = poly_mult(polym03, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym04, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym05, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym06, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym07, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym08, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym09, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym10, 16, polyout[1], len, polyout[0]);
-      len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
-      len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_m_12, 180);
-
-      std::stringstream ss3;
-      ss3 << "ending poly_build calc values " << clock();
-      GR_LOG_DEBUG(LOG, ss3.str());
-      
-      std::ofstream cache_file_w;
-      cache_file_w.open("bchCache.bin", std::ios::out | std::ios::app | std::ios::binary);
-      if(cache_file_w.is_open())
-      {
-        cache_file_w.write((char*)m_poly_n_8, (int)sizeof(m_poly_n_8));
-        cache_file_w.write((char*)m_poly_n_10, (int)sizeof(m_poly_n_10));
-        cache_file_w.write((char*)m_poly_n_12, (int)sizeof(m_poly_n_12));
-        cache_file_w.write((char*)m_poly_s_12, (int)sizeof(m_poly_s_12));
-        cache_file_w.write((char*)m_poly_m_12, (int)sizeof(m_poly_m_12));
-        cache_file_w.close();
-      }
-      else
-        GR_LOG_ERROR(LOG, "failed to write cache file");
-
-      std::stringstream ss4;
-      ss4 << "ending poly_build writing cache" << clock();
-      GR_LOG_DEBUG(LOG, ss4.str());
-      
-
-      m_poly_n_8_0 = 3563495200;
-      m_poly_n_8_1 = 2931179416;
-      m_poly_n_8_2 = 3186222222;
-      m_poly_n_8_3 = 4205109304;
-      m_poly_n_10_0 = 2309414173;
-      m_poly_n_10_1 = 2160364535;
-      m_poly_n_10_2 = 3236568662;
-      m_poly_n_10_3 = 4174140479;
-      m_poly_n_10_4 = 3073419270;
-      m_poly_n_12_0 = 3886694502;
-      m_poly_n_12_1 = 4020363968;
-      m_poly_n_12_2 = 2433788987;
-      m_poly_n_12_3 = 456454922;
-      m_poly_n_12_4 = 948582945;
-      m_poly_n_12_5 = 3245368434;
-      m_poly_s_12_0 = 2778765451;
-      m_poly_s_12_1 = 3957846346;
-      m_poly_s_12_2 = 2517222852;
-      m_poly_s_12_3 = 3007729046;
-      m_poly_s_12_4 = 425188166;
-      m_poly_s_12_5 = 45114482;
-      m_poly_m_12_0 = 3498187715;
-      m_poly_m_12_1 = 4096699498;
-      m_poly_m_12_2 = 3433104751;
-      m_poly_m_12_3 = 3653255568;
-      m_poly_m_12_4 = 2977959358;
-      m_poly_m_12_5 = 3709950066;
-*/
-    }
-
     int
     dvb_bch_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -687,6 +517,7 @@ namespace gr {
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
+              temp &= 1;
               *out++ = temp;
               consumed++;
               
@@ -716,6 +547,7 @@ namespace gr {
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
+              temp &= 1;
               *out++ = temp;
               consumed++;
               b = (temp ^ (shift[4] & 1));
@@ -742,6 +574,7 @@ namespace gr {
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
+              temp &= 1;
               *out++ = temp;
               consumed++;
               b = temp ^ (shift[3] & 1);
@@ -767,6 +600,7 @@ namespace gr {
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
+              temp &= 1;
               *out++ = temp;
               consumed++;
               b = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
@@ -794,6 +628,7 @@ namespace gr {
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
+              temp &= 1;
               *out++ = temp;
               consumed++;
               b = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));

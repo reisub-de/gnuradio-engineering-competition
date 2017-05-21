@@ -80,8 +80,7 @@ namespace gr {
       inline void reg_4_shift(unsigned int*);
       inline void reg_5_shift(unsigned int*);
       inline void reg_6_shift(unsigned int*);
-      void bch_poly_build_tables(void);
-
+      
      public:
       dvb_bch_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate);
       ~dvb_bch_bb_impl();
