@@ -645,8 +645,7 @@ namespace gr {
 			}
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              b = (temp ^ parity_bits[191]);
+              b = (*in++ ^ parity_bits[191]);
 			  parity_bits <<= 1;
               if (b) {
 				  parity_bits ^= polynome;
