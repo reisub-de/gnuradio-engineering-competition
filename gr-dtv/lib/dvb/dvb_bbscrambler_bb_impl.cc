@@ -330,6 +330,8 @@ namespace gr {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
 
+
+      //kbch = 38688;
       for (int i = 0; i < noutput_items; i += kbch) {
         for (int j = 0; j < (int)kbch; ++j) {
           out[i + j] = in[i + j] ^ bb_randomise[j];
