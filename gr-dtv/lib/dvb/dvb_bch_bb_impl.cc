@@ -396,11 +396,8 @@ namespace gr {
     dvb_bch_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
     {
 
-    //replaced memset
-        for (int n = 0; n < (lena + lenb); n++) {
-          *out++ = zero;
-        }
-      //memset(out, 0, sizeof(int) * (lena + lenb));
+
+      memset(out, 0, sizeof(int) * (lena + lenb));
 
       for (int i = 0; i < lena; i++) {
         for (int j = 0; j < lenb; j++) {
