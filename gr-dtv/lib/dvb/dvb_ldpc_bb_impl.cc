@@ -403,116 +403,119 @@ for (row = 0; row < ROWS; row++) { \
       pbits = (frame_size_real + Xp) - nbch;    //number of parity bits
       q = q_val;
 
-      if (frame_size_type == FECFRAME_NORMAL) {
-        if (code_rate == C1_4) {
+       if (frame_size_type == FECFRAME_NORMAL) {
+        switch(code_rate)
+        {
+        case (C1_4) :
           LDPC_BF(ldpc_tab_1_4N,  45);
-        }
-        else if (code_rate == C1_3) {
+          break;
+        case (C1_3) :
           LDPC_BF(ldpc_tab_1_3N,  60);
-        }
-        else if (code_rate == C2_5) {
+          break;
+        case (C2_5) :
           LDPC_BF(ldpc_tab_2_5N,  72);
-        }
-        else if (code_rate == C1_2) {
+          break;
+        case (C1_2) :
           LDPC_BF(ldpc_tab_1_2N,  90);
-        }
-        else if (code_rate == C3_5) {
+          break;
+        case (C3_5) :
           LDPC_BF(ldpc_tab_3_5N,  108);
-        }
-        else if (code_rate == C2_3) {
+          break;
+        case (C2_3) :
           if (dvb_standard == STANDARD_DVBT2) {
             LDPC_BF(ldpc_tab_2_3N_DVBT2, 120);
           }
           else {
             LDPC_BF(ldpc_tab_2_3N_DVBS2, 120);
           }
-        }
-        else if (code_rate == C3_4) {
+          break;
+        case (C3_4) :
           LDPC_BF(ldpc_tab_3_4N,  135);
-        }
-        else if (code_rate == C4_5) {
+          break;
+        case (C4_5) :
           LDPC_BF(ldpc_tab_4_5N,  144);
-        }
-        else if (code_rate == C5_6) {
+          break;
+        case (C5_6) :
           LDPC_BF(ldpc_tab_5_6N,  150);
-        }
-        else if (code_rate == C8_9) {
+          break;
+        case (C8_9) :
           LDPC_BF(ldpc_tab_8_9N,  160);
-        }
-        else if (code_rate == C9_10) {
+          break;
+        case (C9_10) :
           LDPC_BF(ldpc_tab_9_10N, 162);
-        }
-        else if (code_rate == C2_9_VLSNR) {
+          break;
+        case (C2_9_VLSNR) :
           LDPC_BF(ldpc_tab_2_9N,      40);
-        }
-        else if (code_rate == C13_45) {
+          break;
+        case (C13_45) :
           LDPC_BF(ldpc_tab_13_45N,    52);
-        }
-        else if (code_rate == C9_20) {
+          break;
+        case (C9_20) :
           LDPC_BF(ldpc_tab_9_20N,     81);
-        }
-        else if (code_rate == C90_180) {
+          break;
+        case (C90_180) :
           LDPC_BF(ldpc_tab_90_180N,   90);
-        }
-        else if (code_rate == C96_180) {
+          break;
+        case (C96_180) :
           LDPC_BF(ldpc_tab_96_180N,   96);
-        }
-        else if (code_rate == C11_20) {
+          break;
+        case (C11_20) :
           LDPC_BF(ldpc_tab_11_20N,    99);
-        }
-        else if (code_rate == C100_180) {
+          break;
+        case (C100_180) :
           LDPC_BF(ldpc_tab_100_180N, 100);
-        }
-        else if (code_rate == C104_180) {
+          break;
+        case (C104_180) :
           LDPC_BF(ldpc_tab_104_180N, 104);
-        }
-        else if (code_rate == C26_45) {
+          break;
+        case (C26_45) :
           LDPC_BF(ldpc_tab_26_45N,   104);
-        }
-        else if (code_rate == C18_30) {
+          break;
+        case (C18_30) :
           LDPC_BF(ldpc_tab_18_30N,   108);
-        }
-        else if (code_rate == C28_45) {
+          break;
+        case (C28_45) :
           LDPC_BF(ldpc_tab_28_45N,   112);
-        }
-        else if (code_rate == C23_36) {
+          break;
+        case (C23_36) :
           LDPC_BF(ldpc_tab_23_36N,   115);
-        }
-        else if (code_rate == C116_180) {
+          break;
+        case (C116_180) :
           LDPC_BF(ldpc_tab_116_180N, 116);
-        }
-        else if (code_rate == C20_30) {
+          break;
+        case (C20_30) :
           LDPC_BF(ldpc_tab_20_30N,   120);
-        }
-        else if (code_rate == C124_180) {
+          break;
+        case (C124_180) :
           LDPC_BF(ldpc_tab_124_180N, 124);
-        }
-        else if (code_rate == C25_36) {
+          break;
+        case (C25_36) :
           LDPC_BF(ldpc_tab_25_36N,   125);
-        }
-        else if (code_rate == C128_180) {
+          break;
+        case (C128_180) :
           LDPC_BF(ldpc_tab_128_180N, 128);
-        }
-        else if (code_rate == C13_18) {
+          break;
+        case (C13_18) :
           LDPC_BF(ldpc_tab_13_18N,   130);
-        }
-        else if (code_rate == C132_180) {
+          break;
+        case (C132_180) : 
           LDPC_BF(ldpc_tab_132_180N, 132);
-        }
-        else if (code_rate == C22_30) {
+          break;
+        case (C22_30) :
           LDPC_BF(ldpc_tab_22_30N,   132);
-        }
-        else if (code_rate == C135_180) {
+          break;
+        case (C135_180) :
           LDPC_BF(ldpc_tab_135_180N, 135);
-        }
-        else if (code_rate == C140_180) {
+          break;
+        case (C140_180) :
           LDPC_BF(ldpc_tab_140_180N, 140);
-        }
-        else if (code_rate == C7_9) {
+          break;
+        case (C7_9) :
           LDPC_BF(ldpc_tab_7_9N,     140);
-        }
-        else if (code_rate == C154_180) {
+          break;
+        case (C154_180) :
           LDPC_BF(ldpc_tab_154_180N, 154);
+          break;
         }
       }
       else if (frame_size_type == FECFRAME_SHORT) {
