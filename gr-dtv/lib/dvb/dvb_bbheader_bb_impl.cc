@@ -260,7 +260,8 @@ namespace gr {
       f->sis_mis = SIS_MIS_SINGLE;
       f->ccm_acm = CCM;
       f->issyi   = ISSYI_NOT_ACTIVE;
-      f->npd     = NPD_NOT_ACTIVE;
+      //f->npd     = NPD_NOT_ACTIVE;
+      f->npd     = NPD_ACTIVE;
       if (mode == INPUTMODE_NORMAL) {
         f->upl  = 188 * 8;
         f->dfl  = kbch - 80;
