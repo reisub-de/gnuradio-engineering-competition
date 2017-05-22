@@ -635,7 +635,7 @@ namespace gr {
       unsigned char b, temp;
       unsigned int shift[6];
       int consumed = 0;
-      #if defined(__AVX2__)
+
       //Should do this only once, but causes segfault..
       __m256i m_256_poly_n_12 = _mm256_set_epi32(0,
                                                 0,
@@ -646,8 +646,6 @@ namespace gr {
                                                 m_poly_n_12[4],
                                                 m_poly_n_12[5]);
 
-      #endif
-      
       switch (bch_code) {
         case BCH_CODE_N12:
           //TODO: Make this pretty, use VOLK

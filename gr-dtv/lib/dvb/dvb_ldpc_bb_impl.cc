@@ -26,8 +26,6 @@
 
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
-#include <boost/thread/thread.hpp>
-#include <algorithm>
 
 namespace gr {
   namespace dtv {
@@ -380,8 +378,8 @@ namespace gr {
 for (int row = 0; row < ROWS; row++) { \
   for (int n = 0; n < 360; n++) { \
     for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
-      ldpc_encode.item[index].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
-      ldpc_encode.item[index].d = im; \
+      ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+      ldpc_encode.d[index] = im; \
       index++; \
     } \
     im++; \
@@ -598,14 +596,6 @@ for (int row = 0; row < ROWS; row++) { \
         }
       }
       ldpc_encode.table_length = index;
-      std::sort(ldpc_encode.item, ldpc_encode.item+index);
-    }
-
-    void
-    dvb_ldpc_bb_impl::thread_loop(unsigned char *p, const unsigned char *d, int start, int end) {
-      for (int j = start; j < end; j++) {
-        p[ldpc_encode.item[j].p] ^= d[ldpc_encode.item[j].d];
-      }
     }
 
     int
@@ -642,8 +632,8 @@ for (int row = 0; row < ROWS; row++) { \
         memset(p, 0, sizeof(unsigned char) * plen);
 
 		//use memcpy instead of the for loop
-		memcpy(&out[i],&in[consumed],sizeof(unsigned char) * (int)nbch);
-		consumed += (int)nbch;
+		//memcpy(&out[i],&in[consumed],sizeof(unsigned char) * (int)nbch);
+		//consumed += (int)nbch;
 
 
 
@@ -654,38 +644,24 @@ for (int row = 0; row < ROWS; row++) { \
 		//nbch = 38880;
 		// frame_size = 64800;
 
-		/*__m256i *in_m256i;
+		__m256i *in_m256i;
 		for (unsigned int loop_i = 0; loop_i< nbch / 32; loop_i++) {//1215
 			in_m256i = (__m256i*)&in[consumed];
 			_mm256_store_si256((__m256i*)&out[i+32*loop_i], *in_m256i);
 			consumed += (int)32;
-		}*/
+		}
 
         //for (int j = 0; j < (int)nbch; j++) {
         //  out[i + j] = in[consumed];
         //  consumed++;
         //}
 
-        int thread_count = 4;
-        int samp_per_thread = (int)(1.0*ldpc_encode.table_length/thread_count);
-        boost::thread_group tg;
-
-        for(int t=0; t<thread_count;t++) {
-           //tg.add_thread(new boost::thread(threaded_function));
-           int max_samp = (t+1)*samp_per_thread;
-           if(max_samp > ldpc_encode.table_length) max_samp = ldpc_encode.table_length;
-           //thread_loop(p, d, t*samp_per_thread, max_samp);
-           tg.add_thread(new boost::thread(boost::bind(&dvb_ldpc_bb_impl::thread_loop, this, p, d, t*samp_per_thread, max_samp)));
-        }
-        tg.join_all();
-        //thread_loop(p, d, 0, ldpc_encode.table_length);
 
 
         // now do the parity checking
-        //for (int j = 0; j < ldpc_encode.table_length; j++) {
-        //  p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
-        //}
-
+        for (int j = 0; j < ldpc_encode.table_length; j++) {
+          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+        }
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
