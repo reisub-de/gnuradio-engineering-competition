@@ -201,16 +201,16 @@ namespace gr {
           for (int i = 0; i < noutput_items; i += cell_size) {
             if (cyclic_delay == FALSE) {
               for (int j = 0; j < cell_size; j++) {
-//                index = *in++;
-                *out++ = m_qpsk[*in++ & 0x3];
+                index = *in++;
+                *out++ = m_qpsk[index & 0x3];
               }
             }
             else {
               in_delay = in;
               for (int j = 0; j < cell_size; j++) {
-//                index = *in++;
+                index = *in++;
                 index_delay = in_delay[(j + cell_size - 1) % cell_size];
-                *out++ = gr_complex(m_qpsk[*in++ & 0x3].real(),
+                *out++ = gr_complex(m_qpsk[index & 0x3].real(),
                                     m_qpsk[index_delay & 0x3].imag());
               }
             }
@@ -220,16 +220,16 @@ namespace gr {
           for (int i = 0; i < noutput_items; i += cell_size) {
             if (cyclic_delay == FALSE) {
               for (int j = 0; j < cell_size; j++) {
-//                index = *in++;
-                *out++ = m_16qam[*in++ & 0xf];
+                index = *in++;
+                *out++ = m_16qam[index & 0xf];
               }
             }
             else {
               in_delay = in;
               for (int j = 0; j < cell_size; j++) {
-//                index = *in++;
+                index = *in++;
                 index_delay = in_delay[(j + cell_size - 1) % cell_size];
-                *out++ = gr_complex(m_16qam[*in++ & 0xf].real(),
+                *out++ = gr_complex(m_16qam[index & 0xf].real(),
                                     m_16qam[index_delay & 0xf].imag());
               }
             }
@@ -241,16 +241,16 @@ namespace gr {
           for (int i = 0; i < noutput_items; i += cell_size) {
             if (cyclic_delay == FALSE) {
               for (int j = 0; j < cell_size; j++) {
-//                index = *in++;
-                *out++ = m_64qam[*in++ & 0x3f];
+                index = *in++;
+                *out++ = m_64qam[index & 0x3f];
               }
             }
             else {
               in_delay = in;
               for (int j = 0; j < cell_size; j++) {
-//                index = *in++;
+                index = *in++;
                 index_delay = in_delay[(j + cell_size - 1) % cell_size];
-                *out++ = gr_complex(m_64qam[*in++ & 0x3f].real(),
+                *out++ = gr_complex(m_64qam[index & 0x3f].real(),
                                     m_64qam[index_delay & 0x3f].imag());
               }
             }
@@ -260,16 +260,16 @@ namespace gr {
           for (int i = 0; i < noutput_items; i += cell_size) {
             if (cyclic_delay == FALSE) {
               for (int j = 0; j < cell_size; j++) {
-//                index = *in++;
-                *out++ = m_256qam[*in++ & 0xff];
+                index = *in++;
+                *out++ = m_256qam[index & 0xff];
               }
             }
             else {
               in_delay = in;
               for (int j = 0; j < cell_size; j++) {
-//                index = *in++;
+                index = *in++;
                 index_delay = in_delay[(j + cell_size - 1) % cell_size];
-                *out++ = gr_complex(m_256qam[*in++ & 0xff].real(),
+                *out++ = gr_complex(m_256qam[index & 0xff].real(),
                                     m_256qam[index_delay & 0xff].imag());
               }
             }
