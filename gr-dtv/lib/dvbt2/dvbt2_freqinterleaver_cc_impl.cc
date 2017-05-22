@@ -810,9 +810,10 @@ namespace gr {
 			}
 			even_odd != even_odd;*/
 
-          for (int j = 0; j < C_DATA; j++) {
-            *out++ = in[H[j]];
-          }
+        memcpy(out,&in[H],sizeof(int) * C_DATA);
+//          for (int j = 0; j < C_DATA; j++) {
+//            *out++ = in[H[j]];
+//          }
           in += C_DATA;
         }
         if (N_FC != 0) {
