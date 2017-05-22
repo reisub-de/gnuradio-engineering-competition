@@ -2753,23 +2753,23 @@ namespace gr {
 			*out++ = zero;
 			*out++ = zero;*/
 
-//            memset(out, 0, sizeof(gr_complex) * (right_nulls));
-//            out += right_nulls;
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
-            }
+            memset(out, 0, sizeof(gr_complex) * (right_nulls));
+            out += right_nulls;
+//            for (int n = 0; n < right_nulls; n++) {
+//              *out++ = zero;
+//            }
 
 
           }
 
 
           else if (j == (num_symbols - L_FC)) {
-//              memset(out, 0, sizeof(gr_complex) * (left_nulls));
-//              out += left_nulls;
+              memset(out, 0, sizeof(gr_complex) * (left_nulls));
+              out += left_nulls;
 
-            for (int n = 0; n < left_nulls; n++) {
-              *out++ = zero;
-            }
+//            for (int n = 0; n < left_nulls; n++) {
+//              *out++ = zero;
+//            }
 			/*for (int loop_i = 0; loop_i < left_nulls / 4; loop_i++) {
 				_mm256_store_ps((float*)out, zero_m256);
 				out += 4;
@@ -2793,11 +2793,11 @@ namespace gr {
             }
 
 
-//            memset(out, 0, sizeof(gr_complex) * (right_nulls));
-//            out += right_nulls;
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
-            }
+            memset(out, 0, sizeof(gr_complex) * (right_nulls));
+            out += right_nulls;
+//            for (int n = 0; n < right_nulls; n++) {
+//              *out++ = zero;
+//            }
 			/*for (int loop_i = 0; loop_i < right_nulls / 4 - 1; loop_i++) {
 				_mm256_store_ps((float*)out, zero_m256);
 				out += 4;
@@ -2809,11 +2809,11 @@ namespace gr {
 
           }
           else {
-//              memset(out, 0, sizeof(gr_complex) * (left_nulls));
-//              out += left_nulls;
-            for (int n = 0; n < left_nulls; n++) {
-              *out++ = zero;
-            }
+              memset(out, 0, sizeof(gr_complex) * (left_nulls));
+              out += left_nulls;
+//            for (int n = 0; n < left_nulls; n++) {
+//              *out++ = zero;
+//            }
 		/*	for (int loop_i = 0; loop_i < left_nulls / 4; loop_i++) {
 				_mm256_store_ps((float*)out, zero_m256);
 				out += 4;
@@ -2841,11 +2841,11 @@ namespace gr {
               }
             }
 
-//            memset(out, 0, sizeof(gr_complex) * (right_nulls));
-//            out += right_nulls;
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
-            }
+            memset(out, 0, sizeof(gr_complex) * (right_nulls));
+            out += right_nulls;
+//            for (int n = 0; n < right_nulls; n++) {
+//              *out++ = zero;
+//            }
 		/*	for (int loop_i = 0; loop_i < right_nulls / 4 -1; loop_i++) {
 				_mm256_store_ps((float*)out, zero_m256);
 				out += 4;
