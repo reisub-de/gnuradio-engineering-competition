@@ -2719,7 +2719,6 @@ namespace gr {
       }
       for (int i = 0; i < noutput_items; i += num_symbols) {
         for (int j = 0; j < num_symbols; j++) { // for every OFDM symbol j in output item i
-          init_pilots(j);
           for (int n = 0; n < left_nulls; n++) {
             *out++ = zero;
           }
@@ -2739,7 +2738,8 @@ namespace gr {
               }
             }
           } // end if j < N_P2
-          else if (j != (num_symbols - L_FC)) { // else
+          else if (__builtin_expect(!!(j != (num_symbols - L_FC)), 1)) { // else
+            init_pilots(j);
             for (int n = 0; n < C_PS; n++) {
               if (data_carrier_map[n] == SCATTERED_CARRIER) {
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
