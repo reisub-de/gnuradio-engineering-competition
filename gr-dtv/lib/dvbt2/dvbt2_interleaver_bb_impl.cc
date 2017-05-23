@@ -178,8 +178,8 @@ namespace gr {
 
       switch (signal_constellation) {
         case MOD_QPSK:
-          for (int i = 0; i < noutput_items; i += packed_items) {
-            rows = frame_size / 2;
+          rows = frame_size / 2;
+		  for (int i = 0; i < noutput_items; i += packed_items) {
             if (code_rate == C1_3 || code_rate == C2_5) {
               for (int k = 0; k < nbch; k++) {
                 tempu[k] = *in++;
@@ -224,9 +224,9 @@ namespace gr {
           else {
             mux = &mux16[0];
           }
-          for (int i = 0; i < noutput_items; i += packed_items) {
-            rows = frame_size / (mod * 2);
-            const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+          rows = frame_size / (mod * 2);
+		  const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+		  for (int i = 0; i < noutput_items; i += packed_items) {
             c1 = &tempv[0];
             c2 = &tempv[rows];
             c3 = &tempv[rows * 2];
@@ -298,9 +298,9 @@ namespace gr {
           else {
             mux = &mux64[0];
           }
-          for (int i = 0; i < noutput_items; i += packed_items) {
-            rows = frame_size / (mod * 2);
-            const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
+          rows = frame_size / (mod * 2);
+		  const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
+		  for (int i = 0; i < noutput_items; i += packed_items) {
             c1 = &tempv[0];
             c2 = &tempv[rows];
             c3 = &tempv[rows * 2];
@@ -372,10 +372,10 @@ namespace gr {
             else {
               mux = &mux256[0];
             }
+            rows = frame_size / (mod * 2);
+			const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+			const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
             for (int i = 0; i < noutput_items; i += packed_items) {
-              rows = frame_size / (mod * 2);
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-              const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
               c1 = &tempv[0];
               c2 = &tempv[rows];
               c3 = &tempv[rows * 2];
@@ -454,9 +454,9 @@ namespace gr {
             else {
               mux = &mux256s[0];
             }
+            rows = frame_size / mod;
+			const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
             for (int i = 0; i < noutput_items; i += packed_items) {
-              rows = frame_size / mod;
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
               c1 = &tempv[0];
               c2 = &tempv[rows];
               c3 = &tempv[rows * 2];
