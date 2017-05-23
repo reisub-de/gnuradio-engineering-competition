@@ -175,9 +175,7 @@ namespace gr {
       unsigned int pack;
       const int *twist;
       const int *mux;
-	  const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-	  const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-            
+	  
 
       switch (signal_constellation) {
         case MOD_QPSK:
@@ -228,6 +226,7 @@ namespace gr {
             mux = &mux16[0];
           }
           rows = frame_size / (mod * 2);
+		  const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
 		  for (int i = 0; i < noutput_items; i += packed_items) {
             c1 = &tempv[0];
             c2 = &tempv[rows];
@@ -301,6 +300,7 @@ namespace gr {
             mux = &mux64[0];
           }
           rows = frame_size / (mod * 2);
+		  const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
 		  for (int i = 0; i < noutput_items; i += packed_items) {
             c1 = &tempv[0];
             c2 = &tempv[rows];
@@ -374,6 +374,8 @@ namespace gr {
               mux = &mux256[0];
             }
             rows = frame_size / (mod * 2);
+			const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+			const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
 			for (int i = 0; i < noutput_items; i += packed_items) {
               c1 = &tempv[0];
               c2 = &tempv[rows];
@@ -454,7 +456,8 @@ namespace gr {
               mux = &mux256s[0];
             }
             rows = frame_size / mod;
-			for (int i = 0; i < noutput_items; i += packed_items) {
+			const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+            for (int i = 0; i < noutput_items; i += packed_items) {
               c1 = &tempv[0];
               c2 = &tempv[rows];
               c3 = &tempv[rows * 2];
