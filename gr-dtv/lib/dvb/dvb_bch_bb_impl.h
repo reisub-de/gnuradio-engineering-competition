@@ -33,12 +33,11 @@ namespace gr {
       unsigned int kbch;
       unsigned int nbch;
       unsigned int bch_code;
-      unsigned int m_poly_n_8[4];
-      unsigned int m_poly_n_10[5];
-      unsigned int m_poly_n_12[6];
-      unsigned int m_poly_s_12[6];
-      unsigned int m_poly_m_12[6];
-      unsigned int m_lut_mod8_m_12[256*6];
+      const static unsigned int m_poly_n_8[4];
+      const static unsigned int m_poly_n_10[5];
+      const static unsigned int m_poly_s_12[6];
+      const static unsigned int m_poly_m_12[6];
+      const static unsigned int m_lut_mod8_n_12[256*6];
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
       void poly_reverse(int*, int*, int);
@@ -46,7 +45,7 @@ namespace gr {
       inline void reg_5_shift(unsigned int*);
       inline void reg_6_shift(unsigned int*);
       inline void reg_6_shift_8(unsigned int*);
-      void bch_poly_build_tables(void);
+      //void bch_poly_build_tables(void);
 
      public:
       dvb_bch_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate);
