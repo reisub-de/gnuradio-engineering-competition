@@ -1191,7 +1191,7 @@ namespace gr {
         case FFTSIZE_32K_T2GI:
           switch (pilot_pattern) {
             case PILOT_PP7:
-              // Summarize 6 different integer index arrays (entailing
+              /*// Summarize 6 different integer index arrays (entailing
               // in 6 different for-loops) in pp7_cp_all
               // & loop unrolling
               for (int i = 0; i < 180; i += 10) {
@@ -1205,6 +1205,24 @@ namespace gr {
                 data_carrier_map[pp7_cp_all[i + 7]] = CONTINUAL_CARRIER;
                 data_carrier_map[pp7_cp_all[i + 8]] = CONTINUAL_CARRIER;
                 data_carrier_map[pp7_cp_all[i + 9]] = CONTINUAL_CARRIER;
+              }*/
+              for (int i = 0; i < 15; i++) {
+                data_carrier_map[pp7_cp1[i]] = CONTINUAL_CARRIER;
+              }
+              for (int i = 0; i < 30; i++) {
+                data_carrier_map[pp7_cp2[i]] = CONTINUAL_CARRIER;
+              }
+              for (int i = 0; i < 5; i++) {
+                data_carrier_map[pp7_cp3[i]] = CONTINUAL_CARRIER;
+              }
+              for (int i = 0; i < 3; i++) {
+                data_carrier_map[pp7_cp4[i]] = CONTINUAL_CARRIER;
+              }
+              for (int i = 0; i < 35; i++) {
+                data_carrier_map[pp7_cp5[i]] = CONTINUAL_CARRIER;
+              }
+              for (int i = 0; i < 92; i++) {
+                data_carrier_map[pp7_cp6[i]] = CONTINUAL_CARRIER;
               }
               if (isExtendendCarrierMode) {
                 data_carrier_map[pp7_32k[0]] = CONTINUAL_CARRIER;
@@ -2718,7 +2736,6 @@ namespace gr {
           for (int n = 0; n < left_nulls; n++) {
             *out++ = zero;
           }
-          
           const int pn_seq_j = pn_sequence[j];
           if (j < N_P2) { // if j < N_P2
             for (int n = 0; n < C_PS; n++) {
