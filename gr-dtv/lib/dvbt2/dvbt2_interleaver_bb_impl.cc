@@ -22,6 +22,7 @@
 #include "config.h"
 #endif
 
+#include <iostream>
 #include <gnuradio/io_signature.h>
 #include "dvbt2_interleaver_bb_impl.h"
 
@@ -139,6 +140,94 @@ namespace gr {
           mod = 8;
           set_output_multiple(frame_size / mod);
           packed_items = frame_size / mod;
+
+          if (frame_size == FRAME_SIZE_NORMAL) {                    //precalculating interleave order once
+            int rows =  frame_size / (mod * 2);
+            int offset, index;
+            const unsigned short *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+            const unsigned short *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
+            const int *mux;
+            if (code_rate == C3_5) {
+              mux = &mux256_35[0];
+            }
+            else if (code_rate == C2_3) {
+              mux = &mux256_23[0];
+            }
+            else {
+              mux = &mux256[0];
+            }
+
+            c1 = &tempv[0];
+            c2 = &tempv[rows];
+            c3 = &tempv[rows * 2];
+            c4 = &tempv[rows * 3];
+            c5 = &tempv[rows * 4];
+            c6 = &tempv[rows * 5];
+            c7 = &tempv[rows * 6];
+            c8 = &tempv[rows * 7];
+            c9 = &tempv[rows * 8];
+            c10 = &tempv[rows * 9];
+            c11 = &tempv[rows * 10];
+            c12 = &tempv[rows * 11];
+            c13 = &tempv[rows * 12];
+            c14 = &tempv[rows * 13];
+            c15 = &tempv[rows * 14];
+            c16 = &tempv[rows * 15];
+
+            for (int i = nbch; i < frame_size; i++) {                
+              tempv[i] = i;
+            }
+ 
+            for (int k = 0; k < nbch; k++) {                          // information bits are not interleaved
+              tempu[k] = k;
+            }
+
+            for (int t = 0; t < q_val; t++) {                         //parity bits are interleaved
+              for (int s = 0; s < 360; s++) {                         //360 groups of q_val bits -> q_val groups of 360 bits
+                tempu[nbch + (360 * t) + s] = tempv[nbch + (q_val * s) + t];
+              }
+            }
+
+            index = 0;
+            for (int col = 0; col < (mod * 2); col++) {               //WRITE column-wise, starting with offset t_c
+              offset = twist256n[col];                                //in each column
+              for (int row = 0; row < rows; row++) {
+                tempv[offset + (rows * col)] = tempu[index++];
+                offset++;
+                if (offset == rows) {
+                  offset = 0;
+                }
+              }
+            }
+
+            index = 0;
+            for (int j = 0; j < rows; j++) {                          //READ row-wise, c-pointers point to 
+              tempu[index++] = c1[j];                                 //start of each column
+              tempu[index++] = c2[j];
+              tempu[index++] = c3[j];
+              tempu[index++] = c4[j];
+              tempu[index++] = c5[j];
+              tempu[index++] = c6[j];
+              tempu[index++] = c7[j];
+              tempu[index++] = c8[j];
+              tempu[index++] = c9[j];
+              tempu[index++] = c10[j];
+              tempu[index++] = c11[j];
+              tempu[index++] = c12[j];
+              tempu[index++] = c13[j];
+              tempu[index++] = c14[j];
+              tempu[index++] = c15[j];
+              tempu[index++] = c16[j];
+            }
+
+            index = 0;
+            for (int n = 0; n < frame_size / (2 * mod); n++) {       // (2 * mod)-following bits are interleaved
+              for (int q = 0; q < 2 * mod; q++) {
+                offset = mux[q];
+                tempv[n * 2 * mod + offset] = tempu[index++];
+              }
+            }
+          }
           break;
         default:
           mod = 1;
@@ -226,7 +315,7 @@ namespace gr {
           }
           for (int i = 0; i < noutput_items; i += packed_items) {
             rows = frame_size / (mod * 2);
-            const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+            const unsigned short *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
             c1 = &tempv[0];
             c2 = &tempv[rows];
             c3 = &tempv[rows * 2];
@@ -300,7 +389,7 @@ namespace gr {
           }
           for (int i = 0; i < noutput_items; i += packed_items) {
             rows = frame_size / (mod * 2);
-            const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
+            const unsigned short *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
             c1 = &tempv[0];
             c2 = &tempv[rows];
             c3 = &tempv[rows * 2];
@@ -363,85 +452,18 @@ namespace gr {
           break;
         case MOD_256QAM:
           if (frame_size == FRAME_SIZE_NORMAL) {
-            if (code_rate == C3_5) {
-              mux = &mux256_35[0];
-            }
-            else if (code_rate == C2_3) {
-              mux = &mux256_23[0];
-            }
-            else {
-              mux = &mux256[0];
-            }
+            
             for (int i = 0; i < noutput_items; i += packed_items) {
-              rows = frame_size / (mod * 2);
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-              const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-              c1 = &tempv[0];
-              c2 = &tempv[rows];
-              c3 = &tempv[rows * 2];
-              c4 = &tempv[rows * 3];
-              c5 = &tempv[rows * 4];
-              c6 = &tempv[rows * 5];
-              c7 = &tempv[rows * 6];
-              c8 = &tempv[rows * 7];
-              c9 = &tempv[rows * 8];
-              c10 = &tempv[rows * 9];
-              c11 = &tempv[rows * 10];
-              c12 = &tempv[rows * 11];
-              c13 = &tempv[rows * 12];
-              c14 = &tempv[rows * 13];
-              c15 = &tempv[rows * 14];
-              c16 = &tempv[rows * 15];
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
-              }
-              for (int t = 0; t < q_val; t++) {
-                for (int s = 0; s < 360; s++) {
-                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
-                }
-              }
-              in = in + (q_val * 360);
               index = 0;
-              for (int col = 0; col < (mod * 2); col++) {
-                offset = twist256n[col];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-              }
-              index = 0;
-              for (int j = 0; j < rows; j++) {
-                tempu[index++] = c1[j];
-                tempu[index++] = c2[j];
-                tempu[index++] = c3[j];
-                tempu[index++] = c4[j];
-                tempu[index++] = c5[j];
-                tempu[index++] = c6[j];
-                tempu[index++] = c7[j];
-                tempu[index++] = c8[j];
-                tempu[index++] = c9[j];
-                tempu[index++] = c10[j];
-                tempu[index++] = c11[j];
-                tempu[index++] = c12[j];
-                tempu[index++] = c13[j];
-                tempu[index++] = c14[j];
-                tempu[index++] = c15[j];
-                tempu[index++] = c16[j];
-              }
-              index = 0;
-              for (int d = 0; d < frame_size / (mod * 2); d++) {
+              for (int d = 0; d < frame_size / 8; d++) {       // 1bit/unsigned char => 8bit/unsigned char (voll belegt)
                 pack = 0;
-                for (int e = 0; e < (mod * 2); e++) {
-                  offset = mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+                for (int e = 0; e < 8 ; e++) {
+                  pack |= in[tempv[index++]] << (7 - e);
                 }
-                out[produced++] = pack >> 8;
-                out[produced++] = pack & 0xff;
-                consumed += (mod * 2);
+                out[produced++] = pack;
               }
+              in += frame_size;
+              consumed += frame_size;
             }
           }
           else {
@@ -456,7 +478,7 @@ namespace gr {
             }
             for (int i = 0; i < noutput_items; i += packed_items) {
               rows = frame_size / mod;
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+              const unsigned short *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
               c1 = &tempv[0];
               c2 = &tempv[rows];
               c3 = &tempv[rows * 2];

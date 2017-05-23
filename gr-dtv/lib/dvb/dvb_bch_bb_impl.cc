@@ -440,31 +440,6 @@ namespace gr {
       }
     }
 
-	/*
-	* Pack the polynomial into a 64 bit array
-	*/
-	void
-		dvb_bch_bb_impl::poly_pack_64(const int *pin, unsigned long long* pout, int len)
-	{
-		int lw = len / 64;
-		int ptr = 0;
-		unsigned long long temp;
-		if (len % 64) {
-			lw++;
-		}
-
-		for (int i = 0; i < lw; i++) {
-			temp = 0x8000000000000000;
-			pout[i] = 0;
-			for (int j = 0; j < 64; j++) {
-				if (pin[ptr++]) {
-					pout[i] |= temp;
-				}
-				temp >>= 1;
-			}
-		}
-	}
-
     void
     dvb_bch_bb_impl::poly_reverse(int *pin, int *pout, int len)
     {
@@ -514,17 +489,6 @@ namespace gr {
       sr[1] = (sr[1] >> 1) | (sr[0] << 31);
       sr[0] = (sr[0] >> 1);
     }
-
-	/*
-	* Shift 192 bits
-	*/
-	inline void
-		dvb_bch_bb_impl::reg_3_shift(unsigned long long *sr)
-	{
-		sr[2] = (sr[2] >> 1) | (sr[1] << 63);
-		sr[1] = (sr[1] >> 1) | (sr[0] << 63);
-		sr[0] = (sr[0] >> 1);
-	}
 
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
@@ -590,11 +554,11 @@ namespace gr {
       len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_n_12, 192);
-	  poly_pack_64(polyout[0], m_poly_n_12_64, 192);
 
-	  for (int i = 0; i < 192; i += 1) {
-		  polynome[i] = polyout[0][i];
-	  }
+      //pack the polynome in a bitset
+      for (int i = 0; i < 192; i += 1) {
+        polynome[i] = polyout[0][i];
+      }
 
       len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
       len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
@@ -633,27 +597,26 @@ namespace gr {
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
       unsigned int shift[6];
-	  std::bitset<192> parity_bits;
+      std::bitset<192> parity_bits;
       int consumed = 0;
 
       switch (bch_code) {
         case BCH_CODE_N12:
           for (int i = 0; i < noutput_items; i += nbch) {
-            // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
               b = (temp ^ parity_bits[191]);
-			  parity_bits <<= 1;
+              parity_bits <<= 1;
               if (b) {
-				  parity_bits ^= polynome;
+                parity_bits ^= polynome;
               }
             }
             // Now add the parity bits to the output
             for (int n = 0; n < 192; n++) {
               *out++ = (char) parity_bits[191];
-			  parity_bits <<= 1;
+              parity_bits <<= 1;
             }
           }
           break;

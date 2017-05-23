@@ -37,8 +37,8 @@ namespace gr {
       int q_val;
       int mod;
       int packed_items;
-      unsigned char tempu[FRAME_SIZE_NORMAL];
-      unsigned char tempv[FRAME_SIZE_NORMAL];
+      unsigned short tempu[FRAME_SIZE_NORMAL];
+      unsigned short tempv[FRAME_SIZE_NORMAL];
 
       const static int twist16n[8];
       const static int twist64n[12];
