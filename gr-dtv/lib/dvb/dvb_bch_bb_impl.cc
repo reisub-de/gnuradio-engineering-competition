@@ -397,15 +397,15 @@ namespace gr {
     {
       memset(out, 0, sizeof(int) * (lena + lenb));
 
-      for (int i = 0; i < lena; ++i) {
-        for (int j = 0; j < lenb; ++j) {
+      for (int i = 0; i < lena; i++) {
+        for (int j = 0; j < lenb; j++) {
           if (ina[i] * inb[j] > 0 ) {
             ++out[i + j];    // count number of terms for this pwr of x
           }
         }
       }
       int max = 0;
-      for (int i = 0; i < lena + lenb; ++i) {
+      for (int i = 0; i < lena + lenb; i++) {
         out[i] = out[i] & 1;    // If even ignore the term
         if(out[i]) {
           max = i;
@@ -425,13 +425,13 @@ namespace gr {
       int ptr = 0;
       unsigned int temp;
       if (len % 32) {
-        ++lw;
+        lw++;
       }
 
-      for (int i = 0; i < lw; ++i) {
+      for (int i = 0; i < lw; i++) {
         temp = 0x80000000;
         pout[i] = 0;
-        for (int j = 0; j < 32; ++j) {
+        for (int j = 0; j < 32; j++) {
           if (pin[ptr++]) {
             pout[i] |= temp;
           }
@@ -446,7 +446,7 @@ namespace gr {
       int c;
       c = len - 1;
 
-      for (int i = 0; i < len; ++i) {
+      for (int i = 0; i < len; i++) {
         pout[c--] = pin[i];
       }
     }
@@ -613,10 +613,10 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = 0; j < kbch_int; ++j) {
+            for (int j = 0; j < kbch_int; j++) {
               temp = *in++;
               *out++ = temp;
-              ++consumed;
+              consumed++;
               b = (temp ^ (shift[5] & 1));
               reg_6_shift(shift);
               if (b) {
@@ -629,7 +629,7 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            for (int n = 0; n < 192; ++n) {
+            for (int n = 0; n < 192; n++) {
               *out++ = (shift[5] & 1);
               reg_6_shift(shift);
             }
@@ -640,10 +640,10 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 5);
             // MSB of the codeword first
-            for (int j = 0; j < kbch_int; ++j) {
+            for (int j = 0; j < kbch_int; j++) {
               temp = *in++;
               *out++ = temp;
-              ++consumed;
+              consumed++;
               b = (temp ^ (shift[4] & 1));
               reg_5_shift(shift);
               if (b) {
@@ -655,7 +655,7 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            for( int n = 0; n < 160; ++n ) {
+            for( int n = 0; n < 160; n++ ) {
               *out++ = (shift[4] & 1);
               reg_5_shift(shift);
             }
@@ -666,10 +666,10 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 4);
             // MSB of the codeword first
-            for (int j = 0; j < kbch_int; ++j) {
+            for (int j = 0; j < kbch_int; j++) {
               temp = *in++;
               *out++ = temp;
-              ++consumed;
+              consumed++;
               b = temp ^ (shift[3] & 1);
               reg_4_shift(shift);
               if (b) {
@@ -680,7 +680,7 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            for (int n = 0; n < 128; ++n) {
+            for (int n = 0; n < 128; n++) {
               *out++ = shift[3] & 1;
               reg_4_shift(shift);
             }
@@ -691,10 +691,10 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = 0; j < kbch_int; ++j) {
+            for (int j = 0; j < kbch_int; j++) {
               temp = *in++;
               *out++ = temp;
-              ++consumed;
+              consumed++;
               b = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
               reg_6_shift(shift);
               if (b) {
@@ -707,7 +707,7 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            for (int n = 0; n < 168; ++n) {
+            for (int n = 0; n < 168; n++) {
               *out++ = (shift[5] & 0x01000000) ? 1 : 0;
               reg_6_shift(shift);
             }
@@ -718,10 +718,10 @@ namespace gr {
             //Zero the shift register
             memset(shift, 0, sizeof(unsigned int) * 6);
             // MSB of the codeword first
-            for (int j = 0; j < kbch_int; ++j) {
+            for (int j = 0; j < kbch_int; j++) {
               temp = *in++;
               *out++ = temp;
-              ++consumed;
+              consumed++;
               b = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
               reg_6_shift(shift);
               if (b) {
@@ -734,7 +734,7 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            for (int n = 0; n < 180; ++n) {
+            for (int n = 0; n < 180; n++) {
               *out++ = (shift[5] & 0x00001000) ? 1 : 0;
               reg_6_shift(shift);
             }
