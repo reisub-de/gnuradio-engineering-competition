@@ -2718,6 +2718,7 @@ namespace gr {
           for (int n = 0; n < left_nulls; n++) {
             *out++ = zero;
           }
+          
           const int pn_seq_j = pn_sequence[j];
           if (j < N_P2) { // if j < N_P2
             for (int n = 0; n < C_PS; n++) {
@@ -2738,6 +2739,7 @@ namespace gr {
             }
           } // end if j < N_P2
           else if (__builtin_expect(!!(j != (num_symbols - L_FC)), 1)) { // else
+            // Because init_pilots only affects values in the data_carrier_map array, only initilialize it here
             init_pilots(j);
             for (int n = 0; n < C_PS; n++) {
               switch (data_carrier_map[n]) {
