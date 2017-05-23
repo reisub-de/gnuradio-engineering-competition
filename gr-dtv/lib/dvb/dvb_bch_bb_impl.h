@@ -53,7 +53,6 @@ namespace gr {
 	  inline void reg_128b_shift(uint64_t*);
 	  inline void reg_160b_shift(uint64_t*);
 	  inline void reg_192b_shift(uint64_t*);
-    {
       void bch_poly_build_tables(void);
 
      public:

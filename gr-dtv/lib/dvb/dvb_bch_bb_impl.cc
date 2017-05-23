@@ -454,7 +454,7 @@ namespace gr {
       }
 
       for (int i = 0; i < lw; i++) {
-        temp = 1 << 63;
+        temp = (uint64_t)1 << 63;
         pout[i] = 0;
         for (int j = 0; j < 64; j++) {
           if (pin[ptr++]) {
