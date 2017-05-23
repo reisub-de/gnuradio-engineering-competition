@@ -279,15 +279,20 @@ namespace gr {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       
-      
 
+#define AVX_ON 1
+#if AVX_ON
+      __m256i in_256;
+      __m256i random_256;
+      __m256i out_256;
+      
       // For scrambling use For loop enrolling and AVX2
       // Instead of processing each byte, process 32-byte-blocks in Hardware      
       for (int i = 0; i < noutput_items; i += kbch) {
         for (int j = 0; j < (int)kbch; j += 64) {
-          __m256i in_256 = _mm256_loadu_si256((__m256i const*) &in[i + j]);
-          __m256i random_256 = _mm256_loadu_si256((__m256i const*) &bb_randomise[j]);
-          __m256i out_256 = _mm256_xor_si256(in_256, random_256);
+          in_256 = _mm256_loadu_si256((__m256i const*) &in[i + j]);
+          random_256 = _mm256_loadu_si256((__m256i const*) &bb_randomise[j]);
+          out_256 = _mm256_xor_si256(in_256, random_256);
           _mm256_storeu_si256((__m256i*)&out[i+j], out_256);
           
           in_256 = _mm256_loadu_si256((__m256i const *) &in[i + j + 32]);
@@ -296,7 +301,26 @@ namespace gr {
           _mm256_storeu_si256((__m256i*)&out[i + j + 32], out_256);
         }
       }
-
+#else
+      __m128i in_128;
+      __m128i random_128;
+      __m128i out_128;
+      
+      for (int i = 0; i < noutput_items; i += kbch) {
+        for (int j = 0; j < (int)kbch; j += 32) {
+          in_128 = _mm_loadu_si128((__m128i*) &in[i + j]);
+          random_128 = _mm_loadu_si128((__m128i*) &bb_randomise[j]);
+          out_128 = _mm_xor_si128(in_128, random_128);
+          _mm_storeu_si128((__m128i*)&out[i+j], out_128);
+          
+          in_128 = _mm_loadu_si128((__m128i*) &in[i + j + 16]);
+          random_128 = _mm_loadu_si128((__m128i*) &bb_randomise[j+ 16]);
+          out_128 = _mm_xor_si128(in_128, random_128);
+          _mm_storeu_si128((__m128i*)&out[i+j+ 16], out_128);
+        }
+      }
+#endif
+    
       // Tell runtime system how many output items we produced.
       return noutput_items;
     }
