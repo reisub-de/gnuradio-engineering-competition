@@ -179,6 +179,7 @@ namespace gr {
 
       switch (signal_constellation) {
         case MOD_QPSK:
+		{
           rows = frame_size / 2;
 		  for (int i = 0; i < noutput_items; i += packed_items) {
             if (code_rate == C1_3 || code_rate == C2_5) {
@@ -206,7 +207,9 @@ namespace gr {
             }
           }
           break;
+		}
         case MOD_16QAM:
+		{
           if (frame_size == FRAME_SIZE_NORMAL) {
             twist = &twist16n[0];
           }
@@ -280,7 +283,9 @@ namespace gr {
             }
           }
           break;
+		}
         case MOD_64QAM:
+		{
           if (frame_size == FRAME_SIZE_NORMAL) {
             twist = &twist64n[0];
           }
@@ -362,7 +367,9 @@ namespace gr {
             }
           }
           break;
+		}
         case MOD_256QAM:
+		{
           if (frame_size == FRAME_SIZE_NORMAL) {
             if (code_rate == C3_5) {
               mux = &mux256_35[0];
@@ -510,6 +517,7 @@ namespace gr {
             }
           }
           break;
+		}
       }
 
       // Tell runtime system how many input items we consumed on
