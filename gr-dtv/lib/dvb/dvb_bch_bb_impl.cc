@@ -439,6 +439,31 @@ namespace gr {
         }
       }
     }
+    
+    /*
+     * Pack the polynomial into a 64 bit array
+     */
+    void
+    dvb_bch_bb_impl::poly_pack64(const int *pin, uint64_t* pout, int len)
+    {
+      int lw = len / 64;
+      int ptr = 0;
+      uint64_t temp;
+      if (len % 64) {
+        lw++;
+      }
+
+      for (int i = 0; i < lw; i++) {
+        temp = 1 << 63;
+        pout[i] = 0;
+        for (int j = 0; j < 64; j++) {
+          if (pin[ptr++]) {
+            pout[i] |= temp;
+          }
+          temp >>= 1;
+        }
+      }
+    }
 
     void
     dvb_bch_bb_impl::poly_reverse(int *pin, int *pout, int len)
@@ -454,18 +479,32 @@ namespace gr {
     /*
      *Shift a 128 bit register
      */
-    inline void
+	inline void
+	dvb_bch_bb_impl::reg_128b_shift(uint64_t *sr)
+	{
+	  sr[1] = (sr[1] >> 1) | (sr[0] << 63);
+      sr[0] = (sr[0] >> 1);
+	}
+    /*inline void
     dvb_bch_bb_impl::reg_4_shift(unsigned int *sr)
     {
       sr[3] = (sr[3] >> 1) | (sr[2] << 31);
       sr[2] = (sr[2] >> 1) | (sr[1] << 31);
       sr[1] = (sr[1] >> 1) | (sr[0] << 31);
       sr[0] = (sr[0] >> 1);
-    }
+    }*/
 
     /*
      * Shift 160 bits
      */
+	inline void
+    dvb_bch_bb_impl::reg_160b_shift(uint64_t *sr)
+    {
+	  sr[2] = (sr[2] >> 1) | (sr[1] << 63);
+	  sr[1] = (sr[1] >> 1) | (sr[0] << 63);
+      sr[0] = (sr[0] >> 1);
+	}
+    /*
     inline void
     dvb_bch_bb_impl::reg_5_shift(unsigned int *sr)
     {
@@ -474,11 +513,19 @@ namespace gr {
       sr[2] = (sr[2] >> 1) | (sr[1] << 31);
       sr[1] = (sr[1] >> 1) | (sr[0] << 31);
       sr[0] = (sr[0] >> 1);
-    }
+    }*/
 
     /*
      * Shift 192 bits
      */
+	inline void
+    dvb_bch_bb_impl::reg_192b_shift(uint64_t *sr)
+    {
+	  sr[2] = (sr[2] >> 1) | (sr[1] << 63);
+	  sr[1] = (sr[1] >> 1) | (sr[0] << 63);
+      sr[0] = (sr[0] >> 1);
+	}
+	/*
     inline void
     dvb_bch_bb_impl::reg_6_shift(unsigned int *sr)
     {
@@ -488,7 +535,7 @@ namespace gr {
       sr[2] = (sr[2] >> 1) | (sr[1] << 31);
       sr[1] = (sr[1] >> 1) | (sr[0] << 31);
       sr[0] = (sr[0] >> 1);
-    }
+    }*/
 
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
@@ -545,15 +592,18 @@ namespace gr {
       len = poly_mult(polyn06, 17, polyout[1], len, polyout[0]);
       len = poly_mult(polyn07, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn08, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_8, 128);
+      //poly_pack(polyout[0], m_poly_n_8, 128);
+	  poly_pack64(polyout[0], m_poly64_n_8, 128);
 
       len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn10, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_10, 160);
+      //poly_pack(polyout[0], m_poly_n_10, 160);
+      poly_pack64(polyout[0], m_poly64_n_10, 160);
 
       len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_n_12, 192);
+      //poly_pack(polyout[0], m_poly_n_12, 192);
+	  poly_pack64(polyout[0], m_poly64_n_12, 192);
 
       len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
       len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
@@ -566,7 +616,8 @@ namespace gr {
       len = poly_mult(polys10, 15, polyout[1], len, polyout[0]);
       len = poly_mult(polys11, 15, polyout[0], len, polyout[1]);
       len = poly_mult(polys12, 15, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_s_12, 168);
+      //poly_pack(polyout[0], m_poly_s_12, 168);
+	  poly_pack64(polyout[0], m_poly64_s_12, 168);
 
       len = poly_mult(polym01, 16, polym02,    16,  polyout[0]);
       len = poly_mult(polym03, 16, polyout[0], len, polyout[1]);
@@ -579,7 +630,8 @@ namespace gr {
       len = poly_mult(polym10, 16, polyout[1], len, polyout[0]);
       len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
       len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
-      poly_pack(polyout[0], m_poly_m_12, 180);
+      //poly_pack(polyout[0], m_poly_m_12, 180);
+	  poly_pack64(polyout[0], m_poly64_m_12, 180);
     }
 
     int
@@ -591,139 +643,129 @@ namespace gr {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
-      unsigned int shift[6];
+      //unsigned int shift[6];
+	  uint64_t shift[3];
       int consumed = 0;
 
       switch (bch_code) {
         case BCH_CODE_N12:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
+            //memset(shift, 0, sizeof(unsigned int) * 6);
+			  memset(shift,0,sizeof(uint64_t) * 3);
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
-              b = (temp ^ (shift[5] & 1));
-              reg_6_shift(shift);
+              //b = (temp ^ (shift[5] & 1));
+			  b = (temp ^ (shift[2] & 1));
+              reg_192b_shift(shift);
               if (b) {
-                shift[0] ^= m_poly_n_12[0];
-                shift[1] ^= m_poly_n_12[1];
-                shift[2] ^= m_poly_n_12[2];
-                shift[3] ^= m_poly_n_12[3];
-                shift[4] ^= m_poly_n_12[4];
-                shift[5] ^= m_poly_n_12[5];
+                shift[0] ^= m_poly64_n_12[0];
+                shift[1] ^= m_poly64_n_12[1];
+                shift[2] ^= m_poly64_n_12[2];
               }
             }
             // Now add the parity bits to the output
             for (int n = 0; n < 192; n++) {
-              *out++ = (shift[5] & 1);
-              reg_6_shift(shift);
+              *out++ = (shift[2] & 1);
+              reg_192b_shift(shift);
             }
           }
           break;
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 5);
+            memset(shift, 0, sizeof(uint64_t) * 3);
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
-              b = (temp ^ (shift[4] & 1));
-              reg_5_shift(shift);
+              b = (temp ^ (shift[2] & 1));
+              reg_160b_shift(shift);
               if (b) {
-                shift[0] ^= m_poly_n_10[0];
-                shift[1] ^= m_poly_n_10[1];
-                shift[2] ^= m_poly_n_10[2];
-                shift[3] ^= m_poly_n_10[3];
-                shift[4] ^= m_poly_n_10[4];
+                shift[0] ^= m_poly64_n_10[0];
+                shift[1] ^= m_poly64_n_10[1];
+                shift[2] ^= m_poly64_n_10[2];
               }
             }
             // Now add the parity bits to the output
             for( int n = 0; n < 160; n++ ) {
-              *out++ = (shift[4] & 1);
-              reg_5_shift(shift);
+              *out++ = (shift[2] & 1);
+              reg_160b_shift(shift);
             }
           }
           break;
         case BCH_CODE_N8:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 4);
+            memset(shift, 0, sizeof(uint64_t) * 4);
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
-              b = temp ^ (shift[3] & 1);
-              reg_4_shift(shift);
+              b = temp ^ (shift[1] & 1);
+              reg_128b_shift(shift);
               if (b) {
-                shift[0] ^= m_poly_n_8[0];
-                shift[1] ^= m_poly_n_8[1];
-                shift[2] ^= m_poly_n_8[2];
-                shift[3] ^= m_poly_n_8[3];
+                shift[0] ^= m_poly64_n_8[0];
+                shift[1] ^= m_poly64_n_8[1];
               }
             }
             // Now add the parity bits to the output
             for (int n = 0; n < 128; n++) {
-              *out++ = shift[3] & 1;
-              reg_4_shift(shift);
+              *out++ = shift[1] & 1;
+              reg_128b_shift(shift);
             }
           }
           break;
         case BCH_CODE_S12:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
+            memset(shift, 0, sizeof(uint64_t) * 3);
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
-              b = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
-              reg_6_shift(shift);
+              b = (temp ^ ((shift[2] & 0x01000000) ? 1 : 0));
+              reg_192b_shift(shift);
               if (b) {
-                shift[0] ^= m_poly_s_12[0];
-                shift[1] ^= m_poly_s_12[1];
-                shift[2] ^= m_poly_s_12[2];
-                shift[3] ^= m_poly_s_12[3];
-                shift[4] ^= m_poly_s_12[4];
-                shift[5] ^= m_poly_s_12[5];
+                shift[0] ^= m_poly64_s_12[0];
+                shift[1] ^= m_poly64_s_12[1];
+                shift[2] ^= m_poly64_s_12[2];
               }
             }
             // Now add the parity bits to the output
             for (int n = 0; n < 168; n++) {
-              *out++ = (shift[5] & 0x01000000) ? 1 : 0;
-              reg_6_shift(shift);
+              *out++ = (shift[2] & 0x01000000) ? 1 : 0;
+              reg_192b_shift(shift);
             }
           }
           break;
         case BCH_CODE_M12:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
+            memset(shift, 0, sizeof(uint64_t) * 6);
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
-              b = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
-              reg_6_shift(shift);
+              b = (temp ^ ((shift[2] & 0x00001000) ? 1 : 0));
+              reg_192b_shift(shift);
               if (b) {
-                shift[0] ^= m_poly_m_12[0];
-                shift[1] ^= m_poly_m_12[1];
-                shift[2] ^= m_poly_m_12[2];
-                shift[3] ^= m_poly_m_12[3];
-                shift[4] ^= m_poly_m_12[4];
-                shift[5] ^= m_poly_m_12[5];
+                shift[0] ^= m_poly64_m_12[0];
+                shift[1] ^= m_poly64_m_12[1];
+                shift[2] ^= m_poly64_m_12[2];
               }
             }
             // Now add the parity bits to the output
             for (int n = 0; n < 180; n++) {
-              *out++ = (shift[5] & 0x00001000) ? 1 : 0;
-              reg_6_shift(shift);
+              *out++ = (shift[2] & 0x00001000) ? 1 : 0;
+              reg_192b_shift(shift);
             }
           }
           break;
