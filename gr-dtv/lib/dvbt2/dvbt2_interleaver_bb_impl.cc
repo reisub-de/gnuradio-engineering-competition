@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -76,6 +76,7 @@ namespace gr {
             nbch = 0;
             q_val = 0;
             break;
+
         }
       }
       else {
@@ -175,8 +176,10 @@ namespace gr {
       unsigned int pack;
       const int *twist;
       const int *mux;
+      // static bool debug_wrote_input = false;
+      // static bool debug_wrote_output = false;
 
-      switch (signal_constellation) {
+      switch (__builtin_expect(signal_constellation, MOD_256QAM)) { // hehe, corner-case optimization!
         case MOD_QPSK:
           for (int i = 0; i < noutput_items; i += packed_items) {
             rows = frame_size / 2;
@@ -362,7 +365,7 @@ namespace gr {
           }
           break;
         case MOD_256QAM:
-          if (frame_size == FRAME_SIZE_NORMAL) {
+          if (__builtin_expect(frame_size == FRAME_SIZE_NORMAL, 1)) { // hehe, corner-case optimization!
             if (code_rate == C3_5) {
               mux = &mux256_35[0];
             }
@@ -373,11 +376,79 @@ namespace gr {
               mux = &mux256[0];
             }
             for (int i = 0; i < noutput_items; i += packed_items) {
-              rows = frame_size / (mod * 2);
+              #if 1 // new implementation, only tested for qval=72, K=38880, channels=16, rows=4050
+              // if (!debug_wrote_input) {
+              //  FILE* f = fopen("/home/fabian/interleave-new-in.bin", "wb");
+              //  fwrite(in, ninput_items[0], 1, f);
+              //  fclose(f);
+              //  debug_wrote_input = true;
+              // }
+              const int a=360;
+              const int channels = mod*2;
+              rows = frame_size/channels; // 4050
+              const int full_columns = nbch/rows;
+              const int full_columns_bits = full_columns*rows;
+              const int last_info_column_bits = nbch-full_columns_bits;
+              unsigned char* ut;
+              unsigned char* vt;
+              // parity interleaving
+              // only copy bytes starting at the first row which is not completely filled with information bits
+              memcpy(tempu, in+full_columns*rows, last_info_column_bits);
+              ut = tempu+last_info_column_bits;
+              for (int t=0; t<q_val; t++)
+                for (int s=0; s<a; s++)
+                  *ut++ = in[nbch+q_val*s+t];
+              // column twist interleaving
+              for (int c_ind=0; c_ind<channels; c_ind++) {
+                const int c = mux[c_ind]; // does bitmuxing in advance
+                vt = tempv+c;
+                // twisted bits first
+                if (c_ind >= full_columns)
+                  ut = tempu + rows*(c_ind-full_columns);
+                else
+                  ut = const_cast<unsigned char*>(in + rows*c_ind);
+                const int twist = twist256n[c_ind];
+                for (int r=rows-twist; r<rows; r++) {
+                  *vt = ut[r];
+                  vt += channels;
+                }
+                // untwisted bits
+                for (int r=0; r<rows-twist; r++) {
+                  *vt = *ut++;
+                  vt += channels;
+                }
+              }
+              // bit muxing
+              vt = tempv;
+              for (int r=0; r<rows*2; r++) {
+                uint8_t temp = 0;
+                for (int i=7; i>=0; i--)
+                  temp |= *vt++ << i;
+                *out++ = temp;
+              }
+              consumed += frame_size;
+              in += consumed;
+              //DEBUG: write out test output
+              // if (!debug_wrote_output) {
+              //   FILE* f = fopen("/home/fabian/interleave-new-out.bin", "wb");
+              //   fwrite(output_items[0], rows*2, 1, f);
+              //   fclose(f);
+              //   debug_wrote_output = true;
+              // }
+              #else // old implementation
+              //DEBUG: write out test input
+              //if (!debug_wrote_input) {
+              //  FILE* f = fopen("/home/fabian/interleave-in.bin", "wb");
+              //  fwrite(in, ninput_items[0], 1, f);
+              //  fclose(f);
+              //  debug_wrote_input = true;
+              //}
+              rows = frame_size / (mod * 2); // 4050
+              // 16 columns input data (4050 rows *16columns)
               const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
               const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-              c1 = &tempv[0];
-              c2 = &tempv[rows];
+              c1 = &tempv[rows * 0];
+              c2 = &tempv[rows * 1];
               c3 = &tempv[rows * 2];
               c4 = &tempv[rows * 3];
               c5 = &tempv[rows * 4];
@@ -436,15 +507,23 @@ namespace gr {
                 pack = 0;
                 for (int e = 0; e < (mod * 2); e++) {
                   offset = mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+                  pack |= tempu[index++] << (((mod * 2) - 1) - offset); // tempu[0] is msb, tempu[15] is lsb (after twist)
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
                 consumed += (mod * 2);
               }
+              //DEBUG: write out test output
+              // if (!debug_wrote_output) {
+              //   FILE* f = fopen("/home/fabian/interleave-out.bin", "wb");
+              //   fwrite(out, produced, 1, f);
+              //   fclose(f);
+              //   debug_wrote_output = true;
+              // }
+              #endif
             }
           }
-          else {
+          else { // -> FRAME_SIZE_SHORT (unused)
             if (code_rate == C1_3) {
               mux = &mux256s_13[0];
             }
@@ -621,4 +700,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-

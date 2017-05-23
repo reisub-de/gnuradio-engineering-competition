@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -37,8 +37,8 @@ namespace gr {
       int q_val;
       int mod;
       int packed_items;
-      unsigned char tempu[FRAME_SIZE_NORMAL];
-      unsigned char tempv[FRAME_SIZE_NORMAL];
+      unsigned char tempu[FRAME_SIZE_NORMAL]; // input bits
+      unsigned char tempv[FRAME_SIZE_NORMAL]; // output bits
 
       const static int twist16n[8];
       const static int twist64n[12];
@@ -81,4 +81,3 @@ namespace gr {
 } // namespace gr
 
 #endif /* INCLUDED_DTV_DVBT2_INTERLEAVER_BB_IMPL_H */
-
