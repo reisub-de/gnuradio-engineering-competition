@@ -87,6 +87,7 @@ namespace gr {
       int ofdm_fft_size;
 
       const static unsigned char pn_sequence_table[CHIPS / 8];
+      const static int pp7_cp_all[180];
       const static int p2_papr_map_1k[10];
       const static int p2_papr_map_2k[18];
       const static int p2_papr_map_4k[36];
