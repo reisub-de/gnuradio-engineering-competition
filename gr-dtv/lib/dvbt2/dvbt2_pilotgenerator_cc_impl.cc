@@ -2732,30 +2732,51 @@ namespace gr {
         L_FC = 1;
       }
       for (int i = 0; i < noutput_items; i += num_symbols) {
-        for (int j = 0; j < num_symbols; j++) { // for every OFDM symbol j in output item i
+        int j = 0;
+        // At first do all the first N_P2 (= 1 here) OFDM-symbols
+        while (j < N_P2) {
           for (int n = 0; n < left_nulls; n++) {
             *out++ = zero;
           }
           const int pn_seq_j = pn_sequence[j];
-          if (j < N_P2) { // if j < N_P2
-            for (int n = 0; n < C_PS; n++) {
-              switch (p2_carrier_map[n]) {
-                case P2PILOT_CARRIER:
-                  *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case P2PILOT_CARRIER_INVERTED:
-                  *out++ = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case P2PAPR_CARRIER:
-                  *out++ = zero;
-                  break;
-                default:
-                  *out++ = *in++;
-                  break;
-              }
+          for (int n = 0; n < C_PS; n++) {
+            switch (p2_carrier_map[n]) {
+              case P2PILOT_CARRIER:
+                *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
+                break;
+              case P2PILOT_CARRIER_INVERTED:
+                *out++ = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
+                break;
+              case P2PAPR_CARRIER:
+                *out++ = zero;
+                break;
+              default:
+                *out++ = *in++;
+                break;
             }
-          } // end if j < N_P2
-          else if (__builtin_expect(!!(j != (num_symbols - L_FC)), 1)) { // else
+          }
+          for (int n = 0; n < right_nulls; n++) {
+            *out++ = zero;
+          }
+          out -= ofdm_fft_size;
+          if (equalization_enable == EQUALIZATION_ON) {
+            volk_32fc_x2_multiply_32fc(out, out, inverse_sinc, ofdm_fft_size);
+          }
+          dst = ofdm_fft->get_inbuf();
+          memcpy(&dst[ofdm_fft_size / 2], &out[0], sizeof(gr_complex) * ofdm_fft_size / 2);
+          memcpy(&dst[0], &out[ofdm_fft_size / 2], sizeof(gr_complex) * ofdm_fft_size / 2);
+          ofdm_fft->execute();
+          volk_32fc_s32fc_multiply_32fc(out, ofdm_fft->get_outbuf(), normalization, ofdm_fft_size);
+          out += ofdm_fft_size;
+          ++j;
+        }
+        // Then do the remaining num_symbols - N_P2 symbols
+        while (j < num_symbols) {
+          for (int n = 0; n < left_nulls; n++) {
+            *out++ = zero;
+          }
+          const int pn_seq_j = pn_sequence[j];
+          if (j != num_symbols - L_FC) {
             // Because init_pilots only affects values in the data_carrier_map array, only initilialize it here
             init_pilots(j);
             for (int n = 0; n < C_PS; n++) {
@@ -2779,7 +2800,7 @@ namespace gr {
                   break;
               }
             }
-          } // end else 
+          }
           else { // j == num_symbols * L_FC
             for (int n = 0; n < C_PS; n++) {
               switch (fc_carrier_map[n]) {
@@ -2811,7 +2832,8 @@ namespace gr {
           ofdm_fft->execute();
           volk_32fc_s32fc_multiply_32fc(out, ofdm_fft->get_outbuf(), normalization, ofdm_fft_size);
           out += ofdm_fft_size;
-        } // end for every OFDM symbol j
+          ++j;
+        }
       }
 
       // Tell runtime system how many input items we consumed on
