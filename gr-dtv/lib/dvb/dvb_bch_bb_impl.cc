@@ -373,6 +373,7 @@ namespace gr {
 
       bch_poly_build_tables();
       set_output_multiple(nbch);
+	  output_lut_build();
     }
 
     /*
@@ -486,14 +487,15 @@ namespace gr {
 	  sr[1] = (sr[1] >> 1) | (sr[0] << 63);
       sr[0] = (sr[0] >> 1);
 	}
-    /*inline void
-    dvb_bch_bb_impl::reg_4_shift(unsigned int *sr)
-    {
-      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
-      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
-      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
-      sr[0] = (sr[0] >> 1);
-    }*/
+	/* 
+	 * Shift 128 bits by 16 bits
+	 */
+	inline void
+    dvb_bch_bb_impl::reg_128b_shift16(uint64_t *sr)
+	{
+		sr[1] = (sr[1] >> 16) | (sr[0] << 47);
+		sr[0] = (sr[0] >> 16);
+	}
 
     /*
      * Shift 160 bits
@@ -505,16 +507,17 @@ namespace gr {
 	  sr[1] = (sr[1] >> 1) | (sr[0] << 63);
       sr[0] = (sr[0] >> 1);
 	}
-    /*
-    inline void
-    dvb_bch_bb_impl::reg_5_shift(unsigned int *sr)
-    {
-      sr[4] = (sr[4] >> 1) | (sr[3] << 31);
-      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
-      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
-      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
-      sr[0] = (sr[0] >> 1);
-    }*/
+	
+	/* 
+	 * Shift 160 bits by 16 bits
+	 */
+	inline void
+    dvb_bch_bb_impl::reg_160b_shift16(uint64_t *sr)
+	{
+		sr[2] = (sr[2] >> 16) | (sr[1] << 47);
+		sr[1] = (sr[1] >> 16) | (sr[0] << 47);
+		sr[0] = (sr[0] >> 16);
+	}
 
     /*
      * Shift 192 bits
@@ -526,17 +529,28 @@ namespace gr {
 	  sr[1] = (sr[1] >> 1) | (sr[0] << 63);
       sr[0] = (sr[0] >> 1);
 	}
-	/*
-    inline void
-    dvb_bch_bb_impl::reg_6_shift(unsigned int *sr)
-    {
-      sr[5] = (sr[5] >> 1) | (sr[4] << 31);
-      sr[4] = (sr[4] >> 1) | (sr[3] << 31);
-      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
-      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
-      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
-      sr[0] = (sr[0] >> 1);
-    }*/
+	/* 
+	 * Shift 192 bits by 16 bits
+	 */
+	inline void
+    dvb_bch_bb_impl::reg_192b_shift16(uint64_t *sr)
+	{
+		sr[2] = (sr[2] >> 16) | (sr[1] << 47);
+		sr[1] = (sr[1] >> 16) | (sr[0] << 47);
+		sr[0] = (sr[0] >> 16);
+	}
+	
+	void
+	output_lut_build(void){
+		for(int i = 0; i < 65536; i++){
+			for(int j = 0; j < 16; j++){
+				if(i & (1 << j))
+					output_lookup_table.b[i][j]=1;
+				else
+					output_lookup_table.b[i][j]=0;
+			}
+		}
+	}
 
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
@@ -643,6 +657,7 @@ namespace gr {
     {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
+	  uint64_t *out64;
       unsigned char b, temp;
       //unsigned int shift[6];
 	  uint64_t shift[3];
@@ -669,10 +684,17 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
+            out64 = out;
+			for (int n = 0; n < 192/16; n++) {
+				*out64++ = output_lookup_table.lw[shift[2] & 0xffff];
+				reg_192b_shift16(shift);
+			}
+			/*
             for (int n = 0; n < 192; n++) {
               *out++ = (shift[2] & 1);
               reg_192b_shift(shift);
             }
+            */
           }
           break;
         case BCH_CODE_N10:
