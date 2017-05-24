@@ -38,11 +38,11 @@ namespace gr {
       //unsigned int m_poly_n_12[6];
       //unsigned int m_poly_s_12[6];
       //unsigned int m_poly_m_12[6];
-      uint64_t m_poly64_n_8[4];
-      uint64_t m_poly64_n_10[5];
-      uint64_t m_poly64_n_12[6];
-      uint64_t m_poly64_s_12[6];
-      uint64_t m_poly64_m_12[6];
+      uint64_t m_poly64_n_8[2];
+      uint64_t m_poly64_n_10[3];
+      uint64_t m_poly64_n_12[3];
+      uint64_t m_poly64_s_12[3];
+      uint64_t m_poly64_m_12[3];
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
       void poly_pack64(const int*, uint64_t*, int);
