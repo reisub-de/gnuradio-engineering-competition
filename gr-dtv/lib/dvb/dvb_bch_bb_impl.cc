@@ -25,7 +25,6 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_bch_bb_impl.h"
 
-#include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
 
@@ -613,7 +612,7 @@ namespace gr {
             unsigned int num_loop = noutput_items / nbch;
             if (num_loop >= max_thread_num) thread_needed = max_thread_num;
             else thread_needed = num_loop;
-            gr::dtv::ThreadPool thread_pool(thread_needed);
+            gr_thread_pool thread_pool(thread_needed);
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
@@ -631,7 +630,7 @@ namespace gr {
             unsigned int num_loop = noutput_items / nbch;
             if (num_loop >= max_thread_num) thread_needed = max_thread_num;
             else thread_needed = num_loop;
-            gr::dtv::ThreadPool thread_pool(thread_needed);
+            gr_thread_pool thread_pool(thread_needed);
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
@@ -649,7 +648,7 @@ namespace gr {
             unsigned int num_loop = noutput_items / nbch;
             if (num_loop >= max_thread_num) thread_needed = max_thread_num;
             else thread_needed = num_loop;
-            gr::dtv::ThreadPool thread_pool(thread_needed);
+            gr_thread_pool thread_pool(thread_needed);
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
@@ -667,7 +666,7 @@ namespace gr {
             unsigned int num_loop = noutput_items / nbch;
             if (num_loop >= max_thread_num) thread_needed = max_thread_num;
             else thread_needed = num_loop;
-            gr::dtv::ThreadPool thread_pool(thread_needed);
+            gr_thread_pool thread_pool(thread_needed);
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
@@ -685,7 +684,7 @@ namespace gr {
             unsigned int num_loop = noutput_items / nbch;
             if (num_loop >= max_thread_num) thread_needed = max_thread_num;
             else thread_needed = num_loop;
-            gr::dtv::ThreadPool thread_pool(thread_needed);
+            gr_thread_pool thread_pool(thread_needed);
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
