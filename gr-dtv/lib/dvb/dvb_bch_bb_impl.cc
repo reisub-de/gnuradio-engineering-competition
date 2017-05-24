@@ -399,16 +399,16 @@ namespace gr {
 
       for (int i = 0; i < lena; i++) {
         for (int j = 0; j < lenb; j++) {
-          if (ina[i] * inb[j] > 0 ) {
-            out[i + j]++;    // count number of terms for this pwr of x
+          if (ina[i] | inb[j]) {
+            out[i + j]^=1;    // count number of terms for this pwr of x
           }
         }
       }
       int max = 0;
-      for (int i = 0; i < lena + lenb; i++) {
-        out[i] = out[i] & 1;    // If even ignore the term
+      for (int i = lena + lenb; i > 0; i++) {
         if(out[i]) {
           max = i;
+		  break;
         }
       }
       // return the size of array to house the result.
