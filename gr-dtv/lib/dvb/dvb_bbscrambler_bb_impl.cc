@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -39,9 +39,10 @@ namespace gr {
      * The private constructor
      */
     dvb_bbscrambler_bb_impl::dvb_bbscrambler_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate)
-      : gr::sync_block("dvb_bbscrambler_bb",
+      : gr::sync_interpolator("dvb_bbscrambler_bb",
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
-              gr::io_signature::make(1, 1, sizeof(unsigned char)))
+              gr::io_signature::make(1, 1, sizeof(unsigned char)),
+              8)
     {
       if (framesize == FECFRAME_NORMAL) {
         switch (rate) {
@@ -278,16 +279,24 @@ namespace gr {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
 
+      unsigned char *in_bits = new unsigned char[noutput_items];
+      int i_inbits = 0;
+      for (int i = 0; i < noutput_items/8; i++) {
+        for (int j = 7; j >= 0; j--) {
+          in_bits[i_inbits++] = (in[i] >> j) & 1;
+        }
+      }
+
       for (int i = 0; i < noutput_items; i += kbch) {
         for (int j = 0; j < (int)kbch; ++j) {
-          out[i + j] = in[i + j] ^ bb_randomise[j];
+          out[i + j] = in_bits[i + j] ^ bb_randomise[j];
         }
       }
 
       // Tell runtime system how many output items we produced.
+      printf("We return from bbscrambler.\n");
       return noutput_items;
     }
 
   } /* namespace dtv */
 } /* namespace gr */
-
