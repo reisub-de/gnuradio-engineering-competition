@@ -463,7 +463,7 @@ namespace gr {
                 for (int e = 0; e < (mod * 2); e++) {
                   //offset = mux[e];
                   //pack |= tempu[index++] << (((mod * 2) - 1) - offset);
-				  pack |= tempu[index++] << ((mod - 1) - e);
+				  pack |= tempu[index++] << (((mod * 2) - 1) - e);
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
