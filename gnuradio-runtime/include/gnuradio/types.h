@@ -28,6 +28,7 @@
 #include <boost/asio/io_service.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/scoped_ptr.hpp>
 #include <vector>
 #include <stddef.h>				// size_t
 
@@ -71,7 +72,7 @@ typedef unsigned long long	gr_uint64;
 struct gr_thread_pool {
     typedef boost::scoped_ptr<boost::asio::io_service::work> boost_asio_worker;
 
-    ThreadPool(size_t pool_size) :m_service(), m_working(new boost::asio::io_service::work(m_service)) {
+    gr_thread_pool(size_t pool_size) :m_service(), m_working(new boost::asio::io_service::work(m_service)) {
         while(pool_size--)
         {
             m_thread_group.create_thread(boost::bind(&boost::asio::io_service::run, &(this->m_service)));
@@ -81,7 +82,7 @@ struct gr_thread_pool {
     template<class F>
         void enqueue(F f){m_service.post(f);}
 
-    ~ThreadPool() {
+    ~gr_thread_pool() {
         m_working.reset(); //allow run() to exit
         m_thread_group.join_all();
         m_service.stop();
