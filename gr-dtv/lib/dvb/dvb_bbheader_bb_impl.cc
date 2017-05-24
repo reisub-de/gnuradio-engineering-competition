@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -289,10 +289,10 @@ namespace gr {
       ts_rate = tsrate;
       extra = (((kbch - 80) / 8) / 187) + 1;
       if (framesize != FECFRAME_MEDIUM) {
-        set_output_multiple(kbch);
+        set_output_multiple(kbch / 8);
       }
       else {
-        set_output_multiple(kbch * 2);
+        set_output_multiple(kbch / 8 * 2);
       }
     }
 
@@ -308,14 +308,14 @@ namespace gr {
     {
       if (input_mode == INPUTMODE_NORMAL) {
         if (frame_size != FECFRAME_MEDIUM) {
-          ninput_items_required[0] = ((noutput_items - 80) / 8);
+          ninput_items_required[0] = noutput_items - 10;
         }
         else {
-          ninput_items_required[0] = ((noutput_items - 160) / 8);
+          ninput_items_required[0] = noutput_items - 20;
         }
       }
       else {
-        ninput_items_required[0] = ((noutput_items - 80) / 8) + extra;
+        ninput_items_required[0] = noutput_items - 10 + extra;
       }
     }
 
@@ -351,81 +351,61 @@ namespace gr {
     int
     dvb_bbheader_bb_impl::add_crc8_bits(unsigned char *in, int length)
     {
-      int crc = 0;
-      int b;
-      int i = 0;
+      unsigned char crc = 0;
+      unsigned char b;
 
-      for (int n = 0; n < length; n++) {
-        b = in[i++] ^ (crc & 0x01);
-        crc >>= 1;
-        if (b) {
-          crc ^= CRC_POLY;
-        }
+      for (int i = 0; i < length; i++) {
+        b = in[i++] ^ crc;
+        crc = crc_tab[b];
       }
-
       if (input_mode == INPUTMODE_HIEFF) {
-        crc ^= 0x80;
+        crc ^= 1;
       }
-
-      for (int n = 0; n < 8; n++) {
-        in[i++] = (crc & (1 << n)) ? 1 : 0;
-      }
-      return 8;// Length of CRC
+      in[length] = crc;
+      return 1;// Length of CRC in bytes
     }
 
     void
     dvb_bbheader_bb_impl::add_bbheader(unsigned char *out, int count, int padding, bool nibble)
     {
-      int temp, m_frame_offset_bits;
+      int temp, m_frame_offset_bytes;
       unsigned char *m_frame = out;
       BBHeader *h = &m_format[0].bb_header;
 
-      m_frame[0] = h->ts_gs >> 1;
-      m_frame[1] = h->ts_gs & 1;
-      m_frame[2] = h->sis_mis;
-      m_frame[3] = h->ccm_acm;
-      m_frame[4] = h->issyi & 1;
-      m_frame[5] = h->npd & 1;
+      unsigned char b = 0;
+      b |= (h->ts_gs & 3) << 6;
+      b |= (h->sis_mis & 1) << 5;
+      b |= (h->ccm_acm & 1) << 4;
+      b |= (h->issyi & 1) << 3;
+      b |= (h->npd & 1) << 2;
+
       if (dvbs2x == TRUE) {
         if (alternate == TRUE) {
           alternate = FALSE;
-          m_frame[6] = 1;
-          m_frame[7] = 1;
+          b |= 0xC0;
         }
         else {
           alternate = TRUE;
-          m_frame[6] = h->ro >> 1;
-          m_frame[7] = h->ro & 1;
+          b |= h->ro & 3;
         }
       }
       else {
-        m_frame[6] = h->ro >> 1;
-        m_frame[7] = h->ro & 1;
+        b |= h->ro & 3;
       }
-      m_frame_offset_bits = 8;
+      m_frame[0] = b;
+      m_frame_offset_bytes = 1;
       if (h->sis_mis == SIS_MIS_MULTIPLE) {
-        temp = h->isi;
-        for (int n = 7; n >= 0; n--) {
-          m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
-        }
+        m_frame[m_frame_offset_bytes++] = h->isi;;
       }
       else {
-        for (int n = 7; n >= 0; n--) {
-          m_frame[m_frame_offset_bits++] = 0;
-        }
+        m_frame[m_frame_offset_bytes++] = 0;
       }
-      temp = h->upl;
-      for (int n = 15; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      m_frame[m_frame_offset_bytes++] = (h->upl >> 8) & 0xFF;
+      m_frame[m_frame_offset_bytes++] = h->upl & 0xFF;
       temp = h->dfl - padding;
-      for (int n = 15; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
-      temp = h->sync;
-      for (int n = 7; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      m_frame[m_frame_offset_bytes++] = (temp >> 8) & 0xFF;
+      m_frame[m_frame_offset_bytes++] = temp & 0xFF;
+      m_frame[m_frame_offset_bytes++] = h->sync;
       // Calculate syncd, this should point to the MSB of the CRC
       temp = count;
       if (temp == 0) {
@@ -437,12 +417,11 @@ namespace gr {
       if (nibble == FALSE) {
         temp += 4;
       }
-      for (int n = 15; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
-      }
+      m_frame[m_frame_offset_bytes++] = (temp >> 8) & 0xFF;
+      m_frame[m_frame_offset_bytes++] = temp & 0xFF;
       // Add CRC to BB header, at end
-      int len = BB_HEADER_LENGTH_BITS;
-      m_frame_offset_bits += add_crc8_bits(m_frame, len);
+      int len = BB_HEADER_LENGTH_BITS/8;
+      m_frame_offset_bytes += add_crc8_bits(m_frame, len);
     }
 
     void
@@ -488,7 +467,7 @@ namespace gr {
       int padding;
       unsigned char b;
 
-      for (int i = 0; i < noutput_items; i += kbch) {
+      for (int i = 0; i < noutput_items; i += kbch/8) {
         if (frame_size != FECFRAME_MEDIUM) {
           if (fec_block == 0 && inband_type_b == TRUE) {
             padding = 104;
@@ -497,7 +476,7 @@ namespace gr {
             padding = 0;
           }
           add_bbheader(&out[offset], count, padding, TRUE);
-          offset = offset + 80;
+          offset = offset + 10;
 
           if (input_mode == INPUTMODE_HIEFF) {
             for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
@@ -507,21 +486,31 @@ namespace gr {
                 }
                 j--;
                 in++;
+                count++;
+                consumed++;
               }
               else {
-                b = *in++;
-                for (int n = 7; n >= 0; n--) {
-                  out[offset++] = b & (1 << n) ? 1 : 0;
-                }
+                memcpy(&out[offset], in, 187);
+                offset += 187;
+                consumed += 187;
+                in += 187;
+                j += 186;
+                //out[offset++] = *in++;
               }
-              count = (count + 1) % 188;
-              consumed++;
+              //count = (count + 1) % 188;
+              //consumed++;
             }
+            /*
+            // This part is not optimized and probably (surely) broken.
+            // Todo: Adapt after the RuS challenge, not now, because it's a PITA.
             if (fec_block == 0 && inband_type_b == TRUE) {
               add_inband_type_b(&out[offset], ts_rate);
               offset = offset + 104;
-            }
+            }*/
           }
+          /*
+          // This part is not optimized and probably (surely) broken.
+          // Todo: Adapt after the RuS challenge, not now, because it's a PITA.
           else {
             for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
               if (count == 0) {
@@ -549,8 +538,11 @@ namespace gr {
           }
           if (inband_type_b == TRUE) {
             fec_block = (fec_block + 1) % fec_blocks;
-          }
+          }*/
         }
+        /*
+        // This part is not optimized and probably (surely) broken.
+        // Todo: Adapt after the RuS challenge, not now, because it's a PITA.
         else {
           padding = 0;
           add_bbheader(&out[offset], count, padding, nibble);
@@ -584,7 +576,7 @@ namespace gr {
               nibble = TRUE;
             }
           }
-        }
+        }*/
       }
 
       // Tell runtime system how many input items we consumed on
@@ -597,4 +589,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-
