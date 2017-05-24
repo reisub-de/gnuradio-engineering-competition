@@ -405,10 +405,11 @@ namespace gr {
         }
       }
       int max = 0;
-      for (int i = lena + lenb; i > 0; i++) {
+      for (int i = lena + lenb - 1; i > 0; i--) {
+//      for (int i = 0; i < lena + lenb; i++) {
         if(out[i]) {
           max = i;
-		  break;
+	  break;
         }
       }
       // return the size of array to house the result.
