@@ -161,6 +161,372 @@ namespace gr {
       ninput_items_required[0] = noutput_items * mod;
     }
 
+/************************ Function handler ************************/
+    void 
+    dvbt2_interleaver_bb_impl::func_handler_mod_qpsk_c13_c25(FuncHandlerDataStruct data) {
+      const unsigned char *in = data.in;
+      unsigned char *out = data.out;
+      const int rows = data.rows;
+      const int local_nbch = data.local_nbch;
+      const int local_q_val = data.local_q_val;
+
+      unsigned char local_tempu[FRAME_SIZE_NORMAL];
+      unsigned char *local_tempu_ptr = local_tempu;
+
+      memcpy((void*)local_tempu, (void*)in, local_nbch);
+      in += local_nbch;
+
+      for (int t = 0; t < local_q_val; t++) {
+        for (int s = 0; s < 360; s++) {
+          local_tempu[local_nbch + (360 * t) + s] = in[(local_q_val * s) + t];
+        }
+      }
+
+      for (int j = 0; j < rows; j++) {
+        *out++ = (*local_tempu_ptr++ << 1) | *local_tempu_ptr++;
+      }
+    }
+
+    void
+    dvbt2_interleaver_bb_impl::func_handler_mod_qpsk_rest(FuncHandlerDataStruct data) {
+      const unsigned char *in = data.in;
+      unsigned char *out = data.out;
+      const int rows = data.rows;
+
+      for (int j = 0; j < rows; j++) {
+        *out++ = (*in++ << 1) | *in++;
+      }
+    }
+
+    void
+    dvbt2_interleaver_bb_impl::func_handler_mod_16qam( 
+                            FuncHandlerDataStruct data,
+                            const int local_mod,
+                            const int* twist,
+                            const int* mux
+    ) {
+      const unsigned char *in = data.in;
+      unsigned char *out = data.out;
+      const int rows = data.rows;
+      const int local_nbch = data.local_nbch;
+      const int local_q_val = data.local_q_val;
+
+      unsigned char tempu[FRAME_SIZE_NORMAL];
+      unsigned char tempv[FRAME_SIZE_NORMAL];
+
+      int index, offset;
+      unsigned int pack;  
+
+      const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+      c1 = &tempv[0];
+      c2 = &tempv[rows];
+      c3 = &tempv[rows * 2];
+      c4 = &tempv[rows * 3];
+      c5 = &tempv[rows * 4];
+      c6 = &tempv[rows * 5];
+      c7 = &tempv[rows * 6];
+      c8 = &tempv[rows * 7];
+
+      memcpy((void*)tempu, (void*)in, local_nbch);
+      in += local_nbch;
+
+      for (int t = 0; t < local_q_val; t++) {
+        for (int s = 0; s < 360; s++) {
+          tempu[local_nbch + (360 * t) + s] = in[(local_q_val * s) + t];
+        }
+      }
+
+      in += (local_q_val * 360);
+
+      index = 0;
+      for (int col = 0; col < (local_mod * 2); col++) {
+        offset = twist[col];
+        for (int row = 0; row < rows; row++) {
+          tempv[offset + (rows * col)] = tempu[index++];
+          offset++;
+          if (offset == rows) {
+            offset = 0;
+          }
+        }
+      }
+
+      index = 0;
+      for (int j = 0; j < rows; j++) {
+        tempu[index++] = c1[j];
+        tempu[index++] = c2[j];
+        tempu[index++] = c3[j];
+        tempu[index++] = c4[j];
+        tempu[index++] = c5[j];
+        tempu[index++] = c6[j];
+        tempu[index++] = c7[j];
+        tempu[index++] = c8[j];
+      }
+
+      index = 0;
+      for (int d = 0; d < rows; d++) {
+        pack = 0;
+        for (int e = 0; e < (local_mod * 2); e++) {
+          offset = mux[e];
+          pack |= tempu[index++] << (((local_mod * 2) - 1) - offset);
+        }
+        *out++ = pack >> 4;
+        *out++ = pack & 0xf;
+      }
+    }
+
+    void
+    dvbt2_interleaver_bb_impl::func_handler_mod_64qam( 
+                            FuncHandlerDataStruct data,
+                            const int local_mod,
+                            const int* twist,
+                            const int* mux
+    ) {
+      const unsigned char *in = data.in;
+      unsigned char *out = data.out;
+      const int rows = data.rows;
+      const int local_nbch = data.local_nbch;
+      const int local_q_val = data.local_q_val;
+
+      unsigned char tempu[FRAME_SIZE_NORMAL];
+      unsigned char tempv[FRAME_SIZE_NORMAL];
+
+      int index, offset;
+      unsigned int pack;  
+
+      const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
+      c1 = &tempv[0];
+      c2 = &tempv[rows];
+      c3 = &tempv[rows * 2];
+      c4 = &tempv[rows * 3];
+      c5 = &tempv[rows * 4];
+      c6 = &tempv[rows * 5];
+      c7 = &tempv[rows * 6];
+      c8 = &tempv[rows * 7];
+      c9 = &tempv[rows * 8];
+      c10 = &tempv[rows * 9];
+      c11 = &tempv[rows * 10];
+      c12 = &tempv[rows * 11];
+
+      memcpy((void*)tempu, (void*)in, local_nbch);
+      in += local_nbch;
+
+      for (int t = 0; t < local_q_val; t++) {
+        for (int s = 0; s < 360; s++) {
+          tempu[local_nbch + (360 * t) + s] = in[(local_q_val * s) + t];
+        }
+      }
+
+      in += (local_q_val * 360);
+
+      index = 0;
+      for (int col = 0; col < (local_mod * 2); col++) {
+        offset = twist[col];
+        for (int row = 0; row < rows; row++) {
+          tempv[offset + (rows * col)] = tempu[index++];
+          offset++;
+          if (offset == rows) {
+            offset = 0;
+          }
+        }
+      }
+
+      index = 0;
+      for (int j = 0; j < rows; j++) {
+        tempu[index++] = c1[j];
+        tempu[index++] = c2[j];
+        tempu[index++] = c3[j];
+        tempu[index++] = c4[j];
+        tempu[index++] = c5[j];
+        tempu[index++] = c6[j];
+        tempu[index++] = c7[j];
+        tempu[index++] = c8[j];
+        tempu[index++] = c9[j];
+        tempu[index++] = c10[j];
+        tempu[index++] = c11[j];
+        tempu[index++] = c12[j];
+      }
+
+      index = 0;
+      for (int d = 0; d < rows; d++) {
+        pack = 0;
+        for (int e = 0; e < (local_mod * 2); e++) {
+          offset = mux[e];
+          pack |= tempu[index++] << (((local_mod * 2) - 1) - offset);
+        }
+        *out++ = pack >> 6;
+        *out++ = pack & 0x3f;
+      }
+    }
+
+    void
+    dvbt2_interleaver_bb_impl::func_handler_mod_256qam_frame_size_norm( 
+                            FuncHandlerDataStruct data,
+                            const int local_mod,
+                            const int* twist,
+                            const int* mux
+    ) {
+      const unsigned char *in = data.in;
+      unsigned char *out = data.out;
+      const int rows = data.rows;
+      const int local_nbch = data.local_nbch;
+      const int local_q_val = data.local_q_val;
+
+      unsigned char tempu[FRAME_SIZE_NORMAL];
+      unsigned char tempv[FRAME_SIZE_NORMAL];
+
+      int index, offset;
+      unsigned int pack;  
+
+      const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+      const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
+      c1 = &tempv[0];
+      c2 = &tempv[rows];
+      c3 = &tempv[rows * 2];
+      c4 = &tempv[rows * 3];
+      c5 = &tempv[rows * 4];
+      c6 = &tempv[rows * 5];
+      c7 = &tempv[rows * 6];
+      c8 = &tempv[rows * 7];
+      c9 = &tempv[rows * 8];
+      c10 = &tempv[rows * 9];
+      c11 = &tempv[rows * 10];
+      c12 = &tempv[rows * 11];
+      c13 = &tempv[rows * 12];
+      c14 = &tempv[rows * 13];
+      c15 = &tempv[rows * 14];
+      c16 = &tempv[rows * 15];
+
+      memcpy((void*)tempu, (void*)in, local_nbch);
+      in += local_nbch;
+
+      for (int t = 0; t < local_q_val; t++) {
+        for (int s = 0; s < 360; s++) {
+          tempu[local_nbch + (360 * t) + s] = in[(local_q_val * s) + t];
+        }
+      }
+
+      in += (local_q_val * 360);
+
+      index = 0;
+      for (int col = 0; col < (local_mod * 2); col++) {
+        offset = twist256n[col];
+        for (int row = 0; row < rows; row++) {
+          tempv[offset + (rows * col)] = tempu[index++];
+          offset++;
+          if (offset == rows) {
+            offset = 0;
+          }
+        }
+      }
+
+      index = 0;
+      for (int j = 0; j < rows; j++) {
+        tempu[index++] = c1[j];
+        tempu[index++] = c2[j];
+        tempu[index++] = c3[j];
+        tempu[index++] = c4[j];
+        tempu[index++] = c5[j];
+        tempu[index++] = c6[j];
+        tempu[index++] = c7[j];
+        tempu[index++] = c8[j];
+        tempu[index++] = c9[j];
+        tempu[index++] = c10[j];
+        tempu[index++] = c11[j];
+        tempu[index++] = c12[j];
+        tempu[index++] = c13[j];
+        tempu[index++] = c14[j];
+        tempu[index++] = c15[j];
+        tempu[index++] = c16[j];
+      }
+
+      index = 0;
+      for (int d = 0; d < rows; d++) {
+        pack = 0;
+        for (int e = 0; e < (local_mod * 2); e++) {
+          offset = mux[e];
+          pack |= tempu[index++] << (((local_mod * 2) - 1) - offset);
+        }
+        *out++ = pack >> 8;
+        *out++ = pack & 0xff;
+      }
+    }
+
+    void
+    dvbt2_interleaver_bb_impl::func_handler_mod_256qam_rest( 
+                            FuncHandlerDataStruct data,
+                            const int local_mod,
+                            const int* twist,
+                            const int* mux
+    ) {
+      const unsigned char *in = data.in;
+      unsigned char *out = data.out;
+      const int rows = data.rows;
+      const int local_nbch = data.local_nbch;
+      const int local_q_val = data.local_q_val;
+
+      unsigned char tempu[FRAME_SIZE_NORMAL];
+      unsigned char tempv[FRAME_SIZE_NORMAL];
+
+      int index, offset;
+      unsigned int pack;  
+
+      const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+      c1 = &tempv[0];
+      c2 = &tempv[rows];
+      c3 = &tempv[rows * 2];
+      c4 = &tempv[rows * 3];
+      c5 = &tempv[rows * 4];
+      c6 = &tempv[rows * 5];
+      c7 = &tempv[rows * 6];
+      c8 = &tempv[rows * 7];
+
+      memcpy((void*)tempu, (void*)in, local_nbch);
+      in += local_nbch;
+
+      for (int t = 0; t < local_q_val; t++) {
+        for (int s = 0; s < 360; s++) {
+          tempu[local_nbch + (360 * t) + s] = in[(local_q_val * s) + t];
+        }
+      }
+
+      in += (local_q_val * 360);
+
+      index = 0;
+      for (int col = 0; col < local_mod; col++) {
+        offset = twist256s[col];
+        for (int row = 0; row < rows; row++) {
+          tempv[offset + (rows * col)] = tempu[index++];
+          offset++;
+          if (offset == rows) {
+            offset = 0;
+          }
+        }
+      }
+
+      index = 0;
+      for (int j = 0; j < rows; j++) {
+        tempu[index++] = c1[j];
+        tempu[index++] = c2[j];
+        tempu[index++] = c3[j];
+        tempu[index++] = c4[j];
+        tempu[index++] = c5[j];
+        tempu[index++] = c6[j];
+        tempu[index++] = c7[j];
+        tempu[index++] = c8[j];
+      }
+
+      index = 0;
+      for (int d = 0; d < rows; d++) {
+        pack = 0;
+        for (int e = 0; e < local_mod; e++) {
+          offset = mux[e];
+          pack |= tempu[index++] << ((local_mod - 1) - offset);
+        }
+        *out++ = pack & 0xff;
+      }
+    }
+/************************************************************/
+
     int
     dvbt2_interleaver_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -178,333 +544,224 @@ namespace gr {
 
       switch (signal_constellation) {
         case MOD_QPSK:
-          for (int i = 0; i < noutput_items; i += packed_items) {
-            rows = frame_size / 2;
-            if (code_rate == C1_3 || code_rate == C2_5) {
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
+          {
+            unsigned int max_thread_num = boost::thread::hardware_concurrency();
+            unsigned int thread_needed;
+            unsigned int num_loop = noutput_items / packed_items;
+            if (num_loop >= max_thread_num) thread_needed = max_thread_num;
+            else thread_needed = num_loop;
+            gr::dtv::ThreadPool thread_pool(thread_needed);
+
+            rows = frame_size  >> 1;
+            for (int i = 0; i < noutput_items; i += packed_items) {
+              if (code_rate == C1_3 || code_rate == C2_5) {
+                FuncHandlerDataStruct data(
+                                            in,
+                                            out,
+                                            rows,
+                                            nbch,
+                                            q_val
+                                            );
+                thread_pool.enqueue(boost::bind(func_handler_mod_qpsk_c13_c25, data));
+                in += nbch + q_val * 360;
+                out += rows;
+                consumed += 2 * rows;
               }
-              for (int t = 0; t < q_val; t++) {
-                for (int s = 0; s < 360; s++) {
-                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
-                }
-              }
-              in = in + (q_val * 360);
-              index = 0;
-              for (int j = 0; j < rows; j++) {
-                out[produced] = tempu[index++] << 1;
-                out[produced++] |= tempu[index++];
-                consumed += 2;
-              }
-            }
-            else {
-              for (int j = 0; j < rows; j++) {
-                out[produced] = in[consumed++] << 1;
-                out[produced++] |= in[consumed++];
+              else {
+                FuncHandlerDataStruct data(
+                                            in,
+                                            out,
+                                            rows,
+                                            nbch,
+                                            q_val
+                                            );
+                thread_pool.enqueue(boost::bind(func_handler_mod_qpsk_rest, data));
+                in += 2 * rows;
+                out += rows;
+                consumed += 2 * rows;
               }
             }
           }
           break;
         case MOD_16QAM:
-          if (frame_size == FRAME_SIZE_NORMAL) {
-            twist = &twist16n[0];
-          }
-          else {
-            twist = &twist16s[0];
-          }
-          if (code_rate == C3_5 && frame_size == FRAME_SIZE_NORMAL) {
-            mux = &mux16_35[0];
-          }
-          else if (code_rate == C1_3 && frame_size == FRAME_SIZE_SHORT) {
-            mux = &mux16_13[0];
-          }
-          else if (code_rate == C2_5 && frame_size == FRAME_SIZE_SHORT) {
-            mux = &mux16_25[0];
-          }
-          else {
-            mux = &mux16[0];
-          }
-          for (int i = 0; i < noutput_items; i += packed_items) {
+          {
+            if (frame_size == FRAME_SIZE_NORMAL) {
+              twist = &twist16n[0];
+            }
+            else {
+              twist = &twist16s[0];
+            }
+            if (code_rate == C3_5 && frame_size == FRAME_SIZE_NORMAL) {
+              mux = &mux16_35[0];
+            }
+            else if (code_rate == C1_3 && frame_size == FRAME_SIZE_SHORT) {
+              mux = &mux16_13[0];
+            }
+            else if (code_rate == C2_5 && frame_size == FRAME_SIZE_SHORT) {
+              mux = &mux16_25[0];
+            }
+            else {
+              mux = &mux16[0];
+            }
+
             rows = frame_size / (mod * 2);
-            const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-            c1 = &tempv[0];
-            c2 = &tempv[rows];
-            c3 = &tempv[rows * 2];
-            c4 = &tempv[rows * 3];
-            c5 = &tempv[rows * 4];
-            c6 = &tempv[rows * 5];
-            c7 = &tempv[rows * 6];
-            c8 = &tempv[rows * 7];
-            for (int k = 0; k < nbch; k++) {
-              tempu[k] = *in++;
-            }
-            for (int t = 0; t < q_val; t++) {
-              for (int s = 0; s < 360; s++) {
-                tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
-              }
-            }
-            in = in + (q_val * 360);
-            index = 0;
-            for (int col = 0; col < (mod * 2); col++) {
-              offset = twist[col];
-              for (int row = 0; row < rows; row++) {
-                tempv[offset + (rows * col)] = tempu[index++];
-                offset++;
-                if (offset == rows) {
-                  offset = 0;
-                }
-              }
-            }
-            index = 0;
-            for (int j = 0; j < rows; j++) {
-              tempu[index++] = c1[j];
-              tempu[index++] = c2[j];
-              tempu[index++] = c3[j];
-              tempu[index++] = c4[j];
-              tempu[index++] = c5[j];
-              tempu[index++] = c6[j];
-              tempu[index++] = c7[j];
-              tempu[index++] = c8[j];
-            }
-            index = 0;
-            for (int d = 0; d < frame_size / (mod * 2); d++) {
-              pack = 0;
-              for (int e = 0; e < (mod * 2); e++) {
-                offset = mux[e];
-                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
-              }
-              out[produced++] = pack >> 4;
-              out[produced++] = pack & 0xf;
-              consumed += (mod * 2);
+
+            unsigned int max_thread_num = boost::thread::hardware_concurrency();
+            unsigned int thread_needed;
+            unsigned int num_loop = noutput_items / packed_items;
+            if (num_loop >= max_thread_num) thread_needed = max_thread_num;
+            else thread_needed = num_loop;
+            gr::dtv::ThreadPool thread_pool(thread_needed);
+
+            for (int i = 0; i < noutput_items; i += packed_items) {
+                int local_mod = mod;
+                FuncHandlerDataStruct data(
+                                            in,
+                                            out,
+                                            rows,
+                                            nbch,
+                                            q_val
+                                            );
+                thread_pool.enqueue(boost::bind(
+                                                  func_handler_mod_16qam, 
+                                                  data, 
+                                                  local_mod,
+                                                  twist, 
+                                                  mux
+                ));
+                in += nbch + q_val * 360;
+                out += 2 * rows;
+                consumed += 2 * rows * mod;
             }
           }
           break;
         case MOD_64QAM:
-          if (frame_size == FRAME_SIZE_NORMAL) {
-            twist = &twist64n[0];
-          }
-          else {
-            twist = &twist64s[0];
-          }
-          if (code_rate == C3_5 && frame_size == FRAME_SIZE_NORMAL) {
-            mux = &mux64_35[0];
-          }
-          else if (code_rate == C1_3 && frame_size == FRAME_SIZE_SHORT) {
-            mux = &mux64_13[0];
-          }
-          else if (code_rate == C2_5 && frame_size == FRAME_SIZE_SHORT) {
-            mux = &mux64_25[0];
-          }
-          else {
-            mux = &mux64[0];
-          }
-          for (int i = 0; i < noutput_items; i += packed_items) {
+          {
+            if (frame_size == FRAME_SIZE_NORMAL) {
+              twist = &twist64n[0];
+            }
+            else {
+              twist = &twist64s[0];
+            }
+            if (code_rate == C3_5 && frame_size == FRAME_SIZE_NORMAL) {
+              mux = &mux64_35[0];
+            }
+            else if (code_rate == C1_3 && frame_size == FRAME_SIZE_SHORT) {
+              mux = &mux64_13[0];
+            }
+            else if (code_rate == C2_5 && frame_size == FRAME_SIZE_SHORT) {
+              mux = &mux64_25[0];
+            }
+            else {
+              mux = &mux64[0];
+            }
+
             rows = frame_size / (mod * 2);
-            const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
-            c1 = &tempv[0];
-            c2 = &tempv[rows];
-            c3 = &tempv[rows * 2];
-            c4 = &tempv[rows * 3];
-            c5 = &tempv[rows * 4];
-            c6 = &tempv[rows * 5];
-            c7 = &tempv[rows * 6];
-            c8 = &tempv[rows * 7];
-            c9 = &tempv[rows * 8];
-            c10 = &tempv[rows * 9];
-            c11 = &tempv[rows * 10];
-            c12 = &tempv[rows * 11];
-            for (int k = 0; k < nbch; k++) {
-              tempu[k] = *in++;
-            }
-            for (int t = 0; t < q_val; t++) {
-              for (int s = 0; s < 360; s++) {
-                tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
-              }
-            }
-            in = in + (q_val * 360);
-            index = 0;
-            for (int col = 0; col < (mod * 2); col++) {
-              offset = twist[col];
-              for (int row = 0; row < rows; row++) {
-                tempv[offset + (rows * col)] = tempu[index++];
-                offset++;
-                if (offset == rows) {
-                  offset = 0;
-                }
-              }
-            }
-            index = 0;
-            for (int j = 0; j < rows; j++) {
-              tempu[index++] = c1[j];
-              tempu[index++] = c2[j];
-              tempu[index++] = c3[j];
-              tempu[index++] = c4[j];
-              tempu[index++] = c5[j];
-              tempu[index++] = c6[j];
-              tempu[index++] = c7[j];
-              tempu[index++] = c8[j];
-              tempu[index++] = c9[j];
-              tempu[index++] = c10[j];
-              tempu[index++] = c11[j];
-              tempu[index++] = c12[j];
-            }
-            index = 0;
-            for (int d = 0; d < frame_size / (mod * 2); d++) {
-              pack = 0;
-              for (int e = 0; e < (mod * 2); e++) {
-                offset = mux[e];
-                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
-              }
-              out[produced++] = pack >> 6;
-              out[produced++] = pack & 0x3f;
-              consumed += (mod * 2);
+
+            unsigned int max_thread_num = boost::thread::hardware_concurrency();
+            unsigned int thread_needed;
+            unsigned int num_loop = noutput_items / packed_items;
+            if (num_loop >= max_thread_num) thread_needed = max_thread_num;
+            else thread_needed = num_loop;
+            gr::dtv::ThreadPool thread_pool(thread_needed);
+
+            int local_mod = mod;
+            for (int i = 0; i < noutput_items; i += packed_items) {
+                FuncHandlerDataStruct data(
+                                            in,
+                                            out,
+                                            rows,
+                                            nbch,
+                                            q_val
+                                            );
+                thread_pool.enqueue(boost::bind(
+                                                  func_handler_mod_64qam, 
+                                                  data, 
+                                                  local_mod,
+                                                  twist, 
+                                                  mux
+                ));
+                in += nbch + q_val * 360;
+                out += 2 * rows;
+                consumed += 2 * rows * mod;
             }
           }
           break;
         case MOD_256QAM:
-          if (frame_size == FRAME_SIZE_NORMAL) {
-            if (code_rate == C3_5) {
-              mux = &mux256_35[0];
-            }
-            else if (code_rate == C2_3) {
-              mux = &mux256_23[0];
-            }
-            else {
-              mux = &mux256[0];
-            }
-            for (int i = 0; i < noutput_items; i += packed_items) {
+          {
+            unsigned int max_thread_num = boost::thread::hardware_concurrency();
+            unsigned int thread_needed;
+            unsigned int num_loop = noutput_items / packed_items;
+            if (num_loop >= max_thread_num) thread_needed = max_thread_num;
+            else thread_needed = num_loop;
+            gr::dtv::ThreadPool thread_pool(thread_needed);
+
+            if (frame_size == FRAME_SIZE_NORMAL) {
+              if (code_rate == C3_5) {
+                mux = &mux256_35[0];
+              }
+              else if (code_rate == C2_3) {
+                mux = &mux256_23[0];
+              }
+              else {
+                mux = &mux256[0];
+              }
+
               rows = frame_size / (mod * 2);
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-              const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-              c1 = &tempv[0];
-              c2 = &tempv[rows];
-              c3 = &tempv[rows * 2];
-              c4 = &tempv[rows * 3];
-              c5 = &tempv[rows * 4];
-              c6 = &tempv[rows * 5];
-              c7 = &tempv[rows * 6];
-              c8 = &tempv[rows * 7];
-              c9 = &tempv[rows * 8];
-              c10 = &tempv[rows * 9];
-              c11 = &tempv[rows * 10];
-              c12 = &tempv[rows * 11];
-              c13 = &tempv[rows * 12];
-              c14 = &tempv[rows * 13];
-              c15 = &tempv[rows * 14];
-              c16 = &tempv[rows * 15];
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
+
+              int local_mod = mod;
+              for (int i = 0; i < noutput_items; i += packed_items) {
+                  FuncHandlerDataStruct data(
+                                              in,
+                                              out,
+                                              rows,
+                                              nbch,
+                                              q_val
+                                              );
+                  thread_pool.enqueue(boost::bind(
+                                                    func_handler_mod_256qam_frame_size_norm, 
+                                                    data, 
+                                                    local_mod,
+                                                    twist, 
+                                                    mux
+                  ));
+                  in += nbch + q_val * 360;
+                  out += 2 * rows;
+                  consumed += 2 * rows * mod;
               }
-              for (int t = 0; t < q_val; t++) {
-                for (int s = 0; s < 360; s++) {
-                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
-                }
-              }
-              in = in + (q_val * 360);
-              index = 0;
-              for (int col = 0; col < (mod * 2); col++) {
-                offset = twist256n[col];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-              }
-              index = 0;
-              for (int j = 0; j < rows; j++) {
-                tempu[index++] = c1[j];
-                tempu[index++] = c2[j];
-                tempu[index++] = c3[j];
-                tempu[index++] = c4[j];
-                tempu[index++] = c5[j];
-                tempu[index++] = c6[j];
-                tempu[index++] = c7[j];
-                tempu[index++] = c8[j];
-                tempu[index++] = c9[j];
-                tempu[index++] = c10[j];
-                tempu[index++] = c11[j];
-                tempu[index++] = c12[j];
-                tempu[index++] = c13[j];
-                tempu[index++] = c14[j];
-                tempu[index++] = c15[j];
-                tempu[index++] = c16[j];
-              }
-              index = 0;
-              for (int d = 0; d < frame_size / (mod * 2); d++) {
-                pack = 0;
-                for (int e = 0; e < (mod * 2); e++) {
-                  offset = mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - offset);
-                }
-                out[produced++] = pack >> 8;
-                out[produced++] = pack & 0xff;
-                consumed += (mod * 2);
-              }
-            }
-          }
-          else {
-            if (code_rate == C1_3) {
-              mux = &mux256s_13[0];
-            }
-            else if (code_rate == C2_5) {
-              mux = &mux256s_25[0];
             }
             else {
-              mux = &mux256s[0];
-            }
-            for (int i = 0; i < noutput_items; i += packed_items) {
+              if (code_rate == C1_3) {
+                mux = &mux256s_13[0];
+              }
+              else if (code_rate == C2_5) {
+                mux = &mux256s_25[0];
+              }
+              else {
+                mux = &mux256s[0];
+              }
+
               rows = frame_size / mod;
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-              c1 = &tempv[0];
-              c2 = &tempv[rows];
-              c3 = &tempv[rows * 2];
-              c4 = &tempv[rows * 3];
-              c5 = &tempv[rows * 4];
-              c6 = &tempv[rows * 5];
-              c7 = &tempv[rows * 6];
-              c8 = &tempv[rows * 7];
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
-              }
-              for (int t = 0; t < q_val; t++) {
-                for (int s = 0; s < 360; s++) {
-                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
-                }
-              }
-              in = in + (q_val * 360);
-              index = 0;
-              for (int col = 0; col < mod; col++) {
-                offset = twist256s[col];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-              }
-              index = 0;
-              for (int j = 0; j < rows; j++) {
-                tempu[index++] = c1[j];
-                tempu[index++] = c2[j];
-                tempu[index++] = c3[j];
-                tempu[index++] = c4[j];
-                tempu[index++] = c5[j];
-                tempu[index++] = c6[j];
-                tempu[index++] = c7[j];
-                tempu[index++] = c8[j];
-              }
-              index = 0;
-              for (int d = 0; d < frame_size / mod; d++) {
-                pack = 0;
-                for (int e = 0; e < mod; e++) {
-                  offset = mux[e];
-                  pack |= tempu[index++] << ((mod - 1) - offset);
-                }
-                out[produced++] = pack & 0xff;
-                consumed += mod;
+
+              int local_mod = mod;
+              for (int i = 0; i < noutput_items; i += packed_items) {
+                  FuncHandlerDataStruct data(
+                                              in,
+                                              out,
+                                              rows,
+                                              nbch,
+                                              q_val
+                                              );
+                  thread_pool.enqueue(boost::bind(
+                                                    func_handler_mod_256qam_rest, 
+                                                    data, 
+                                                    local_mod,
+                                                    twist, 
+                                                    mux
+                  ));
+                  in += nbch + q_val * 360;
+                  out += rows;
+                  consumed += rows * mod;
               }
             }
           }

@@ -24,11 +24,57 @@
 #include <gnuradio/dtv/dvb_ldpc_bb.h>
 #include "dvb_defines.h"
 
+// ThreadPool dependencies
+#include <boost/array.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/bind.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/scoped_ptr.hpp>
+
 typedef struct{
     int table_length;
     int d[LDPC_ENCODE_TABLE_LENGTH];
     int p[LDPC_ENCODE_TABLE_LENGTH];
 }ldpc_encode_table;
+
+struct FuncHandlerDataStruct {
+  FuncHandlerDataStruct(                        
+    const unsigned char *arg_in,
+    unsigned char *arg_out,
+    const int arg_idx,
+    const unsigned int arg_val_frame_size,
+    const int arg_plen,
+    const unsigned int arg_val_nbch,
+    const int arg_val_Xp,
+    const int arg_val_Xs,
+    const int arg_P, 
+    const unsigned int arg_val_signal_constellation,
+    const ldpc_encode_table *arg_ldpc_encode_table_ptr
+  ):
+    in(arg_in),
+    out(arg_out),
+    idx(arg_idx),
+    val_frame_size(arg_val_frame_size),
+    plen(arg_plen),
+    val_nbch(arg_val_nbch),
+    val_Xp(arg_val_Xp),
+    val_Xs(arg_val_Xs),
+    val_P(arg_P),
+    val_signal_constellation(arg_val_signal_constellation),
+    ldpc_encode_table_ptr(arg_ldpc_encode_table_ptr)
+   {}
+    const unsigned char *in;
+    unsigned char *out;
+    const int idx;
+    const unsigned int val_frame_size;
+    const int plen;
+    const unsigned int val_nbch;
+    const int val_Xp;
+    const int val_Xs;
+    const int val_P;
+    const unsigned int val_signal_constellation;
+    const ldpc_encode_table *ldpc_encode_table_ptr;
+};
 
 namespace gr {
   namespace dtv {
@@ -47,9 +93,16 @@ namespace gr {
       int Xs;
       int P;
       int Xp;
-      unsigned char puncturing_buffer[FRAME_SIZE_NORMAL];
-      unsigned char shortening_buffer[FRAME_SIZE_NORMAL];
       void ldpc_lookup_generate(void);
+
+/************************** Function handler ********************/
+      static void func_handler_nxs_np(FuncHandlerDataStruct data);
+      static void func_handler_xs_np(FuncHandlerDataStruct data);
+      static void func_handler_nxs_p(FuncHandlerDataStruct data);
+      static void func_handler_xs_p(FuncHandlerDataStruct data);
+
+/****************************************************/
+
       ldpc_encode_table ldpc_encode;
 
       const static int ldpc_tab_1_4N[45][13];
@@ -126,6 +179,34 @@ namespace gr {
                        gr_vector_void_star &output_items);
     };
 
+    #ifndef THREAD_POOL_DEF
+    #define THREAD_POOL_DEF
+    // The definition of boost_asio based thread pool
+    struct ThreadPool {
+        typedef boost::scoped_ptr<boost::asio::io_service::work> boost_asio_worker;
+
+        ThreadPool(size_t pool_size) :m_service(), m_working(new boost::asio::io_service::work(m_service)) {
+            while(pool_size--)
+            {
+                m_thread_group.create_thread(boost::bind(&boost::asio::io_service::run, &(this->m_service)));
+            }
+        }
+
+        template<class F>
+            void enqueue(F f){m_service.post(f);}
+
+        ~ThreadPool() {
+            m_working.reset(); //allow run() to exit
+            m_thread_group.join_all();
+            m_service.stop();
+        }
+
+        private:
+        boost::asio::io_service m_service; //< the io_service we are wrapping
+        boost_asio_worker m_working;
+        boost::thread_group m_thread_group; //< need to keep track of threads so we can join them
+    };
+    #endif
   } // namespace dtv
 } // namespace gr
 
