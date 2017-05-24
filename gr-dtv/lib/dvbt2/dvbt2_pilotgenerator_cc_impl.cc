@@ -1177,9 +1177,7 @@ namespace gr {
     dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
     {
       int remainder, shift;
-      for (int i = 0; i < C_PS; i++) { // Jiaxin Fan
-        data_carrier_map[i] = DATA_CARRIER;
-      }
+      memset((void*)data_carrier_map, DATA_CARRIER, C_PS);
       switch (fft_size) {
         case FFTSIZE_1K:
           switch (pilot_pattern) {
