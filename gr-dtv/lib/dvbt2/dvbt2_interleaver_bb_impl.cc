@@ -460,8 +460,9 @@ namespace gr {
               for (int d = 0; d < frame_size / (mod * 2); d++) {
                 pack = 0;
                 for (int e = 0; e < (mod * 2); e++) {
-                  offset = e;//mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+                  //offset = mux[e];
+                  //pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+				  pack |= tempu[index++] << e;
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
@@ -534,8 +535,9 @@ namespace gr {
               for (int d = 0; d < frame_size / mod; d++) {
                 pack = 0;
                 for (int e = 0; e < mod; e++) {
-                  offset = e;//mux[e];
-                  pack |= tempu[index++] << ((mod - 1) - offset);
+                  //offset = mux[e];
+                  //pack |= tempu[index++] << ((mod - 1) - offset);
+				  pack |= tempu[index++] << e;
                 }
                 out[produced++] = pack & 0xff;
                 consumed += mod;
