@@ -439,7 +439,7 @@ namespace gr {
               }
               index = 0;
               for (int j = 0; j < rows; j++) {
-                tempu[index+mux[0]] = c[0][j];
+                /*tempu[index+mux[0]] = c[0][j];
                 tempu[index+mux[1]] = c[1][j];
                 tempu[index+mux[2]] = c[2][j];
                 tempu[index+mux[3]] = c[3][j];
@@ -455,8 +455,30 @@ namespace gr {
                 tempu[index+mux[13]] = c[13][j];
                 tempu[index+mux[14]] = c[14][j];
                 tempu[index+mux[15]] = c[15][j];
-				index+=16;
+				index+=16;*/
+				pack = 0;
+				pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
+				pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
+				pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
+				pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
+				pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
+				pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
+				pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
+				pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
+				pack |= c[8][j] << (((mod * 2) - 1) - mux[8]);
+				pack |= c[9][j] << (((mod * 2) - 1) - mux[9]);
+				pack |= c[10][j] << (((mod * 2) - 1) - mux[10]);
+				pack |= c[11][j] << (((mod * 2) - 1) - mux[11]);
+				pack |= c[12][j] << (((mod * 2) - 1) - mux[12]);
+				pack |= c[13][j] << (((mod * 2) - 1) - mux[13]);
+				pack |= c[14][j] << (((mod * 2) - 1) - mux[14]);
+				pack |= c[15][j] << (((mod * 2) - 1) - mux[15]);
+				out[produced++] = pack >> 8;
+                out[produced++] = pack & 0xff;
+                consumed += (mod * 2);
               }
+              
+              /*
               index = 0;
               for (int d = 0; d < frame_size / (mod * 2); d++) {
                 pack = 0;
@@ -468,7 +490,7 @@ namespace gr {
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
                 consumed += (mod * 2);
-              }
+              }*/
             }
           }
           else {
@@ -523,6 +545,7 @@ namespace gr {
               }
               index = 0;
               for (int j = 0; j < rows; j++) {
+				  /*
 				tempu[index+mux[0]] = c[0][j];
                 tempu[index+mux[1]] = c[1][j];
                 tempu[index+mux[2]] = c[2][j];
@@ -532,7 +555,20 @@ namespace gr {
                 tempu[index+mux[6]] = c[6][j];
                 tempu[index+mux[7]] = c[7][j];
 				index+=8;
+				*/
+				pack = 0;
+				pack |= c[0][j] << ((mod - 1) - mux[0]);
+				pack |= c[1][j] << ((mod - 1) - mux[1]);
+				pack |= c[2][j] << ((mod - 1) - mux[2]);
+				pack |= c[3][j] << ((mod - 1) - mux[3]);
+				pack |= c[4][j] << ((mod - 1) - mux[4]);
+				pack |= c[5][j] << ((mod - 1) - mux[5]);
+				pack |= c[6][j] << ((mod - 1) - mux[6]);
+				pack |= c[7][j] << ((mod - 1) - mux[7]);
+				out[produced++] = pack & 0xff;
+                consumed += mod;
               }
+              /*
               index = 0;
               for (int d = 0; d < frame_size / mod; d++) {
                 pack = 0;
@@ -543,7 +579,7 @@ namespace gr {
                 }
                 out[produced++] = pack & 0xff;
                 consumed += mod;
-              }
+              }*/
             }
           }
           break;
