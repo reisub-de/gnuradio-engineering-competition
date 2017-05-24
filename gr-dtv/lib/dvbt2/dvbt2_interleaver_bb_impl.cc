@@ -26,6 +26,7 @@
 #include "dvbt2_interleaver_bb_impl.h"
 #include <boost/range/algorithm/rotate.hpp>
 #include <algorithm>
+#include "immintrin.h"
 
 namespace gr {
   namespace dtv {
@@ -175,7 +176,7 @@ namespace gr {
       int produced = 0;
       int rows, index;
       int offset;//,offset1,offset2,offset3,offset4,offset5,offset6,offset7,offset8,offset9,offset10,offset11,offset12,offset13,offset14,offset15;
-      unsigned int pack;
+      uint16_t pack;
       const int *twist;
       const int *mux;
 
@@ -232,7 +233,7 @@ namespace gr {
           rows = frame_size / (mod * 2);
           for (int i = 0; i < noutput_items; i += packed_items) {
             
-            const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+            const uint16_t *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
             c1 = &tempv[0];
             c2 = &tempv[rows];
             c3 = &tempv[rows * 2];
@@ -392,7 +393,7 @@ namespace gr {
           
           rows = frame_size / (mod * 2);
           for (int i = 0; i < noutput_items; i += packed_items) {
-            const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
+            const uint16_t *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
             c1 = &tempv[0];
             c2 = &tempv[rows];
             c3 = &tempv[rows * 2];
@@ -602,8 +603,8 @@ namespace gr {
             rows = frame_size / (mod * 2);
             for (int i = 0; i < noutput_items; i += packed_items) {
               
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-              const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
+              const uint16_t *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+              const uint16_t *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
               c1 = &tempv[0];
               c2 = &tempv[rows];
               c3 = &tempv[rows * 2];
@@ -655,231 +656,427 @@ namespace gr {
                 std::rotate_copy(tempu + (rows * 13), tempu + (rows * 13) + ((rows - twist256n[13])%rows), tempu + (rows * 14),tempv + (rows * 13));
                 std::rotate_copy(tempu + (rows * 14), tempu + (rows * 14) + ((rows - twist256n[14])%rows), tempu + (rows * 15),tempv + (rows * 14));
                 std::rotate_copy(tempu + (rows * 15), tempu + (rows * 15) + ((rows - twist256n[15])%rows), tempu + (rows * 16),tempv + (rows * 15));/**/
-                /*
 
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 0)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                
-                offset = twist256n[1];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 1)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                //printf("%d\n", tempv[rows]);
-                //printf("%d\n", tempv[rows+1]);
-                //printf("%d\n", tempv[rows+2]);
-index+=(rows*2);
-                offset = twist256n[2];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 2)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                
-                offset = twist256n[3];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 3)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[4];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 4)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[5];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 5)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[6];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 6)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[7];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 7)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[8];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 8)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[9];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 9)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[10];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 10)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[11];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 11)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[12];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 12)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[13];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 13)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[14];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 14)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-
-                offset = twist256n[15];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * 15)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }*/
-              //}
-              /*index = 0;
-              for (int j = 0; j < rows; j++) {
-                tempu[index++] = c1[j];
-                tempu[index++] = c2[j];
-                tempu[index++] = c3[j];
-                tempu[index++] = c4[j];
-                tempu[index++] = c5[j];
-                tempu[index++] = c6[j];
-                tempu[index++] = c7[j];
-                tempu[index++] = c8[j];
-                tempu[index++] = c9[j];
-                tempu[index++] = c10[j];
-                tempu[index++] = c11[j];
-                tempu[index++] = c12[j];
-                tempu[index++] = c13[j];
-                tempu[index++] = c14[j];
-                tempu[index++] = c15[j];
-                tempu[index++] = c16[j];
-              }*/
               index = 0;
-              for (int d = 0; d < rows; d++) {
-                pack = 0;
+
+              unsigned char modulo_val;
+
+#define AVX_OFF 0
+#if AVX_OFF    
+              modulo_val = 8;
+              __m128i in1_128;
+              __m128i in2_128;
+              __m128i in3_128;
+              __m128i in4_128;
+              __m128i in5_128;
+              __m128i in6_128;
+              __m128i in7_128;
+              __m128i in8_128;
+              __m128i in9_128;
+              __m128i in10_128;
+              __m128i in11_128;
+              __m128i in12_128;
+              __m128i in13_128;
+              __m128i in14_128;
+              __m128i in15_128;
+              __m128i in16_128;
+
+              __m128i in1_128_shifted;
+              __m128i in2_128_shifted;
+              __m128i in3_128_shifted;
+              __m128i in4_128_shifted;
+              __m128i in5_128_shifted;
+              __m128i in6_128_shifted;
+              __m128i in7_128_shifted;
+              __m128i in8_128_shifted;
+              __m128i in9_128_shifted;
+              __m128i in10_128_shifted;
+              __m128i in11_128_shifted;
+              __m128i in12_128_shifted;
+              __m128i in13_128_shifted;
+              __m128i in14_128_shifted;
+              __m128i in15_128_shifted;
+              __m128i in16_128_shifted;
+
+		      __m128i out_128;
+		      __m128i out2_128;
+
+              for (int d = 0; d < rows - (rows%modulo_val); d+=modulo_val) {
+                uint16_t packs[8] = {0};
+                
                 //better do loop unrolling for small number of loops
                 //for (int e = 0; e < mod2; e++) {
-                offset = mux[0];
-                pack |= c1[d] << (((mod * 2) - 1) - offset);
+
+				in1_128 = _mm_loadu_si128((__m128i*) &c1[d]);
+				in2_128 = _mm_loadu_si128((__m128i*) &c2[d]);
+				in3_128 = _mm_loadu_si128((__m128i*) &c3[d]);
+				in4_128 = _mm_loadu_si128((__m128i*) &c4[d]);
+				in5_128 = _mm_loadu_si128((__m128i*) &c5[d]);
+				in6_128 = _mm_loadu_si128((__m128i*) &c6[d]);
+				in7_128 = _mm_loadu_si128((__m128i*) &c7[d]);
+				in8_128 = _mm_loadu_si128((__m128i*) &c8[d]);
+				in9_128 = _mm_loadu_si128((__m128i*) &c9[d]);
+				in10_128 = _mm_loadu_si128((__m128i*) &c10[d]);
+				in11_128 = _mm_loadu_si128((__m128i*) &c11[d]);
+				in12_128 = _mm_loadu_si128((__m128i*) &c12[d]);
+				in13_128 = _mm_loadu_si128((__m128i*) &c13[d]);
+				in14_128 = _mm_loadu_si128((__m128i*) &c14[d]);
+				in15_128 = _mm_loadu_si128((__m128i*) &c15[d]);
+				in16_128 = _mm_loadu_si128((__m128i*) &c16[d]);
+
+				in1_128_shifted = _mm_slli_epi16(in1_128, 15 - mux[0]);				
+				in2_128_shifted = _mm_slli_epi16(in2_128, 15 - mux[1]);				
+				in3_128_shifted = _mm_slli_epi16(in3_128, 15 - mux[2]);
+				in4_128_shifted = _mm_slli_epi16(in4_128, 15 - mux[3]);
+				in5_128_shifted = _mm_slli_epi16(in5_128, 15 - mux[4]);
+				in6_128_shifted = _mm_slli_epi16(in6_128, 15 - mux[5]);
+				in7_128_shifted = _mm_slli_epi16(in7_128, 15 - mux[6]);
+				in8_128_shifted = _mm_slli_epi16(in8_128, 15 - mux[7]);
+				in9_128_shifted = _mm_slli_epi16(in9_128, 15 - mux[8]);
+				in10_128_shifted = _mm_slli_epi16(in10_128, 15 - mux[9]);
+				in11_128_shifted = _mm_slli_epi16(in11_128, 15 - mux[10]);
+				in12_128_shifted = _mm_slli_epi16(in12_128, 15 - mux[11]);
+				in13_128_shifted = _mm_slli_epi16(in13_128, 15 - mux[12]);
+				in14_128_shifted = _mm_slli_epi16(in14_128, 15 - mux[13]);
+				in15_128_shifted = _mm_slli_epi16(in15_128, 15 - mux[14]);
+				in16_128_shifted = _mm_slli_epi16(in16_128, 15 - mux[15]);
+
+		        out_128 = _mm_or_si128(in1_128_shifted, in2_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in3_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in4_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in5_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in6_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in7_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in8_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in9_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in10_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in11_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in12_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in13_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in14_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in15_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in16_128_shifted);
+
+		        _mm_storeu_si128((__m128i*)&packs, out_128);
+
+                //}
+                *out++ = packs[0] >> 8;
+                *out++ = packs[0] & 0xff;
+
+                *out++ = packs[1] >> 8;
+                *out++ = packs[1] & 0xff;
+
+                *out++ = packs[2] >> 8;
+                *out++ = packs[2] & 0xff;
+
+                *out++ = packs[3] >> 8;
+                *out++ = packs[3] & 0xff;
+
+                *out++ = packs[4] >> 8;
+                *out++ = packs[4] & 0xff;
+
+                *out++ = packs[5] >> 8;
+                *out++ = packs[5] & 0xff;
+
+                *out++ = packs[6] >> 8;
+                *out++ = packs[6] & 0xff;
+
+                *out++ = packs[7] >> 8;
+                *out++ = packs[7] & 0xff;
+
+
+
+                /*uint16_t packs2[8] = {0};
+
+                in1_128 = _mm_loadu_si128((__m128i*) &c1[d + 8]);
+				in2_128 = _mm_loadu_si128((__m128i*) &c2[d + 8]);
+				in3_128 = _mm_loadu_si128((__m128i*) &c3[d + 8]);
+				in4_128 = _mm_loadu_si128((__m128i*) &c4[d + 8]);
+				in5_128 = _mm_loadu_si128((__m128i*) &c5[d + 8]);
+				in6_128 = _mm_loadu_si128((__m128i*) &c6[d + 8]);
+				in7_128 = _mm_loadu_si128((__m128i*) &c7[d + 8]);
+				in8_128 = _mm_loadu_si128((__m128i*) &c8[d + 8]);
+				in9_128 = _mm_loadu_si128((__m128i*) &c9[d + 8]);
+				in10_128 = _mm_loadu_si128((__m128i*) &c10[d + 8]);
+				in11_128 = _mm_loadu_si128((__m128i*) &c11[d + 8]);
+				in12_128 = _mm_loadu_si128((__m128i*) &c12[d + 8]);
+				in13_128 = _mm_loadu_si128((__m128i*) &c13[d + 8]);
+				in14_128 = _mm_loadu_si128((__m128i*) &c14[d + 8]);
+				in15_128 = _mm_loadu_si128((__m128i*) &c15[d + 8]);
+				in16_128 = _mm_loadu_si128((__m128i*) &c16[d + 8]);
+
+				in1_128_shifted = _mm_slli_epi16(in1_128, 15 - mux[0]);				
+				in2_128_shifted = _mm_slli_epi16(in2_128, 15 - mux[1]);				
+				in3_128_shifted = _mm_slli_epi16(in3_128, 15 - mux[2]);
+				in4_128_shifted = _mm_slli_epi16(in4_128, 15 - mux[3]);
+				in5_128_shifted = _mm_slli_epi16(in5_128, 15 - mux[4]);
+				in6_128_shifted = _mm_slli_epi16(in6_128, 15 - mux[5]);
+				in7_128_shifted = _mm_slli_epi16(in7_128, 15 - mux[6]);
+				in8_128_shifted = _mm_slli_epi16(in8_128, 15 - mux[7]);
+				in9_128_shifted = _mm_slli_epi16(in9_128, 15 - mux[8]);
+				in10_128_shifted = _mm_slli_epi16(in10_128, 15 - mux[9]);
+				in11_128_shifted = _mm_slli_epi16(in11_128, 15 - mux[10]);
+				in12_128_shifted = _mm_slli_epi16(in12_128, 15 - mux[11]);
+				in13_128_shifted = _mm_slli_epi16(in13_128, 15 - mux[12]);
+				in14_128_shifted = _mm_slli_epi16(in14_128, 15 - mux[13]);
+				in15_128_shifted = _mm_slli_epi16(in15_128, 15 - mux[14]);
+				in16_128_shifted = _mm_slli_epi16(in16_128, 15 - mux[15]);
+
+		        out_128 = _mm_or_si128(in1_128_shifted, in2_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in3_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in4_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in5_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in6_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in7_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in8_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in9_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in10_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in11_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in12_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in13_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in14_128_shifted);
+		        out2_128 = _mm_or_si128(out_128, in15_128_shifted);
+		        out_128 = _mm_or_si128(out2_128, in16_128_shifted);
+
+		        _mm_storeu_si128((__m128i*)&packs2, out_128);
+
+                //}
+                *out++ = packs2[0] >> 8;
+                *out++ = packs2[0] & 0xff;
+
+                *out++ = packs2[1] >> 8;
+                *out++ = packs2[1] & 0xff;
+
+                *out++ = packs2[2] >> 8;
+                *out++ = packs2[2] & 0xff;
+
+                *out++ = packs2[3] >> 8;
+                *out++ = packs2[3] & 0xff;
+
+                *out++ = packs2[4] >> 8;
+                *out++ = packs2[4] & 0xff;
+
+                *out++ = packs2[5] >> 8;
+                *out++ = packs2[5] & 0xff;
+
+                *out++ = packs2[6] >> 8;
+                *out++ = packs2[6] & 0xff;
+
+                *out++ = packs2[7] >> 8;
+                *out++ = packs2[7] & 0xff;*/
+
+                
+                consumed += (mod * 2 * modulo_val);
+              }
+#else
+
+              modulo_val = 16;
+			  __m256i in1_256;
+              __m256i in2_256;
+              __m256i in3_256;
+              __m256i in4_256;
+              __m256i in5_256;
+              __m256i in6_256;
+              __m256i in7_256;
+              __m256i in8_256;
+              __m256i in9_256;
+              __m256i in10_256;
+              __m256i in11_256;
+              __m256i in12_256;
+              __m256i in13_256;
+              __m256i in14_256;
+              __m256i in15_256;
+              __m256i in16_256;
+
+              __m256i in1_256_shifted;
+              __m256i in2_256_shifted;
+              __m256i in3_256_shifted;
+              __m256i in4_256_shifted;
+              __m256i in5_256_shifted;
+              __m256i in6_256_shifted;
+              __m256i in7_256_shifted;
+              __m256i in8_256_shifted;
+              __m256i in9_256_shifted;
+              __m256i in10_256_shifted;
+              __m256i in11_256_shifted;
+              __m256i in12_256_shifted;
+              __m256i in13_256_shifted;
+              __m256i in14_256_shifted;
+              __m256i in15_256_shifted;
+              __m256i in16_256_shifted;
+
+		      __m256i out_256;
+		      __m256i out2_256;
+
+              for (int d = 0; d < rows-(rows%modulo_val); d+=modulo_val) {
+                uint16_t packs[16] = {0};
+                //better do loop unrolling for small number of loops
+                //for (int e = 0; e < mod2; e++) {
+
+				in1_256 = _mm256_loadu_si256((__m256i*) &c1[d]);
+				in2_256 = _mm256_loadu_si256((__m256i*) &c2[d]);
+				in3_256 = _mm256_loadu_si256((__m256i*) &c3[d]);
+				in4_256 = _mm256_loadu_si256((__m256i*) &c4[d]);
+				in5_256 = _mm256_loadu_si256((__m256i*) &c5[d]);
+				in6_256 = _mm256_loadu_si256((__m256i*) &c6[d]);
+				in7_256 = _mm256_loadu_si256((__m256i*) &c7[d]);
+				in8_256 = _mm256_loadu_si256((__m256i*) &c8[d]);
+				in9_256 = _mm256_loadu_si256((__m256i*) &c9[d]);
+				in10_256 = _mm256_loadu_si256((__m256i*) &c10[d]);
+				in11_256 = _mm256_loadu_si256((__m256i*) &c11[d]);
+				in12_256 = _mm256_loadu_si256((__m256i*) &c12[d]);
+				in13_256 = _mm256_loadu_si256((__m256i*) &c13[d]);
+				in14_256 = _mm256_loadu_si256((__m256i*) &c14[d]);
+				in15_256 = _mm256_loadu_si256((__m256i*) &c15[d]);
+				in16_256 = _mm256_loadu_si256((__m256i*) &c16[d]);
+
+				in1_256_shifted = _mm256_slli_epi16(in1_256, 15 - mux[0]);				
+				in2_256_shifted = _mm256_slli_epi16(in2_256, 15 - mux[1]);				
+				in3_256_shifted = _mm256_slli_epi16(in3_256, 15 - mux[2]);
+				in4_256_shifted = _mm256_slli_epi16(in4_256, 15 - mux[3]);
+				in5_256_shifted = _mm256_slli_epi16(in5_256, 15 - mux[4]);
+				in6_256_shifted = _mm256_slli_epi16(in6_256, 15 - mux[5]);
+				in7_256_shifted = _mm256_slli_epi16(in7_256, 15 - mux[6]);
+				in8_256_shifted = _mm256_slli_epi16(in8_256, 15 - mux[7]);
+				in9_256_shifted = _mm256_slli_epi16(in9_256, 15 - mux[8]);
+				in10_256_shifted = _mm256_slli_epi16(in10_256, 15 - mux[9]);
+				in11_256_shifted = _mm256_slli_epi16(in11_256, 15 - mux[10]);
+				in12_256_shifted = _mm256_slli_epi16(in12_256, 15 - mux[11]);
+				in13_256_shifted = _mm256_slli_epi16(in13_256, 15 - mux[12]);
+				in14_256_shifted = _mm256_slli_epi16(in14_256, 15 - mux[13]);
+				in15_256_shifted = _mm256_slli_epi16(in15_256, 15 - mux[14]);
+				in16_256_shifted = _mm256_slli_epi16(in16_256, 15 - mux[15]);
+
+		        out_256 = _mm256_or_si256(in1_256_shifted, in2_256_shifted);
+		        out2_256 = _mm256_or_si256(out_256, in3_256_shifted);
+		        out_256 = _mm256_or_si256(out2_256, in4_256_shifted);
+		        out2_256 = _mm256_or_si256(out_256, in5_256_shifted);
+		        out_256 = _mm256_or_si256(out2_256, in6_256_shifted);
+		        out2_256 = _mm256_or_si256(out_256, in7_256_shifted);
+		        out_256 = _mm256_or_si256(out2_256, in8_256_shifted);
+		        out2_256 = _mm256_or_si256(out_256, in9_256_shifted);
+		        out_256 = _mm256_or_si256(out2_256, in10_256_shifted);
+		        out2_256 = _mm256_or_si256(out_256, in11_256_shifted);
+		        out_256 = _mm256_or_si256(out2_256, in12_256_shifted);
+		        out2_256 = _mm256_or_si256(out_256, in13_256_shifted);
+		        out_256 = _mm256_or_si256(out2_256, in14_256_shifted);
+		        out2_256 = _mm256_or_si256(out_256, in15_256_shifted);
+		        out_256 = _mm256_or_si256(out2_256, in16_256_shifted);
+
+		        _mm256_storeu_si256((__m256i*)&packs, out_256);
+
+                //}
+                *out++ = packs[0] >> 8;
+                *out++ = packs[0] & 0xff;
+
+                *out++ = packs[1] >> 8;
+                *out++ = packs[1] & 0xff;
+
+                *out++ = packs[2] >> 8;
+                *out++ = packs[2] & 0xff;
+
+                *out++ = packs[3] >> 8;
+                *out++ = packs[3] & 0xff;
+
+                *out++ = packs[4] >> 8;
+                *out++ = packs[4] & 0xff;
+
+                *out++ = packs[5] >> 8;
+                *out++ = packs[5] & 0xff;
+
+                *out++ = packs[6] >> 8;
+                *out++ = packs[6] & 0xff;
+
+                *out++ = packs[7] >> 8;
+                *out++ = packs[7] & 0xff;
+
+                *out++ = packs[8] >> 8;
+                *out++ = packs[8] & 0xff;
+
+                *out++ = packs[9] >> 8;
+                *out++ = packs[9] & 0xff;
+
+                *out++ = packs[10] >> 8;
+                *out++ = packs[10] & 0xff;
+
+                *out++ = packs[11] >> 8;
+                *out++ = packs[11] & 0xff;
+
+                *out++ = packs[12] >> 8;
+                *out++ = packs[12] & 0xff;
+
+                *out++ = packs[13] >> 8;
+                *out++ = packs[13] & 0xff;
+
+                *out++ = packs[14] >> 8;
+                *out++ = packs[14] & 0xff;
+
+                *out++ = packs[15] >> 8;
+                *out++ = packs[15] & 0xff;
+                
+                consumed += (mod * 2 * modulo_val);
+              }
+
+#endif
+
+              for (int d = (rows%modulo_val); d > 0; d--)
+              {
+              	pack = 0;
+
+              	offset = mux[0];
+                pack |= c1[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[1];
-                pack |= c2[d] << (((mod * 2) - 1) - offset);
+                pack |= c2[rows - d] << (((mod * 2) - 1) - offset);
+
 
                 offset = mux[2];
-                pack |= c3[d] << (((mod * 2) - 1) - offset);
+                pack |= c3[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[3];
-                pack |= c4[d] << (((mod * 2) - 1) - offset);
+                pack |= c4[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[4];
-                pack |= c5[d] << (((mod * 2) - 1) - offset);
+                pack |= c5[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[5];
-                pack |= c6[d] << (((mod * 2) - 1) - offset);
+                pack |= c6[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[6];
-                pack |= c7[d] << (((mod * 2) - 1) - offset);
+                pack |= c7[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[7];
-                pack |= c8[d] << (((mod * 2) - 1) - offset);
+                pack |= c8[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[8];
-                pack |= c9[d] << (((mod * 2) - 1) - offset);
+                pack |= c9[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[9];
-                pack |= c10[d] << (((mod * 2) - 1) - offset);
+                pack |= c10[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[10];
-                pack |= c11[d] << (((mod * 2) - 1) - offset);
+                pack |= c11[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[11];
-                pack |= c12[d] << (((mod * 2) - 1) - offset);
+                pack |= c12[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[12];
-                pack |= c13[d] << (((mod * 2) - 1) - offset);
+                pack |= c13[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[13];
-                pack |= c14[d] << (((mod * 2) - 1) - offset);
+                pack |= c14[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[14];
-                pack |= c15[d] << (((mod * 2) - 1) - offset);
+                pack |= c15[rows - d] << (((mod * 2) - 1) - offset);
 
                 offset = mux[15];
-                pack |= c16[d] << (((mod * 2) - 1) - offset);
-                //}
-                out[produced++] = pack >> 8;
-                out[produced++] = pack & 0xff;
+                pack |= c16[rows - d] << (((mod * 2) - 1) - offset);
+
+                //printf("%d\n", pack);
+
+                *out++ = pack >> 8;
+                *out++ = pack & 0xff;
+
                 consumed += (mod * 2);
               }
             }
@@ -897,7 +1094,7 @@ index+=(rows*2);
             rows = frame_size / mod;
             for (int i = 0; i < noutput_items; i += packed_items) {
               
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+              const uint16_t *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
               c1 = &tempv[0];
               c2 = &tempv[rows];
               c3 = &tempv[rows * 2];
@@ -1148,4 +1345,3 @@ index+=(rows*2);
 
   } /* namespace dtv */
 } /* namespace gr */
-
