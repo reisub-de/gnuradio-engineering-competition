@@ -186,8 +186,8 @@ namespace gr {
               for (int k = 0; k < nbch; k++) {
                 tempu[k] = *in++;
               }
-              for (int t = 0; t < q_val; t++) {
-                for (int s = 0; s < 360; s++) {
+			  for (int s = 0; s < 360; s++) {
+				for (int t = 0; t < q_val; t++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
               }
@@ -242,8 +242,8 @@ namespace gr {
             for (int k = 0; k < nbch; k++) {
               tempu[k] = *in++;
             }
+		  for (int s = 0; s < 360; s++) {
             for (int t = 0; t < q_val; t++) {
-              for (int s = 0; s < 360; s++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
               }
             }
@@ -322,8 +322,8 @@ namespace gr {
             for (int k = 0; k < nbch; k++) {
               tempu[k] = *in++;
             }
-            for (int t = 0; t < q_val; t++) {
-              for (int s = 0; s < 360; s++) {
+			for (int s = 0; s < 360; s++) {
+			  for (int t = 0; t < q_val; t++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
               }
             }
@@ -403,8 +403,8 @@ namespace gr {
               for (int k = 0; k < nbch; k++) {
                 tempu[k] = *in++;
               }
-              for (int t = 0; t < q_val; t++) {
-                for (int s = 0; s < 360; s++) {
+			  for (int s = 0; s < 360; s++) {
+			    for (int t = 0; t < q_val; t++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
               }
@@ -476,8 +476,8 @@ namespace gr {
               for (int k = 0; k < nbch; k++) {
                 tempu[k] = *in++;
               }
-              for (int t = 0; t < q_val; t++) {
-                for (int s = 0; s < 360; s++) {
+		      for (int s = 0; s < 360; s++) {
+				for (int t = 0; t < q_val; t++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
               }
