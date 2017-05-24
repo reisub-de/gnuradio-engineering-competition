@@ -175,11 +175,10 @@ namespace gr {
       unsigned int pack;
       const int *twist;
       const int *mux;
-	  
+	  const unsigned char* c[16];
 
       switch (signal_constellation) {
         case MOD_QPSK:
-		{
           rows = frame_size / 2;
 		  for (int i = 0; i < noutput_items; i += packed_items) {
             if (code_rate == C1_3 || code_rate == C2_5) {
@@ -207,9 +206,7 @@ namespace gr {
             }
           }
           break;
-		}
         case MOD_16QAM:
-		{
           if (frame_size == FRAME_SIZE_NORMAL) {
             twist = &twist16n[0];
           }
@@ -229,15 +226,14 @@ namespace gr {
             mux = &mux16[0];
           }
           rows = frame_size / (mod * 2);
-		  const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-		  c1 = &tempv[0];
-		  c2 = &tempv[rows];
-		  c3 = &tempv[rows * 2];
-		  c4 = &tempv[rows * 3];
-		  c5 = &tempv[rows * 4];
-		  c6 = &tempv[rows * 5];
-		  c7 = &tempv[rows * 6];
-		  c8 = &tempv[rows * 7];
+		  c[0] = &tempv[0];
+		  c[1] = &tempv[rows];
+		  c[2] = &tempv[rows * 2];
+		  c[3] = &tempv[rows * 3];
+		  c[4] = &tempv[rows * 4];
+		  c[5] = &tempv[rows * 5];
+		  c[6] = &tempv[rows * 6];
+		  c[7] = &tempv[rows * 7];
 		  for (int i = 0; i < noutput_items; i += packed_items) {
             for (int k = 0; k < nbch; k++) {
               tempu[k] = *in++;
@@ -261,16 +257,20 @@ namespace gr {
             }
             index = 0;
             for (int j = 0; j < rows; j++) {
-              tempu[index++] = c1[j];
-              tempu[index++] = c2[j];
-              tempu[index++] = c3[j];
-              tempu[index++] = c4[j];
-              tempu[index++] = c5[j];
-              tempu[index++] = c6[j];
-              tempu[index++] = c7[j];
-              tempu[index++] = c8[j];
+				pack = 0;
+				pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
+				pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
+				pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
+				pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
+				pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
+				pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
+				pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
+				pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
+				out[produced++] = pack >> 4;
+              out[produced++] = pack & 0xf;
+              consumed += (mod * 2);
             }
-            index = 0;
+            /*index = 0;
             for (int d = 0; d < frame_size / (mod * 2); d++) {
               pack = 0;
               for (int e = 0; e < (mod * 2); e++) {
@@ -280,12 +280,10 @@ namespace gr {
               out[produced++] = pack >> 4;
               out[produced++] = pack & 0xf;
               consumed += (mod * 2);
-            }
+            }*/
           }
           break;
-		}
         case MOD_64QAM:
-		{
           if (frame_size == FRAME_SIZE_NORMAL) {
             twist = &twist64n[0];
           }
@@ -305,19 +303,18 @@ namespace gr {
             mux = &mux64[0];
           }
           rows = frame_size / (mod * 2);
-		  const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
-		  c1 = &tempv[0];
-		  c2 = &tempv[rows];
-		  c3 = &tempv[rows * 2];
-		  c4 = &tempv[rows * 3];
-		  c5 = &tempv[rows * 4];
-		  c6 = &tempv[rows * 5];
-		  c7 = &tempv[rows * 6];
-		  c8 = &tempv[rows * 7];
-		  c9 = &tempv[rows * 8];
-		  c10 = &tempv[rows * 9];
-		  c11 = &tempv[rows * 10];
-		  c12 = &tempv[rows * 11];
+		  c[0] = &tempv[0];
+		  c[1] = &tempv[rows];
+		  c[2] = &tempv[rows * 2];
+		  c[3] = &tempv[rows * 3];
+		  c[4] = &tempv[rows * 4];
+		  c[5] = &tempv[rows * 5];
+		  c[6] = &tempv[rows * 6];
+		  c[7] = &tempv[rows * 7];
+		  c[8] = &tempv[rows * 8];
+		  c[9] = &tempv[rows * 9];
+		  c[10] = &tempv[rows * 10];
+		  c[11] = &tempv[rows * 11];
 		  for (int i = 0; i < noutput_items; i += packed_items) {
             for (int k = 0; k < nbch; k++) {
               tempu[k] = *in++;
@@ -341,20 +338,24 @@ namespace gr {
             }
             index = 0;
             for (int j = 0; j < rows; j++) {
-              tempu[index++] = c1[j];
-              tempu[index++] = c2[j];
-              tempu[index++] = c3[j];
-              tempu[index++] = c4[j];
-              tempu[index++] = c5[j];
-              tempu[index++] = c6[j];
-              tempu[index++] = c7[j];
-              tempu[index++] = c8[j];
-              tempu[index++] = c9[j];
-              tempu[index++] = c10[j];
-              tempu[index++] = c11[j];
-              tempu[index++] = c12[j];
+              pack = 0;
+			  pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
+			  pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
+			  pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
+			  pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
+			  pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
+			  pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
+		      pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
+			  pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
+			  pack |= c[8][j] << (((mod * 2) - 1) - mux[8]);
+			  pack |= c[9][j] << (((mod * 2) - 1) - mux[9]);
+			  pack |= c[10][j] << (((mod * 2) - 1) - mux[10]);
+			  pack |= c[11][j] << (((mod * 2) - 1) - mux[11]);
+              out[produced++] = pack >> 6;
+              out[produced++] = pack & 0x3f;
+              consumed += (mod * 2);
             }
-            index = 0;
+            /*index = 0;
             for (int d = 0; d < frame_size / (mod * 2); d++) {
               pack = 0;
               for (int e = 0; e < (mod * 2); e++) {
@@ -364,12 +365,10 @@ namespace gr {
               out[produced++] = pack >> 6;
               out[produced++] = pack & 0x3f;
               consumed += (mod * 2);
-            }
+            }*/
           }
           break;
-		}
         case MOD_256QAM:
-		{
           if (frame_size == FRAME_SIZE_NORMAL) {
             if (code_rate == C3_5) {
               mux = &mux256_35[0];
@@ -383,7 +382,6 @@ namespace gr {
             rows = frame_size / (mod * 2);
 			//const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
 			//const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-			const unsigned char* c[16];
 			/*c1 = &tempv[0];
 			c2 = &tempv[rows];
 			c3 = &tempv[rows * 2];
@@ -505,7 +503,6 @@ namespace gr {
             }
             rows = frame_size / mod;
 			//const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-			const unsigned char* c[8];
 			/*c1 = &tempv[0];
             c2 = &tempv[rows];
             c3 = &tempv[rows * 2];
@@ -583,7 +580,6 @@ namespace gr {
             }
           }
           break;
-		}
       }
 
       // Tell runtime system how many input items we consumed on
