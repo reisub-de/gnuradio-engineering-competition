@@ -495,6 +495,7 @@ namespace gr {
                 consumed += 187;
                 in += 187;
                 j += 186;
+                count = (count + 187) % 188;
                 //out[offset++] = *in++;
               }
               //count = (count + 1) % 188;
