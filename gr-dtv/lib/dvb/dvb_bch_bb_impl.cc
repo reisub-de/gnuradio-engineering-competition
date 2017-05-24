@@ -488,13 +488,13 @@ namespace gr {
       sr[0] = (sr[0] >> 1);
 	}
 	/* 
-	 * Shift 128 bits by 16 bits
+	 * Shift 128 bits by 8 bits
 	 */
 	inline void
-    dvb_bch_bb_impl::reg_128b_shift16(uint64_t *sr)
+    dvb_bch_bb_impl::reg_128b_shift8(uint64_t *sr)
 	{
-		sr[1] = (sr[1] >> 16) | (sr[0] << 47);
-		sr[0] = (sr[0] >> 16);
+		sr[1] = (sr[1] >> 8) | (sr[0] << 56);
+		sr[0] = (sr[0] >> 8);
 	}
 
     /*
@@ -509,14 +509,14 @@ namespace gr {
 	}
 	
 	/* 
-	 * Shift 160 bits by 16 bits
+	 * Shift 160 bits by 8 bits
 	 */
 	inline void
-    dvb_bch_bb_impl::reg_160b_shift16(uint64_t *sr)
+    dvb_bch_bb_impl::reg_160b_shift8(uint64_t *sr)
 	{
-		sr[2] = (sr[2] >> 16) | (sr[1] << 47);
-		sr[1] = (sr[1] >> 16) | (sr[0] << 47);
-		sr[0] = (sr[0] >> 16);
+		sr[2] = (sr[2] >> 8) | (sr[1] << 56);
+		sr[1] = (sr[1] >> 8) | (sr[0] << 56);
+		sr[0] = (sr[0] >> 8);
 	}
 
     /*
@@ -529,21 +529,21 @@ namespace gr {
 	  sr[1] = (sr[1] >> 1) | (sr[0] << 63);
       sr[0] = (sr[0] >> 1);
 	}
-	/* 
-	 * Shift 192 bits by 16 bits
-	 */
-	inline void
-    dvb_bch_bb_impl::reg_192b_shift16(uint64_t *sr)
-	{
-		sr[2] = (sr[2] >> 16) | (sr[1] << 47);
-		sr[1] = (sr[1] >> 16) | (sr[0] << 47);
-		sr[0] = (sr[0] >> 16);
-	}
-	
+    /*
+     * Shift 192 bits by 8 bits
+     */
+    inline void
+    dvb_bch_bb_impl::reg_192b_shift8(uint64_t *sr)
+    {
+         sr[2] = (sr[2] >> 8) | (sr[1] << 56);
+	 sr[1] = (sr[1] >> 8) | (sr[0] << 56);
+	 sr[0] = (sr[0] >> 8);
+    }
+
 	void
-	output_lut_build(void){
-		for(int i = 0; i < 65536; i++){
-			for(int j = 0; j < 16; j++){
+	dvb_bch_bb_impl::output_lut_build(void){
+		for(int i = 0; i < 256; i++){
+			for(int j = 0; j < 8; j++){
 				if(i & (1 << j))
 					output_lookup_table.b[i][j]=1;
 				else
@@ -657,7 +657,7 @@ namespace gr {
     {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
-	  uint64_t *out64;
+      uint64_t *out64;
       unsigned char b, temp;
       //unsigned int shift[6];
 	  uint64_t shift[3];
@@ -684,12 +684,13 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            out64 = out;
-			for (int n = 0; n < 192/16; n++) {
-				*out64++ = output_lookup_table.lw[shift[2] & 0xffff];
-				reg_192b_shift16(shift);
-			}
-			/*
+            out64 = (uint64_t*)out;
+            for (int n = 0; n < 192/8; n++) {
+              *out64++ = output_lookup_table.lw[shift[2] & 0xff];
+              reg_192b_shift8(shift);
+            }
+            out = (unsigned char*) out64;
+            /*
             for (int n = 0; n < 192; n++) {
               *out++ = (shift[2] & 1);
               reg_192b_shift(shift);
