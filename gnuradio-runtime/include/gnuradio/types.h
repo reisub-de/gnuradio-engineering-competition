@@ -68,7 +68,7 @@ typedef unsigned long long	gr_uint64;
 #ifndef HAVE_THREAD_POOL
 #define HAVE_THREAD_POOL
 // The definition of boost_asio based thread pool
-struct ThreadPool {
+struct gr_thread_pool {
     typedef boost::scoped_ptr<boost::asio::io_service::work> boost_asio_worker;
 
     ThreadPool(size_t pool_size) :m_service(), m_working(new boost::asio::io_service::work(m_service)) {
