@@ -88,7 +88,7 @@ Abbreviated instructions are duplicated below.
     $ cd build
     $ cmake [OPTIONS] ../
     $ make
-    $ make test
+    $ sudo make test
     $ sudo make install
     ```
     Useful `[OPTIONS]` include setting the install prefix 

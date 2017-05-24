@@ -24,8 +24,15 @@
 #include <gnuradio/dtv/dvb_bch_bb.h>
 #include "dvb_defines.h"
 
+
 namespace gr {
   namespace dtv {
+
+    union ShiftR {
+      unsigned long long l[3];
+      unsigned int i[6];
+      unsigned char c[24];
+    };
 
     class dvb_bch_bb_impl : public dvb_bch_bb
     {
@@ -38,6 +45,7 @@ namespace gr {
       unsigned int m_poly_n_12[6];
       unsigned int m_poly_s_12[6];
       unsigned int m_poly_m_12[6];
+      ShiftR poly12;
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
       void poly_reverse(int*, int*, int);
