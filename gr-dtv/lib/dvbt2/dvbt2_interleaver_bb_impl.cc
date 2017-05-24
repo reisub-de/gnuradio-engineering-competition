@@ -439,28 +439,28 @@ namespace gr {
               }
               index = 0;
               for (int j = 0; j < rows; j++) {
-                tempu[index++] = c[0][j];
-                tempu[index++] = c[1][j];
-                tempu[index++] = c[2][j];
-                tempu[index++] = c[3][j];
-                tempu[index++] = c[4][j];
-                tempu[index++] = c[5][j];
-                tempu[index++] = c[6][j];
-                tempu[index++] = c[7][j];
-                tempu[index++] = c[8][j];
-                tempu[index++] = c[9][j];
-                tempu[index++] = c[10][j];
-                tempu[index++] = c[11][j];
-                tempu[index++] = c[12][j];
-                tempu[index++] = c[13][j];
-                tempu[index++] = c[14][j];
-                tempu[index++] = c[15][j];
+                tempu[index++] = c[mux[0]][j];
+                tempu[index++] = c[mux[1]][j];
+                tempu[index++] = c[mux[2]][j];
+                tempu[index++] = c[mux[3]][j];
+                tempu[index++] = c[mux[4]][j];
+                tempu[index++] = c[mux[5]][j];
+                tempu[index++] = c[mux[6]][j];
+                tempu[index++] = c[mux[7]][j];
+                tempu[index++] = c[mux[8]][j];
+                tempu[index++] = c[mux[9]][j];
+                tempu[index++] = c[mux[10]][j];
+                tempu[index++] = c[mux[11]][j];
+                tempu[index++] = c[mux[12]][j];
+                tempu[index++] = c[mux[13]][j];
+                tempu[index++] = c[mux[14]][j];
+                tempu[index++] = c[mux[15]][j];
               }
               index = 0;
               for (int d = 0; d < frame_size / (mod * 2); d++) {
                 pack = 0;
                 for (int e = 0; e < (mod * 2); e++) {
-                  offset = mux[e];
+                  offset = e;//mux[e];
                   pack |= tempu[index++] << (((mod * 2) - 1) - offset);
                 }
                 out[produced++] = pack >> 8;
@@ -521,20 +521,20 @@ namespace gr {
               }
               index = 0;
               for (int j = 0; j < rows; j++) {
-				tempu[index++] = c[0][j];
-                tempu[index++] = c[1][j];
-                tempu[index++] = c[2][j];
-                tempu[index++] = c[3][j];
-                tempu[index++] = c[4][j];
-                tempu[index++] = c[5][j];
-                tempu[index++] = c[6][j];
-                tempu[index++] = c[7][j];
+				tempu[index++] = c[mux[0]][j];
+                tempu[index++] = c[mux[1]][j];
+                tempu[index++] = c[mux[2]][j];
+                tempu[index++] = c[mux[3]][j];
+                tempu[index++] = c[mux[4]][j];
+                tempu[index++] = c[mux[5]][j];
+                tempu[index++] = c[mux[6]][j];
+                tempu[index++] = c[mux[7]][j];
               }
               index = 0;
               for (int d = 0; d < frame_size / mod; d++) {
                 pack = 0;
                 for (int e = 0; e < mod; e++) {
-                  offset = mux[e];
+                  offset = e;//mux[e];
                   pack |= tempu[index++] << ((mod - 1) - offset);
                 }
                 out[produced++] = pack & 0xff;
