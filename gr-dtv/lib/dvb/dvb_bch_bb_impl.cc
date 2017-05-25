@@ -28,6 +28,10 @@
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
 
+struct FuncHandlerDataStruct {
+  
+};
+
 namespace gr {
   namespace dtv {
 
