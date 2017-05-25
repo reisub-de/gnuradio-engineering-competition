@@ -613,6 +613,7 @@ for (int row = 0; row < ROWS; row++) { \
       int plen = (frame_size_real + Xp) - nbch;
       d = in;
       p = &out[nbch];
+      uint64_t p_bitwise[plen/64 +1];
       int consumed = 0;
       int puncture, index;
 
@@ -631,15 +632,22 @@ for (int row = 0; row < ROWS; row++) { \
         memset(p, 0, sizeof(unsigned char) * plen);
         memcpy(&out[i],&in[consumed],sizeof(unsigned char) * nbch);
         consumed+=nbch;
+	//convert input data stream to bitfield
         memset(d_bitwise, 0, sizeof(uint64_t) * nbch/64+1);
         for(int n = 0; n<(int)nbch; n++){
           d_bitwise[n/64] |= (uint64_t)(d[n] & 1) << (n % 64);
         }
         // now do the parity checking
         for (int j = 0; j < ldpc_encode.table_length; j++) {
-          if(d_bitwise[ldpc_encode.d[j]/64] & ((uint64_t) 1 << (ldpc_encode.d[j] % 64)))
-            p[ldpc_encode.p[j]] ^= 1;
+          //if(d_bitwise[ldpc_encode.d[j]/64] & ((uint64_t) 1 << (ldpc_encode.d[j] % 64)))
+          //  p[ldpc_encode.p[j]] ^= 1;
+          p_bitwise[ldpc_encode.p[j]/64] ^= d_bitwise[ldpc_encode.d[j]/64] & ((uint64_t) 1 << (ldpc_encode.d[j] % 64));
         }
+        //create p from p_bitwise
+        for(int n = 0; n<(int)plen; n++){
+          p[n] = (p_bitwise[n/64] & (uint64_t) 1 << (n % 64)) >> (n % 64);
+        }
+        
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
