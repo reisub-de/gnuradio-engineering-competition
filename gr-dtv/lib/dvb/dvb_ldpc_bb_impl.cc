@@ -605,7 +605,6 @@ for (int row = 0; row < ROWS; row++) { \
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       const unsigned char *d;
-      uint64_t d_bitwise[nbch/64+1];
       unsigned char *p;
       unsigned char *b = (unsigned char *) output_items[0];
       unsigned char *s;
@@ -613,7 +612,6 @@ for (int row = 0; row < ROWS; row++) { \
       int plen = (frame_size_real + Xp) - nbch;
       d = in;
       p = &out[nbch];
-      uint64_t p_bitwise[plen/64 +1];
       int consumed = 0;
       int puncture, index;
 
@@ -630,25 +628,12 @@ for (int row = 0; row < ROWS; row++) { \
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
-        //memset(p_bitwise, 0, sizeof(uint64_t) * (plen/64 +1));
         memcpy(&out[i],&in[consumed],sizeof(unsigned char) * nbch);
         consumed+=nbch;
-	//convert input data stream to bitfield
-        memset(d_bitwise, 0, sizeof(uint64_t) * nbch/64+1);
-        /*for(int n = 0; n<(int)nbch; n++){
-          d_bitwise[n/64] |= (uint64_t)(d[n] & 1) << (n % 64);
-        }*/
         // now do the parity checking
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
-          //if(d_bitwise[ldpc_encode.d[j]/64] & ((uint64_t) 1 << (ldpc_encode.d[j] % 64)))
-          //  p[ldpc_encode.p[j]] ^= 1;
-          //p_bitwise[ldpc_encode.p[j]/64] ^= ((d_bitwise[ldpc_encode.d[j]/64] & ((uint64_t) 1 << (ldpc_encode.d[j] % 64))) >> (ldpc_encode.d[j] % 64)) << (ldpc_encode.p[j] % 64);
         }
-        //create p from p_bitwise
-        /*for(int n = 0; n<(int)plen; n++){
-          p[n] = (p_bitwise[n/64] & (uint64_t) 1 << (n % 64)) >> (n % 64);
-        }*/
         
         if (P != 0) {
           puncture = 0;
