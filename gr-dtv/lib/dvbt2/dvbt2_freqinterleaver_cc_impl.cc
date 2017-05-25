@@ -780,16 +780,17 @@ namespace gr {
         if (remaining_iter == 1) {
           int i = 0;
           while (i < noutput_items) {
+
+            // symbol even
             H = HevenP2;
             int j = 0;
             while (j < C_P2) {
               *out++ = in[H[j]];
               j++;
             }
-            //symbol++;
-            // symbol uneven now
             in += C_P2;
-          
+
+            // symbol uneven now          
             j = 0;
             while (j < num_iter) {
               H = Hodd;
@@ -806,9 +807,9 @@ namespace gr {
                 k++;
               }
               in += C_DATA;
-              //symbol += 2;
               j += 2;
             }
+
             // symbol still uneven
             H = Hodd;
             int k = 0;
@@ -817,25 +818,27 @@ namespace gr {
               k++;
             }
             in += C_DATA;
-            //symbol++;
+
             // symbol even again --> return to start of loop
             i += interleaved_items;
+
           } // end while i < noutput_items
         }
         else {
           // num_data_symbols is multiple of 2, i.e. remaining_iter = 0
           int i = 0;
           while (i < noutput_items) {
+
+            // symbol even
             H = HevenP2;
             int j = 0;
             while (j < C_P2) {
               *out++ = in[H[j]];
               j++;
             }
-            //symbol++;
-            // symbol uneven now
             in += C_P2;
           
+            // symbol uneven now
             j = 0;
             while (j < num_iter) {
               H = Hodd;
@@ -852,12 +855,13 @@ namespace gr {
                 k++;
               }
               in += C_DATA;
-              //symbol += 2;
               j += 2;
             }
-            // symbol still uneven, therefore unroll loop, symbol then even
             i += interleaved_items;
+
+            // symbol still uneven, therefore unroll loop, symbol then even
             if (i < noutput_items) {
+
               // symbol uneven
               H = HoddP2;
               int j = 0;
@@ -865,12 +869,12 @@ namespace gr {
                 *out++ = in[H[j]];
                 j++;
               }
-              //symbol++;
-              // symbol even now
               in += C_P2;
-          
+
+              // symbol even now
               j = 0;
               while (j < num_iter) {
+                // symbol uneven
                 H = Heven;
                 int k = 0;  
                 while (k < C_DATA) {
@@ -878,6 +882,8 @@ namespace gr {
                   k++;
                 }
                 in += C_DATA;
+
+                // symbol uneven
                 H = Hodd;
                 k = 0;
                 while (k < C_DATA) {
@@ -885,15 +891,16 @@ namespace gr {
                   k++;
                 }
                 in += C_DATA;
-                //symbol += 2;
                 j += 2;
               }
-              // symbol now (still) even, go back to start of loop
               i += interleaved_items;
+              // symbol now (still) even, go back to start of loop
+
             }
-            else {
+            else { // i >= nouput_items: stop
               break;
             }
+
           } // end while i < noutput_items 
         }// end else remaining_iter == 0 
       }
