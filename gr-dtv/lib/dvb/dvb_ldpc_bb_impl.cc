@@ -375,8 +375,9 @@ namespace gr {
 #define LDPC_BF(TABLE_NAME, ROWS) \
 for (int row = 0; row < ROWS; row++) { \
   for (int n = 0; n < 360; n++) { \
-  	for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
-      ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n*q)) % pbits; \
+  	int nq = n * q;\
+    for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
+      ldpc_encode.p[index] = (TABLE_NAME[row][col] + nq) % pbits; \
       ldpc_encode.d[index] = im; \
       index++; \
     } \
