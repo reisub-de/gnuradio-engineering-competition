@@ -614,7 +614,7 @@ for (int row = 0; row < ROWS; row++) { \
       d = in;
      // p = &out[nbch];
       int consumed = 0;
-      int puncture, index;
+      //int puncture, index;
 
       for (int i = 0; i < noutput_items; i += frame_size) {
         if (Xs != 0) {
@@ -634,38 +634,30 @@ for (int row = 0; row < ROWS; row++) { \
 
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
-        for (int j = 0; j < (int)nbch; j++) {
-          out[i + j] = in[consumed];
-          consumed++;
-        }
+        memcpy(&out[i], &in[consumed], nbch);
+        consumed += nbch;
+
         // now do the parity checking
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
         }
         if (P != 0) {
-          puncture = 0;
-          for (int j = 0; j < plen; j += P) {
-            p[j] = 0x55;
-            puncture++;
-            if (puncture == Xp) {
-              break;
-            }
+          memset(p, 0x55, std::min(Xp, plen));
+
+          if(plen > Xp) {
+          	memcpy(b,&p[Xp],plen-Xp);
           }
-          index = 0;
-          for (int j = 0; j < plen; j++) {
-            if (p[j] != 0x55) {
-              b[index++] = p[j];
-            }
-          }
+
           p = &out[nbch];
         }
         for (int j = 1; j < (plen - Xp); j++) {
           p[j] ^= p[j-1];
         }
         if (signal_constellation == MOD_128APSK) {
-          for (int j = 0; j < 6; j++) {
-            p[j + plen] = 0;
-          }
+        	memset(&p[plen], 0, 6);
+//          for (int j = 0; j < 6; j++) {
+//            p[j + plen] = 0;
+//          }
         }
         d += nbch;
         p += frame_size;
