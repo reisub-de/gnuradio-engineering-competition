@@ -550,7 +550,7 @@ namespace gr {
             unsigned int num_loop = noutput_items / packed_items;
             if (num_loop >= max_thread_num) thread_needed = max_thread_num;
             else thread_needed = num_loop;
-            gr::dtv::ThreadPool thread_pool(thread_needed);
+            gr_thread_pool thread_pool(thread_needed);
 
             rows = frame_size  >> 1;
             for (int i = 0; i < noutput_items; i += packed_items) {
@@ -611,7 +611,7 @@ namespace gr {
             unsigned int num_loop = noutput_items / packed_items;
             if (num_loop >= max_thread_num) thread_needed = max_thread_num;
             else thread_needed = num_loop;
-            gr::dtv::ThreadPool thread_pool(thread_needed);
+            gr_thread_pool thread_pool(thread_needed);
 
             for (int i = 0; i < noutput_items; i += packed_items) {
                 int local_mod = mod;
@@ -663,7 +663,7 @@ namespace gr {
             unsigned int num_loop = noutput_items / packed_items;
             if (num_loop >= max_thread_num) thread_needed = max_thread_num;
             else thread_needed = num_loop;
-            gr::dtv::ThreadPool thread_pool(thread_needed);
+            gr_thread_pool thread_pool(thread_needed);
 
             int local_mod = mod;
             for (int i = 0; i < noutput_items; i += packed_items) {
@@ -694,7 +694,7 @@ namespace gr {
             unsigned int num_loop = noutput_items / packed_items;
             if (num_loop >= max_thread_num) thread_needed = max_thread_num;
             else thread_needed = num_loop;
-            gr::dtv::ThreadPool thread_pool(thread_needed);
+            gr_thread_pool thread_pool(thread_needed);
 
             if (frame_size == FRAME_SIZE_NORMAL) {
               if (code_rate == C3_5) {
