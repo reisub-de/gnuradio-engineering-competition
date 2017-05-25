@@ -221,16 +221,16 @@ namespace gr {
 
       for (int i = 0; i < noutput_items; i += insertion_items) {
         level = out;
-        for (int j = 0; j < 542; j++) {
-          *out++ = p1_timeshft[j];
-        }
-        for (int j = 0; j < 1024; j++) {
-          *out++ = p1_time[j];
-        }
-        for (int j = 542; j < 1024; j++) {
-          *out++ = p1_timeshft[j];
-        }
+        // replace for-loops with memcpy()s
+        memcpy(out, &p1_timeshft[0], 542 * sizeof(gr_complex));
+        out += 542;
+        memcpy(out, &p1_time[0], 1024 * sizeof(gr_complex));
+        out += 1024;
+        memcpy(out, &p1_timeshft[542], 482 * sizeof(gr_complex));
+        out += 482;
         memcpy(out, in, sizeof(gr_complex) * frame_items);
+        out += frame_items;
+        in += frame_items;
         if (show_levels == TRUE) {
           for (int j = 0; j < frame_items + 2048; j++) {
             if (level[j].real() > real_positive) {
@@ -261,8 +261,6 @@ namespace gr {
           printf("peak real = %+e, %+e, %d, %d\n", real_positive, real_negative, real_positive_threshold_count, real_negative_threshold_count);
           printf("peak imag = %+e, %+e, %d, %d\n", imag_positive, imag_negative, imag_positive_threshold_count, imag_negative_threshold_count);
         }
-        out += frame_items;
-        in += frame_items;
       }
 
       // Tell runtime system how many input items we consumed on
