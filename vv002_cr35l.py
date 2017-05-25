@@ -3,11 +3,11 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Vv002 Cr35L
-<<<<<<< HEAD
+#<<<<<<< HEAD
 # Generated: Thu May 25 19:39:49 2017
-=======
+#=======
 # Generated: Thu May 25 01:17:04 2017
->>>>>>> 89dedec936722e5d25d85b11a868e82c7934437d
+#>>>>>>> 89dedec936722e5d25d85b11a868e82c7934437d
 ##################################################
 
 from gnuradio import blocks
