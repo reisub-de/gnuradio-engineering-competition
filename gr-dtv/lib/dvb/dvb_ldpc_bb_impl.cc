@@ -630,6 +630,7 @@ for (int row = 0; row < ROWS; row++) { \
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
+        memset(p_bitwise, 0, sizeof(uint64_t) * (plen/64 +1));
         memcpy(&out[i],&in[consumed],sizeof(unsigned char) * nbch);
         consumed+=nbch;
 	//convert input data stream to bitfield
@@ -641,7 +642,7 @@ for (int row = 0; row < ROWS; row++) { \
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           //if(d_bitwise[ldpc_encode.d[j]/64] & ((uint64_t) 1 << (ldpc_encode.d[j] % 64)))
           //  p[ldpc_encode.p[j]] ^= 1;
-          p_bitwise[ldpc_encode.p[j]/64] ^= d_bitwise[ldpc_encode.d[j]/64] & ((uint64_t) 1 << (ldpc_encode.d[j] % 64));
+          p_bitwise[ldpc_encode.p[j]/64] ^= ((d_bitwise[ldpc_encode.d[j]/64] & ((uint64_t) 1 << (ldpc_encode.d[j] % 64))) >> (ldpc_encode.d[j] % 64)) << (ldpc_encode.p[j] % 64);
         }
         //create p from p_bitwise
         for(int n = 0; n<(int)plen; n++){
