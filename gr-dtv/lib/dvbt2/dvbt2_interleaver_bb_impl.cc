@@ -327,10 +327,7 @@ namespace gr {
               offset = twist[col];
               for (int row = 0; row < rows; row++) {
                 tempv[offset + (rows * col)] = tempu[index++];
-                offset++;
-                if (offset == rows) {
-                  offset = 0;
-                }
+                offset = (offset + 1) % rows;
               }
             }
             index = 0;
