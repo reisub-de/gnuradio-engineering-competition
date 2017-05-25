@@ -2790,19 +2790,18 @@ namespace gr {
 #define AVX_ON 1
 #if AVX_ON
           // AVX
-          int remaining_iter = C_PS % 8;
+          int remaining_iter = C_PS % 4;
           int num_iter = C_PS - remaining_iter;
-          int index_array[8];
-          int pn_seq_array[8] = {pn_sequence[j], pn_sequence[j], pn_sequence[j], pn_sequence[j],
-                                pn_sequence[j], pn_sequence[j], pn_sequence[j], pn_sequence[j]};
+          int index_array[4];
+          int pn_seq_array[4] = {pn_sequence[j], pn_sequence[j], pn_sequence[j], pn_sequence[j]};
           __m256i pn_seq_256 = _mm256_loadu_si256((__m256i const*) pn_seq_array);
           int n;
-          for (n = 0; n < num_iter; n += 8) {
+          for (n = 0; n < num_iter; n += 4) {
             __m256i prbs_off_256 = _mm256_loadu_si256((__m256i const*) &prbs[n + K_OFFSET]);
             __m256i index_array_256 = _mm256_xor_si256(prbs_off_256, pn_seq_256);
             _mm256_storeu_si256((__m256i*)index_array, index_array_256);
             int p = 0;
-            while (p < 8) {
+            while (p < 4) {
               switch (data_carrier_map[n + p]) {
                 case SCATTERED_CARRIER:
                   *out++ = sp_bpsk[index_array[p]];
@@ -2849,18 +2848,18 @@ namespace gr {
           }
 #else
           // SSE
-          int remaining_iter = C_PS % 4;
+          int remaining_iter = C_PS % 2;
           int num_iter = C_PS - remaining_iter;
-          int index_array[4];
-          int pn_seq_array[4] = {pn_sequence[j], pn_sequence[j], pn_sequence[j], pn_sequence[j]};
+          int index_array[2];
+          int pn_seq_array[2] = {pn_sequence[j], pn_sequence[j]};
           __m128i pn_seq_128 = _mm_loadu_si128((__m128i*) pn_seq_array);
           int n;
-          for (n = 0; n < num_iter; n += 4) {
+          for (n = 0; n < num_iter; n += 2) {
             __m128i prbs_off_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
             __m128i index_array_128 = _mm_xor_si128(prbs_off_128, pn_seq_128);
             _mm_storeu_si128((__m128i*)index_array, index_array_128);
             int p = 0;
-            while (p < 4) {
+            while (p < 2) {
               switch (data_carrier_map[n + p]) {
                 case SCATTERED_CARRIER:
                   *out++ = sp_bpsk[index_array[p]];
