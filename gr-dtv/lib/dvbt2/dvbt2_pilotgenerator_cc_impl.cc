@@ -2794,9 +2794,9 @@ namespace gr {
           __m256i pn_seq_256 = _mm256_loadu_si256((__m256i const*) pn_seq_array);
           int n;
           for (n = 0; n < num_iter; n += 8) {
-            __m256i prbs_off_256 = _mm256_loadu_si256((__256i*) &prbs[n + K_OFFSET]);
+            __m256i prbs_off_256 = _mm256_loadu_si256((__m256i*) &prbs[n + K_OFFSET]);
             __m256i index_array_256 = _mm256_xor_si256(prbs_off_256, pn_seq_256);
-            _mm256_storeu_si256((__m128i*)index_array, index_array_256);
+            _mm256_storeu_si256((__m256i*)index_array, index_array_256);
             int p = 0;
             while (p < 8) {
               switch (data_carrier_map[n + p]) {
