@@ -26,6 +26,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
+#include <future>
 
 namespace gr {
   namespace dtv {
@@ -659,9 +660,20 @@ for (int row = 0; row < ROWS; row++) { \
 
 
         // now do the parity checking
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
-        }
+		void parallel_parity(int from, int to, unsigned char *p, unsigned char *d)
+		{
+			for (int j = from; j < to;  j++)
+			{
+				p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+			}
+		}
+		std::future<void> res1 = std::async(parallel_parity, 0, ldpc_encode_table.table_length/2, p, d);
+		std::future<void> res2 = std::async(parallel_parity, ldpc_encode_table.table_length/2, ldpc_encode_table.table_length, p, d);
+		res1.get();
+		res2.get();
+        //for (int j = 0; j < ldpc_encode.table_length; j++) {
+         // p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+        //}
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
