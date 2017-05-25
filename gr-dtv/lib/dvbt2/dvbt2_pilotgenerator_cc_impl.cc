@@ -26,12 +26,7 @@
 #include "dvbt2_pilotgenerator_cc_impl.h"
 #include <volk/volk.h>
 
-#define AVX_ON 1
-#if AVX_ON
-#include "emmintrin.h"
-#else
 #include "immintrin.h"
-#endif
 
 namespace gr {
   namespace dtv {
@@ -2792,6 +2787,7 @@ namespace gr {
           // Since init_pilots only affects values in the data_carrier_map array, only initialize them here
           init_pilots(j);
           pn_seq_j = pn_sequence[j];
+#define AVX_ON 1
 #if AVX_ON
           // AVX
           int remaining_iter = C_PS % 8;
