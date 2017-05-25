@@ -236,7 +236,7 @@ namespace gr {
           c[7] = &tempv[rows * 7];
           for (int i = 0; i < noutput_items; i += packed_items) {
             for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
-              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
             }
             for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
               tempu[k] = in[k]; //copy remaining part
@@ -254,7 +254,6 @@ namespace gr {
               for (int row = 0; row < rows; row++) {
                 tempv[offset + (rows * col)] = tempu[index++];
                 offset = (offset + 1) % rows;
-                }
               }
             }
             index = 0;
@@ -308,7 +307,7 @@ namespace gr {
           c[11] = &tempv[rows * 11];
           for (int i = 0; i < noutput_items; i += packed_items) {
             for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
-              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
             }
             for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
               tempu[k] = in[k]; //copy remaining part
@@ -379,7 +378,7 @@ namespace gr {
             c[15] = &tempv[rows * 15];
             for (int i = 0; i < noutput_items; i += packed_items) {
               for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
-                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
               }
               for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
                 tempu[k] = in[k]; //copy remaining part
@@ -447,7 +446,7 @@ namespace gr {
             c[7] = &tempv[rows * 7];
             for (int i = 0; i < noutput_items; i += packed_items) {
               for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
-                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
               }
               for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
                 tempu[k] = in[k]; //copy remaining part
