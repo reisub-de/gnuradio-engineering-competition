@@ -175,18 +175,18 @@ namespace gr {
       unsigned int pack;
       const int *twist;
       const int *mux;
-	  const unsigned char* c[16];
+      const unsigned char* c[16];
 
       switch (signal_constellation) {
         case MOD_QPSK:
           rows = frame_size / 2;
-		  for (int i = 0; i < noutput_items; i += packed_items) {
+          for (int i = 0; i < noutput_items; i += packed_items) {
             if (code_rate == C1_3 || code_rate == C2_5) {
               for (int k = 0; k < nbch; k++) {
                 tempu[k] = *in++;
               }
-			  for (int s = 0; s < 360; s++) {
-				for (int t = 0; t < q_val; t++) {
+              for (int s = 0; s < 360; s++) {
+                for (int t = 0; t < q_val; t++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
               }
@@ -226,20 +226,24 @@ namespace gr {
             mux = &mux16[0];
           }
           rows = frame_size / (mod * 2);
-		  c[0] = &tempv[0];
-		  c[1] = &tempv[rows];
-		  c[2] = &tempv[rows * 2];
-		  c[3] = &tempv[rows * 3];
-		  c[4] = &tempv[rows * 4];
-		  c[5] = &tempv[rows * 5];
-		  c[6] = &tempv[rows * 6];
-		  c[7] = &tempv[rows * 7];
-		  for (int i = 0; i < noutput_items; i += packed_items) {
-            for (int k = 0; k < nbch; k++) {
-              tempu[k] = *in++;
+          c[0] = &tempv[0];
+          c[1] = &tempv[rows];
+          c[2] = &tempv[rows * 2];
+          c[3] = &tempv[rows * 3];
+          c[4] = &tempv[rows * 4];
+          c[5] = &tempv[rows * 5];
+          c[6] = &tempv[rows * 6];
+          c[7] = &tempv[rows * 7];
+          for (int i = 0; i < noutput_items; i += packed_items) {
+            for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
+              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
             }
-		  for (int s = 0; s < 360; s++) {
-            for (int t = 0; t < q_val; t++) {
+            for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
+              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+            }
+            in+=nbch;
+            for (int s = 0; s < 360; s++) {
+              for (int t = 0; t < q_val; t++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
               }
             }
@@ -257,30 +261,19 @@ namespace gr {
             }
             index = 0;
             for (int j = 0; j < rows; j++) {
-				pack = 0;
-				pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
-				pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
-				pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
-				pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
-				pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
-				pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
-				pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
-				pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
-				out[produced++] = pack >> 4;
-              out[produced++] = pack & 0xf;
-              consumed += (mod * 2);
-            }
-            /*index = 0;
-            for (int d = 0; d < frame_size / (mod * 2); d++) {
               pack = 0;
-              for (int e = 0; e < (mod * 2); e++) {
-                offset = mux[e];
-                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
-              }
+              pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
+              pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
+              pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
+              pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
+              pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
+              pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
+              pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
+              pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
               out[produced++] = pack >> 4;
               out[produced++] = pack & 0xf;
               consumed += (mod * 2);
-            }*/
+            }
           }
           break;
         case MOD_64QAM:
@@ -303,24 +296,28 @@ namespace gr {
             mux = &mux64[0];
           }
           rows = frame_size / (mod * 2);
-		  c[0] = &tempv[0];
-		  c[1] = &tempv[rows];
-		  c[2] = &tempv[rows * 2];
-		  c[3] = &tempv[rows * 3];
-		  c[4] = &tempv[rows * 4];
-		  c[5] = &tempv[rows * 5];
-		  c[6] = &tempv[rows * 6];
-		  c[7] = &tempv[rows * 7];
-		  c[8] = &tempv[rows * 8];
-		  c[9] = &tempv[rows * 9];
-		  c[10] = &tempv[rows * 10];
-		  c[11] = &tempv[rows * 11];
-		  for (int i = 0; i < noutput_items; i += packed_items) {
-            for (int k = 0; k < nbch; k++) {
-              tempu[k] = *in++;
+          c[0] = &tempv[0];
+          c[1] = &tempv[rows];
+          c[2] = &tempv[rows * 2];
+          c[3] = &tempv[rows * 3];
+          c[4] = &tempv[rows * 4];
+          c[5] = &tempv[rows * 5];
+          c[6] = &tempv[rows * 6];
+          c[7] = &tempv[rows * 7];
+          c[8] = &tempv[rows * 8];
+          c[9] = &tempv[rows * 9];
+          c[10] = &tempv[rows * 10];
+          c[11] = &tempv[rows * 11];
+          for (int i = 0; i < noutput_items; i += packed_items) {
+            for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
+              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
             }
-			for (int s = 0; s < 360; s++) {
-			  for (int t = 0; t < q_val; t++) {
+            for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
+              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+            }
+            in+=nbch;
+            for (int s = 0; s < 360; s++) {
+              for (int t = 0; t < q_val; t++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
               }
             }
@@ -339,33 +336,22 @@ namespace gr {
             index = 0;
             for (int j = 0; j < rows; j++) {
               pack = 0;
-			  pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
-			  pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
-			  pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
-			  pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
-			  pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
-			  pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
-		      pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
-			  pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
-			  pack |= c[8][j] << (((mod * 2) - 1) - mux[8]);
-			  pack |= c[9][j] << (((mod * 2) - 1) - mux[9]);
-			  pack |= c[10][j] << (((mod * 2) - 1) - mux[10]);
-			  pack |= c[11][j] << (((mod * 2) - 1) - mux[11]);
+              pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
+              pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
+              pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
+              pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
+              pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
+              pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
+              pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
+              pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
+              pack |= c[8][j] << (((mod * 2) - 1) - mux[8]);
+              pack |= c[9][j] << (((mod * 2) - 1) - mux[9]);
+              pack |= c[10][j] << (((mod * 2) - 1) - mux[10]);
+              pack |= c[11][j] << (((mod * 2) - 1) - mux[11]);
               out[produced++] = pack >> 6;
               out[produced++] = pack & 0x3f;
               consumed += (mod * 2);
             }
-            /*index = 0;
-            for (int d = 0; d < frame_size / (mod * 2); d++) {
-              pack = 0;
-              for (int e = 0; e < (mod * 2); e++) {
-                offset = mux[e];
-                pack |= tempu[index++] << (((mod * 2) - 1) - offset);
-              }
-              out[produced++] = pack >> 6;
-              out[produced++] = pack & 0x3f;
-              consumed += (mod * 2);
-            }*/
           }
           break;
         case MOD_256QAM:
@@ -380,46 +366,33 @@ namespace gr {
               mux = &mux256[0];
             }
             rows = frame_size / (mod * 2);
-			//const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-			//const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-			/*c1 = &tempv[0];
-			c2 = &tempv[rows];
-			c3 = &tempv[rows * 2];
-			c4 = &tempv[rows * 3];
-			c5 = &tempv[rows * 4];
-			c6 = &tempv[rows * 5];
-			c7 = &tempv[rows * 6];
-			c8 = &tempv[rows * 7];
-			c9 = &tempv[rows * 8];
-			c10 = &tempv[rows * 9];
-			c11 = &tempv[rows * 10];
-			c12 = &tempv[rows * 11];
-			c13 = &tempv[rows * 12];
-			c14 = &tempv[rows * 13];
-			c15 = &tempv[rows * 14];
-			c16 = &tempv[rows * 15];*/
-			c[0] = &tempv[0];
-			c[1] = &tempv[rows];
-			c[2] = &tempv[rows * 2];
-			c[3] = &tempv[rows * 3];
-			c[4] = &tempv[rows * 4];
-			c[5] = &tempv[rows * 5];
-			c[6] = &tempv[rows * 6];
-			c[7] = &tempv[rows * 7];
-			c[8] = &tempv[rows * 8];
-			c[9] = &tempv[rows * 9];
-			c[10] = &tempv[rows * 10];
-			c[11] = &tempv[rows * 11];
-			c[12] = &tempv[rows * 12];
-			c[13] = &tempv[rows * 13];
-			c[14] = &tempv[rows * 14];
-			c[15] = &tempv[rows * 15];
-			for (int i = 0; i < noutput_items; i += packed_items) {
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
+            c[0] = &tempv[0];
+            c[1] = &tempv[rows];
+            c[2] = &tempv[rows * 2];
+            c[3] = &tempv[rows * 3];
+            c[4] = &tempv[rows * 4];
+            c[5] = &tempv[rows * 5];
+            c[6] = &tempv[rows * 6];
+            c[7] = &tempv[rows * 7];
+            c[8] = &tempv[rows * 8];
+            c[9] = &tempv[rows * 9];
+            c[10] = &tempv[rows * 10];
+            c[11] = &tempv[rows * 11];
+            c[12] = &tempv[rows * 12];
+            c[13] = &tempv[rows * 13];
+            c[14] = &tempv[rows * 14];
+            c[15] = &tempv[rows * 15];
+            for (int i = 0; i < noutput_items; i += packed_items) {
+              for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
+                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
               }
-			  for (int s = 0; s < 360; s++) {
-			    for (int t = 0; t < q_val; t++) {
+              for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
+                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+              }
+              in+=nbch;
+            
+              for (int s = 0; s < 360; s++) {
+                for (int t = 0; t < q_val; t++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
               }
@@ -437,58 +410,27 @@ namespace gr {
               }
               index = 0;
               for (int j = 0; j < rows; j++) {
-                /*tempu[index+mux[0]] = c[0][j];
-                tempu[index+mux[1]] = c[1][j];
-                tempu[index+mux[2]] = c[2][j];
-                tempu[index+mux[3]] = c[3][j];
-                tempu[index+mux[4]] = c[4][j];
-                tempu[index+mux[5]] = c[5][j];
-                tempu[index+mux[6]] = c[6][j];
-                tempu[index+mux[7]] = c[7][j];
-                tempu[index+mux[8]] = c[8][j];
-                tempu[index+mux[9]] = c[9][j];
-                tempu[index+mux[10]] = c[10][j];
-                tempu[index+mux[11]] = c[11][j];
-                tempu[index+mux[12]] = c[12][j];
-                tempu[index+mux[13]] = c[13][j];
-                tempu[index+mux[14]] = c[14][j];
-                tempu[index+mux[15]] = c[15][j];
-				index+=16;*/
-				pack = 0;
-				pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
-				pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
-				pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
-				pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
-				pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
-				pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
-				pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
-				pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
-				pack |= c[8][j] << (((mod * 2) - 1) - mux[8]);
-				pack |= c[9][j] << (((mod * 2) - 1) - mux[9]);
-				pack |= c[10][j] << (((mod * 2) - 1) - mux[10]);
-				pack |= c[11][j] << (((mod * 2) - 1) - mux[11]);
-				pack |= c[12][j] << (((mod * 2) - 1) - mux[12]);
-				pack |= c[13][j] << (((mod * 2) - 1) - mux[13]);
-				pack |= c[14][j] << (((mod * 2) - 1) - mux[14]);
-				pack |= c[15][j] << (((mod * 2) - 1) - mux[15]);
-				out[produced++] = pack >> 8;
-                out[produced++] = pack & 0xff;
-                consumed += (mod * 2);
-              }
-              
-              /*
-              index = 0;
-              for (int d = 0; d < frame_size / (mod * 2); d++) {
                 pack = 0;
-                for (int e = 0; e < (mod * 2); e++) {
-                  //offset = mux[e];
-                  //pack |= tempu[index++] << (((mod * 2) - 1) - offset);
-				  pack |= tempu[index++] << (((mod * 2) - 1) - e);
-                }
+                pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
+                pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
+                pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
+                pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
+                pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
+                pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
+                pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
+                pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
+                pack |= c[8][j] << (((mod * 2) - 1) - mux[8]);
+                pack |= c[9][j] << (((mod * 2) - 1) - mux[9]);
+                pack |= c[10][j] << (((mod * 2) - 1) - mux[10]);
+                pack |= c[11][j] << (((mod * 2) - 1) - mux[11]);
+                pack |= c[12][j] << (((mod * 2) - 1) - mux[12]);
+                pack |= c[13][j] << (((mod * 2) - 1) - mux[13]);
+                pack |= c[14][j] << (((mod * 2) - 1) - mux[14]);
+                pack |= c[15][j] << (((mod * 2) - 1) - mux[15]);
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
                 consumed += (mod * 2);
-              }*/
+              }
             }
           }
           else {
@@ -502,16 +444,7 @@ namespace gr {
               mux = &mux256s[0];
             }
             rows = frame_size / mod;
-			//const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-			/*c1 = &tempv[0];
-            c2 = &tempv[rows];
-            c3 = &tempv[rows * 2];
-            c4 = &tempv[rows * 3];
-            c5 = &tempv[rows * 4];
-            c6 = &tempv[rows * 5];
-            c7 = &tempv[rows * 6];
-            c8 = &tempv[rows * 7];*/
-			c[0] = &tempv[0];
+            c[0] = &tempv[0];
             c[1] = &tempv[rows];
             c[2] = &tempv[rows * 2];
             c[3] = &tempv[rows * 3];
@@ -520,11 +453,16 @@ namespace gr {
             c[6] = &tempv[rows * 6];
             c[7] = &tempv[rows * 7];
             for (int i = 0; i < noutput_items; i += packed_items) {
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
+              for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
+                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
               }
-		      for (int s = 0; s < 360; s++) {
-				for (int t = 0; t < q_val; t++) {
+              for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
+                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+              }
+              in+=nbch;
+            
+              for (int s = 0; s < 360; s++) {
+                for (int t = 0; t < q_val; t++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
               }
@@ -542,41 +480,18 @@ namespace gr {
               }
               index = 0;
               for (int j = 0; j < rows; j++) {
-				  /*
-				tempu[index+mux[0]] = c[0][j];
-                tempu[index+mux[1]] = c[1][j];
-                tempu[index+mux[2]] = c[2][j];
-                tempu[index+mux[3]] = c[3][j];
-                tempu[index+mux[4]] = c[4][j];
-                tempu[index+mux[5]] = c[5][j];
-                tempu[index+mux[6]] = c[6][j];
-                tempu[index+mux[7]] = c[7][j];
-				index+=8;
-				*/
-				pack = 0;
-				pack |= c[0][j] << ((mod - 1) - mux[0]);
-				pack |= c[1][j] << ((mod - 1) - mux[1]);
-				pack |= c[2][j] << ((mod - 1) - mux[2]);
-				pack |= c[3][j] << ((mod - 1) - mux[3]);
-				pack |= c[4][j] << ((mod - 1) - mux[4]);
-				pack |= c[5][j] << ((mod - 1) - mux[5]);
-				pack |= c[6][j] << ((mod - 1) - mux[6]);
-				pack |= c[7][j] << ((mod - 1) - mux[7]);
-				out[produced++] = pack & 0xff;
-                consumed += mod;
-              }
-              /*
-              index = 0;
-              for (int d = 0; d < frame_size / mod; d++) {
                 pack = 0;
-                for (int e = 0; e < mod; e++) {
-                  //offset = mux[e];
-                  //pack |= tempu[index++] << ((mod - 1) - offset);
-				  pack |= tempu[index++] << ((mod - 1) - e);
-                }
+                pack |= c[0][j] << ((mod - 1) - mux[0]);
+                pack |= c[1][j] << ((mod - 1) - mux[1]);
+                pack |= c[2][j] << ((mod - 1) - mux[2]);
+                pack |= c[3][j] << ((mod - 1) - mux[3]);
+                pack |= c[4][j] << ((mod - 1) - mux[4]);
+                pack |= c[5][j] << ((mod - 1) - mux[5]);
+                pack |= c[6][j] << ((mod - 1) - mux[6]);
+                pack |= c[7][j] << ((mod - 1) - mux[7]);
                 out[produced++] = pack & 0xff;
                 consumed += mod;
-              }*/
+              }
             }
           }
           break;
