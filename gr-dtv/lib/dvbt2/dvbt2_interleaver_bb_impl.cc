@@ -412,7 +412,8 @@ namespace gr {
               }
               in = in + (q_val * 360);
               index = 0;
-              for (int col = 0; col < (mod * 2); col++) {
+              int mod2 = mod * 2;
+              for (int col = 0; col < mod2; col++) {
                 offset = twist256n[col];
                 int f = rows * col;
                 for (int row = rows; row--; ) {
@@ -445,13 +446,13 @@ namespace gr {
               index = 0;
               for( int d= frame_size / (mod * 2); d--; ) {
                 pack = 0;
-                for (int e = 0; e < (mod * 2); e++) {
+                for (int e = 0; e < mod2; e++) {
                   offset = mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+                  pack |= tempu[index++] << ((mod2 - 1) - offset);
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
-                consumed += (mod * 2);
+                consumed += mod2;
               }
             }
           }
