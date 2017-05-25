@@ -251,9 +251,11 @@ namespace gr {
             index = 0;
             for (int col = 0; col < (mod * 2); col++) {
               offset = twist[col];
-              for (int row = 0; row < rows; row++) {
-                tempv[offset + (rows * col)] = tempu[index++];
-                offset = (offset + 1) % rows;
+              for (int row = offset; row < rows; row++) {
+                tempv[row + (rows * col)] = tempu[index++];
+              }
+              for (int row = 0; row < offset; row++) {
+                tempv[row + (rows * col)] = tempu[index++];
               }
             }
             index = 0;
@@ -322,9 +324,11 @@ namespace gr {
             index = 0;
             for (int col = 0; col < (mod * 2); col++) {
               offset = twist[col];
-              for (int row = 0; row < rows; row++) {
-                tempv[offset + (rows * col)] = tempu[index++];
-                offset = (offset + 1) % rows;
+              for (int row = offset; row < rows; row++) {
+                tempv[row + (rows * col)] = tempu[index++];
+              }
+              for (int row = 0; row < offset; row++) {
+                tempv[row + (rows * col)] = tempu[index++];
               }
             }
             index = 0;
@@ -394,10 +398,11 @@ namespace gr {
               index = 0;
               for (int col = 0; col < (mod * 2); col++) {
                 offset = twist256n[col];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
-                  offset = (offset + 1) % rows;
-                  }
+                for (int row = offset; row < rows; row++) {
+                  tempv[row + (rows * col)] = tempu[index++];
+                }
+                for (int row = 0; row < offset; row++) {
+                  tempv[row + (rows * col)] = tempu[index++];
                 }
               }
               index = 0;
@@ -462,10 +467,11 @@ namespace gr {
               index = 0;
               for (int col = 0; col < mod; col++) {
                 offset = twist256s[col];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
-                  offset = (offset + 1) % rows;
-                  }
+                for (int row = offset; row < rows; row++) {
+                  tempv[row + (rows * col)] = tempu[index++];
+                }
+                for (int row = 0; row < offset; row++) {
+                  tempv[row + (rows * col)] = tempu[index++];
                 }
               }
               index = 0;
