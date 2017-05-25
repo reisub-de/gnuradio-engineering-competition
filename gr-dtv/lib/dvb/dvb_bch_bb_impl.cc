@@ -556,7 +556,7 @@ namespace gr {
     void dvb_bch_bb_impl::bch_lut_build(void){
       uint64_t* poly;
       uint64_t shift[3];
-      
+
       switch(bch_code){
         case BCH_CODE_N12:
           poly = m_poly64_n_12;
@@ -575,18 +575,22 @@ namespace gr {
           break;
       }
       for(int i = 0; i < 256; i++) {
-        shift[0]=0;
-        shift[1]=0;
-        shift[2]=i;
         for(int j = 0; j < 256; j++) {
-          for(int k = 1; k<8; k++){
-            int temp = !!((1 << k) & j);
-            b = (temp ^ (shift[2] & 1));
+          shift[0]=0;
+          shift[1]=0;
+          shift[2]=i;
+          for(int k = 0; k<8; k++){
+            unsigned char temp;
+            if((1 << k) & j)
+              temp = 1;
+            else
+              temp = 0;
+            unsigned char b = (temp ^ (shift[2] & 1));
             reg_192b_shift(shift);
             if (b) {
-              shift[0] ^= m_poly64_n_12[0];
-              shift[1] ^= m_poly64_n_12[1];
-              shift[2] ^= m_poly64_n_12[2];
+              shift[0] ^= poly[0];
+              shift[1] ^= poly[1];
+              shift[2] ^= poly[2];
             }
           }
           bch_lookup_table[i][j][0]=shift[0];
@@ -714,19 +718,21 @@ namespace gr {
             shift[0]=0;
             shift[1]=0;
             shift[2]=0;
-            // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              *out++ = temp;
-              consumed++;
-              //b = (temp ^ (shift[5] & 1));
-              b = (temp ^ (shift[2] & 1));
-              reg_192b_shift(shift);
-              if (b) {
-                shift[0] ^= m_poly64_n_12[0];
-                shift[1] ^= m_poly64_n_12[1];
-                shift[2] ^= m_poly64_n_12[2];
+
+            // MSB of the codeword first, read into byte
+            for (int j = 0; j < (int)kbch; j+=8) {	//kbch seems to be always multiple of 8
+              unsigned char lbyte = shift[2] & 0xff;
+              unsigned char nbyte = 0;
+              for(int k = 0; k < 8; k++){
+                *out++ = *in;
+                temp = *in;
+                nbyte |= (*in++) << k;
               }
+              consumed+=8;
+              reg_192b_shift8(shift);
+              shift[0] ^= bch_lookup_table[lbyte][nbyte][0];
+              shift[1] ^= bch_lookup_table[lbyte][nbyte][1];
+              shift[2] ^= bch_lookup_table[lbyte][nbyte][2];
             }
             // Now add the parity bits to the output
             out64 = (uint64_t*)out;

@@ -38,7 +38,7 @@ namespace gr {
       //unsigned int m_poly_n_12[6];
       //unsigned int m_poly_s_12[6];
       //unsigned int m_poly_m_12[6];
-      uint64_t m_poly64_n_8[2];
+      uint64_t m_poly64_n_8[3];		//use also 3 lw for lut_generation
       uint64_t m_poly64_n_10[3];
       uint64_t m_poly64_n_12[3];
       uint64_t m_poly64_s_12[3];
@@ -53,6 +53,7 @@ namespace gr {
       void poly_pack64(const int*, uint64_t*, int);
       void poly_reverse(int*, int*, int);
       void output_lut_build(void);
+      void bch_lut_build(void);
       //inline void reg_4_shift(unsigned int*);
       //inline void reg_5_shift(unsigned int*);
       //inline void reg_6_shift(unsigned int*);
