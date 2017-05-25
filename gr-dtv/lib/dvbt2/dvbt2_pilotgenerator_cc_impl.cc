@@ -2744,7 +2744,7 @@ namespace gr {
       const int size_left_zeros = left_nulls * sizeof(gr_complex);
       const int size_right_zeros = right_nulls * sizeof(gr_complex);
 
-#define AVX_ON 0
+#define AVX_ON 1
 #if AVX_ON
       int num_el_256 = 256 / sizeof(int);
       int *index_array = (int *) malloc(256);
