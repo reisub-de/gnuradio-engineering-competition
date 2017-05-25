@@ -25,7 +25,13 @@
 #include <gnuradio/io_signature.h>
 #include "dvbt2_pilotgenerator_cc_impl.h"
 #include <volk/volk.h>
+
+#define AVX_ON 1
+#if AVX_ON
+#include "emmintrin.h"
+#else
 #include "immintrin.h"
+#endif
 
 namespace gr {
   namespace dtv {
@@ -2749,6 +2755,7 @@ namespace gr {
       for (int i = 0; i < noutput_items; i += num_symbols) {
         int j = 0;
         int pn_seq_j;
+
         // At first do all the first N_P2 (= 1 here) OFDM-symbols
         while (j < N_P2) {
           memset(out, 0, size_left_zeros);
@@ -2776,6 +2783,7 @@ namespace gr {
           out += ofdm_fft_size;
           ++j;
         }
+
         // Then do the symbols N_P2 to num_symbols - L_FC
         int limit = num_symbols - L_FC;
         while (j < limit) {
@@ -2783,7 +2791,6 @@ namespace gr {
           out += left_nulls;
           // Since init_pilots only affects values in the data_carrier_map array, only initialize them here
           init_pilots(j);
-#define AVX_ON 1
 #if AVX_ON
           // AVX
           int remaining_iter = C_PS % 8;
@@ -2908,7 +2915,8 @@ namespace gr {
           out += ofdm_fft_size;
           ++j;
         }
-        // Now do symbol j = num_symbols - L_FC
+
+        // Now do the symbol j = num_symbols - L_FC
         pn_seq_j = pn_sequence[num_symbols - L_FC];
         memset(out, 0, size_left_zeros);
         out += left_nulls;
@@ -2933,12 +2941,13 @@ namespace gr {
         generate_ofdm_symbol(out);
         out += ofdm_fft_size;
         ++j;
+
         // Finally do remaining symbols j = num_symbols - L_FC + 1 to j = num_symbols - 1
         while (j < num_symbols) {
           memset(out, 0, size_left_zeros);
           out += left_nulls;
           pn_seq_j = pn_sequence[j];
-          // Because init_pilots only affects values in the data_carrier_map array, only initilialize it here
+          // Since init_pilots only affects values in the data_carrier_map array, only initilialize it here
           init_pilots(j);
           for (int n = 0; n < C_PS; n++) {
             switch (data_carrier_map[n]) {
