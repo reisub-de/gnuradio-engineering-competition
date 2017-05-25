@@ -2748,7 +2748,6 @@ namespace gr {
       for (int i = 0; i < noutput_items; i += num_symbols) {
         int j = 0;
         int pn_seq_j;
-
         // At first do all the first N_P2 (= 1 here) OFDM-symbols
         while (j < N_P2) {
           memset(out, 0, size_left_zeros);
@@ -2776,17 +2775,15 @@ namespace gr {
           out += ofdm_fft_size;
           ++j;
         }
-
         // Then do the symbols N_P2 to num_symbols - L_FC
         int limit = num_symbols - L_FC;
         while (j < limit) {
           memset(out, 0, size_left_zeros);
           out += left_nulls;
-          // Since init_pilots only affects values in the data_carrier_map array, only initialize them here
-          init_pilots(j);
           pn_seq_j = pn_sequence[j];
-          int n;
-          for (n = 0; n < C_PS; n++) {
+          // Because init_pilots only affects values in the data_carrier_map array, only initilialize it here
+          init_pilots(j);
+          for (int n = 0; n < C_PS; n++) {
             switch (data_carrier_map[n]) {
               case SCATTERED_CARRIER:
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
@@ -2795,7 +2792,7 @@ namespace gr {
                 *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
                 break;
               case CONTINUAL_CARRIER:
-                *out++ = cp_bpsk[prbs[prbs[n + K_OFFSET] ^ pn_seq_j]];
+                *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
                 break;
               case CONTINUAL_CARRIER_INVERTED:
                 *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
@@ -2805,16 +2802,15 @@ namespace gr {
               default:
                 *out++ = *in++;
                 break;
-            } // end switch
-          } // end for
+            }
+          }
           memset(out, 0, size_right_zeros);
           out -=  ofdm_fft_size - right_nulls;
           generate_ofdm_symbol(out);
           out += ofdm_fft_size;
           ++j;
         }
-
-        // Now do the symbol j = num_symbols - L_FC
+        // Now do symbol j = num_symbols - L_FC
         pn_seq_j = pn_sequence[num_symbols - L_FC];
         memset(out, 0, size_left_zeros);
         out += left_nulls;
@@ -2839,13 +2835,12 @@ namespace gr {
         generate_ofdm_symbol(out);
         out += ofdm_fft_size;
         ++j;
-
         // Finally do remaining symbols j = num_symbols - L_FC + 1 to j = num_symbols - 1
         while (j < num_symbols) {
           memset(out, 0, size_left_zeros);
           out += left_nulls;
           pn_seq_j = pn_sequence[j];
-          // Since init_pilots only affects values in the data_carrier_map array, only initilialize it here
+          // Because init_pilots only affects values in the data_carrier_map array, only initilialize it here
           init_pilots(j);
           for (int n = 0; n < C_PS; n++) {
             switch (data_carrier_map[n]) {
