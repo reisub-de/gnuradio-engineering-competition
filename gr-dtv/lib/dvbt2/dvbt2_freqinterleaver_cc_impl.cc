@@ -771,47 +771,177 @@ namespace gr {
       gr_complex *out = (gr_complex *) output_items[0];
       int symbol = 0;
       int *H;
-
-      for (int i = 0; i < noutput_items; i += interleaved_items) {
-        for (int j = 0; j < N_P2; j++) {
-          if ((symbol % 2) == 0) {
+    
+      // N_P2 is either 1 (fftsize 32 or 16) or a multiple of 2 (i.e. 2, 4, 8, 16)
+      if (N_P2 == 1 && N_FC == 0) {
+        // N_P2 = 1 & N_FC = 0 (e.g. for PP7 and 32k)
+        int remaining_iter = num_data_symbols % 2;
+        int num_iter = num_data_symbols - remaining_iter;
+        if (remaining_iter == 1) {
+          int i = 0;
+          while (i < noutput_items) {
             H = HevenP2;
-          }
-          else {
-            H = HoddP2;
-          }
-          for (int j = 0; j < C_P2; j++) {
-            *out++ = in[H[j]];
-          }
-          symbol++;
-          in += C_P2;
-        }
-        for (int j = 0; j < num_data_symbols; j++) {
-          if ((symbol % 2) == 0) {
-            H = Heven;
-          }
-          else {
+            int j = 0;
+            while (j < C_P2) {
+              *out++ = in[H[j]];
+              j++;
+            }
+            //symbol++;
+            // symbol uneven now
+            in += C_P2;
+          
+            j = 0;
+            while (j < num_iter) {
+              H = Hodd;
+              int k = 0;
+              while (k < C_DATA) {
+                *out++ = in[H[k]];
+                k++;
+              }
+              in += C_DATA;
+              H = Heven;
+              k = 0;  
+              while (k < C_DATA) {
+                *out++ = in[H[k]];
+                k++;
+              }
+              in += C_DATA;
+              //symbol += 2;
+              j += 2;
+            }
+            // symbol still uneven
             H = Hodd;
-          }
-          for (int j = 0; j < C_DATA; j++) {
-            *out++ = in[H[j]];
-          }
-          symbol++;
-          in += C_DATA;
+            int k = 0;
+            while (k < C_DATA) {
+              *out++ = in[H[k]];
+              k++;
+            }
+            in += C_DATA;
+            //symbol++;
+            // symbol even again --> return to start of loop
+            i += interleaved_items;
+          } // end while i < noutput_items
         }
-        if (N_FC != 0) {
-          if ((symbol % 2) == 0) {
-            H = HevenFC;
+        else {
+          // num_data_symbols is multiple of 2, i.e. remaining_iter = 0
+          int i = 0;
+          while (i < noutput_items) {
+            H = HevenP2;
+            int j = 0;
+            while (j < C_P2) {
+              *out++ = in[H[j]];
+              j++;
+            }
+            //symbol++;
+            // symbol uneven now
+            in += C_P2;
+          
+            j = 0;
+            while (j < num_iter) {
+              H = Hodd;
+              int k = 0;
+              while (k < C_DATA) {
+                *out++ = in[H[k]];
+                k++;
+              }
+              in += C_DATA;
+              H = Heven;
+              k = 0;  
+              while (k < C_DATA) {
+                *out++ = in[H[k]];
+                k++;
+              }
+              in += C_DATA;
+              //symbol += 2;
+              j += 2;
+            }
+            // symbol still uneven, therefore unroll loop, symbol then even
+            i += interleaved_items;
+            if (i < noutput_items) {
+              // symbol uneven
+              H = HoddP2;
+              int j = 0;
+              while (j < C_P2) {
+                *out++ = in[H[j]];
+                j++;
+              }
+              //symbol++;
+              // symbol even now
+              in += C_P2;
+          
+              j = 0;
+              while (j < num_iter) {
+                H = Heven;
+                int k = 0;  
+                while (k < C_DATA) {
+                  *out++ = in[H[k]];
+                  k++;
+                }
+                in += C_DATA;
+                H = Hodd;
+                k = 0;
+                while (k < C_DATA) {
+                  *out++ = in[H[k]];
+                  k++;
+                }
+                in += C_DATA;
+                //symbol += 2;
+                j += 2;
+              }
+              // symbol now (still) even, go back to start of loop
+              i += interleaved_items;
+            }
+            else {
+              break;
+            }
+          } // end while i < noutput_items 
+        }// end else remaining_iter == 0 
+      }
+      else {
+        // N_P2 multiple of 2 (or other elseif N_P2 == 1 && N_FC != 0
+        // not implemented yet: thus do everything else here
+        for (int i = 0; i < noutput_items; i += interleaved_items) {
+          for (int j = 0; j < N_P2; j++) {
+            if ((symbol % 2) == 0) {
+              H = HevenP2;
+            }
+            else {
+              H = HoddP2;
+            }
+            for (int j = 0; j < C_P2; j++) {
+              *out++ = in[H[j]];
+            }
+            symbol++;
+            in += C_P2;
           }
-          else {
-            H = HoddFC;
+          for (int j = 0; j < num_data_symbols; j++) {
+            if ((symbol % 2) == 0) {
+              H = Heven;
+            }
+            else {
+              H = Hodd;
+            }
+            for (int j = 0; j < C_DATA; j++) {
+              *out++ = in[H[j]];
+            }
+            symbol++;
+            in += C_DATA;
           }
-          for (int j = 0; j < N_FC; j++) {
-            *out++ = in[H[j]];
+          if (N_FC != 0) {
+            if ((symbol % 2) == 0) {
+              H = HevenFC;
+            }
+            else {
+              H = HoddFC;
+            }
+            for (int j = 0; j < N_FC; j++) {
+              *out++ = in[H[j]];
+            }
+            symbol++;
+            in += N_FC;
           }
-          symbol++;
-          in += N_FC;
         }
+
       }
 
       // Tell runtime system how many output items we produced.
