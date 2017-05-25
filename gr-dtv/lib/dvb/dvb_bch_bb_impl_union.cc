@@ -406,7 +406,7 @@ namespace gr {
       }
       int max = 0;
       for (int i = 0; i < lena + lenb; i++) {
-        out[i] &= 1;    // If even ignore the term
+        out[i] = out[i] & 1;    // If even ignore the term
         if(out[i]) {
           max = i;
         }
@@ -460,7 +460,7 @@ namespace gr {
       sr[3] = (sr[3] >> 1) | (sr[2] << 31);
       sr[2] = (sr[2] >> 1) | (sr[1] << 31);
       sr[1] = (sr[1] >> 1) | (sr[0] << 31);
-      sr[0] >>= 1;
+      sr[0] = (sr[0] >> 1);
     }
 
     /*
@@ -473,13 +473,13 @@ namespace gr {
       sr[3] = (sr[3] >> 1) | (sr[2] << 31);
       sr[2] = (sr[2] >> 1) | (sr[1] << 31);
       sr[1] = (sr[1] >> 1) | (sr[0] << 31);
-      sr[0] >>= 1;
+      sr[0] = (sr[0] >> 1);
     }
 
     /*
      * Shift 192 bits
      */
-    /*inline void
+    inline void
     dvb_bch_bb_impl::reg_6_shift(unsigned int *sr)
     {
       sr[5] = (sr[5] >> 1) | (sr[4] << 31);
@@ -488,7 +488,7 @@ namespace gr {
       sr[2] = (sr[2] >> 1) | (sr[1] << 31);
       sr[1] = (sr[1] >> 1) | (sr[0] << 31);
       sr[0] = (sr[0] >> 1);
-    }*/
+    }
 
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
@@ -580,6 +580,7 @@ namespace gr {
       len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
       len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_m_12, 180);
+      memcpy(&poly12, m_poly_n_12, sizeof(poly12));
     }
 
     int
@@ -591,56 +592,52 @@ namespace gr {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
-      unsigned int shift[6];
+      ShiftR shift = { 0 };
       int consumed = 0;
 
       switch (bch_code) {
         case BCH_CODE_N12:
           for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
-
-            // simplify things in the first step:
-            temp = *in++;
-            *out++ = temp;
-            consumed++;
-            // we don't need to shift, since there are only zeros in the buffer
-            if (temp) {
-              // shift[5] & 1 = 0 in the first step
-          	  memcpy(&shift, m_poly_n_12, sizeof(m_poly_n_12));
-            }
-            // MSB of the codeword first	(start loop from j=1)
-            for (unsigned int j = 1; j < kbch; j++) {
+              // simplify things in the first step:
               temp = *in++;
               *out++ = temp;
+              // we don't need to shift, since there are only zeros in the buffer
               consumed++;
-              b = (temp ^ (shift[5] & 1));
+              if (temp)
+                  memcpy(&shift, m_poly_n_12, sizeof(m_poly_n_12));
 
-              // shift 192 bits
-              shift[5] = (shift[5] >> 1) | (shift[4] << 31);
-              shift[4] = (shift[4] >> 1) | (shift[3] << 31);
-              shift[3] = (shift[3] >> 1) | (shift[2] << 31);
-              shift[2] = (shift[2] >> 1) | (shift[1] << 31);
-              shift[1] = (shift[1] >> 1) | (shift[0] << 31);
-              shift[0] >>= 1;
+              // MSB of the codeword first
+              // (start with j=1)
+              for (int j = 1; j < (int)kbch; j++) {
+                temp = *in++;
+                *out++ = temp;
+                consumed++;
+                b = (temp ^ (shift.i[5] & 1));
 
-              if (b) {
-                shift[0] ^= m_poly_n_12[0];
-                shift[1] ^= m_poly_n_12[1];
-                shift[2] ^= m_poly_n_12[2];
-                shift[3] ^= m_poly_n_12[3];
-                shift[4] ^= m_poly_n_12[4];
-                shift[5] ^= m_poly_n_12[5];
+                shift.i[5] = (shift.i[5] >> 1) | (shift.i[4] << 31);
+                shift.i[4] = (shift.i[4] >> 1) | (shift.i[3] << 31);
+                shift.i[3] = (shift.i[3] >> 1) | (shift.i[2] << 31);
+                shift.i[2] = (shift.i[2] >> 1) | (shift.i[1] << 31);
+                shift.i[1] = (shift.i[1] >> 1) | (shift.i[0] << 31);
+                shift.i[0] >>= 1;
+
+                if (b) {
+                  shift.l[0] ^= poly12.l[0];
+                  shift.l[1] ^= poly12.l[1];
+                  shift.l[2] ^= poly12.l[2];
+                }
               }
-            }
-            // Now add the parity bits to the output ( 5 x 32 Bit)
-            // it's not necessary to shift the whole register
-            for (int m=5; m>=0; m--)
-              for (int n=0; n<32; n++) {
-       			*out++ = (shift[m] & 1);
-       			shift[m] >>= 1;
-       		  }
-            }
+
+              // Now add the parity bits to the output
+             for (int m=5; m>=0; m--)
+                for (int n=0; n<32; n++) {
+                    *out++ = (shift.i[m] & 1);
+                    shift.i[m] >>= 1;
+                }
+
+              // Zero the shift register
+              memset(&shift, 0, sizeof(unsigned int) * 6);
+          }
           break;
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
