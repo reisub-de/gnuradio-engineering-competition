@@ -43,10 +43,10 @@ namespace gr {
       uint64_t m_poly64_n_12[3];
       uint64_t m_poly64_s_12[3];
       uint64_t m_poly64_m_12[3];
-	  union{
-		unsigned char b[256][8];
-		uint64_t lw[256];
-	  }output_lookup_table;
+      union{
+        unsigned char b[256][8];
+        uint64_t lw[256];
+      }output_lookup_table;
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
       void poly_pack64(const int*, uint64_t*, int);
@@ -55,12 +55,12 @@ namespace gr {
       //inline void reg_4_shift(unsigned int*);
       //inline void reg_5_shift(unsigned int*);
       //inline void reg_6_shift(unsigned int*);
-	  inline void reg_128b_shift(uint64_t*);
-	  inline void reg_160b_shift(uint64_t*);
-	  inline void reg_192b_shift(uint64_t*);
+      inline void reg_128b_shift(uint64_t*);
+      inline void reg_160b_shift(uint64_t*);
+      inline void reg_192b_shift(uint64_t*);
       inline void reg_128b_shift8(uint64_t*);
-	  inline void reg_160b_shift8(uint64_t*);
-	  inline void reg_192b_shift8(uint64_t*);
+      inline void reg_160b_shift8(uint64_t*);
+      inline void reg_192b_shift8(uint64_t*);
       void bch_poly_build_tables(void);
 
      public:
