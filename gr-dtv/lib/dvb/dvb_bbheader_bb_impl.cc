@@ -486,20 +486,12 @@ namespace gr {
                 }
                 j--;
                 in++;
-                count++;
-                consumed++;
               }
               else {
-                memcpy(&out[offset], in, 187);
-                offset += 187;
-                consumed += 187;
-                in += 187;
-                j += 186;
-                count = (count + 187) % 188;
-                //out[offset++] = *in++;
+                out[offset++] = *in++;
               }
-              //count = (count + 1) % 188;
-              //consumed++;
+              count = (count + 1) % 188;
+              consumed++;
             }
             /*
             // This part is not optimized and probably (surely) broken.
@@ -578,7 +570,15 @@ namespace gr {
             }
           }
         }*/
+        //printf("consumed: %i\n", consumed);
+        //printf("count: %i\n", count);
       }
+      //for (int i = 0; i < noutput_items; i++) {
+      //  printf("%02X\n", out[i]);
+      //}
+      //printf("consumed: %i\n", consumed);
+      //printf("count: %i\n", count);
+      //printf("noutput_items: %i\n", noutput_items);
 
       // Tell runtime system how many input items we consumed on
       // each input stream.
