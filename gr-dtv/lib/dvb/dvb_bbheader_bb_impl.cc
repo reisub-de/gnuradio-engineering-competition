@@ -307,15 +307,10 @@ namespace gr {
     dvb_bbheader_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
       if (input_mode == INPUTMODE_NORMAL) {
-        if (frame_size != FECFRAME_MEDIUM) {
-          ninput_items_required[0] = noutput_items - 10;
-        }
-        else {
-          ninput_items_required[0] = noutput_items - 20;
-        }
+        ninput_items_required[0] = (kbch - 10) * (noutput_items / (kbch / 8));
       }
       else {
-        ninput_items_required[0] = noutput_items - 10 + extra;
+        ninput_items_required[0] = (kbch - 10 + extra) * (noutput_items / (kbch / 8));
       }
     }
 
@@ -352,17 +347,15 @@ namespace gr {
     dvb_bbheader_bb_impl::add_crc8_bits(unsigned char *in, int length)
     {
       unsigned char crc = 0;
-      unsigned char b;
 
       for (int i = 0; i < length; i++) {
-        b = in[i++] ^ crc;
-        crc = crc_tab[b];
+        crc = crc_tab[in[i] ^ crc];
       }
       if (input_mode == INPUTMODE_HIEFF) {
         crc ^= 1;
       }
       in[length] = crc;
-      return 1;// Length of CRC in bytes
+      return 1;// Length of CRC in bytes*/
     }
 
     void
@@ -570,15 +563,7 @@ namespace gr {
             }
           }
         }*/
-        //printf("consumed: %i\n", consumed);
-        //printf("count: %i\n", count);
       }
-      //for (int i = 0; i < noutput_items; i++) {
-      //  printf("%02X\n", out[i]);
-      //}
-      //printf("consumed: %i\n", consumed);
-      //printf("count: %i\n", count);
-      //printf("noutput_items: %i\n", noutput_items);
 
       // Tell runtime system how many input items we consumed on
       // each input stream.

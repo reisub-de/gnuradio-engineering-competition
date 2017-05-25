@@ -294,7 +294,6 @@ namespace gr {
       }
 
       // Tell runtime system how many output items we produced.
-      printf("We return from bbscrambler.\n");
       return noutput_items;
     }
 
