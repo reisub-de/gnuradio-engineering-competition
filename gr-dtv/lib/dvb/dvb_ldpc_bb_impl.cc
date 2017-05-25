@@ -608,6 +608,7 @@ for (int row = 0; row < ROWS; row++) { \
       unsigned char *p;
       unsigned char *b = (unsigned char *) output_items[0];
       unsigned char *s;
+      uint64_t in_bitwise[nbch/64+1];
       // Calculate the number of parity bits
       int plen = (frame_size_real + Xp) - nbch;
       d = in;
@@ -630,9 +631,14 @@ for (int row = 0; row < ROWS; row++) { \
         memset(p, 0, sizeof(unsigned char) * plen);
         memcpy(&out[i],&in[consumed],sizeof(unsigned char) * nbch);
         consumed+=nbch;
+        memset(in_bitwise, 0, sizeof(uint64_t) * nbch/64+1);
+        for(int n = 0; n<nbch; n++){
+          in_bitwise[n/64] |= 1 << (n % 64);
+        }
         // now do the parity checking
         for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+          //p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+          p[ldpc_encode.p[j]] ^= in_bitwise[ldpc_encode.d[j]/64] & (1 << (ldpc_encode.d[j] % 64)) >> (ldpc_encode.d[j] % 64);
         }
         if (P != 0) {
           puncture = 0;
