@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -307,15 +307,10 @@ namespace gr {
     dvb_bbheader_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
       if (input_mode == INPUTMODE_NORMAL) {
-        if (frame_size != FECFRAME_MEDIUM) {
-          ninput_items_required[0] = ((noutput_items - 80) / 8);
-        }
-        else {
-          ninput_items_required[0] = ((noutput_items - 160) / 8);
-        }
+        ninput_items_required[0] = ((kbch - 80) / 8) * (noutput_items / kbch);
       }
       else {
-        ninput_items_required[0] = ((noutput_items - 80) / 8) + extra;
+        ninput_items_required[0] = ((kbch - 80) / 8 + extra) * (noutput_items / kbch);
       }
     }
 
@@ -597,4 +592,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-
