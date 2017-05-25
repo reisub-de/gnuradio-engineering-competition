@@ -398,11 +398,9 @@ namespace gr {
 
             for( int i = noutput_items; i; i -= packed_items){
 
-              in = in + nbch-1;
-              for (int k = nbch; k--; ) {
-                tempu[k] = *(in--);
-              }
-              in = in + nbch + 1;
+
+            	std::memcpy(tempu, in, nbch);
+              in = in + nbch;
 
               for (int t = 0; t < q_val; t++) {
                 int r = 360 * t;
