@@ -161,7 +161,6 @@ namespace gr {
       ninput_items_required[0] = noutput_items * mod;
     }
 
-
     int
     dvbt2_interleaver_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -374,10 +373,10 @@ namespace gr {
               mux = &mux256[0];
             }
 
-            int mod2 = 2*mod;			// introduce a variable mod2 since it is often required
+            int mod2 = 2*mod;
             rows = frame_size / mod2;
-
             for (int i = 0; i < noutput_items; i += packed_items) {
+
               const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
               const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
               c1 = &tempv[0];
@@ -397,9 +396,6 @@ namespace gr {
               c15 = &tempv[rows * 14];
               c16 = &tempv[rows * 15];
 
-              //for (int k = 0; k < nbch; k++) {
-              //  tempu[k] = *in++;
-              //}
               memcpy(tempu, in, nbch);
               in+=nbch;
 
@@ -408,12 +404,13 @@ namespace gr {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
               }
-              in = in + (q_val * 360);
+              in += (q_val * 360);
               index = 0;
               for (int col = 0; col < mod2; col++) {
                 offset = twist256n[col];
                 for (int row = 0; row < rows; row++) {
-                  tempv[offset++ + (rows * col)] = tempu[index++];
+                  tempv[offset + (rows * col)] = tempu[index++];
+                  offset++;
                   if (offset == rows) {
                     offset = 0;
                   }
@@ -440,10 +437,10 @@ namespace gr {
               }
               index = 0;
               for (int d = 0; d < rows; d++) {
-            	  // speed up things in the first iteration
-                pack = tempu[index++] << ((mod2 - 1) - mux[0]);
-                for (int e = 1; e < mod2; e++) {
-                  pack |= tempu[index++] << ((mod2 - 1) - mux[e]);
+                pack = 0;
+                for (int e = 0; e < mod2; e++) {
+                  offset = mux[e];
+                  pack |= tempu[index++] << ((mod2 - 1) - offset);
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
