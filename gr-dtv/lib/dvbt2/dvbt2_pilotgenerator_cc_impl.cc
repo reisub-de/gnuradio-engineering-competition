@@ -2791,6 +2791,7 @@ namespace gr {
           out += left_nulls;
           // Since init_pilots only affects values in the data_carrier_map array, only initialize them here
           init_pilots(j);
+          pn_seq_j = pn_sequence[j];
 #if AVX_ON
           // AVX
           int remaining_iter = C_PS % 8;
