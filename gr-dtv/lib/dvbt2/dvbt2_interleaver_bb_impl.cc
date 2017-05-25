@@ -239,7 +239,7 @@ namespace gr {
               *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
             }
             for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
-              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+              tempu[k] = in[k]; //copy remaining part
             }
             in+=nbch;
             for (int s = 0; s < 360; s++) {
@@ -313,7 +313,7 @@ namespace gr {
               *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
             }
             for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
-              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+              tempu[k] = in[k]; //copy remaining part
             }
             in+=nbch;
             for (int s = 0; s < 360; s++) {
@@ -387,7 +387,7 @@ namespace gr {
                 *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
               }
               for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
-                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+                tempu[k] = in[k]; //copy remaining part
               }
               in+=nbch;
             
@@ -457,7 +457,7 @@ namespace gr {
                 *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
               }
               for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
-                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throuput
+                tempu[k] = in[k]; //copy remaining part
               }
               in+=nbch;
             
