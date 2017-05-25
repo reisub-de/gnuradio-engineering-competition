@@ -23,7 +23,7 @@
 
 #include <gnuradio/dtv/api.h>
 #include <gnuradio/dtv/dvb_config.h>
-#include <gnuradio/sync_interpolator.h>
+#include <gnuradio/sync_block.h>
 
 namespace gr {
   namespace dtv {
@@ -36,7 +36,7 @@ namespace gr {
      * Input: Variable length FEC baseband frames (BBFRAME).
      * Output: Scrambled variable length FEC baseband frames (BBFRAME).
      */
-    class DTV_API dvb_bbscrambler_bb : virtual public gr::sync_interpolator
+    class DTV_API dvb_bbscrambler_bb : virtual public gr::sync_block
     {
      public:
       typedef boost::shared_ptr<dvb_bbscrambler_bb> sptr;

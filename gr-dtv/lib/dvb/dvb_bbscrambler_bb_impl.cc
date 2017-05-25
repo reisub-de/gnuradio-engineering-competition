@@ -39,10 +39,9 @@ namespace gr {
      * The private constructor
      */
     dvb_bbscrambler_bb_impl::dvb_bbscrambler_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate)
-      : gr::sync_interpolator("dvb_bbscrambler_bb",
+      : gr::sync_block("dvb_bbscrambler_bb",
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
-              gr::io_signature::make(1, 1, sizeof(unsigned char)),
-              8)
+              gr::io_signature::make(1, 1, sizeof(unsigned char)))
     {
       if (framesize == FECFRAME_NORMAL) {
         switch (rate) {
@@ -247,7 +246,7 @@ namespace gr {
       }
 
       init_bb_randomiser();
-      set_output_multiple(kbch);
+      set_output_multiple(kbch/8);
     }
 
     /*
@@ -260,14 +259,14 @@ namespace gr {
     void
     dvb_bbscrambler_bb_impl::init_bb_randomiser(void)
     {
-      int sr = 0x4A80;
-      for (int i = 0; i < FRAME_SIZE_NORMAL; i++) {
-        int b = ((sr) ^ (sr >> 1)) & 1;
-        bb_randomise[i] = b;
-        sr >>= 1;
-        if(b) {
-          sr |= 0x4000;
+      unsigned int sr = 0x00A9;
+      for (int i = 0; i < FRAME_SIZE_NORMAL/8; i++) {
+        for (int j = 0; j < 8; j++) {
+          char b = ((sr >> 13) ^ (sr >> 14)) & 1;
+          sr <<= 1;
+          sr |= b;
         }
+        bb_randomise[i] = sr & 0xFF;
       }
     }
 
@@ -279,17 +278,9 @@ namespace gr {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
 
-      unsigned char *in_bits = new unsigned char[noutput_items];
-      int i_inbits = 0;
-      for (int i = 0; i < noutput_items/8; i++) {
-        for (int j = 7; j >= 0; j--) {
-          in_bits[i_inbits++] = (in[i] >> j) & 1;
-        }
-      }
-
-      for (int i = 0; i < noutput_items; i += kbch) {
-        for (int j = 0; j < (int)kbch; ++j) {
-          out[i + j] = in_bits[i + j] ^ bb_randomise[j];
+      for (int i = 0; i < noutput_items; i += kbch/8) {
+        for (int j = 0; j < (int)kbch/8; ++j) {
+          out[i + j] = in[i + j] ^ bb_randomise[j];
         }
       }
 

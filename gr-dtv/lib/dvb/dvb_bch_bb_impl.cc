@@ -385,7 +385,7 @@ namespace gr {
     void
     dvb_bch_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
-      ninput_items_required[0] = (noutput_items / nbch) * kbch;
+      ninput_items_required[0] = (noutput_items / nbch) * kbch / 8;
     }
 
     /*
@@ -510,11 +510,18 @@ namespace gr {
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
-      const unsigned char *in = (const unsigned char *) input_items[0];
+      const unsigned char *in_orig = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       unsigned char b, temp;
       unsigned int shift[6];
       int consumed = 0;
+
+      unsigned char *in = new unsigned char[ninput_items[0]*8];
+      for (int i = 0; i < ninput_items[0]; i++) {
+        for (int j = 0; j < 8; j++) {
+          in[8*i+j] = (in_orig[i] >> (7-j)) & 1;
+        }
+      }
 
       switch (bch_code) {
         case BCH_CODE_N12:
@@ -543,7 +550,7 @@ namespace gr {
               shift[4] ^= m_lut_mod8_n_12[6*b + 4];
               shift[5] ^= m_lut_mod8_n_12[6*b + 5];
             }
-            consumed += kbch;
+            consumed += kbch/8;
             // Now add the parity bits to the output
             // todo: update for bytewise data if possible
             for (int n = 0; n < 192; n++) {
