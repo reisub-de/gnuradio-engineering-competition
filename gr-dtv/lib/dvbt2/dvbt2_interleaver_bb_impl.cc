@@ -411,7 +411,7 @@ namespace gr {
               }
               index = 0;
               for (int d = 0; d < rows; d++) {
-                pack = tempu[index++] << ((mod2 - 1) - mux[e]);
+                pack = tempu[index++] << ((mod2 - 1) - mux[0]);
                 for (int e = 1; e < mod2; e++) {
                   pack |= tempu[index++] << ((mod2 - 1) - mux[e]);
                 }
