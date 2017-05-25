@@ -410,7 +410,7 @@ namespace gr {
 //      for (int i = 0; i < lena + lenb; i++) {
         if(out[i]) {
           max = i;
-	  break;
+          break;
         }
       }
       // return the size of array to house the result.
@@ -481,76 +481,76 @@ namespace gr {
     /*
      *Shift a 128 bit register
      */
-	inline void
-	dvb_bch_bb_impl::reg_128b_shift(uint64_t *sr)
-	{
-	  sr[1] = (sr[1] >> 1) | (sr[0] << 63);
+    inline void
+    dvb_bch_bb_impl::reg_128b_shift(uint64_t *sr)
+    {
+      sr[1] = (sr[1] >> 1) | (sr[0] << 63);
       sr[0] = (sr[0] >> 1);
-	}
-	/* 
-	 * Shift 128 bits by 8 bits
-	 */
-	inline void
+    }
+    /* 
+      * Shift 128 bits by 8 bits
+      */
+    inline void
     dvb_bch_bb_impl::reg_128b_shift8(uint64_t *sr)
-	{
-		sr[1] = (sr[1] >> 8) | (sr[0] << 56);
-		sr[0] = (sr[0] >> 8);
-	}
+    {
+      sr[1] = (sr[1] >> 8) | (sr[0] << 56);
+      sr[0] = (sr[0] >> 8);
+    }
 
     /*
      * Shift 160 bits
      */
-	inline void
+    inline void
     dvb_bch_bb_impl::reg_160b_shift(uint64_t *sr)
     {
-	  sr[2] = (sr[2] >> 1) | (sr[1] << 63);
-	  sr[1] = (sr[1] >> 1) | (sr[0] << 63);
+      sr[2] = (sr[2] >> 1) | (sr[1] << 63);
+      sr[1] = (sr[1] >> 1) | (sr[0] << 63);
       sr[0] = (sr[0] >> 1);
-	}
-	
-	/* 
-	 * Shift 160 bits by 8 bits
-	 */
-	inline void
+    }
+    
+    /* 
+     * Shift 160 bits by 8 bits
+     */
+    inline void
     dvb_bch_bb_impl::reg_160b_shift8(uint64_t *sr)
-	{
-		sr[2] = (sr[2] >> 8) | (sr[1] << 56);
-		sr[1] = (sr[1] >> 8) | (sr[0] << 56);
-		sr[0] = (sr[0] >> 8);
-	}
+    {
+      sr[2] = (sr[2] >> 8) | (sr[1] << 56);
+      sr[1] = (sr[1] >> 8) | (sr[0] << 56);
+      sr[0] = (sr[0] >> 8);
+    }
 
     /*
      * Shift 192 bits
      */
-	inline void
+    inline void
     dvb_bch_bb_impl::reg_192b_shift(uint64_t *sr)
     {
-	  sr[2] = (sr[2] >> 1) | (sr[1] << 63);
-	  sr[1] = (sr[1] >> 1) | (sr[0] << 63);
+      sr[2] = (sr[2] >> 1) | (sr[1] << 63);
+      sr[1] = (sr[1] >> 1) | (sr[0] << 63);
       sr[0] = (sr[0] >> 1);
-	}
+    }
     /*
      * Shift 192 bits by 8 bits
      */
     inline void
     dvb_bch_bb_impl::reg_192b_shift8(uint64_t *sr)
     {
-         sr[2] = (sr[2] >> 8) | (sr[1] << 56);
-	 sr[1] = (sr[1] >> 8) | (sr[0] << 56);
-	 sr[0] = (sr[0] >> 8);
+      sr[2] = (sr[2] >> 8) | (sr[1] << 56);
+      sr[1] = (sr[1] >> 8) | (sr[0] << 56);
+      sr[0] = (sr[0] >> 8);
     }
 
-	void
-	dvb_bch_bb_impl::output_lut_build(void){
-		for(int i = 0; i < 256; i++){
-			for(int j = 0; j < 8; j++){
-				if(i & (1 << j))
-					output_lookup_table.b[i][j]=1;
-				else
-					output_lookup_table.b[i][j]=0;
-			}
-		}
-	}
+    void
+    dvb_bch_bb_impl::output_lut_build(void){
+      for(int i = 0; i < 256; i++){
+        for(int j = 0; j < 8; j++){
+          if(i & (1 << j))
+            output_lookup_table.b[i][j]=1;
+          else
+            output_lookup_table.b[i][j]=0;
+        }
+      }
+    }
 
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
@@ -608,7 +608,7 @@ namespace gr {
       len = poly_mult(polyn07, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn08, 17, polyout[1], len, polyout[0]);
       //poly_pack(polyout[0], m_poly_n_8, 128);
-	  poly_pack64(polyout[0], m_poly64_n_8, 128);
+      poly_pack64(polyout[0], m_poly64_n_8, 128);
 
       len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn10, 17, polyout[1], len, polyout[0]);
@@ -618,7 +618,7 @@ namespace gr {
       len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
       //poly_pack(polyout[0], m_poly_n_12, 192);
-	  poly_pack64(polyout[0], m_poly64_n_12, 192);
+      poly_pack64(polyout[0], m_poly64_n_12, 192);
 
       len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
       len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
@@ -632,7 +632,7 @@ namespace gr {
       len = poly_mult(polys11, 15, polyout[0], len, polyout[1]);
       len = poly_mult(polys12, 15, polyout[1], len, polyout[0]);
       //poly_pack(polyout[0], m_poly_s_12, 168);
-	  poly_pack64(polyout[0], m_poly64_s_12, 168);
+      poly_pack64(polyout[0], m_poly64_s_12, 168);
 
       len = poly_mult(polym01, 16, polym02,    16,  polyout[0]);
       len = poly_mult(polym03, 16, polyout[0], len, polyout[1]);
@@ -646,7 +646,7 @@ namespace gr {
       len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
       len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
       //poly_pack(polyout[0], m_poly_m_12, 180);
-	  poly_pack64(polyout[0], m_poly64_m_12, 180);
+      poly_pack64(polyout[0], m_poly64_m_12, 180);
     }
 
     int
@@ -667,15 +667,16 @@ namespace gr {
         case BCH_CODE_N12:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            //memset(shift, 0, sizeof(unsigned int) * 6);
-			  memset(shift,0,sizeof(uint64_t) * 3);
+            shift[0]=0;
+            shift[1]=0;
+            shift[2]=0;
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
               *out++ = temp;
               consumed++;
               //b = (temp ^ (shift[5] & 1));
-			  b = (temp ^ (shift[2] & 1));
+              b = (temp ^ (shift[2] & 1));
               reg_192b_shift(shift);
               if (b) {
                 shift[0] ^= m_poly64_n_12[0];
@@ -701,7 +702,9 @@ namespace gr {
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(uint64_t) * 3);
+            shift[0]=0;
+            shift[1]=0;
+            shift[2]=0;
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
@@ -725,7 +728,8 @@ namespace gr {
         case BCH_CODE_N8:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(uint64_t) * 4);
+            shift[0]=0;
+            shift[1]=0;
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
@@ -748,7 +752,9 @@ namespace gr {
         case BCH_CODE_S12:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(uint64_t) * 3);
+            shift[0]=0;
+            shift[1]=0;
+            shift[2]=0;
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
@@ -772,7 +778,9 @@ namespace gr {
         case BCH_CODE_M12:
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(uint64_t) * 6);
+            shift[0]=0;
+            shift[1]=0;
+            shift[2]=0;
             // MSB of the codeword first
             for (int j = 0; j < (int)kbch; j++) {
               temp = *in++;
