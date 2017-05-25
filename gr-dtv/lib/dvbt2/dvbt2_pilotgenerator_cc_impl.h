@@ -63,8 +63,8 @@ namespace gr {
       gr_complex sp_bpsk_inverted[2];
       gr_complex cp_bpsk_inverted[2];
       gr_complex inverse_sinc[32768];
-      int prbs[MAX_CARRIERS];
-      int pn_sequence[CHIPS];
+      const static int prbs[MAX_CARRIERS];
+      const static int pn_sequence[CHIPS];
       int p2_carrier_map[MAX_CARRIERS];
       int data_carrier_map[MAX_CARRIERS];
       int fc_carrier_map[MAX_CARRIERS];
@@ -80,7 +80,6 @@ namespace gr {
       int dy;
       int miso;
       int miso_group;
-      void init_prbs(void);
       void init_pilots(int);
 
       fft::fft_complex *ofdm_fft;
