@@ -161,6 +161,7 @@ namespace gr {
       ninput_items_required[0] = noutput_items * mod;
     }
 
+
     int
     dvbt2_interleaver_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -372,8 +373,11 @@ namespace gr {
             else {
               mux = &mux256[0];
             }
+
+            int mod2 = 2*mod;			// introduce a variable mod2 since it is often required
+            rows = frame_size / mod2;
+
             for (int i = 0; i < noutput_items; i += packed_items) {
-              rows = frame_size / (mod * 2);
               const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
               const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
               c1 = &tempv[0];
@@ -392,9 +396,13 @@ namespace gr {
               c14 = &tempv[rows * 13];
               c15 = &tempv[rows * 14];
               c16 = &tempv[rows * 15];
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
-              }
+
+              //for (int k = 0; k < nbch; k++) {
+              //  tempu[k] = *in++;
+              //}
+              memcpy(tempu, in, nbch);
+              in+=nbch;
+
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -402,11 +410,10 @@ namespace gr {
               }
               in = in + (q_val * 360);
               index = 0;
-              for (int col = 0; col < (mod * 2); col++) {
+              for (int col = 0; col < mod2; col++) {
                 offset = twist256n[col];
                 for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
-                  offset++;
+                  tempv[offset++ + (rows * col)] = tempu[index++];
                   if (offset == rows) {
                     offset = 0;
                   }
@@ -432,15 +439,15 @@ namespace gr {
                 tempu[index++] = c16[j];
               }
               index = 0;
-              for (int d = 0; d < frame_size / (mod * 2); d++) {
-                pack = 0;
-                for (int e = 0; e < (mod * 2); e++) {
-                  offset = mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - offset);
+              for (int d = 0; d < rows; d++) {
+            	  // speed up things in the first iteration
+                pack = tempu[index++] << ((mod2 - 1) - mux[0]);
+                for (int e = 1; e < mod2; e++) {
+                  pack |= tempu[index++] << ((mod2 - 1) - mux[e]);
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
-                consumed += (mod * 2);
+                consumed += mod2;
               }
             }
           }
@@ -519,105 +526,45 @@ namespace gr {
       return noutput_items;
     }
 
-    const int dvbt2_interleaver_bb_impl::twist16n[8] =
-    {
-      0, 0, 2, 4, 4, 5, 7, 7
-    };
+    const int Interleaver_Test::twist16n[8] = {0, 0, 2, 4, 4, 5, 7, 7 };
 
-    const int dvbt2_interleaver_bb_impl::twist64n[12] =
-    {
-      0, 0, 2, 2, 3, 4, 4, 5, 5, 7, 8, 9
-    };
+    const int Interleaver_Test::twist64n[12] = {0, 0, 2, 2, 3, 4, 4, 5, 5, 7, 8, 9};
 
-    const int dvbt2_interleaver_bb_impl::twist256n[16] =
-    {
-      0, 2, 2, 2, 2, 3, 7, 15, 16, 20, 22, 22, 27, 27, 28, 32
-    };
+    const int Interleaver_Test::twist256n[16] = {0, 2, 2, 2, 2, 3, 7, 15, 16, 20, 22, 22, 27, 27, 28, 32};
 
-    const int dvbt2_interleaver_bb_impl::twist16s[8] =
-    {
-      0, 0, 0, 1, 7, 20, 20, 21
-    };
+    const int Interleaver_Test::twist16s[8] = {0, 0, 0, 1, 7, 20, 20, 21};
 
-    const int dvbt2_interleaver_bb_impl::twist64s[12] =
-    {
-      0, 0, 0, 2, 2, 2, 3, 3, 3, 6, 7, 7
-    };
+    const int Interleaver_Test::twist64s[12] = {0, 0, 0, 2, 2, 2, 3, 3, 3, 6, 7, 7};
 
-    const int dvbt2_interleaver_bb_impl::twist256s[8] =
-    {
-      0, 0, 0, 1, 7, 20, 20, 21
-    };
+    const int Interleaver_Test::twist256s[8] = {0, 0, 0, 1, 7, 20, 20, 21};
 
-    const int dvbt2_interleaver_bb_impl::mux16[8] =
-    {
-      7, 1, 4, 2, 5, 3, 6, 0
-    };
+    const int Interleaver_Test::mux16[8] = {7, 1, 4, 2, 5, 3, 6, 0};
 
-    const int dvbt2_interleaver_bb_impl::mux64[12] =
-    {
-      11, 7, 3, 10, 6, 2, 9, 5, 1, 8, 4, 0
-    };
+    const int Interleaver_Test::mux64[12] = {11, 7, 3, 10, 6, 2, 9, 5, 1, 8, 4, 0};
 
-    const int dvbt2_interleaver_bb_impl::mux256[16] =
-    {
-      15, 1, 13, 3, 8, 11, 9, 5, 10, 6, 4, 7, 12, 2, 14, 0
-    };
+    const int Interleaver_Test::mux256[16] = {15, 1, 13, 3, 8, 11, 9, 5, 10, 6, 4, 7, 12, 2, 14, 0};
 
-    const int dvbt2_interleaver_bb_impl::mux16_35[8] =
-    {
-      0, 5, 1, 2, 4, 7, 3, 6
-    };
+    const int Interleaver_Test::mux16_35[8] = {0, 5, 1, 2, 4, 7, 3, 6};
 
-    const int dvbt2_interleaver_bb_impl::mux16_13[8] =
-    {
-      6, 0, 3, 4, 5, 2, 1, 7
-    };
+    const int Interleaver_Test::mux16_13[8] = {6, 0, 3, 4, 5, 2, 1, 7};
 
-    const int dvbt2_interleaver_bb_impl::mux16_25[8] =
-    {
-      7, 5, 4, 0, 3, 1, 2, 6
-    };
+    const int Interleaver_Test::mux16_25[8] = {7, 5, 4, 0, 3, 1, 2, 6};
 
-    const int dvbt2_interleaver_bb_impl::mux64_35[12] =
-    {
-      2, 7, 6, 9, 0, 3, 1, 8, 4, 11, 5, 10
-    };
+    const int Interleaver_Test::mux64_35[12] = {2, 7, 6, 9, 0, 3, 1, 8, 4, 11, 5, 10};
 
-    const int dvbt2_interleaver_bb_impl::mux64_13[12] =
-    {
-      4, 2, 0, 5, 6, 1, 3, 7, 8, 9, 10, 11
-    };
+    const int Interleaver_Test::mux64_13[12] = { 4, 2, 0, 5, 6, 1, 3, 7, 8, 9, 10, 11};
 
-    const int dvbt2_interleaver_bb_impl::mux64_25[12] =
-    {
-      4, 0, 1, 6, 2, 3, 5, 8, 7, 10, 9, 11
-    };
+    const int Interleaver_Test::mux64_25[12] = {4, 0, 1, 6, 2, 3, 5, 8, 7, 10, 9, 11};
 
-    const int dvbt2_interleaver_bb_impl::mux256_35[16] =
-    {
-      2, 11, 3, 4, 0, 9, 1, 8, 10, 13, 7, 14, 6, 15, 5, 12
-    };
+    const int Interleaver_Test::mux256_35[16] = {2, 11, 3, 4, 0, 9, 1, 8, 10, 13, 7, 14, 6, 15, 5, 12};
 
-    const int dvbt2_interleaver_bb_impl::mux256_23[16] =
-    {
-      7, 2, 9, 0, 4, 6, 13, 3, 14, 10, 15, 5, 8, 12, 11, 1
-    };
+    const int Interleaver_Test::mux256_23[16] = {7, 2, 9, 0, 4, 6, 13, 3, 14, 10, 15, 5, 8, 12, 11, 1};
 
-    const int dvbt2_interleaver_bb_impl::mux256s[8] =
-    {
-      7, 3, 1, 5, 2, 6, 4, 0
-    };
+    const int Interleaver_Test::mux256s[8] = {7, 3, 1, 5, 2, 6, 4, 0};
 
-    const int dvbt2_interleaver_bb_impl::mux256s_13[8] =
-    {
-      4, 0, 1, 2, 5, 3, 6, 7
-    };
+    const int Interleaver_Test::mux256s_13[8] = {4, 0, 1, 2, 5, 3, 6, 7};
 
-    const int dvbt2_interleaver_bb_impl::mux256s_25[8] =
-    {
-      4, 0, 5, 1, 2, 3, 6, 7
-    };
+    const int Interleaver_Test::mux256s_25[8] = {4, 0, 5, 1, 2, 3, 6, 7};
 
   } /* namespace dtv */
 } /* namespace gr */
