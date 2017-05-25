@@ -66,6 +66,7 @@ namespace gr {
       int prbs[MAX_CARRIERS];
       int pn_sequence[CHIPS];
       int p2_carrier_map[MAX_CARRIERS];
+      int data_carrier_map_init[MAX_CARRIERS];
       int data_carrier_map[MAX_CARRIERS];
       int fc_carrier_map[MAX_CARRIERS];
       int N_P2;
@@ -80,14 +81,15 @@ namespace gr {
       int dy;
       int miso;
       int miso_group;
+      int size_pgenerate_memcpy;
       void init_prbs(void);
       void init_pilots(int);
+      void generate_ofdm_symbol (gr_complex *out);
 
       fft::fft_complex *ofdm_fft;
       int ofdm_fft_size;
 
       const static unsigned char pn_sequence_table[CHIPS / 8];
-      const static int pp7_cp_all[180];
       const static int p2_papr_map_1k[10];
       const static int p2_papr_map_2k[18];
       const static int p2_papr_map_4k[36];
