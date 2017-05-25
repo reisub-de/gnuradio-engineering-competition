@@ -377,24 +377,12 @@ namespace gr {
             rows = frame_size / mod2;
             for (int i = 0; i < noutput_items; i += packed_items) {
 
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-              const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-              c1 = &tempv[0];
-              c2 = &tempv[rows];
-              c3 = &tempv[rows * 2];
-              c4 = &tempv[rows * 3];
-              c5 = &tempv[rows * 4];
-              c6 = &tempv[rows * 5];
-              c7 = &tempv[rows * 6];
-              c8 = &tempv[rows * 7];
-              c9 = &tempv[rows * 8];
-              c10 = &tempv[rows * 9];
-              c11 = &tempv[rows * 10];
-              c12 = &tempv[rows * 11];
-              c13 = &tempv[rows * 12];
-              c14 = &tempv[rows * 13];
-              c15 = &tempv[rows * 14];
-              c16 = &tempv[rows * 15];
+              // encapsulate all pointer to an array
+              const unsigned char *c[16];
+              c[0] = &tempv[0];
+              c[1] = &tempv[rows];
+              for(int k =2; k<16; k++)
+            	c[k] = &tempv[k*rows];
 
               memcpy(tempu, in, nbch);
               in+=nbch;
@@ -409,8 +397,7 @@ namespace gr {
               for (int col = 0; col < mod2; col++) {
                 offset = twist256n[col];
                 for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
-                  offset++;
+                  tempv[offset++ + (rows * col)] = tempu[index++];
                   if (offset == rows) {
                     offset = 0;
                   }
@@ -418,29 +405,15 @@ namespace gr {
               }
               index = 0;
               for (int j = 0; j < rows; j++) {
-                tempu[index++] = c1[j];
-                tempu[index++] = c2[j];
-                tempu[index++] = c3[j];
-                tempu[index++] = c4[j];
-                tempu[index++] = c5[j];
-                tempu[index++] = c6[j];
-                tempu[index++] = c7[j];
-                tempu[index++] = c8[j];
-                tempu[index++] = c9[j];
-                tempu[index++] = c10[j];
-                tempu[index++] = c11[j];
-                tempu[index++] = c12[j];
-                tempu[index++] = c13[j];
-                tempu[index++] = c14[j];
-                tempu[index++] = c15[j];
-                tempu[index++] = c16[j];
+            	// use memcpy instead of element-wise access
+            	memcpy(&tempu[index],c,16);
+            	index+=16;
               }
               index = 0;
               for (int d = 0; d < rows; d++) {
-                pack = 0;
-                for (int e = 0; e < mod2; e++) {
-                  offset = mux[e];
-                  pack |= tempu[index++] << ((mod2 - 1) - offset);
+                pack = tempu[index++] << ((mod2 - 1) - mux[e]);
+                for (int e = 1; e < mod2; e++) {
+                  pack |= tempu[index++] << ((mod2 - 1) - mux[e]);
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
