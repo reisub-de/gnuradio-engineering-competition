@@ -26,6 +26,8 @@
 #include "dvbt2_pilotgenerator_cc_impl.h"
 #include <volk/volk.h>
 
+#include <iostream>
+
 namespace gr {
   namespace dtv {
 
@@ -1222,9 +1224,8 @@ else { \
     dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
     {
       int remainder, shift;
-      for (int i = 0; i < C_PS; i++) { // Jiaxin Fan
-        data_carrier_map[i] = DATA_CARRIER;
-      }
+      std::fill(data_carrier_map, data_carrier_map + C_PS, DATA_CARRIER);
+
       switch (fft_size) {
         case FFTSIZE_1K:
           switch (pilot_pattern) {
@@ -2118,6 +2119,199 @@ else { \
       }
     }
 
+    void
+    dvbt2_pilotgenerator_cc_impl::init_pilots_handler(
+      int* local_data_carrier_map,
+      int symbol
+    ) {
+      const int local_K_EXT = 288;
+      const int local_C_PS = 27841;
+      const int local_dx = 24;
+      const int local_dy = 4;
+
+      int remainder;
+      std::fill(local_data_carrier_map, local_data_carrier_map + local_C_PS, DATA_CARRIER);
+
+      for (int i = 0; i < 15; i++) {
+        local_data_carrier_map[pp7_cp1[i]] = CONTINUAL_CARRIER;
+      }
+      for (int i = 0; i < 30; i++) {
+        local_data_carrier_map[pp7_cp2[i]] = CONTINUAL_CARRIER;
+      }
+      for (int i = 0; i < 5; i++) {
+        local_data_carrier_map[pp7_cp3[i]] = CONTINUAL_CARRIER;
+      }
+      for (int i = 0; i < 3; i++) {
+        local_data_carrier_map[pp7_cp4[i]] = CONTINUAL_CARRIER;
+      }
+      for (int i = 0; i < 35; i++) {
+        local_data_carrier_map[pp7_cp5[i]] = CONTINUAL_CARRIER;
+      }
+      for (int i = 0; i < 92; i++) {
+        local_data_carrier_map[pp7_cp6[i]] = CONTINUAL_CARRIER;
+      }
+      for (int i = 0; i < 2; i++) {
+        local_data_carrier_map[pp7_32k[i]] = CONTINUAL_CARRIER;
+      }
+      for (int i = 0; i < local_C_PS; i++) {
+        remainder = (i - local_K_EXT) % (local_dx * local_dy);
+        if (remainder < 0) {
+          remainder += (local_dx * local_dy);
+        }
+        if (remainder == (local_dx * (symbol % local_dy))) {
+          local_data_carrier_map[i] = SCATTERED_CARRIER;
+        }
+      }
+
+      local_data_carrier_map[0] = SCATTERED_CARRIER;
+      local_data_carrier_map[local_C_PS - 1] = SCATTERED_CARRIER;
+    }
+
+    void
+    dvbt2_pilotgenerator_cc_impl::func_handler(FuncHandlerDataStruct data) {
+      const gr_complex *in = data.in;
+      gr_complex *out = data.out;
+      const gr_complex *m_inverse_sinc = data.m_inverse_sinc;
+      const int *local_p2_carrier_map = data.local_p2_carrier_map;
+      const int *local_fc_carrier_map = data.local_fc_carrier_map;
+
+      // const int local_active_items = 1639268;
+      const int local_num_symbols = 60;
+      // const int local_fft_size = 7;
+      const int local_left_nulls = 2464;
+      const int local_right_nulls = 2463;
+      // const int local_pilot_pattern = 6;
+      // const int local_carrier_mode = 1;
+      // const int local_papr_mode = 0;
+      const float local_equalization_enable = 0;
+      const float local_normalization = 0.00576694;
+      const int local_N_P2 = 1;
+      // const int local_C_P2 = 22432;
+      // const int local_N_FC = 0;
+      const int local_L_FC = 0;
+      // const int local_C_FC = 0;
+      // const int local_C_DATA = 27404;
+      // const int local_K_EXT = 288;
+      const int local_C_PS = 27841;
+      const int local_K_OFFSET = 0;
+      // const int local_dx = 24;
+      // const int local_dy = 4;
+      // const int local_miso = 0;
+      // const int local_miso_group = 0;
+
+      const int local_ofdm_fft_size = 32768;
+      fft::fft_complex *local_ofdm_fft = new (std::nothrow) fft::fft_complex(local_ofdm_fft_size, false, 1);
+
+      int local_data_carrier_map[MAX_CARRIERS];
+
+      gr_complex local_p2_bpsk[2];
+      gr_complex local_p2_bpsk_inverted[2];
+      local_p2_bpsk[0] = gr_complex(std::sqrt(37.0) / 5.0, 0.0);
+      local_p2_bpsk[1] = gr_complex(-(std::sqrt(37.0) / 5.0), 0.0);
+      local_p2_bpsk_inverted[0] = gr_complex(-(std::sqrt(37.0) / 5.0), 0.0);
+      local_p2_bpsk_inverted[1] = gr_complex(std::sqrt(37.0) / 5.0, 0.0);
+
+      gr_complex local_sp_bpsk[2];
+      gr_complex local_sp_bpsk_inverted[2];
+      local_sp_bpsk[0] = gr_complex(7.0 / 3.0, 0.0);
+      local_sp_bpsk[1] = gr_complex(-7.0 / 3.0, 0.0);
+      local_sp_bpsk_inverted[0] = gr_complex(-7.0 / 3.0, 0.0);
+      local_sp_bpsk_inverted[1] = gr_complex(7.0 / 3.0, 0.0);
+
+      gr_complex local_cp_bpsk[2];
+      gr_complex local_cp_bpsk_inverted[2];
+      local_cp_bpsk[0] = gr_complex(8.0 / 3.0, 0.0);
+      local_cp_bpsk[1] = gr_complex(-8.0 / 3.0, 0.0);
+      local_cp_bpsk_inverted[0] = gr_complex(-8.0 / 3.0, 0.0);
+      local_cp_bpsk_inverted[1] = gr_complex(8.0 / 3.0, 0.0);
+
+      gr_complex zero = gr_complex(0.0, 0.0);
+      gr_complex *local_dst;
+
+      for (int j = 0; j < local_num_symbols; j++) {
+        init_pilots_handler(local_data_carrier_map, j);
+        if (j < local_N_P2) {
+          std::fill(out, out + local_left_nulls, zero);
+          out += local_left_nulls;
+
+          for (int n = 0; n < local_C_PS; n++) {
+            if (local_p2_carrier_map[n] == P2PILOT_CARRIER) {
+              *out++ = local_p2_bpsk[prbs[n + local_K_OFFSET] ^ pn_sequence[j]];
+            }
+            else if (local_p2_carrier_map[n] == P2PILOT_CARRIER_INVERTED) {
+              *out++ = local_p2_bpsk_inverted[prbs[n + local_K_OFFSET] ^ pn_sequence[j]];
+            }
+            else if (local_p2_carrier_map[n] == P2PAPR_CARRIER) {
+              *out++ = zero;
+            }
+            else {
+              *out++ = *in++;
+            }
+          }
+          std::fill(out, out + local_right_nulls, zero);
+          out += local_right_nulls;
+        }
+        else if (j == (local_num_symbols - local_L_FC)) {
+          std::fill(out, out + local_left_nulls, zero);
+          out += local_left_nulls;
+          for (int n = 0; n < local_C_PS; n++) {
+            if (local_fc_carrier_map[n] == SCATTERED_CARRIER) {
+              *out++ = local_sp_bpsk[prbs[n + local_K_OFFSET] ^ pn_sequence[j]];
+            }
+            else if (local_fc_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
+              *out++ = local_sp_bpsk_inverted[prbs[n + local_K_OFFSET] ^ pn_sequence[j]];
+            }
+            else if (local_fc_carrier_map[n] == TRPAPR_CARRIER) {
+              *out++ = zero;
+            }
+            else {
+              *out++ = *in++;
+            }
+          }
+          std::fill(out, out + local_right_nulls, zero);
+          out += local_right_nulls;
+        }
+        else {
+          std::fill(out, out + local_left_nulls, zero);
+          out += local_left_nulls;
+          for (int n = 0; n < local_C_PS; n++) {
+            if (local_data_carrier_map[n] == SCATTERED_CARRIER) {
+              *out++ = local_sp_bpsk[prbs[n + local_K_OFFSET] ^ pn_sequence[j]];
+            }
+            else if (local_data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
+              *out++ = local_sp_bpsk_inverted[prbs[n + local_K_OFFSET] ^ pn_sequence[j]];
+            }
+            else if (local_data_carrier_map[n] == CONTINUAL_CARRIER) {
+              *out++ = local_cp_bpsk[prbs[n + local_K_OFFSET] ^ pn_sequence[j]];
+            }
+            else if (local_data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
+              *out++ = local_cp_bpsk_inverted[prbs[n + local_K_OFFSET] ^ pn_sequence[j]];
+            }
+            else if (local_data_carrier_map[n] == TRPAPR_CARRIER) {
+              *out++ = zero;
+            }
+            else {
+              *out++ = *in++;
+            }
+          }
+          std::fill(out, out + local_right_nulls, zero);
+          out += local_right_nulls;
+        }
+        out -= local_ofdm_fft_size;
+        if (local_equalization_enable == EQUALIZATION_ON) {
+          volk_32fc_x2_multiply_32fc(out, out, m_inverse_sinc, local_ofdm_fft_size);
+        }
+        local_dst = local_ofdm_fft->get_inbuf();
+        memcpy(&local_dst[local_ofdm_fft_size / 2], &out[0], sizeof(gr_complex) * local_ofdm_fft_size / 2);
+        memcpy(&local_dst[0], &out[local_ofdm_fft_size / 2], sizeof(gr_complex) * local_ofdm_fft_size / 2);
+        local_ofdm_fft->execute();
+        volk_32fc_s32fc_multiply_32fc(out, local_ofdm_fft->get_outbuf(), local_normalization, local_ofdm_fft_size);
+        out += local_ofdm_fft_size;
+
+      }
+      delete local_ofdm_fft;
+    }
+
     int
     dvbt2_pilotgenerator_cc_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -2134,94 +2328,110 @@ else { \
       if (N_FC != 0) {
         L_FC = 1;
       }
+
+      unsigned int max_thread_num = boost::thread::hardware_concurrency();
+      unsigned int thread_needed;
+      unsigned int num_loop = noutput_items / num_symbols;
+      if (num_loop >= max_thread_num) thread_needed = max_thread_num;
+      else thread_needed = num_loop;
+      gr_thread_pool thread_pool(thread_needed);
+
       for (int i = 0; i < noutput_items; i += num_symbols) {
-        for (int j = 0; j < num_symbols; j++) {
-          init_pilots(j);
-          if (j < N_P2) {
-
-            fill(out, out + left_nulls, zero);
-            out += left_nulls;
-
-            for (int n = 0; n < C_PS; n++) {
-              if (p2_carrier_map[n] == P2PILOT_CARRIER) {
-                *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (p2_carrier_map[n] == P2PILOT_CARRIER_INVERTED) {
-                *out++ = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (p2_carrier_map[n] == P2PAPR_CARRIER) {
-                *out++ = zero;
-              }
-              else {
-                *out++ = *in++;
-              }
-            }
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
-            }
-          }
-          else if (j == (num_symbols - L_FC)) {
-            for (int n = 0; n < left_nulls; n++) {
-              *out++ = zero;
-            }
-            for (int n = 0; n < C_PS; n++) {
-              if (fc_carrier_map[n] == SCATTERED_CARRIER) {
-                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (fc_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
-                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (fc_carrier_map[n] == TRPAPR_CARRIER) {
-                *out++ = zero;
-              }
-              else {
-                *out++ = *in++;
-              }
-            }
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
-            }
-          }
-          else {
-            for (int n = 0; n < left_nulls; n++) {
-              *out++ = zero;
-            }
-            for (int n = 0; n < C_PS; n++) {
-              if (data_carrier_map[n] == SCATTERED_CARRIER) {
-                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
-                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (data_carrier_map[n] == CONTINUAL_CARRIER) {
-                *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
-                *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (data_carrier_map[n] == TRPAPR_CARRIER) {
-                *out++ = zero;
-              }
-              else {
-                *out++ = *in++;
-              }
-            }
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
-            }
-          }
-          out -= ofdm_fft_size;
-          if (equalization_enable == EQUALIZATION_ON) {
-            volk_32fc_x2_multiply_32fc(out, out, inverse_sinc, ofdm_fft_size);
-          }
-          dst = ofdm_fft->get_inbuf();
-          memcpy(&dst[ofdm_fft_size / 2], &out[0], sizeof(gr_complex) * ofdm_fft_size / 2);
-          memcpy(&dst[0], &out[ofdm_fft_size / 2], sizeof(gr_complex) * ofdm_fft_size / 2);
-          ofdm_fft->execute();
-          volk_32fc_s32fc_multiply_32fc(out, ofdm_fft->get_outbuf(), normalization, ofdm_fft_size);
-          out += ofdm_fft_size;
-        }
+        FuncHandlerDataStruct func_data(
+          in,
+          out,
+          inverse_sinc,
+          p2_carrier_map,
+          fc_carrier_map
+        );
+        thread_pool.enqueue(boost::bind(func_handler, func_data));
+        in += 1639268;
+        out += 1966080;
       }
+
+      // for (int i = 0; i < noutput_items; i += num_symbols) {
+      //   for (int j = 0; j < num_symbols; j++) {
+      //     init_pilots_handler(data_carrier_map, j);
+      //     if (j < N_P2) {
+
+      //       std::fill(out, out + left_nulls, zero);
+      //       out += left_nulls;
+
+      //       for (int n = 0; n < C_PS; n++) {
+      //         if (p2_carrier_map[n] == P2PILOT_CARRIER) {
+      //           *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+      //         }
+      //         else if (p2_carrier_map[n] == P2PILOT_CARRIER_INVERTED) {
+      //           *out++ = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+      //         }
+      //         else if (p2_carrier_map[n] == P2PAPR_CARRIER) {
+      //           *out++ = zero;
+      //         }
+      //         else {
+      //           *out++ = *in++;
+      //         }
+      //       }
+      //       std::fill(out, out + right_nulls, zero);
+      //       out += right_nulls;
+      //     }
+      //     else if (j == (num_symbols - L_FC)) {
+      //       std::fill(out, out + left_nulls, zero);
+      //       out += left_nulls;
+      //       for (int n = 0; n < C_PS; n++) {
+      //         if (fc_carrier_map[n] == SCATTERED_CARRIER) {
+      //           *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+      //         }
+      //         else if (fc_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
+      //           *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+      //         }
+      //         else if (fc_carrier_map[n] == TRPAPR_CARRIER) {
+      //           *out++ = zero;
+      //         }
+      //         else {
+      //           *out++ = *in++;
+      //         }
+      //       }
+      //       std::fill(out, out + right_nulls, zero);
+      //       out += right_nulls;
+      //     }
+      //     else {
+      //       std::fill(out, out + left_nulls, zero);
+      //       out += left_nulls;
+      //       for (int n = 0; n < C_PS; n++) {
+      //         if (data_carrier_map[n] == SCATTERED_CARRIER) {
+      //           *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+      //         }
+      //         else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
+      //           *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+      //         }
+      //         else if (data_carrier_map[n] == CONTINUAL_CARRIER) {
+      //           *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+      //         }
+      //         else if (data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
+      //           *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+      //         }
+      //         else if (data_carrier_map[n] == TRPAPR_CARRIER) {
+      //           *out++ = zero;
+      //         }
+      //         else {
+      //           *out++ = *in++;
+      //         }
+      //       }
+      //       std::fill(out, out + right_nulls, zero);
+      //       out += right_nulls;
+      //     }
+      //     out -= ofdm_fft_size;
+      //     if (equalization_enable == EQUALIZATION_ON) {
+      //       volk_32fc_x2_multiply_32fc(out, out, inverse_sinc, ofdm_fft_size);
+      //     }
+      //     dst = ofdm_fft->get_inbuf();
+      //     memcpy(&dst[ofdm_fft_size / 2], &out[0], sizeof(gr_complex) * ofdm_fft_size / 2);
+      //     memcpy(&dst[0], &out[ofdm_fft_size / 2], sizeof(gr_complex) * ofdm_fft_size / 2);
+      //     ofdm_fft->execute();
+      //     volk_32fc_s32fc_multiply_32fc(out, ofdm_fft->get_outbuf(), normalization, ofdm_fft_size);
+      //     out += ofdm_fft_size;
+      //   }
+      // }
 
       // Tell runtime system how many input items we consumed on
       // each input stream.
