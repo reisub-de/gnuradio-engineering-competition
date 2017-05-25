@@ -26,8 +26,10 @@
 
 typedef struct{
     int table_length;
-    int d[LDPC_ENCODE_TABLE_LENGTH];
-    int p[LDPC_ENCODE_TABLE_LENGTH];
+    struct {
+      int d[LDPC_ENCODE_TABLE_LENGTH];
+      int p[LDPC_ENCODE_TABLE_LENGTH];
+    };
 }ldpc_encode_table;
 
 namespace gr {
