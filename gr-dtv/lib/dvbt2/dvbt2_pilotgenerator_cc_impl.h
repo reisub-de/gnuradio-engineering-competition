@@ -66,7 +66,6 @@ namespace gr {
       int prbs[MAX_CARRIERS];
       int pn_sequence[CHIPS];
       int p2_carrier_map[MAX_CARRIERS];
-      int data_carrier_map_init[MAX_CARRIERS];
       int data_carrier_map[MAX_CARRIERS];
       int fc_carrier_map[MAX_CARRIERS];
       int N_P2;
