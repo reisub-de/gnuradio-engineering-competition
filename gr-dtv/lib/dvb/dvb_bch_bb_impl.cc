@@ -373,7 +373,8 @@ namespace gr {
 
       bch_poly_build_tables();
       set_output_multiple(nbch);
-	  output_lut_build();
+      output_lut_build();
+      bch_lut_build();
     }
 
     /*
@@ -551,6 +552,49 @@ namespace gr {
         }
       }
     }
+    
+    void dvb_bch_bb_impl::bch_lut_build(void){
+      uint64_t* poly;
+      uint64_t shift[3];
+      
+      switch(bch_code){
+        case BCH_CODE_N12:
+          poly = m_poly64_n_12;
+          break;
+        case BCH_CODE_N10:
+          poly = m_poly64_n_10;
+          break;
+        case BCH_CODE_N8:
+          poly = m_poly64_n_8;
+          break;
+        case BCH_CODE_S12:
+          poly = m_poly64_s_12;
+          break;
+        case BCH_CODE_M12:
+          poly = m_poly64_m_12;
+          break;
+      }
+      for(int i = 0; i < 256; i++) {
+        shift[0]=0;
+        shift[1]=0;
+        shift[2]=i;
+        for(int j = 0; j < 256; j++) {
+          for(int k = 1; k<8; k++){
+            int temp = !!((1 << k) & j);
+            b = (temp ^ (shift[2] & 1));
+            reg_192b_shift(shift);
+            if (b) {
+              shift[0] ^= m_poly64_n_12[0];
+              shift[1] ^= m_poly64_n_12[1];
+              shift[2] ^= m_poly64_n_12[2];
+            }
+          }
+          bch_lookup_table[i][j][0]=shift[0];
+          bch_lookup_table[i][j][1]=shift[1];
+          bch_lookup_table[i][j][2]=shift[2];
+        }
+      }
+    }
 
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
@@ -660,7 +704,7 @@ namespace gr {
       uint64_t *out64;
       unsigned char b, temp;
       //unsigned int shift[6];
-	  uint64_t shift[3];
+      uint64_t shift[3];
       int consumed = 0;
 
       switch (bch_code) {

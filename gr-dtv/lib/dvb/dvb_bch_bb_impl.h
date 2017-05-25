@@ -47,6 +47,7 @@ namespace gr {
         unsigned char b[256][8];
         uint64_t lw[256];
       }output_lookup_table;
+      uint64_t bch_lookup_table[256][256][3];
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
       void poly_pack64(const int*, uint64_t*, int);
