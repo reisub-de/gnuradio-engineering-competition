@@ -598,6 +598,14 @@ for (int row = 0; row < ROWS; row++) { \
       }
       ldpc_encode.table_length = index;
     }
+	
+	void parallel_parity(int from, int to, unsigned char *p, unsigned char *d)
+		{
+			for (int j = from; j < to;  j++)
+			{
+				p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+			}
+		}
 
     int
     dvb_ldpc_bb_impl::general_work (int noutput_items,
@@ -660,13 +668,7 @@ for (int row = 0; row < ROWS; row++) { \
 
 
         // now do the parity checking
-		void parallel_parity(int from, int to, unsigned char *p, unsigned char *d)
-		{
-			for (int j = from; j < to;  j++)
-			{
-				p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
-			}
-		}
+		
 		std::future<void> res1 = std::async(parallel_parity, 0, ldpc_encode_table.table_length/2, p, d);
 		std::future<void> res2 = std::async(parallel_parity, ldpc_encode_table.table_length/2, ldpc_encode_table.table_length, p, d);
 		res1.get();
