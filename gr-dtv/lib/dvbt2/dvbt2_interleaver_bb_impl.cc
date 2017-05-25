@@ -259,20 +259,18 @@ namespace gr {
               }
             }
             index = 0;
-            for (int j = 0; j < rows; j++) {
-              pack = 0;
-              pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
-              pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
-              pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
-              pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
-              pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
-              pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
-              pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
-              pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
-              out[produced++] = pack >> 4;
-              out[produced++] = pack & 0xf;
-              consumed += (mod * 2);
-            }
+              int shift_vals[mod * 2];
+              for(int i = 0; i < mod * 2; i++)
+                shift_vals[i] = ((mod * 2) - 1) - mux[i];
+              
+              for (int j = 0; j < rows; j++) {
+                pack = 0;
+                for (int k=0; k<mod * 2; k++)
+                  pack |= c[k][j] << shift_vals[k];
+                out[produced++] = pack >> 4;
+                out[produced++] = pack & 0xf;
+                consumed += (mod * 2);
+              }
           }
           break;
         case MOD_64QAM:
@@ -331,21 +329,14 @@ namespace gr {
                 tempv[row + (rows * col)] = tempu[index++];
               }
             }
-            index = 0;
+            int shift_vals[mod * 2];
+            for(int i = 0; i < mod * 2; i++)
+              shift_vals[i] = ((mod * 2) - 1) - mux[i];
+            
             for (int j = 0; j < rows; j++) {
               pack = 0;
-              pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
-              pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
-              pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
-              pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
-              pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
-              pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
-              pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
-              pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
-              pack |= c[8][j] << (((mod * 2) - 1) - mux[8]);
-              pack |= c[9][j] << (((mod * 2) - 1) - mux[9]);
-              pack |= c[10][j] << (((mod * 2) - 1) - mux[10]);
-              pack |= c[11][j] << (((mod * 2) - 1) - mux[11]);
+              for (int k=0; k<mod * 2; k++)
+                pack |= c[k][j] << shift_vals[k];
               out[produced++] = pack >> 6;
               out[produced++] = pack & 0x3f;
               consumed += (mod * 2);
@@ -405,25 +396,14 @@ namespace gr {
                   tempv[row + (rows * col)] = tempu[index++];
                 }
               }
-              index = 0;
+              int shift_vals[mod * 2];
+              for(int i = 0; i < mod * 2; i++)
+                shift_vals[i] = ((mod * 2) - 1) - mux[i];
+              
               for (int j = 0; j < rows; j++) {
                 pack = 0;
-                pack |= c[0][j] << (((mod * 2) - 1) - mux[0]);
-                pack |= c[1][j] << (((mod * 2) - 1) - mux[1]);
-                pack |= c[2][j] << (((mod * 2) - 1) - mux[2]);
-                pack |= c[3][j] << (((mod * 2) - 1) - mux[3]);
-                pack |= c[4][j] << (((mod * 2) - 1) - mux[4]);
-                pack |= c[5][j] << (((mod * 2) - 1) - mux[5]);
-                pack |= c[6][j] << (((mod * 2) - 1) - mux[6]);
-                pack |= c[7][j] << (((mod * 2) - 1) - mux[7]);
-                pack |= c[8][j] << (((mod * 2) - 1) - mux[8]);
-                pack |= c[9][j] << (((mod * 2) - 1) - mux[9]);
-                pack |= c[10][j] << (((mod * 2) - 1) - mux[10]);
-                pack |= c[11][j] << (((mod * 2) - 1) - mux[11]);
-                pack |= c[12][j] << (((mod * 2) - 1) - mux[12]);
-                pack |= c[13][j] << (((mod * 2) - 1) - mux[13]);
-                pack |= c[14][j] << (((mod * 2) - 1) - mux[14]);
-                pack |= c[15][j] << (((mod * 2) - 1) - mux[15]);
+                for (int k=0; k<mod * 2; k++)
+                  pack |= c[k][j] << shift_vals[k];
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
                 consumed += (mod * 2);
@@ -474,17 +454,14 @@ namespace gr {
                   tempv[row + (rows * col)] = tempu[index++];
                 }
               }
-              index = 0;
+              int shift_vals[mod];
+              for(int i = 0; i < mod; i++)
+                shift_vals[i] = (mod - 1) - mux[i];
+              
               for (int j = 0; j < rows; j++) {
                 pack = 0;
-                pack |= c[0][j] << ((mod - 1) - mux[0]);
-                pack |= c[1][j] << ((mod - 1) - mux[1]);
-                pack |= c[2][j] << ((mod - 1) - mux[2]);
-                pack |= c[3][j] << ((mod - 1) - mux[3]);
-                pack |= c[4][j] << ((mod - 1) - mux[4]);
-                pack |= c[5][j] << ((mod - 1) - mux[5]);
-                pack |= c[6][j] << ((mod - 1) - mux[6]);
-                pack |= c[7][j] << ((mod - 1) - mux[7]);
+                for (int k=0; k<mod; k++)
+                  pack |= c[k][j] << shift_vals[k];
                 out[produced++] = pack & 0xff;
                 consumed += mod;
               }
