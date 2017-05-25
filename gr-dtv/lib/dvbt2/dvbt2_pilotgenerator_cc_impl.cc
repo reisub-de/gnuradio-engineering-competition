@@ -1186,44 +1186,51 @@ namespace gr {
       for (int i = 0; i < C_PS; i++) {
         data_carrier_map[i] = DATA_CARRIER;
       }
+      
       switch (fft_size) {
         case FFTSIZE_32K:
         case FFTSIZE_32K_T2GI:
           switch (pilot_pattern) {
             case PILOT_PP7:
-              /*// Summarize 6 different integer index arrays (entailing
-              // in 6 different for-loops) in pp7_cp_all
-              // & loop unrolling
-              for (int i = 0; i < 180; i += 10) {
-                data_carrier_map[pp7_cp_all[i]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp_all[i + 1]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp_all[i + 2]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp_all[i + 3]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp_all[i + 4]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp_all[i + 5]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp_all[i + 6]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp_all[i + 7]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp_all[i + 8]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp_all[i + 9]] = CONTINUAL_CARRIER;
-              }*/
-              for (int i = 0; i < 15; i++) {
+              int i;
+              for (i = 0; i < 15; i += 5) {
                 data_carrier_map[pp7_cp1[i]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp1[i + 1]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp1[i + 2]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp1[i + 3]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp1[i + 4]] = CONTINUAL_CARRIER;
               }
-              for (int i = 0; i < 30; i++) {
+              for (i = 0; i < 30; i += 5) {
                 data_carrier_map[pp7_cp2[i]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp2[i + 1]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp2[i + 2]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp2[i + 3]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp2[i + 4]] = CONTINUAL_CARRIER;
               }
-              for (int i = 0; i < 5; i++) {
-                data_carrier_map[pp7_cp3[i]] = CONTINUAL_CARRIER;
-              }
-              for (int i = 0; i < 3; i++) {
-                data_carrier_map[pp7_cp4[i]] = CONTINUAL_CARRIER;
-              }
-              for (int i = 0; i < 35; i++) {
+              data_carrier_map[pp7_cp3[0]] = CONTINUAL_CARRIER;
+              data_carrier_map[pp7_cp3[1]] = CONTINUAL_CARRIER;
+              data_carrier_map[pp7_cp3[2]] = CONTINUAL_CARRIER;
+              data_carrier_map[pp7_cp3[3]] = CONTINUAL_CARRIER;
+              data_carrier_map[pp7_cp3[4]] = CONTINUAL_CARRIER;
+              data_carrier_map[pp7_cp4[0]] = CONTINUAL_CARRIER;
+              data_carrier_map[pp7_cp4[1]] = CONTINUAL_CARRIER;
+              data_carrier_map[pp7_cp4[2]] = CONTINUAL_CARRIER;
+              for (i = 0; i < 35; i += 5) {
                 data_carrier_map[pp7_cp5[i]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp5[i + 1]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp5[i + 2]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp5[i + 3]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp5[i + 4]] = CONTINUAL_CARRIER;
               }
-              for (int i = 0; i < 92; i++) {
+              for (i = 0; i < 90; i += 5) {
                 data_carrier_map[pp7_cp6[i]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp6[i + 1]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp6[i + 2]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp6[i + 3]] = CONTINUAL_CARRIER;
+                data_carrier_map[pp7_cp6[i + 4]] = CONTINUAL_CARRIER;
               }
+              data_carrier_map[pp7_cp6[90]] = CONTINUAL_CARRIER;
+              data_carrier_map[pp7_cp6[91]] = CONTINUAL_CARRIER;
               if (isExtendendCarrierMode) {
                 data_carrier_map[pp7_32k[0]] = CONTINUAL_CARRIER;
                 data_carrier_map[pp7_32k[1]] = CONTINUAL_CARRIER;
@@ -2637,12 +2644,13 @@ namespace gr {
           }
           break;
       }
+      int certain_remainder = dx * (symbol % dy);
       for (int i = 0; i < C_PS; i++) {
         remainder = (i - K_EXT) % (dx * dy);
         if (remainder < 0) {
           remainder += (dx * dy);
         }
-        if (remainder == (dx * (symbol % dy))) {
+        if (remainder == certain_remainder) {
           if (isMISO_TX2) {
             if ((i / dx) % 2) {
               data_carrier_map[i] = SCATTERED_CARRIER_INVERTED;
@@ -2728,17 +2736,33 @@ namespace gr {
       int L_FC = 0;
 
       zero = gr_complex(0.0, 0.0);
+      const int size_left_zeros = left_nulls * sizeof(gr_complex);
+      const int size_right_zeros = right_nulls * sizeof(gr_complex);
+      int size_zero_array, nel_zero_array;
+      if (left_nulls > right_nulls) {
+        size_zero_array = size_left_zeros;
+        nel_zero_array = left_nulls;
+      }
+      else {
+        size_zero_array = size_right_zeros;
+        nel_zero_array = right_nulls;
+      }
+      gr_complex *zero_array = (gr_complex *) malloc(size_zero_array);
+      for (int n = 0; n < nel_zero_array; n++) {
+        zero_array[n] = zero;
+      }
+
       if (N_FC != 0) {
         L_FC = 1;
       }
       for (int i = 0; i < noutput_items; i += num_symbols) {
         int j = 0;
+        int pn_seq_j;
         // At first do all the first N_P2 (= 1 here) OFDM-symbols
         while (j < N_P2) {
-          for (int n = 0; n < left_nulls; n++) {
-            *out++ = zero;
-          }
-          const int pn_seq_j = pn_sequence[j];
+          memcpy(out, zero_array, size_left_zeros);
+          out += left_nulls;
+          pn_seq_j = pn_sequence[j];
           for (int n = 0; n < C_PS; n++) {
             switch (p2_carrier_map[n]) {
               case P2PILOT_CARRIER:
@@ -2755,10 +2779,8 @@ namespace gr {
                 break;
             }
           }
-          for (int n = 0; n < right_nulls; n++) {
-            *out++ = zero;
-          }
-          out -= ofdm_fft_size;
+          memcpy(out, zero_array, size_right_zeros);
+          out -=  ofdm_fft_size - right_nulls;
           if (equalization_enable == EQUALIZATION_ON) {
             volk_32fc_x2_multiply_32fc(out, out, inverse_sinc, ofdm_fft_size);
           }
@@ -2770,59 +2792,110 @@ namespace gr {
           out += ofdm_fft_size;
           ++j;
         }
-        // Then do the remaining num_symbols - N_P2 symbols
+        // Then do the symbols N_P2 to num_symbols - L_FC
+        int limit = num_symbols - L_FC;
+        while (j < limit) {
+          memcpy(out, zero_array, size_left_zeros);
+          out += left_nulls;
+          pn_seq_j = pn_sequence[j];
+          // Because init_pilots only affects values in the data_carrier_map array, only initilialize it here
+          init_pilots(j);
+          for (int n = 0; n < C_PS; n++) {
+            switch (data_carrier_map[n]) {
+              case SCATTERED_CARRIER:
+                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
+                break;
+              case SCATTERED_CARRIER_INVERTED:
+                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
+                break;
+              case CONTINUAL_CARRIER:
+                *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
+                break;
+              case CONTINUAL_CARRIER_INVERTED:
+                *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
+                break;
+              case TRPAPR_CARRIER:
+                *out++ = zero;
+              default:
+                *out++ = *in++;
+                break;
+            }
+          }
+          memcpy(out, zero_array, size_right_zeros);
+          out -=  ofdm_fft_size - right_nulls;
+          if (equalization_enable == EQUALIZATION_ON) {
+            volk_32fc_x2_multiply_32fc(out, out, inverse_sinc, ofdm_fft_size);
+          }
+          dst = ofdm_fft->get_inbuf();
+          memcpy(&dst[ofdm_fft_size / 2], &out[0], sizeof(gr_complex) * ofdm_fft_size / 2);
+          memcpy(&dst[0], &out[ofdm_fft_size / 2], sizeof(gr_complex) * ofdm_fft_size / 2);
+          ofdm_fft->execute();
+          volk_32fc_s32fc_multiply_32fc(out, ofdm_fft->get_outbuf(), normalization, ofdm_fft_size);
+          out += ofdm_fft_size;
+          ++j;
+        }
+        // Now do symbol j = num_symbols - L_FC
+        pn_seq_j = pn_sequence[num_symbols - L_FC];
+        memcpy(out, zero_array, size_left_zeros);
+        out += left_nulls;
+        for (int n = 0; n < C_PS; n++) {
+          switch (fc_carrier_map[n]) {
+            case SCATTERED_CARRIER:
+              *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
+              break;
+            case SCATTERED_CARRIER_INVERTED:
+              *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
+              break;
+            case TRPAPR_CARRIER:
+              *out++ = zero;
+              break;
+            default:
+              *out++ = *in++;
+              break;
+          }
+        }
+        memcpy(out, zero_array, size_right_zeros);
+        out -=  ofdm_fft_size - right_nulls;
+        if (equalization_enable == EQUALIZATION_ON) {
+          volk_32fc_x2_multiply_32fc(out, out, inverse_sinc, ofdm_fft_size);
+        }
+        dst = ofdm_fft->get_inbuf();
+        memcpy(&dst[ofdm_fft_size / 2], &out[0], sizeof(gr_complex) * ofdm_fft_size / 2);
+        memcpy(&dst[0], &out[ofdm_fft_size / 2], sizeof(gr_complex) * ofdm_fft_size / 2);
+        ofdm_fft->execute();
+        volk_32fc_s32fc_multiply_32fc(out, ofdm_fft->get_outbuf(), normalization, ofdm_fft_size);
+        out += ofdm_fft_size;
+        ++j;
+        // Finally do remaining symbols j = num_symbols - L_FC + 1 to j = num_symbols - 1
         while (j < num_symbols) {
-          for (int n = 0; n < left_nulls; n++) {
-            *out++ = zero;
-          }
-          const int pn_seq_j = pn_sequence[j];
-          if (j != num_symbols - L_FC) {
-            // Because init_pilots only affects values in the data_carrier_map array, only initilialize it here
-            init_pilots(j);
-            for (int n = 0; n < C_PS; n++) {
-              switch (data_carrier_map[n]) {
-                case SCATTERED_CARRIER:
-                  *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case SCATTERED_CARRIER_INVERTED:
-                  *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case CONTINUAL_CARRIER:
-                  *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case CONTINUAL_CARRIER_INVERTED:
-                  *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case TRPAPR_CARRIER:
-                  *out++ = zero;
-                default:
-                  *out++ = *in++;
-                  break;
-              }
+          memcpy(out, zero_array, size_left_zeros);
+          out += left_nulls;
+          pn_seq_j = pn_sequence[j];
+          // Because init_pilots only affects values in the data_carrier_map array, only initilialize it here
+          init_pilots(j);
+          for (int n = 0; n < C_PS; n++) {
+            switch (data_carrier_map[n]) {
+              case SCATTERED_CARRIER:
+                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
+                break;
+              case SCATTERED_CARRIER_INVERTED:
+                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
+                break;
+              case CONTINUAL_CARRIER:
+                *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
+                break;
+              case CONTINUAL_CARRIER_INVERTED:
+                *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
+                break;
+              case TRPAPR_CARRIER:
+                *out++ = zero;
+              default:
+                *out++ = *in++;
+                break;
             }
           }
-          else { // j == num_symbols * L_FC
-            for (int n = 0; n < C_PS; n++) {
-              switch (fc_carrier_map[n]) {
-                case SCATTERED_CARRIER:
-                  *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case SCATTERED_CARRIER_INVERTED:
-                  *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case TRPAPR_CARRIER:
-                  *out++ = zero;
-                  break;
-                default:
-                  *out++ = *in++;
-                  break;
-              }
-            }
-          } // end j == num_symbols * L_FC
-          for (int n = 0; n < right_nulls; n++) {
-            *out++ = zero;
-          }
-          out -= ofdm_fft_size;
+          memcpy(out, zero_array, size_right_zeros);
+          out -=  ofdm_fft_size - right_nulls;
           if (equalization_enable == EQUALIZATION_ON) {
             volk_32fc_x2_multiply_32fc(out, out, inverse_sinc, ofdm_fft_size);
           }
@@ -2833,8 +2906,9 @@ namespace gr {
           volk_32fc_s32fc_multiply_32fc(out, ofdm_fft->get_outbuf(), normalization, ofdm_fft_size);
           out += ofdm_fft_size;
           ++j;
-        }
-      }
+        } // end while remaining symbols
+
+      } // end for iteration over output_items
 
       // Tell runtime system how many input items we consumed on
       // each input stream.
@@ -3201,24 +3275,6 @@ namespace gr {
       22344, 22416, 22848, 22968, 23016, 23040, 23496, 23688, 23904, 24048, 24168, 24360,
       24408, 24984, 25152, 25176, 25224, 25272, 25344, 25416, 25488, 25512, 25536, 25656,
       25680, 25752, 25992, 26016
-    };
-
-    const int dvbt2_pilotgenerator_cc_impl::pp7_cp_all[180] = 
-    {
-      264, 360, 1848, 2088, 2112, 2160, 2256, 2280, 3936, 3960, 3984, 5016, 5136, 5208,
-      5664, 116, 430, 518, 601, 646, 1022, 1296, 1368, 1369, 1495, 2833, 3024, 4416, 4608,
-      4776, 5710, 5881, 6168, 7013, 8164, 10568, 10709, 11515, 12946, 15559, 23239, 24934,
-      25879, 26308, 26674, 456, 480, 2261, 6072, 17500, 1008, 6120, 13954, 6984, 7032, 7056,
-      7080, 7152, 7320, 7392, 7536, 7649, 7704, 7728, 7752, 8088, 8952, 9240, 9288, 9312,
-      9480, 9960, 10320, 10368, 10728, 10752, 11448, 11640, 11688, 11808, 12192, 12240,
-      12480, 12816, 16681, 22124, 13416, 13440, 13536, 13608, 13704, 13752, 14016, 14040,
-      14112, 14208, 14304, 14376, 14448, 14616, 14712, 14760, 14832, 14976, 15096, 15312,
-      15336, 15552, 15816, 15984, 16224, 16464, 16560, 17088, 17136, 17256, 17352, 17400,
-      17448, 17544, 17928, 18048, 18336, 18456, 18576, 18864, 19032, 19078, 19104, 19320,
-      19344, 19416, 19488, 19920, 19930, 19992, 20424, 20664, 20808, 21168, 21284, 21360,
-      21456, 21816, 22128, 22200, 22584, 22608, 22824, 22848, 22944, 22992, 23016, 23064,
-      23424, 23448, 23472, 23592, 24192, 24312, 24360, 24504, 24552, 24624, 24648, 24672,
-      24768, 24792, 25080, 25176, 25224, 25320, 25344, 25584, 25680, 25824, 26064, 26944
     };
 
     const int dvbt2_pilotgenerator_cc_impl::pp7_cp1[15] = 
