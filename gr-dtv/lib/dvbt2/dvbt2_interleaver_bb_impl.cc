@@ -376,7 +376,7 @@ namespace gr {
             const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
             const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
 
-            if(noutput_items) {
+            //if(noutput_items) {
               rows = frame_size / (mod * 2);
               c1 = &tempv[0];
               c2 = &tempv[rows];
@@ -394,7 +394,7 @@ namespace gr {
               c14 = &tempv[rows * 13];
               c15 = &tempv[rows * 14];
               c16 = &tempv[rows * 15];
-            }
+            //}
 
             for( int i = noutput_items; i; i -= packed_items){
 
