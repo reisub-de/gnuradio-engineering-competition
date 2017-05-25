@@ -26,8 +26,6 @@
 #include "dvbt2_pilotgenerator_cc_impl.h"
 #include <volk/volk.h>
 
-#include "immintrin.h"
-
 namespace gr {
   namespace dtv {
 
@@ -1199,44 +1197,24 @@ namespace gr {
           switch (pilot_pattern) {
             case PILOT_PP7:
               int i;
-              for (i = 0; i < 15; i += 5) {
+              for (i = 0; i < 15; i++) {
                 data_carrier_map[pp7_cp1[i]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp1[i + 1]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp1[i + 2]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp1[i + 3]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp1[i + 4]] = CONTINUAL_CARRIER;
               }
-              for (i = 0; i < 30; i += 5) {
+              for (i = 0; i < 30; i++) {
                 data_carrier_map[pp7_cp2[i]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp2[i + 1]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp2[i + 2]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp2[i + 3]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp2[i + 4]] = CONTINUAL_CARRIER;
               }
-              data_carrier_map[pp7_cp3[0]] = CONTINUAL_CARRIER;
-              data_carrier_map[pp7_cp3[1]] = CONTINUAL_CARRIER;
-              data_carrier_map[pp7_cp3[2]] = CONTINUAL_CARRIER;
-              data_carrier_map[pp7_cp3[3]] = CONTINUAL_CARRIER;
-              data_carrier_map[pp7_cp3[4]] = CONTINUAL_CARRIER;
-              data_carrier_map[pp7_cp4[0]] = CONTINUAL_CARRIER;
-              data_carrier_map[pp7_cp4[1]] = CONTINUAL_CARRIER;
-              data_carrier_map[pp7_cp4[2]] = CONTINUAL_CARRIER;
-              for (i = 0; i < 35; i += 5) {
+              for (i = 0; i < 5; i++) {
+                data_carrier_map[pp7_cp3[i]] = CONTINUAL_CARRIER;
+              }
+              for (i = 0; i < 3; i++) {
+                data_carrier_map[pp7_cp4[i]] = CONTINUAL_CARRIER;
+              }
+              for (i = 0; i < 35; i++) {
                 data_carrier_map[pp7_cp5[i]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp5[i + 1]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp5[i + 2]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp5[i + 3]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp5[i + 4]] = CONTINUAL_CARRIER;
               }
-              for (i = 0; i < 90; i += 5) {
+              for (i = 0; i < 92; i++) {
                 data_carrier_map[pp7_cp6[i]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp6[i + 1]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp6[i + 2]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp6[i + 3]] = CONTINUAL_CARRIER;
-                data_carrier_map[pp7_cp6[i + 4]] = CONTINUAL_CARRIER;
               }
-              data_carrier_map[pp7_cp6[90]] = CONTINUAL_CARRIER;
-              data_carrier_map[pp7_cp6[91]] = CONTINUAL_CARRIER;
               if (isExtendendCarrierMode) {
                 data_carrier_map[pp7_32k[0]] = CONTINUAL_CARRIER;
                 data_carrier_map[pp7_32k[1]] = CONTINUAL_CARRIER;
@@ -2744,24 +2722,12 @@ namespace gr {
       const int size_left_zeros = left_nulls * sizeof(gr_complex);
       const int size_right_zeros = right_nulls * sizeof(gr_complex);
 
-#define AVX_ON 1
-#if AVX_ON
-      int num_el_256 = 256 / sizeof(int);
-      int *index_array = (int *) malloc(256);
-      int *pn_seq_array = (int *) malloc(256);
-#else
-      int num_el_128 = 128 / sizeof(int);
-      int *index_array = (int *) malloc(128);
-      int *pn_seq_array = (int *) malloc(128);
-#endif
-
       if (N_FC != 0) {
         L_FC = 1;
       }
       for (int i = 0; i < noutput_items; i += num_symbols) {
         int j = 0;
         int pn_seq_j;
-
         // At first do all the first N_P2 (= 1 here) OFDM-symbols
         while (j < N_P2) {
           memset(out, 0, size_left_zeros);
@@ -2789,53 +2755,15 @@ namespace gr {
           out += ofdm_fft_size;
           ++j;
         }
-
         // Then do the symbols N_P2 to num_symbols - L_FC
         int limit = num_symbols - L_FC;
         while (j < limit) {
           memset(out, 0, size_left_zeros);
           out += left_nulls;
-          // Since init_pilots only affects values in the data_carrier_map array, only initialize them here
-          init_pilots(j);
           pn_seq_j = pn_sequence[j];
-#if AVX_ON
-          // AVX
-          int remaining_iter = C_PS % num_el_256;
-          int num_iter = C_PS - remaining_iter;
-          int n;
-          for (n = 0; n < num_el_256; n++) {
-            pn_seq_array[n] = pn_sequence[j];
-          }
-          __m256i pn_seq_256 = _mm256_loadu_si256((__m256i const*) pn_seq_array);
-          for (n = 0; n < num_iter; n += num_el_256) {
-            __m256i prbs_off_256 = _mm256_loadu_si256((__m256i const*) &prbs[n + K_OFFSET]);
-            __m256i index_array_256 = _mm256_xor_si256(prbs_off_256, pn_seq_256);
-            _mm256_storeu_si256((__m256i*)index_array, index_array_256);
-            int p = 0;
-            while (p < num_el_256) {
-              switch (data_carrier_map[n + p]) {
-                case SCATTERED_CARRIER:
-                  *out++ = sp_bpsk[index_array[p]];
-                  break;
-                case SCATTERED_CARRIER_INVERTED:
-                  *out++ = sp_bpsk_inverted[index_array[p]];
-                  break;
-                case CONTINUAL_CARRIER:
-                  *out++ = cp_bpsk[index_array[p]];
-                  break;
-                case CONTINUAL_CARRIER_INVERTED:
-                  *out++ = cp_bpsk_inverted[index_array[p]];
-                  break;
-                case TRPAPR_CARRIER:
-                  *out++ = zero;
-                default:
-                  *out++ = *in++;
-                  break;
-              } // end switch
-            p++;
-            } // end while
-          } // end for
-          while (n < C_PS) {
+          // Because init_pilots only affects values in the data_carrier_map array, only initilialize it here
+          init_pilots(j);
+          for (int n = 0; n < C_PS; n++) {
             switch (data_carrier_map[n]) {
               case SCATTERED_CARRIER:
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
@@ -2855,80 +2783,14 @@ namespace gr {
                 *out++ = *in++;
                 break;
             }
-            n++;
           }
-          free(index_array);
-          free(pn_seq_array);
-#else
-          // SSE
-          int remaining_iter = C_PS % num_el_128;
-          int num_iter = C_PS - remaining_iter;
-          int n;
-          for (n = 0; n < num_el_128; n++) {
-            pn_seq_array[n] = pn_sequence[j];
-          }
-          __m128i pn_seq_128 = _mm_loadu_si128((__m128i*) pn_seq_array);
-          for (n = 0; n < num_iter; n += num_el_128) {
-            __m128i prbs_off_128 = _mm_loadu_si128((__m128i*) &prbs[n + K_OFFSET]);
-            __m128i index_array_128 = _mm_xor_si128(prbs_off_128, pn_seq_128);
-            _mm_storeu_si128((__m128i*)index_array, index_array_128);
-            int p = 0;
-            while (p < num_el_128) {
-              switch (data_carrier_map[n + p]) {
-                case SCATTERED_CARRIER:
-                  *out++ = sp_bpsk[index_array[p]];
-                  break;
-                case SCATTERED_CARRIER_INVERTED:
-                  *out++ = sp_bpsk_inverted[index_array[p]];
-                  break;
-                case CONTINUAL_CARRIER:
-                  *out++ = cp_bpsk[index_array[p]];
-                  break;
-                case CONTINUAL_CARRIER_INVERTED:
-                  *out++ = cp_bpsk_inverted[index_array[p]];
-                  break;
-                case TRPAPR_CARRIER:
-                  *out++ = zero;
-                default:
-                  *out++ = *in++;
-                  break;
-              } // end switch
-            p++;
-            } // end while
-          } // end for
-          while (n < C_PS) {
-            switch (data_carrier_map[n]) {
-              case SCATTERED_CARRIER:
-                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
-                break;
-              case SCATTERED_CARRIER_INVERTED:
-                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
-                break;
-              case CONTINUAL_CARRIER:
-                *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
-                break;
-              case CONTINUAL_CARRIER_INVERTED:
-                *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
-                break;
-              case TRPAPR_CARRIER:
-                *out++ = zero;
-              default:
-                *out++ = *in++;
-                break;
-            }
-            n++;
-          }
-          free(index_array);
-          free(pn_seq_array);
-#endif
           memset(out, 0, size_right_zeros);
           out -=  ofdm_fft_size - right_nulls;
           generate_ofdm_symbol(out);
           out += ofdm_fft_size;
           ++j;
         }
-
-        // Now do the symbol j = num_symbols - L_FC
+        // Now do symbol j = num_symbols - L_FC
         pn_seq_j = pn_sequence[num_symbols - L_FC];
         memset(out, 0, size_left_zeros);
         out += left_nulls;
@@ -2953,13 +2815,12 @@ namespace gr {
         generate_ofdm_symbol(out);
         out += ofdm_fft_size;
         ++j;
-
         // Finally do remaining symbols j = num_symbols - L_FC + 1 to j = num_symbols - 1
         while (j < num_symbols) {
           memset(out, 0, size_left_zeros);
           out += left_nulls;
           pn_seq_j = pn_sequence[j];
-          // Since init_pilots only affects values in the data_carrier_map array, only initilialize it here
+          // Because init_pilots only affects values in the data_carrier_map array, only initilialize it here
           init_pilots(j);
           for (int n = 0; n < C_PS; n++) {
             switch (data_carrier_map[n]) {
@@ -3535,4 +3396,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-
