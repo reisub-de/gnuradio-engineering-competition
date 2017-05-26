@@ -229,20 +229,8 @@ namespace gr {
               }
               n++;
             }
-            int ulim = 8*(cell_size/8);
-            for (int w = 0; w < ulim; w+=8) {
-              time_interleave[((permutations[w]   + shift) % cell_size) + index] = in[0];
-              time_interleave[((permutations[w+1] + shift) % cell_size) + index] = in[1];
-              time_interleave[((permutations[w+2] + shift) % cell_size) + index] = in[2];
-              time_interleave[((permutations[w+3] + shift) % cell_size) + index] = in[3];
-              time_interleave[((permutations[w+4] + shift) % cell_size) + index] = in[4];
-              time_interleave[((permutations[w+5] + shift) % cell_size) + index] = in[5];
-              time_interleave[((permutations[w+6] + shift) % cell_size) + index] = in[6];
-              time_interleave[((permutations[w+7] + shift) % cell_size) + index] = in[7];
-              in+=8;
-            }
-            for (int w = ulim; w < cell_size; w++) {
-              time_interleave[((permutations[w]   + shift) % cell_size) + index] = *in++;
+            for (int w = 0; w < cell_size; w++) {
+              time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
             }
             index += cell_size;
           }
