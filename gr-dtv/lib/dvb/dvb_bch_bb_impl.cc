@@ -603,15 +603,15 @@ namespace gr {
             // simplify things in the first step:
             temp = *in++;
             *out++ = temp;
-            // we don't need to shift, since there are only zeros in the buffer
+	    consumed++;
             if (temp) {
-              // shift[5] & 1 = 0 in the first step
           	  memcpy(&shift, m_poly_n_12, sizeof(m_poly_n_12));
             }
             // MSB of the codeword first	(start loop from j=1)
             for (unsigned int j = kbch - 1; j != 0; j--) {
               temp = *in++;
               *out++ = temp;
+	      consumed++;
               b = (temp ^ (shift[5] & 1));
 
               // shift 192 bits
@@ -639,7 +639,6 @@ namespace gr {
        			shift[m] >>= 1;
        		  }
             }
-          consumed = ninput_items;
           break;
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
