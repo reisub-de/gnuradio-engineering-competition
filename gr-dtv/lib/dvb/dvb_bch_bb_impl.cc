@@ -705,7 +705,7 @@ namespace gr {
     {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
-      uint64_t *out64;
+      uint64_t *out64, *in64;
       unsigned char b, temp;
       //unsigned int shift[6];
       uint64_t shift[3];
@@ -714,26 +714,46 @@ namespace gr {
       switch (bch_code) {
         case BCH_CODE_N12:
           for (int i = 0; i < noutput_items; i += nbch) {
+	    //Copy data bits from input to output
+            memcpy(out,in,sizeof(unsigned char) * kbch);
+            out+=kbch;
+
             //Zero the shift register
             shift[0]=0;
             shift[1]=0;
             shift[2]=0;
 
             // MSB of the codeword first, read into byte
+            in64 = (uint64_t*) in;
             for (int j = 0; j < (int)kbch; j+=8) {	//kbch seems to be always multiple of 8
               unsigned char lbyte = shift[2] & 0xff;
               unsigned char nbyte = 0;
+
+              nbyte |= *in64;
+              nbyte |= *in64 >>  7;
+              nbyte |= *in64 >> 14;
+              nbyte |= *in64 >> 21;
+              nbyte |= *in64 >> 28;
+              nbyte |= *in64 >> 35;
+              nbyte |= *in64 >> 42;
+              nbyte |= *in64 >> 49;
+
+              in64++;
+
+/*
               for(int k = 0; k < 8; k++){
-                *out++ = *in;
-                temp = *in;
+                // *out++ = *in;
                 nbyte |= (*in++) << k;
               }
-              consumed+=8;
+*/
               reg_192b_shift8(shift);
               shift[0] ^= bch_lookup_table[lbyte][nbyte][0];
               shift[1] ^= bch_lookup_table[lbyte][nbyte][1];
               shift[2] ^= bch_lookup_table[lbyte][nbyte][2];
             }
+            consumed+=kbch;
+            in+=kbch;
+
             // Now add the parity bits to the output
             out64 = (uint64_t*)out;
             for (int n = 0; n < 192/8; n++) {
