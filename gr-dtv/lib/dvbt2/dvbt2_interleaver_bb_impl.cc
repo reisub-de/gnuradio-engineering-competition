@@ -146,6 +146,32 @@ namespace gr {
           packed_items = frame_size / mod;
           break;
       }
+
+      /* initialize index array (ONLY for the case 256_QAM with FRAME_SIZE_NORMAL, C3_5) */
+      // calc tempu_shift[]
+      for(int i=0; i<16; i++) {
+      	tempu_shift[i] = 2*mod - 1 - mux256_35[i];
+      }
+      // calc in_idx[]
+      int index=0, offset;
+      for (int t = 0; t < q_val; t++) {
+      	for (int s = 0; s < 360; s++) {
+      	  in_idx[index++] = q_val * s + t;
+      	}
+      }
+      // calc tempv_idx[]
+      nt rows = frame_size / (2*mod);
+      index = 0;
+      for (int col = 0; col < 2*mod; col++) {
+        offset = twist256n[col];		// fix.
+        for (int row = 0; row < rows; row++) {
+      	  tempv_idx[index++] = offset++ + (rows * col);
+      	  if (offset == rows) {
+      		offset = 0;
+      	  }
+      	}
+      }
+
     }
 
     /*
@@ -395,20 +421,24 @@ namespace gr {
 		    c15 = &tempv[rows * 14];
 		    c16 = &tempv[rows * 15];
 		    // precalculate tempu shift index
-		    for(int i=0; i<mod2; i++)
-		    	tempu_shift[i] = mod2 - 1 - mux[i];
+		    //for(int i=0; i<mod2; i++)
+		    	//tempu_shift[i] = mod2 - 1 - mux[i];
 
 		    for (int i = 0; i < noutput_items; i += packed_items) {
 			  memcpy(tempu, in, nbch);
 			  in += nbch;
 
-              for (int t = 0; t < q_val; t++) {
+              /*for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
-              }
+              }*/
+			  int *idx = in_idx;
+			  for (int t = 0; t < 25920; t++) {
+				  tempu[nbch + t] = in[*idx++];
+			  }
               in += (q_val * 360);
-              index = 0;
+              /*index = 0;
               for (int col = 0; col < mod2; col++) {
                 offset = twist256n[col];
                 for (int row = 0; row < rows; row++) {
@@ -417,27 +447,32 @@ namespace gr {
                     offset = 0;
                   }
                 }
-              }
+              }*/
+              idx = tempv_idx;
+			  for(int t = 0; t< FRAME_SIZE_NORMAL; t++) {
+				tempv[*idx++] = tempu[t];
+			  }
+
               index = 0;
               for (int j = 0; j < rows; j++) {
 
-            	tempu[index++] = c1[j];
-				tempu[index++] = c2[j];
-				tempu[index++] = c3[j];
-				tempu[index++] = c4[j];
-				tempu[index++] = c5[j];
-				tempu[index++] = c6[j];
-				tempu[index++] = c7[j];
-				tempu[index++] = c8[j];
-				tempu[index++] = c9[j];
-				tempu[index++] = c10[j];
-				tempu[index++] = c11[j];
-				tempu[index++] = c12[j];
-				tempu[index++] = c13[j];
-				tempu[index++] = c14[j];
-				tempu[index++] = c15[j];
-				tempu[index++] = c16[j];
-				      }
+                tempu[index++] = c1[j];
+			    tempu[index++] = c2[j];
+			    tempu[index++] = c3[j];
+			    tempu[index++] = c4[j];
+			    tempu[index++] = c5[j];
+			    tempu[index++] = c6[j];
+			    tempu[index++] = c7[j];
+			    tempu[index++] = c8[j];
+			    tempu[index++] = c9[j];
+			    tempu[index++] = c10[j];
+			    tempu[index++] = c11[j];
+			    tempu[index++] = c12[j];
+			    tempu[index++] = c13[j];
+			    tempu[index++] = c14[j];
+			    tempu[index++] = c15[j];
+			    tempu[index++] = c16[j];
+			  }
               index = 0;
               for (int d = 0; d < rows; d++) {
                 pack = tempu[index++] << tempu_shift[0];
