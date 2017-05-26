@@ -504,14 +504,14 @@ namespace gr {
                 b = *in++;
                 for (int n = 7; n >= 0; n--) {
                   out[offset++] = b & (1 << n) ? 1 : 0;
+                }
               }
               else {
-            	  if (*in != 0x47) {
-					GR_LOG_WARN(d_logger, "Transport Stream sync error!");
-				  }
-				  j--;
-				  in++;
-                }
+				if (*in != 0x47) {
+				  GR_LOG_WARN(d_logger, "Transport Stream sync error!");
+				}
+				j--;
+				in++;
               }
               count = (count + 1) % 188;
             }
