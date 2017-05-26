@@ -355,7 +355,11 @@ namespace gr {
       int b;
       int i = 0;
 
-      for (int n = 0; n < length; n++) {
+      // simplyfy things in the first iteration
+      if(in[i++])
+      	  crc = CRC_POLY;
+
+      for (int n = 1; n < length; n++) {
         b = in[i++] ^ (crc & 0x01);
         crc >>= 1;
         if (b) {
@@ -427,13 +431,8 @@ namespace gr {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       // Calculate syncd, this should point to the MSB of the CRC
-      temp = count;
-      if (temp == 0) {
-        temp = count;
-      }
-      else {
-        temp = (188 - count) * 8;
-      }
+      temp = (count) ? (188 - count) * 8 : count;
+
       if (nibble == FALSE) {
         temp += 4;
       }
@@ -441,8 +440,7 @@ namespace gr {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       // Add CRC to BB header, at end
-      int len = BB_HEADER_LENGTH_BITS;
-      m_frame_offset_bits += add_crc8_bits(m_frame, len);
+      m_frame_offset_bits += add_crc8_bits(m_frame, BB_HEADER_LENGTH_BITS);
     }
 
     void
@@ -497,29 +495,34 @@ namespace gr {
             padding = 0;
           }
           add_bbheader(&out[offset], count, padding, TRUE);
-          offset = offset + 80;
+          offset += 80;
 
+          int len = (kbch - 80 - padding) / 8;
           if (input_mode == INPUTMODE_HIEFF) {
-            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
-              if (count == 0) {
-                if (*in != 0x47) {
-                  GR_LOG_WARN(d_logger, "Transport Stream sync error!");
-                }
-                j--;
-                in++;
-              }
-              else {
+            for (int j = 0; j < len; j++) {
+              if (count) {
                 b = *in++;
                 for (int n = 7; n >= 0; n--) {
                   out[offset++] = b & (1 << n) ? 1 : 0;
+              }
+              else {
+            	  if (*in != 0x47) {
+					GR_LOG_WARN(d_logger, "Transport Stream sync error!");
+				  }
+				  j--;
+				  in++;
                 }
               }
               count = (count + 1) % 188;
-              consumed++;
             }
-            if (fec_block == 0 && inband_type_b == TRUE) {
+            consumed += len;
+
+            if(inband_type_b == FALSE)
+            	continue;
+
+            if (fec_block == 0) {
               add_inband_type_b(&out[offset], ts_rate);
-              offset = offset + 104;
+              offset += 104;
             }
           }
           else {
