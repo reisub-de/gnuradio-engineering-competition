@@ -2727,7 +2727,6 @@ namespace gr {
       if (N_FC != 0) {
         L_FC = 1;
       }
-      // L_FC is either 1 or 0
 
       for (int i = 0; i < noutput_items; i += num_symbols) {
         int j = 0;
@@ -2764,6 +2763,7 @@ namespace gr {
         }
 
         // Then do the symbols N_P2 to num_symbols - L_FC - 1
+        int counter_data_carriers = 0;
         while (j < limit) {
           memset(out, 0, size_left_zeros);
           out += left_nulls;
@@ -2773,22 +2773,43 @@ namespace gr {
           while (n < C_PS) {
             switch (data_carrier_map[n]) {
               case SCATTERED_CARRIER:
+                memcpy(out, in, counter_data_carriers * size_gr_complex);
+                out += counter_data_carriers;
+                in += counter_data_carriers;
+                counter_data_carriers = 0;
                 *out = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case SCATTERED_CARRIER_INVERTED:
+                memcpy(out, in, counter_data_carriers * size_gr_complex);
+                out += counter_data_carriers;
+                in += counter_data_carriers;
+                counter_data_carriers = 0;
                 *out = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case CONTINUAL_CARRIER:
+                memcpy(out, in, counter_data_carriers * size_gr_complex);
+                out += counter_data_carriers;
+                in += counter_data_carriers;
+                counter_data_carriers = 0;
                 *out = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case CONTINUAL_CARRIER_INVERTED:
+                memcpy(out, in, counter_data_carriers * size_gr_complex);
+                out += counter_data_carriers;
+                in += counter_data_carriers;
+                counter_data_carriers = 0;
                 *out = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case TRPAPR_CARRIER:
+                memcpy(out, in, counter_data_carriers * size_gr_complex);
+                out += counter_data_carriers;
+                in += counter_data_carriers;
+                counter_data_carriers = 0;
                 memset(out, 0, size_gr_complex);
               default:
-                *out = *in++;
-                break;
+                counter_data_carriers++;
+                n++;
+                continue;
             }
             out++;
             n++;
