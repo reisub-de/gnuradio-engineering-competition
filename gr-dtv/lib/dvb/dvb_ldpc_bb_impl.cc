@@ -660,7 +660,7 @@ for (int row = 0; row < ROWS; row++) { \
         unsigned char *iter_p_2 = p;
         for (int j = (plen - Xp); j != 0; j--) {
           *iter_p++ ^= *iter_p_2++;
-          p[j] ^= p[j-1];
+          //p[j] ^= p[j-1];
         }
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
