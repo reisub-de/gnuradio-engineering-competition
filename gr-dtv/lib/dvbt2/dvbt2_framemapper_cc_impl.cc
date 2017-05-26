@@ -930,7 +930,8 @@ namespace gr {
         }
       }
       int max = 0;
-      for (int i = 0; i < lena + lenb; i++) {
+      int limit = lena + lenb;
+      for (int i = 0; i < limit; i++) {
         out[i] = out[i] & 1;    // If even ignore the term
         if(out[i]) max = i;
       }
@@ -1641,30 +1642,49 @@ namespace gr {
     {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
-      int index = 0;
       int read, save, count = 0;
       gr_complex *interleave = zigzag_interleave;
 
-      for (int i = 0; i < noutput_items; i += mapped_items) {
-        if (N_P2 == 1) {
-          for (int j = 0; j < 1840; j++) {
-            *out++ = l1pre_cache[index++];
-          }
+      if (N_P2 == 1) {
+        int memcpy_size_l1precache = 1840 * sizeof(gr_complex);
+        int memcpy_size_out = stream_items * sizeof(gr_complex);
+        int out_update = N_post / eta_mod;
+        int diff_N_FC_C_FC = N_FC - C_FC;
+        int num_dummy_randomize = mapped_items - stream_items - 1840 - (N_post / eta_mod) - diff_N_FC_C_FC;
+        int memcpy_size_dummy = num_dummy_randomize * sizeof(gr_complex);
+        memcpy(out, &l1pre_cache[0], memcpy_size_l1precache); //or index+1 and offset index by 1 less???
+        out += 1840;
+        add_l1post(out, t2_frame_num);
+        t2_frame_num = (t2_frame_num + 1) % t2_frames;
+        out += out_update;
+        memcpy(out, in, memcpy_size_out);
+        out += stream_items;
+        in += stream_items;
+        memcpy(out, &dummy_randomize[0], memcpy_size_dummy); // or 1??
+        out += num_dummy_randomize;
+        for (int j = 0; j < diff_N_FC_C_FC; j++) {
+          *out++ = unmodulated;
+        }
+        for (int i = 1; i < noutput_items; i += mapped_items) {
+          memcpy(out, &l1pre_cache[num_dummy_randomize], memcpy_size_l1precache); //or index+1 and offset index by 1 less???
+          out += 1840;
           add_l1post(out, t2_frame_num);
           t2_frame_num = (t2_frame_num + 1) % t2_frames;
-          out += N_post / eta_mod;
-          for (int j = 0; j < stream_items; j++) {
-            *out++ = *in++;
-          }
-          index = 0;
-          for (int j = 0; j < mapped_items - stream_items - 1840 - (N_post / eta_mod) - (N_FC - C_FC); j++) {
-            *out++ = dummy_randomize[index++];
-          }
-          for (int j = 0; j < N_FC - C_FC; j++) {
-             *out++ = unmodulated;
+          out += out_update;
+          memcpy(out, in, memcpy_size_out);
+          out += stream_items;
+          in += stream_items;
+          memcpy(out, &dummy_randomize[0], memcpy_size_dummy); // or 1??
+          out += num_dummy_randomize;
+          for (int j = 0; j < diff_N_FC_C_FC; j++) {
+            *out++ = unmodulated;
           }
         }
-        else {
+      }
+      else {
+        // N_P2 != 1
+        int index = 0;
+        for (int i = 0; i < noutput_items; i += mapped_items) {
           for (int j = 0; j < 1840; j++) {
             *interleave++ = l1pre_cache[index++];
           }
