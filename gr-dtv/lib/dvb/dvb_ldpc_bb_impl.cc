@@ -610,6 +610,7 @@ for (int row = 0; row < ROWS; row++) { \
       unsigned char *s;
       // Calculate the number of parity bits
       int plen = (frame_size_real + Xp) - nbch;
+      int ulim;
       d = in;
       p = &out[nbch];
       int consumed = 0;
@@ -659,8 +660,8 @@ for (int row = 0; row < ROWS; row++) { \
           }
           p = &out[nbch];
         }
-        index=0;
-        for (int j = 1; j < (plen - Xp); j+=8) {
+        ulim = 8*((plen - Xp)/8);
+        for (int j = 1; j < ulim; j+=8) {
           p[j]   ^= p[j-1];
           p[j+1] ^= p[j];
           p[j+2] ^= p[j+1];
@@ -669,9 +670,8 @@ for (int row = 0; row < ROWS; row++) { \
           p[j+5] ^= p[j+4];
           p[j+6] ^= p[j+5];
           p[j+7] ^= p[j+6];
-          index+=8;
         }
-        for (int j = index; j < (plen - Xp); j++) {
+        for (int j = ulim; j < (plen - Xp); j++) {
           p[j]   ^= p[j-1];
         }
 
