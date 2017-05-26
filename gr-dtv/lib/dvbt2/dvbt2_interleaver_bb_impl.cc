@@ -388,7 +388,7 @@ namespace gr {
             for (int i = 0; i < noutput_items; i += packed_items) {
               for (int k = 0; k < nbch; k+=4) {                     //nbch always n*8
                 //copy in long words to improve throughput
-                uint64_t temp;
+                volatile uint64_t temp;
                 temp = *(uint64_t*)&in[k];
                 tempu[k] = in[k];
               }
