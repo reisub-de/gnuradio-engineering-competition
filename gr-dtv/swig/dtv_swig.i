@@ -51,6 +51,7 @@
 #include "gnuradio/dtv/dvb_bbscrambler_bb.h"
 #include "gnuradio/dtv/dvb_bch_bb.h"
 #include "gnuradio/dtv/dvb_ldpc_bb.h"
+#include "gnuradio/dtv/dvb_bch_ldpc_bb.h"
 #include "gnuradio/dtv/dvbt2_interleaver_bb.h"
 #include "gnuradio/dtv/dvbt2_modulator_bc.h"
 #include "gnuradio/dtv/dvbt2_cellinterleaver_cc.h"
@@ -109,6 +110,7 @@
 %include "gnuradio/dtv/dvb_bbscrambler_bb.h"
 %include "gnuradio/dtv/dvb_bch_bb.h"
 %include "gnuradio/dtv/dvb_ldpc_bb.h"
+%include "gnuradio/dtv/dvb_bch_ldpc_bb.h"
 %include "gnuradio/dtv/dvbt2_interleaver_bb.h"
 %include "gnuradio/dtv/dvbt2_modulator_bc.h"
 %include "gnuradio/dtv/dvbt2_cellinterleaver_cc.h"
@@ -162,6 +164,7 @@ GR_SWIG_BLOCK_MAGIC2(dtv, dvb_bbheader_bb);
 GR_SWIG_BLOCK_MAGIC2(dtv, dvb_bbscrambler_bb);
 GR_SWIG_BLOCK_MAGIC2(dtv, dvb_bch_bb);
 GR_SWIG_BLOCK_MAGIC2(dtv, dvb_ldpc_bb);
+GR_SWIG_BLOCK_MAGIC2(dtv, dvb_bch_ldpc_bb);
 GR_SWIG_BLOCK_MAGIC2(dtv, dvbt2_interleaver_bb);
 GR_SWIG_BLOCK_MAGIC2(dtv, dvbt2_modulator_bc);
 GR_SWIG_BLOCK_MAGIC2(dtv, dvbt2_cellinterleaver_cc);

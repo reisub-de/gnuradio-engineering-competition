@@ -1,0 +1,7 @@
+bch operates on multiples of nbch output items at once.
+ldpc operates on multiples of framesize output items at once.
+
+framesize_normal: 64800
+nbch our case: C3_5: kbch = 38688;
+                     nbch = 38880;
+-->192 Bit BCH

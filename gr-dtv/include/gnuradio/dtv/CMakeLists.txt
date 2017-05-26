@@ -46,6 +46,7 @@ install(FILES
     dvb_bbscrambler_bb.h
     dvb_bch_bb.h
     dvb_ldpc_bb.h
+    dvb_bch_ldpc_bb.h
     dvbt2_interleaver_bb.h
     dvbt2_modulator_bc.h
     dvbt2_cellinterleaver_cc.h
