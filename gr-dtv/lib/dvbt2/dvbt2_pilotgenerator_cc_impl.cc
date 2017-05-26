@@ -2736,7 +2736,7 @@ namespace gr {
             /*for (int n = 0; n < left_nulls; n++) {         // Removed
               *out++ = zero;
             }*/
-            memset(out, 0, sizeof(gr_complex)*left_nulls);    // Added
+            memset(out, 0, sizeof(gr_complex)*left_nulls);    // Added 
             out += left_nulls;
             for (int n = 0; n < C_PS; n++) {
               if (fc_carrier_map[n] == SCATTERED_CARRIER) {
