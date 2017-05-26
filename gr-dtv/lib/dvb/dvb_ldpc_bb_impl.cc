@@ -631,8 +631,15 @@ for (int row = 0; row < ROWS; row++) { \
         memcpy(&out[i],&in[consumed],sizeof(unsigned char) * nbch);
         consumed+=nbch;
         // now do the parity checking
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+        for (int j = 0; j < ldpc_encode.table_length; j+=8) {  //always possible, as table_length = n*360
+          p[ldpc_encode.p[j]]   ^= d[ldpc_encode.d[j]];
+          p[ldpc_encode.p[j+1]] ^= d[ldpc_encode.d[j+1]];
+          p[ldpc_encode.p[j+2]] ^= d[ldpc_encode.d[j+2]];
+          p[ldpc_encode.p[j+3]] ^= d[ldpc_encode.d[j+3]];
+          p[ldpc_encode.p[j+4]] ^= d[ldpc_encode.d[j+4]];
+          p[ldpc_encode.p[j+5]] ^= d[ldpc_encode.d[j+5]];
+          p[ldpc_encode.p[j+6]] ^= d[ldpc_encode.d[j+6]];
+          p[ldpc_encode.p[j+7]] ^= d[ldpc_encode.d[j+7]];
         }
         
         if (P != 0) {
@@ -652,9 +659,22 @@ for (int row = 0; row < ROWS; row++) { \
           }
           p = &out[nbch];
         }
-        for (int j = 1; j < (plen - Xp); j++) {
-          p[j] ^= p[j-1];
+        index=0;
+        for (int j = 1; j < (plen - Xp); j+=8) {
+          p[j]   ^= p[j-1];
+          p[j+1] ^= p[j];
+          p[j+2] ^= p[j+1];
+          p[j+3] ^= p[j+2];
+          p[j+4] ^= p[j+3];
+          p[j+5] ^= p[j+4];
+          p[j+6] ^= p[j+5];
+          p[j+7] ^= p[j+6];
+          index+=8;
         }
+        for (int j = index; j < (plen - Xp); j++) {
+          p[j]   ^= p[j-1];
+        }
+
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
             p[j + plen] = 0;
