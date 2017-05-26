@@ -160,7 +160,7 @@ namespace gr {
       	}
       }
       // calc tempv_idx[]
-      nt rows = frame_size / (2*mod);
+      int rows = frame_size / (2*mod);
       index = 0;
       for (int col = 0; col < 2*mod; col++) {
         offset = twist256n[col];		// fix.
