@@ -40,11 +40,6 @@ namespace gr {
       unsigned char tempu[FRAME_SIZE_NORMAL];
       unsigned char tempv[FRAME_SIZE_NORMAL];
 
-      // index arrays	(we ONLY consider the case 256_QAM, FRAME_SIZE_NORMAL, C3_5)
-      int in_idx[25920]; 	// 360 * q_val
-      int tempu_shift[16];
-      int tempv_idx[FRAME_SIZE_NORMAL];
-
       const static int twist16n[8];
       const static int twist64n[12];
       const static int twist256n[16];

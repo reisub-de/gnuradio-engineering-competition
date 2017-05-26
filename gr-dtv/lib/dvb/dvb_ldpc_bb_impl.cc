@@ -373,16 +373,18 @@ namespace gr {
     }
 
 #define LDPC_BF(TABLE_NAME, ROWS) \
+int *idx_p = ldpc_encode.p; \
+int *idx_d = ldpc_encode.d; \
 for (int row = 0; row < ROWS; row++) { \
-  for (int n = 0; n < 360; n++) { \
-    for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
-      ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
-      ldpc_encode.d[index] = im; \
-      index++; \
-    } \
-    im++; \
-  } \
-} 
+for (int n = 0; n < 360; n++) { \
+for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
+	*idx_p++ = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+	*idx_d++ = im; \
+  index++; \
+} \
+im++; \
+} \
+}
 
     void
     dvb_ldpc_bb_impl::ldpc_lookup_generate(void)
