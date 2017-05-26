@@ -2776,27 +2776,27 @@ namespace gr {
             while (p < 10) {
               switch (data_carrier_map[n + p]) {
                 case SCATTERED_CARRIER:
-                  memcpy(out + 1, out, (10 - p) * sizeof(gr_complex));
+                  memmove(out + 1, out, (9 - p) * sizeof(gr_complex));
                   in--;
                   *out = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
                   break;
                 case SCATTERED_CARRIER_INVERTED:
-                  memcpy(out + 1, out, (10 - p) * sizeof(gr_complex));
+                  memmove(out + 1, out, (9 - p) * sizeof(gr_complex));
                   in--;
                   *out = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
                   break;
                 case CONTINUAL_CARRIER:
-                  memcpy(out + 1, out, (10 - p) * sizeof(gr_complex));
+                  memmove(out + 1, out, (9 - p) * sizeof(gr_complex));
                   in--;
                   *out = cp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
                   break;
                 case CONTINUAL_CARRIER_INVERTED:
-                  memcpy(out + 1, out, (10 - p) * sizeof(gr_complex));
+                  memmove(out + 1, out, (9 - p) * sizeof(gr_complex));
                   in--;
                   *out = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
                   break;
                 case TRPAPR_CARRIER:
-                  memcpy(out + 1, out, (10 - p) * sizeof(gr_complex));
+                  memmove(out + 1, out, (9 - p) * sizeof(gr_complex));
                   in--;
                   *out = zero;
                   break;
