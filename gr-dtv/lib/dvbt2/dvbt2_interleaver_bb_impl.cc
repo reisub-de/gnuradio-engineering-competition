@@ -175,7 +175,6 @@ namespace gr {
       unsigned int pack;
       const int *twist;
       const int *mux;
-      int ulim;
       const unsigned char* c[16];
 
       switch (signal_constellation) {
@@ -236,11 +235,10 @@ namespace gr {
           c[6] = &tempv[rows * 6];
           c[7] = &tempv[rows * 7];
           for (int i = 0; i < noutput_items; i += packed_items) {
-            ulim = 8*(nbch/8);
-            for (int k = 0; k < ulim; k+=8) {
+            for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
               *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
             }
-            for (int k = ulim; k < nbch; k++) {
+            for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
               tempu[k] = in[k]; //copy remaining part
             }
             in+=nbch;
@@ -312,11 +310,10 @@ namespace gr {
           c[10] = &tempv[rows * 10];
           c[11] = &tempv[rows * 11];
           for (int i = 0; i < noutput_items; i += packed_items) {
-            ulim = 8*(nbch/8);
-            for (int k = 0; k < ulim; k+=8) {
+            for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
               *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
             }
-            for (int k = ulim; k < nbch; k++) {
+            for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
               tempu[k] = in[k]; //copy remaining part
             }
             in+=nbch;
@@ -388,11 +385,10 @@ namespace gr {
             c[14] = &tempv[rows * 14];
             c[15] = &tempv[rows * 15];
             for (int i = 0; i < noutput_items; i += packed_items) {
-              ulim = 8*(nbch/8);
-              for (int k = 0; k < ulim; k+=8) {
+              for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
                 *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
               }
-              for (int k = ulim; k < nbch; k++) {
+              for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
                 tempu[k] = in[k]; //copy remaining part
               }
               in+=nbch;
@@ -461,11 +457,10 @@ namespace gr {
             c[6] = &tempv[rows * 6];
             c[7] = &tempv[rows * 7];
             for (int i = 0; i < noutput_items; i += packed_items) {
-              ulim = 8*(nbch/8);
-              for (int k = 0; k < ulim; k+=8) {
+              for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
                 *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
               }
-              for (int k = ulim; k < nbch; k++) {
+              for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
                 tempu[k] = in[k]; //copy remaining part
               }
               in+=nbch;
