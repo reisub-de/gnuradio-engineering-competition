@@ -41,7 +41,7 @@ namespace gr {
       unsigned char tempv[FRAME_SIZE_NORMAL];
 
       // index arrays	(we ONLY consider the case 256_QAM, FRAME_SIZE_NORMAL, C3_5)
-      int in_idx[25920]; 	// 360*q_val
+      int in_idx[25920]; 	// 360 * q_val
       int tempu_shift[16];
       int tempv_idx[FRAME_SIZE_NORMAL];
 
