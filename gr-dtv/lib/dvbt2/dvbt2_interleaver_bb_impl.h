@@ -40,6 +40,9 @@ namespace gr {
       unsigned char tempu[FRAME_SIZE_NORMAL];
       unsigned char tempv[FRAME_SIZE_NORMAL];
 
+      // index arrays
+      int tempu_shift[16];
+
       const static int twist16n[8];
       const static int twist64n[12];
       const static int twist256n[16];

@@ -628,15 +628,13 @@ for (int row = 0; row < ROWS; row++) { \
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
-
-        memcpy(&out[i], &in[consumed], nbch);
-        consumed += nbch;
-
+        for (int j = 0; j < (int)nbch; j++) {
+          out[i + j] = in[consumed];
+          consumed++;
+        }
         // now do the parity checking
-        int *idx_p = ldpc_encode.p;
-        int *idx_d = ldpc_encode.d;
         for (int j = 0; j < ldpc_encode.table_length; j++) {
-        	p[*idx_p++] ^= d[*idx_d++]; // accelerate calculation with pointers
+          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
         }
         if (P != 0) {
           puncture = 0;
@@ -655,12 +653,8 @@ for (int row = 0; row < ROWS; row++) { \
           }
           p = &out[nbch];
         }
-
-        unsigned char *iter_p = p+1;
-        unsigned char *iter_p_2 = p;
-        for (int j = (plen - Xp); j != 0; j--) {
-          *iter_p++ ^= *iter_p_2++;
-          //p[j] ^= p[j-1];
+        for (int j = 1; j < (plen - Xp); j++) {
+          p[j] ^= p[j-1];
         }
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
