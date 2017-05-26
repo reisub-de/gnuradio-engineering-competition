@@ -388,7 +388,15 @@ namespace gr {
             for (int i = 0; i < noutput_items; i += packed_items) {
               ulim = 8*(nbch/8);
               for (int k = 0; k < ulim; k+=8) {
-                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
+//                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
+                  tempu[k] = in[k];
+                  tempu[k+1] = in[k+1];
+                  tempu[k+2] = in[k+2];
+                  tempu[k+3] = in[k+3];
+                  tempu[k+4] = in[k+4];
+                  tempu[k+5] = in[k+5];
+                  tempu[k+6] = in[k+6];
+                  tempu[k+7] = in[k+7];
               }
               for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
                 tempu[k] = in[k]; //copy remaining part
