@@ -388,9 +388,13 @@ namespace gr {
             for (int i = 0; i < noutput_items; i += packed_items) {
               for (int k = 0; k < nbch; k+=8) {                     //nbch always n*8
                 //copy in long words to improve throughput
-                uint64_t* s = (uint64_t*) &in[k];
-                uint64_t* d = (uint64_t*) &tempu[k];
-                *d = *s;
+                union {
+                  const unsigned char* b;
+                  uint64_t* lw;
+                } s,d;
+                s.b = &in[k];
+                d.b = &tempu[k];
+                *(d.lw) = *(s.lw);
               }
               in+=nbch;
             
