@@ -218,17 +218,21 @@ namespace gr {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
       gr_complex *level;
+      const int size_gr_complex = sizeof(gr_complex);
+      const int memcpy_out_pshift_one = 542 * size_gr_complex;
+      const int memcpy_out_p = 1024 * size_gr_complex;
+      const int memcpy_out_pshift_two = 482 * size_gr_complex;
 
       for (int i = 0; i < noutput_items; i += insertion_items) {
         level = out;
         // replace for-loops with memcpy()s
-        memcpy(out, &p1_timeshft[0], 542 * sizeof(gr_complex));
+        memcpy(out, &p1_timeshft[0], memcpy_out_pshift_one);
         out += 542;
-        memcpy(out, &p1_time[0], 1024 * sizeof(gr_complex));
+        memcpy(out, &p1_time[0], memcpy_out_p);
         out += 1024;
-        memcpy(out, &p1_timeshft[542], 482 * sizeof(gr_complex));
+        memcpy(out, &p1_timeshft[542], memcpy_out_pshift_two);
         out += 482;
-        memcpy(out, in, sizeof(gr_complex) * frame_items);
+        memcpy(out, in, size_gr_complex * frame_items);
         out += frame_items;
         in += frame_items;
         if (show_levels == TRUE) {
