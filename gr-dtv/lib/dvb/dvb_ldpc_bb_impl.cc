@@ -631,8 +631,15 @@ for (int row = 0; row < ROWS; row++) { \
         memcpy(&out[i],&in[consumed],sizeof(unsigned char) * nbch);
         consumed+=nbch;
         // now do the parity checking
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+        for (int j = 0; j < ldpc_encode.table_length; j+=8) {  //always possible, as table_length = n*360
+          p[ldpc_encode.p[j]]   ^= d[ldpc_encode.d[j]];
+          p[ldpc_encode.p[j+1]] ^= d[ldpc_encode.d[j+1]];
+          p[ldpc_encode.p[j+2]] ^= d[ldpc_encode.d[j+2]];
+          p[ldpc_encode.p[j+3]] ^= d[ldpc_encode.d[j+3]];
+          p[ldpc_encode.p[j+4]] ^= d[ldpc_encode.d[j+4]];
+          p[ldpc_encode.p[j+5]] ^= d[ldpc_encode.d[j+5]];
+          p[ldpc_encode.p[j+6]] ^= d[ldpc_encode.d[j+6]];
+          p[ldpc_encode.p[j+7]] ^= d[ldpc_encode.d[j+7]];
         }
         
         if (P != 0) {
