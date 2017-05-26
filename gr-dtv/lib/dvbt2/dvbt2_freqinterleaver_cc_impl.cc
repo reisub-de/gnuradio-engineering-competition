@@ -770,44 +770,46 @@ namespace gr {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
       int symbol = 0;
-      int *H;
-
+      
       for (int i = 0; i < noutput_items; i += interleaved_items) {
         for (int j = 0; j < N_P2; j++) {
-          if ((symbol % 2) == 0) {
-            H = HevenP2;
+          if (symbol & 1) {
+            for (int j = 0; j < C_P2; j++) {
+              *out++ = in[HoddP2[j]];
+            }
           }
           else {
-            H = HoddP2;
-          }
-          for (int j = 0; j < C_P2; j++) {
-            *out++ = in[H[j]];
+            for (int j = 0; j < C_P2; j++) {
+              *out++ = in[HevenP2[j]];
+            }
           }
           symbol++;
           in += C_P2;
         }
         for (int j = 0; j < num_data_symbols; j++) {
-          if ((symbol % 2) == 0) {
-            H = Heven;
+          if (symbol & 1) {
+            for (int j = 0; j < C_DATA; j++) {
+              *out++ = in[Hodd[j]];
+            }
           }
           else {
-            H = Hodd;
-          }
-          for (int j = 0; j < C_DATA; j++) {
-            *out++ = in[H[j]];
+            for (int j = 0; j < C_DATA; j++) {
+              *out++ = in[Heven[j]];
+            }
           }
           symbol++;
           in += C_DATA;
         }
         if (N_FC != 0) {
-          if ((symbol % 2) == 0) {
-            H = HevenFC;
+          if (symbol & 1) {
+            for (int j = 0; j < N_FC; j++) {
+              *out++ = in[HoddFC[j]];
+            }
           }
           else {
-            H = HoddFC;
-          }
-          for (int j = 0; j < N_FC; j++) {
-            *out++ = in[H[j]];
+            for (int j = 0; j < N_FC; j++) {
+              *out++ = in[HevenFC[j]];
+            }
           }
           symbol++;
           in += N_FC;
