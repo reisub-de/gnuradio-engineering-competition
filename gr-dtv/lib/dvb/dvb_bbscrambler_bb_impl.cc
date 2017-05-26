@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -246,7 +246,7 @@ namespace gr {
       }
 
       init_bb_randomiser();
-      set_output_multiple(kbch);
+      set_output_multiple(kbch/8);
     }
 
     /*
@@ -259,14 +259,14 @@ namespace gr {
     void
     dvb_bbscrambler_bb_impl::init_bb_randomiser(void)
     {
-      int sr = 0x4A80;
-      for (int i = 0; i < FRAME_SIZE_NORMAL; i++) {
-        int b = ((sr) ^ (sr >> 1)) & 1;
-        bb_randomise[i] = b;
-        sr >>= 1;
-        if(b) {
-          sr |= 0x4000;
+      unsigned int sr = 0x00A9;
+      for (int i = 0; i < FRAME_SIZE_NORMAL/8; i++) {
+        for (int j = 0; j < 8; j++) {
+          char b = ((sr >> 13) ^ (sr >> 14)) & 1;
+          sr <<= 1;
+          sr |= b;
         }
+        bb_randomise[i] = sr & 0xFF;
       }
     }
 
@@ -278,8 +278,8 @@ namespace gr {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
 
-      for (int i = 0; i < noutput_items; i += kbch) {
-        for (int j = 0; j < (int)kbch; ++j) {
+      for (int i = 0; i < noutput_items; i += kbch/8) {
+        for (int j = 0; j < (int)kbch/8; ++j) {
           out[i + j] = in[i + j] ^ bb_randomise[j];
         }
       }
@@ -290,4 +290,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-
