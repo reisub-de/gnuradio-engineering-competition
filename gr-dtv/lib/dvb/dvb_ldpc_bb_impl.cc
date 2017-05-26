@@ -659,9 +659,22 @@ for (int row = 0; row < ROWS; row++) { \
           }
           p = &out[nbch];
         }
-        for (int j = 1; j < (plen - Xp); j++) {
-          p[j] ^= p[j-1];
+        index=0;
+        for (int j = 1; j < (plen - Xp); j+=8) {
+          p[j]   ^= p[j-1];
+          p[j+1] ^= p[j];
+          p[j+2] ^= p[j+1];
+          p[j+3] ^= p[j+2];
+          p[j+4] ^= p[j+3];
+          p[j+5] ^= p[j+4];
+          p[j+6] ^= p[j+5];
+          p[j+7] ^= p[j+6];
+          index+=8;
         }
+        for (int j = index; j < (plen - Xp); j++) {
+          p[j]   ^= p[j-1];
+        }
+
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
             p[j + plen] = 0;
