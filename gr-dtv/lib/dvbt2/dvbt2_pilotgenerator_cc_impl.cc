@@ -2715,108 +2715,116 @@ namespace gr {
     {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
-      gr_complex zero;
       int L_FC = 0;
 
-      zero = gr_complex(0.0, 0.0);
-      const int size_left_zeros = left_nulls * sizeof(gr_complex);
-      const int size_right_zeros = right_nulls * sizeof(gr_complex);
+      const int size_gr_complex = sizeof(gr_complex);
+      const int size_left_zeros = left_nulls * size_gr_complex;
+      const int size_right_zeros = right_nulls * size_gr_complex;
+      const int reset_out = ofdm_fft_size - right_nulls;
 
       int limit = num_symbols - L_FC;
 
       if (N_FC != 0) {
         L_FC = 1;
       }
+      // L_FC is either 1 or 0
+
       for (int i = 0; i < noutput_items; i += num_symbols) {
         int j = 0;
-        int pn_seq_j;
+        int n;
 
         // At first do all the first N_P2 (= 1 here) OFDM-symbols
         while (j < N_P2) {
           memset(out, 0, size_left_zeros);
           out += left_nulls;
-          pn_seq_j = pn_sequence[j];
-          for (int n = 0; n < C_PS; n++) {
+          n = 0;
+          while (n < C_PS) {
             switch (p2_carrier_map[n]) {
               case P2PILOT_CARRIER:
-                *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
+                *out = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case P2PILOT_CARRIER_INVERTED:
-                *out++ = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
+                *out = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case P2PAPR_CARRIER:
-                *out++ = zero;
+                memset(out, 0, size_gr_complex);
                 break;
               default:
-                *out++ = *in++;
+                *out = *in++;
                 break;
             }
+            out++;
+            n++;
           }
           memset(out, 0, size_right_zeros);
-          out -=  ofdm_fft_size - right_nulls;
+          out -=  reset_out;
           generate_ofdm_symbol(out);
           out += ofdm_fft_size;
           ++j;
         }
 
-        // Then do the symbols N_P2 to limit = num_symbols - L_FC - 1
+        // Then do the symbols N_P2 to num_symbols - L_FC - 1
         while (j < limit) {
           memset(out, 0, size_left_zeros);
           out += left_nulls;
-          pn_seq_j = pn_sequence[j];
           // Since init_pilots only affects values in the data_carrier_map array, only initialize it here
           init_pilots(j);
-          for (int n = 0; n < C_PS; n++) {
+          n = 0;
+          while (n < C_PS) {
             switch (data_carrier_map[n]) {
               case SCATTERED_CARRIER:
-                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
+                *out = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case SCATTERED_CARRIER_INVERTED:
-                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
+                *out = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case CONTINUAL_CARRIER:
-                *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
+                *out = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case CONTINUAL_CARRIER_INVERTED:
-                *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
+                *out = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case TRPAPR_CARRIER:
-                *out++ = zero;
+                memset(out, 0, size_gr_complex);
               default:
-                *out++ = *in++;
+                *out = *in++;
                 break;
             }
+            out++;
+            n++;
           }
           memset(out, 0, size_right_zeros);
-          out -=  ofdm_fft_size - right_nulls;
+          out -=  reset_out;
           generate_ofdm_symbol(out);
           out += ofdm_fft_size;
           ++j;
         }
         
         if (L_FC == 1) {
-          // Now do symbol j = num_symbols - L_FC
-          pn_seq_j = pn_sequence[num_symbols - L_FC];
+          // Now do symbol j = limit = num_symbols - L_FC
           memset(out, 0, size_left_zeros);
           out += left_nulls;
-          for (int n = 0; n < C_PS; n++) {
+          n = 0;
+          while (n < C_PS) {
             switch (fc_carrier_map[n]) {
               case SCATTERED_CARRIER:
-                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
+                *out = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case SCATTERED_CARRIER_INVERTED:
-                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
+                *out = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
                 break;
               case TRPAPR_CARRIER:
-                *out++ = zero;
+                memset(out, 0, size_gr_complex);
                 break;
               default:
-                *out++ = *in++;
+                *out = *in++;
                 break;
             }
+            out++;
+            n++;
           }
           memset(out, 0, size_right_zeros);
-          out -=  ofdm_fft_size - right_nulls;
+          out -=  reset_out;
           generate_ofdm_symbol(out);
           out += ofdm_fft_size;
           ++j;
