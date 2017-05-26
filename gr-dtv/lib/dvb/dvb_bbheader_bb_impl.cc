@@ -460,10 +460,6 @@ namespace gr {
       int padding;
       //unsigned char b;
 
-      gr_vector_int nin_items(1);
-      forecast(noutput_items, nin_items);
-      printf("forecast: %i\n", nin_items[0]);
-
       for (int i = 0; i < noutput_items; i += kbch/8) {
         if (frame_size != FECFRAME_MEDIUM) {
           if (fec_block == 0 && inband_type_b == TRUE) {
@@ -572,7 +568,6 @@ namespace gr {
       // Tell runtime system how many input items we consumed on
       // each input stream.
       consume_each (consumed);
-      printf("consumed: %i\n", consumed);
 
       // Tell runtime system how many output items we produced.
       return noutput_items;
