@@ -1177,10 +1177,8 @@ namespace gr {
       }
     }
 
-    void
-    dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
+    void dvbt2_pilotgenerator_cc_impl::init_pilots_preset()
     {
-      int remainder, shift;
       for (int i = 0; i < C_PS; i++) {
         data_carrier_map[i] = DATA_CARRIER;
       }
@@ -2515,6 +2513,7 @@ namespace gr {
               }
               break;
             case PILOT_PP7:
+              //-------------------------------------------------------------------------------------
               for (int i = 0; i < 15; i++) {
                 data_carrier_map[pp7_cp1[i]] = CONTINUAL_CARRIER;
               }
@@ -2598,6 +2597,12 @@ namespace gr {
           }
           break;
       }
+    }
+
+    void dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
+    {
+      int remainder, shift;
+      //--------------------------------------------------------------------------------here
       for (int i = 0; i < C_PS; i++) {
         remainder = (i - K_EXT) % (dx * dy);
         if (remainder < 0) {
@@ -2688,7 +2693,9 @@ namespace gr {
       gr_complex *dst;
       int L_FC = 0;
 
-      //int *prbs_idx; // idx pointer
+      // build pilots
+      init_pilots_preset();
+      memcpy(data_carrier_map_cpy, data_carrier_map, sizeof(int) * MAX_CARRIERS);
 
       zero = gr_complex(0.0, 0.0);
       if (N_FC != 0) {
@@ -2696,6 +2703,7 @@ namespace gr {
       }
       for (int i = 0; i < noutput_items; i += num_symbols) {
         for (int j = 0; j < num_symbols; j++) {
+          memcpy(data_carrier_map, data_carrier_map_cpy, sizeof(int) * MAX_CARRIERS);
           init_pilots(j);
           if (j < N_P2) {
             /*for (int n = 0; n < left_nulls; n++) {          // Removed

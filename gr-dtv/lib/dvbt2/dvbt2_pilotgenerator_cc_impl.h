@@ -67,6 +67,7 @@ namespace gr {
       int pn_sequence[CHIPS];
       int p2_carrier_map[MAX_CARRIERS];
       int data_carrier_map[MAX_CARRIERS];
+      int data_carrier_map_cpy[MAX_CARRIERS]; // added
       int fc_carrier_map[MAX_CARRIERS];
       int N_P2;
       int C_P2;
@@ -81,6 +82,7 @@ namespace gr {
       int miso;
       int miso_group;
       void init_prbs(void);
+      void init_pilots_preset(); // added
       void init_pilots(int);
 
       fft::fft_complex *ofdm_fft;
