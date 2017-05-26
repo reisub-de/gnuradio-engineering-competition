@@ -386,11 +386,11 @@ namespace gr {
             c[14] = &tempv[rows * 14];
             c[15] = &tempv[rows * 15];
             for (int i = 0; i < noutput_items; i += packed_items) {
-              for (int k = 0; k < nbch; k+=8) {                     //nbch always n*8
+              for (int k = 0; k < nbch; k+=4) {                     //nbch always n*8
                 //copy in long words to improve throughput
                 union {
                   const unsigned char* b;
-                  uint64_t* lw;
+                  uint32_t* lw;
                 } s,d;
                 s.b = &in[k];
                 d.b = &tempu[k];
