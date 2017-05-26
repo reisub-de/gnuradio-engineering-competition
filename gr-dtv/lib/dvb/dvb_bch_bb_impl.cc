@@ -617,11 +617,11 @@ namespace gr {
             //for(int i=0; i<6; i++){ shift[i] = 0;}
             
             // MSB of the codeword first
-            for (int j = 0; j < kbch_int; j++) {
+            for (int j = 0; j < kbch_int; ++j) {
 			//for (int j = kbch_int; j--;) {
               temp = *in++;
               *out++ = temp;
-              consumed++;
+              ++consumed;
               b = (temp ^ (shift[5] & 1));
               reg_6_shift(shift);
               if (b) {
@@ -634,7 +634,7 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            for (int n = 0; n < 192; n++) {
+            for (int n = 0; n < 192; ++n) {
 			//for (int n=192; n--;) {
               *out++ = (shift[5] & 1);
               reg_6_shift(shift);
