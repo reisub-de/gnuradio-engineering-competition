@@ -581,10 +581,7 @@ namespace gr {
           shift[2]=i;
           for(int k = 0; k<8; k++){
             unsigned char temp;
-            if((1 << k) & j)
-              temp = 1;
-            else
-              temp = 0;
+            temp = !!((1 << k) & j);
             unsigned char b = (temp ^ (shift[2] & 1));
             reg_192b_shift(shift);
             if (b) {
@@ -725,7 +722,7 @@ namespace gr {
 
             // MSB of the codeword first, read into byte
             in64 = (uint64_t*) in;
-            for (int j = 0; j < (int)kbch; j+=8) {	//kbch seems to be always multiple of 8
+            for (int j = 0; j < (int)kbch; j+=8) {	//kbch always multiple of 8
               unsigned char lbyte = shift[2] & 0xff;
               unsigned char nbyte = 0;
 
@@ -775,7 +772,7 @@ namespace gr {
             shift[2]=0;
             // MSB of the codeword first, read into byte
             in64 = (uint64_t*) in;
-            for (int j = 0; j < (int)kbch; j+=8) {	//kbch seems to be always multiple of 8
+            for (int j = 0; j < (int)kbch; j+=8) {	//kbch always multiple of 8
               unsigned char lbyte = shift[2] & 0xff;
               unsigned char nbyte = 0;
               
@@ -814,7 +811,7 @@ namespace gr {
             // MSB of the codeword first, read into byte
             in64 = (uint64_t*) in;
             
-            for (int j = 0; j < (int)kbch; j+=8) {	//kbch seems to be always multiple of 8
+            for (int j = 0; j < (int)kbch; j+=8) {	//kbch always multiple of 8
               unsigned char lbyte = shift[2] & 0xff;
               unsigned char nbyte = 0;
                             
@@ -851,26 +848,17 @@ namespace gr {
             shift[1]=0;
             shift[2]=0;
             // MSB of the codeword first, read into byte
-            in64 = (uint64_t*) in;
-            for (int j = 0; j < (int)kbch; j+=8) {	//kbch seems to be always multiple of 8
-              unsigned char lbyte = shift[2] & 0xff;
-              unsigned char nbyte = 0;
-              
-              nbyte |= *in64;
-              nbyte |= *in64 >>  7;
-              nbyte |= *in64 >> 14;
-              nbyte |= *in64 >> 21;
-              nbyte |= *in64 >> 28;
-              nbyte |= *in64 >> 35;
-              nbyte |= *in64 >> 42;
-              nbyte |= *in64 >> 49;
-
-              in64++;
-              consumed+=8;
-              reg_192b_shift8(shift);
-              shift[0] ^= bch_lookup_table[lbyte][nbyte][0];
-              shift[1] ^= bch_lookup_table[lbyte][nbyte][1];
-              shift[2] ^= bch_lookup_table[lbyte][nbyte][2];
+            for (int j = 0; j < (int)kbch; j++) {
+              temp = *in++;
+              *out++ = temp;
+              consumed++;
+              b = (temp ^ ((shift[2] & 0x01000000) ? 1 : 0));
+              reg_192b_shift(shift);
+              if (b) {
+                shift[0] ^= m_poly64_s_12[0];
+                shift[1] ^= m_poly64_s_12[1];
+                shift[2] ^= m_poly64_s_12[2];
+              }
             }
             // Now add the parity bits to the output
             for (int n = 0; n < 168; n++) {
@@ -889,27 +877,18 @@ namespace gr {
             shift[0]=0;
             shift[1]=0;
             shift[2]=0;
-            // MSB of the codeword first, read into byte
-            in64 = (uint64_t*) in;
-            for (int j = 0; j < (int)kbch; j+=8) {	//kbch seems to be always multiple of 8
-              unsigned char lbyte = shift[2] & 0xff;
-              unsigned char nbyte = 0;
-              
-              nbyte |= *in64;
-              nbyte |= *in64 >>  7;
-              nbyte |= *in64 >> 14;
-              nbyte |= *in64 >> 21;
-              nbyte |= *in64 >> 28;
-              nbyte |= *in64 >> 35;
-              nbyte |= *in64 >> 42;
-              nbyte |= *in64 >> 49;
-
-              in64++;
-              consumed+=8;
-              reg_192b_shift8(shift);
-              shift[0] ^= bch_lookup_table[lbyte][nbyte][0];
-              shift[1] ^= bch_lookup_table[lbyte][nbyte][1];
-              shift[2] ^= bch_lookup_table[lbyte][nbyte][2];
+            // MSB of the codeword first
+            for (int j = 0; j < (int)kbch; j++) {
+              temp = *in++;
+              *out++ = temp;
+              consumed++;
+              b = (temp ^ ((shift[2] & 0x00001000) ? 1 : 0));
+              reg_192b_shift(shift);
+              if (b) {
+                shift[0] ^= m_poly64_m_12[0];
+                shift[1] ^= m_poly64_m_12[1];
+                shift[2] ^= m_poly64_m_12[2];
+              }
             }
             // Now add the parity bits to the output
             for (int n = 0; n < 180; n++) {
