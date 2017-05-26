@@ -147,7 +147,7 @@ namespace gr {
           break;
       }
 
-      /* initialize index array (ONLY for the case 256_QAM with FRAME_SIZE_NORMAL, C3_5) */
+      /* initialize index array (we ONLY consider the case 256_QAM, FRAME_SIZE_NORMAL, C3_5) */
       // calc tempu_shift[]
       for(int i=0; i<16; i++) {
       	tempu_shift[i] = 2*mod - 1 - mux256_35[i];
