@@ -605,19 +605,20 @@ namespace gr {
       unsigned int shift[6];
       int consumed = 0;
 	  int kbch_int = (int) kbch;
+	  int sizeof_uint_mult_6 = sizeof(unsigned int) * 6;
 
       switch (bch_code) {
         case BCH_CODE_N12:
 		  //kbch_int = (int) kbch;
-          //for (int i = 0; i < noutput_items; i += nbch) {
-		  for (int i=noutput_items; i; i-=nbch) {
+          for (int i = 0; i < noutput_items; i += nbch) {
+		  //for (int i=noutput_items; i; i-=nbch) {
             //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
+            memset(shift, 0, sizeof_uint_mult_6);
             //for(int i=0; i<6; i++){ shift[i] = 0;}
             
             // MSB of the codeword first
-            //for (int j = 0; j < kbch_int; j++) {
-			for (int j = kbch_int; j--;) {
+            for (int j = 0; j < kbch_int; j++) {
+			//for (int j = kbch_int; j--;) {
               temp = *in++;
               *out++ = temp;
               consumed++;
@@ -633,8 +634,8 @@ namespace gr {
               }
             }
             // Now add the parity bits to the output
-            //for (int n = 0; n < 192; n++) {
-			for (int n=192; n--;) {
+            for (int n = 0; n < 192; n++) {
+			//for (int n=192; n--;) {
               *out++ = (shift[5] & 1);
               reg_6_shift(shift);
             }
