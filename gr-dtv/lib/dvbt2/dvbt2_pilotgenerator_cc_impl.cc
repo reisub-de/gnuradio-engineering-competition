@@ -2722,10 +2722,11 @@ namespace gr {
       const int size_left_zeros = left_nulls * sizeof(gr_complex);
       const int size_right_zeros = right_nulls * sizeof(gr_complex);
 
+      int limit = num_symbols - L_FC;
+
       if (N_FC != 0) {
         L_FC = 1;
       }
-      int limit = num_symbols - L_FC;
       for (int i = 0; i < noutput_items; i += num_symbols) {
         int j = 0;
         int pn_seq_j;
@@ -2758,12 +2759,12 @@ namespace gr {
           ++j;
         }
 
-        // Then do the symbols N_P2 to num_symbols - L_FC
+        // Then do the symbols N_P2 to limit = num_symbols - L_FC - 1
         while (j < limit) {
           memset(out, 0, size_left_zeros);
           out += left_nulls;
           pn_seq_j = pn_sequence[j];
-          // Since init_pilots only affects values in the data_carrier_map array, only initialize them here
+          // Since init_pilots only affects values in the data_carrier_map array, only initialize it here
           init_pilots(j);
           for (int n = 0; n < C_PS; n++) {
             switch (data_carrier_map[n]) {
@@ -2814,12 +2815,13 @@ namespace gr {
                 break;
             }
           }
+          memset(out, 0, size_right_zeros);
+          out -=  ofdm_fft_size - right_nulls;
+          generate_ofdm_symbol(out);
+          out += ofdm_fft_size;
+          ++j;
         }
-        memset(out, 0, size_right_zeros);
-        out -=  ofdm_fft_size - right_nulls;
-        generate_ofdm_symbol(out);
-        out += ofdm_fft_size;
-        ++j;
+
       } // end for iteration over output_items
 
       // Tell runtime system how many input items we consumed on
