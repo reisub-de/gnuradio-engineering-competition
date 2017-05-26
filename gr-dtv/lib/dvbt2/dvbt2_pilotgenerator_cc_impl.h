@@ -40,6 +40,26 @@ enum dvbt2_carrier_type_t {
   CONTINUAL_CARRIER_INVERTED
 };
 
+struct FuncHandlerDataStruct {
+  FuncHandlerDataStruct(
+    const gr_complex *arg_in,
+    gr_complex *arg_out,
+    const gr_complex *arg_m_inverse_sinc,
+    const int *arg_local_p2_carrier_map,
+    const int *arg_local_fc_carrier_map
+  ) :
+    in(arg_in),
+    out(arg_out),
+    m_inverse_sinc(arg_m_inverse_sinc),
+    local_p2_carrier_map(arg_local_p2_carrier_map),
+    local_fc_carrier_map(arg_local_fc_carrier_map) {}
+  const gr_complex *in;
+  gr_complex *out;  
+  const gr_complex *m_inverse_sinc;
+  const int *local_p2_carrier_map;
+  const int *local_fc_carrier_map;
+};
+
 namespace gr {
   namespace dtv {
 
@@ -63,8 +83,6 @@ namespace gr {
       gr_complex sp_bpsk_inverted[2];
       gr_complex cp_bpsk_inverted[2];
       gr_complex inverse_sinc[32768];
-      int prbs[MAX_CARRIERS];
-      int pn_sequence[CHIPS];
       int p2_carrier_map[MAX_CARRIERS];
       int data_carrier_map[MAX_CARRIERS];
       int fc_carrier_map[MAX_CARRIERS];
@@ -80,11 +98,13 @@ namespace gr {
       int dy;
       int miso;
       int miso_group;
-      void init_prbs(void);
       void init_pilots(int);
 
       fft::fft_complex *ofdm_fft;
       int ofdm_fft_size;
+
+      const static int prbs[MAX_CARRIERS];
+      const static int pn_sequence[CHIPS];
 
       const static unsigned char pn_sequence_table[CHIPS / 8];
       const static int p2_papr_map_1k[10];
@@ -154,6 +174,10 @@ namespace gr {
       const static int pp7_32k[2];
       const static int pp8_32k[6];
 
+/**************** Function Handler ****************/
+      static void init_pilots_handler(int*,int);
+      static void func_handler(FuncHandlerDataStruct);
+/************************************************/
      public:
       dvbt2_pilotgenerator_cc_impl(dvbt2_extended_carrier_t carriermode, dvbt2_fftsize_t fftsize, dvbt2_pilotpattern_t pilotpattern, dvb_guardinterval_t guardinterval, int numdatasyms, dvbt2_papr_t paprmode, dvbt2_version_t version, dvbt2_preamble_t preamble, dvbt2_misogroup_t misogroup, dvbt2_equalization_t equalization, dvbt2_bandwidth_t bandwidth, int vlength);
       ~dvbt2_pilotgenerator_cc_impl();

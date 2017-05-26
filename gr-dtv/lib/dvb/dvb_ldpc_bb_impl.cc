@@ -826,7 +826,7 @@ for (int row = 0; row < ROWS; row++) { \
           thread_needed = max_thread_num;
         }
 
-        gr::dtv::ThreadPool thread_pool(thread_needed);
+      gr_thread_pool thread_pool(thread_needed);
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       
@@ -858,7 +858,7 @@ for (int row = 0; row < ROWS; row++) { \
           thread_needed = max_thread_num;
         }
 
-        gr::dtv::ThreadPool thread_pool(thread_needed);
+      gr_thread_pool thread_pool(thread_needed);
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       
@@ -890,7 +890,7 @@ for (int row = 0; row < ROWS; row++) { \
           thread_needed = max_thread_num;
         }
 
-        gr::dtv::ThreadPool thread_pool(thread_needed);
+      gr_thread_pool thread_pool(thread_needed);
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       
@@ -922,7 +922,7 @@ for (int row = 0; row < ROWS; row++) { \
           thread_needed = max_thread_num;
         }
 
-        gr::dtv::ThreadPool thread_pool(thread_needed);
+      gr_thread_pool thread_pool(thread_needed);
 
         for (int i = 0; i < noutput_items; i += frame_size) {
           FuncHandlerDataStruct data(       
