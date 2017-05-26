@@ -386,9 +386,8 @@ namespace gr {
         }
       }
       else {
-        for (int n = 7; n >= 0; n--) {
-          m_frame[m_frame_offset_bits++] = 0;
-        }
+        std::fill(m_frame + m_frame_offset_bits, m_frame + m_frame_offset_bits + 8, 0);
+        m_frame_offset_bits += 8;
       }
       temp = h->upl;
       for (int n = 15; n >= 0; n--) {
@@ -430,25 +429,21 @@ namespace gr {
       m_frame[0] = 0;
       m_frame[1] = 1;
       m_frame_offset_bits = 2;
-      for (int n = 30; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = 0;
-      }
-      for (int n = 21; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = 0;
-      }
-      for (int n = 1; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = 0;
-      }
-      for (int n = 9; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = 0;
-      }
+      std::fill(
+        m_frame + m_frame_offset_bits, 
+        m_frame + m_frame_offset_bits + 64,
+        0
+      );
+      m_frame_offset_bits += 64;
       temp = ts_rate;
       for (int n = 26; n >= 0; n--) {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
-      for (int n = 9; n >= 0; n--) {
-        m_frame[m_frame_offset_bits++] = 0;
-      }
+      std::fill(
+        m_frame + m_frame_offset_bits, 
+        m_frame + m_frame_offset_bits + 10,
+        0
+      );
     }
 
     int
@@ -465,17 +460,14 @@ namespace gr {
       unsigned char b;
 
       if (frame_size != FECFRAME_MEDIUM) {
-        for (int i = 0; i < noutput_items; i += kbch) {
-          if (fec_block == 0 && inband_type_b == TRUE) {
-            padding = 104;
-          }
-          else {
+        if(
+          (fec_block != 0 || inband_type_b != TRUE) && 
+          input_mode == INPUTMODE_HIEFF
+        ) {
+          for (int i = 0; i < noutput_items; i += kbch) {
             padding = 0;
-          }
-          add_bbheader(&out[offset], count, padding, TRUE);
-          offset = offset + 80;
-
-          if (input_mode == INPUTMODE_HIEFF) {
+            add_bbheader(&out[offset], count, padding, TRUE);
+            offset = offset + 80;
             for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
               if (count == 0) {
                 if (*in != 0x47) {
@@ -493,38 +485,70 @@ namespace gr {
               count = (count + 1) % 188;
               consumed++;
             }
-            if (fec_block == 0 && inband_type_b == TRUE) {
-              add_inband_type_b(&out[offset], ts_rate);
-              offset = offset + 104;
-            }
           }
-          else {
-            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
-              if (count == 0) {
-                if (*in != 0x47) {
-                  GR_LOG_WARN(d_logger, "Transport Stream sync error!");
+        }
+        else {
+          for (int i = 0; i < noutput_items; i += kbch) {
+            if (fec_block == 0 && inband_type_b == TRUE) {
+              padding = 104;
+            }
+            else {
+              padding = 0;
+            }
+            add_bbheader(&out[offset], count, padding, TRUE);
+            offset = offset + 80;
+
+            if (input_mode == INPUTMODE_HIEFF) {
+              for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
+                if (count == 0) {
+                  if (*in != 0x47) {
+                    GR_LOG_WARN(d_logger, "Transport Stream sync error!");
+                  }
+                  j--;
+                  in++;
                 }
-                in++;
-                b = crc;
-                crc = 0;
+                else {
+                  b = *in++;
+                  for (int n = 7; n >= 0; n--) {
+                    out[offset++] = b & (1 << n) ? 1 : 0;
+                  }
+                }
+                count = (count + 1) % 188;
+                consumed++;
               }
-              else {
-                b = *in++;
-                crc = crc_tab[b ^ crc];
-              }
-              count = (count + 1) % 188;
-              consumed++;
-              for (int n = 7; n >= 0; n--) {
-                out[offset++] = b & (1 << n) ? 1 : 0;
+              if (fec_block == 0 && inband_type_b == TRUE) {
+                add_inband_type_b(&out[offset], ts_rate);
+                offset = offset + 104;
               }
             }
-            if (fec_block == 0 && inband_type_b == TRUE) {
-              add_inband_type_b(&out[offset], ts_rate);
-              offset = offset + 104;
+            else {
+              for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
+                if (count == 0) {
+                  if (*in != 0x47) {
+                    GR_LOG_WARN(d_logger, "Transport Stream sync error!");
+                  }
+                  in++;
+                  b = crc;
+                  crc = 0;
+                }
+                else {
+                  b = *in++;
+                  crc = crc_tab[b ^ crc];
+                }
+                count = (count + 1) % 188;
+                consumed++;
+                for (int n = 7; n >= 0; n--) {
+                  out[offset++] = b & (1 << n) ? 1 : 0;
+                }
+              }
+              if (fec_block == 0 && inband_type_b == TRUE) {
+                add_inband_type_b(&out[offset], ts_rate);
+                offset = offset + 104;
+              }
             }
-          }
-          if (inband_type_b == TRUE) {
-            fec_block = (fec_block + 1) % fec_blocks;
+            if (inband_type_b == TRUE) {
+              fec_block = (fec_block + 1) % fec_blocks;
+            }
           }
         }
       }
@@ -533,7 +557,7 @@ namespace gr {
             padding = 0;
             add_bbheader(&out[offset], count, padding, nibble);
             offset = offset + 80;
-            for (int j = 0; j < (int)((kbch - 80) / 4); j++) {
+            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
               if (nibble == TRUE) {
                 if (count == 0) {
                   if (*in != 0x47) {
