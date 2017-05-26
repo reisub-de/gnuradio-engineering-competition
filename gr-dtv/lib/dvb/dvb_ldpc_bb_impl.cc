@@ -352,7 +352,7 @@ namespace gr {
       code_rate = rate;
       signal_constellation = constellation;
       dvb_standard = standard;
-      ldpc_lookup_generate();
+      //ldpc_lookup_generate();
       if (signal_constellation == MOD_128APSK) {
         frame_size += 6;
       }
@@ -378,6 +378,7 @@ for (int row = 0; row < ROWS; row++) { \
     for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
       ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
       ldpc_encode.d[index] = im; \
+      printf("0x%08x 0x%08x\n", ldpc_encode.p[index], ldpc_encode.d[index]); \
       index++; \
     } \
     im++; \
@@ -614,9 +615,44 @@ for (int row = 0; row < ROWS; row++) { \
       p = &out[nbch];
       int consumed = 0;
       int puncture, index;
+static bool wi = false;
+static bool wo = false;
 
       for (int i = 0; i < noutput_items; i += frame_size) {
-        if (Xs != 0) {
+unsigned char* p = out+nbch;
+
+// copy info bits
+memcpy(out, in, nbch);
+
+// init parity bits
+memset(p, 0, plen);
+
+const unsigned char* it = in;
+for (int row=0; row<108; row++) {
+  for (int m=0; m<360; m++) {
+    int n;
+    for (n=1; n<=ldpc_tab_3_5N[row][0]; n++) {
+      const int x = ldpc_tab_3_5N[row][n];
+      const int pi = (x+m*q_val)%plen;
+      p[pi] ^= it[m];
+    }
+  }
+  it += 360;
+}
+
+for (int n=1; n<plen; n++)
+  p[n] ^= p[n-1];
+
+in += nbch;
+consumed += nbch;
+out += frame_size;
+/*if (!wi) {
+  wi = true;
+  FILE* f = fopen("/home/fabian/ldpc_in.bin", "w");
+  fwrite(in, nbch, 1, f);
+  fclose(f);
+}*/
+        /*if (Xs != 0) {
           s = &shortening_buffer[0];
           memset(s, 0, sizeof(unsigned char) * Xs);
           memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
@@ -625,15 +661,17 @@ for (int row = 0; row < ROWS; row++) { \
         if (P != 0) {
           p = &puncturing_buffer[nbch];
           b = &out[i + nbch];
-        }
+        }*/
         // First zero all the parity bits
-        memset(p, 0, sizeof(unsigned char) * plen);
-        for (int j = 0; j < (int)nbch; j++) {
-          out[i + j] = in[consumed];
-          consumed++;
-        }
+        //memset(p, 0, sizeof(unsigned char) * plen);
+        //memcpy(out+i, in+consumed, nbch);
+        //consumed += nbch;
+        //for (int j = 0; j < (int)nbch; j++) {
+        //  out[i + j] = in[consumed];
+        //  consumed++;
+        //}
         // now do the parity checking
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
+        /*for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
         }
         if (P != 0) {
@@ -660,9 +698,15 @@ for (int row = 0; row < ROWS; row++) { \
           for (int j = 0; j < 6; j++) {
             p[j + plen] = 0;
           }
-        }
+        }*/
         d += nbch;
         p += frame_size;
+/*if (!wo) {
+  wo = true;
+  FILE* f = fopen("/home/fabian/ldpc_out.bin", "w");
+  fwrite(out, frame_size, 1, f);
+  fclose(f);
+}*/
       }
 
       // Tell runtime system how many input items we consumed on
