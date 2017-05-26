@@ -1652,7 +1652,7 @@ namespace gr {
         int diff_N_FC_C_FC = N_FC - C_FC;
         int num_dummy_randomize = mapped_items - stream_items - 1840 - (N_post / eta_mod) - diff_N_FC_C_FC;
         int memcpy_size_dummy = num_dummy_randomize * sizeof(gr_complex);
-        memcpy(out, &l1pre_cache[0], memcpy_size_l1precache); //or index+1 and offset index by 1 less???
+        memcpy(out, &l1pre_cache[1], memcpy_size_l1precache);
         out += 1840;
         add_l1post(out, t2_frame_num);
         t2_frame_num = (t2_frame_num + 1) % t2_frames;
@@ -1660,13 +1660,13 @@ namespace gr {
         memcpy(out, in, memcpy_size_out);
         out += stream_items;
         in += stream_items;
-        memcpy(out, &dummy_randomize[0], memcpy_size_dummy); // or 1??
+        memcpy(out, &dummy_randomize[1], memcpy_size_dummy);
         out += num_dummy_randomize;
         for (int j = 0; j < diff_N_FC_C_FC; j++) {
           *out++ = unmodulated;
         }
         for (int i = 1; i < noutput_items; i += mapped_items) {
-          memcpy(out, &l1pre_cache[num_dummy_randomize], memcpy_size_l1precache); //or index+1 and offset index by 1 less???
+          memcpy(out, &l1pre_cache[num_dummy_randomize + 1], memcpy_size_l1precache);
           out += 1840;
           add_l1post(out, t2_frame_num);
           t2_frame_num = (t2_frame_num + 1) % t2_frames;
@@ -1674,7 +1674,7 @@ namespace gr {
           memcpy(out, in, memcpy_size_out);
           out += stream_items;
           in += stream_items;
-          memcpy(out, &dummy_randomize[0], memcpy_size_dummy); // or 1??
+          memcpy(out, &dummy_randomize[1], memcpy_size_dummy);
           out += num_dummy_randomize;
           for (int j = 0; j < diff_N_FC_C_FC; j++) {
             *out++ = unmodulated;
