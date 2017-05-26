@@ -148,9 +148,11 @@ namespace gr {
       }
 
       /* initialize index array (we ONLY consider the case 256_QAM, FRAME_SIZE_NORMAL, C3_5) */
+
       // calc tempu_shift[]
+      int mod2 = 2*mod;
       for(int i=0; i<16; i++) {
-      	tempu_shift[i] = 2*mod - 1 - mux256_35[i];
+      	tempu_shift[i] = mod2 - 1 - mux256_35[i];
       }
       // calc in_idx[]
       int index=0, offset;
@@ -160,15 +162,14 @@ namespace gr {
       	}
       }
       // calc tempv_idx[]
-      int rows = frame_size / (2*mod);
+      int rows = frame_size / mod2;
       index = 0;
-      for (int col = 0; col < 2*mod; col++) {
-        offset = twist256n[col];		// fix.
+      for (int col = 0; col < mod2; col++) {
+        offset = twist256n[col];
         for (int row = 0; row < rows; row++) {
       	  tempv_idx[index++] = offset++ + (rows * col);
-      	  if (offset == rows) {
+      	  if (offset == rows)
       		offset = 0;
-      	  }
       	}
       }
 
@@ -420,34 +421,20 @@ namespace gr {
 		    c14 = &tempv[rows * 13];
 		    c15 = &tempv[rows * 14];
 		    c16 = &tempv[rows * 15];
-		    // precalculate tempu shift index
-		    //for(int i=0; i<mod2; i++)
-		    	//tempu_shift[i] = mod2 - 1 - mux[i];
 
 		    for (int i = 0; i < noutput_items; i += packed_items) {
 			  memcpy(tempu, in, nbch);
 			  in += nbch;
 
-              /*for (int t = 0; t < q_val; t++) {
-                for (int s = 0; s < 360; s++) {
-                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
-                }
-              }*/
+			  // access in[] via in_idx[] array
 			  int *idx = in_idx;
+			  unsigned char *data_idx = &tempu[nbch];
 			  for (int t = 0; t < 25920; t++) {
-				  tempu[nbch + t] = in[*idx++];
+				  *data_idx++ = in[*idx++];
 			  }
               in += (q_val * 360);
-              /*index = 0;
-              for (int col = 0; col < mod2; col++) {
-                offset = twist256n[col];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset++ + (rows * col)] = tempu[index++];
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-              }*/
+
+              // acces tmpv[] via tmpv_idx[] array
               idx = tempv_idx;
 			  for(int t = 0; t< FRAME_SIZE_NORMAL; t++) {
 				tempv[*idx++] = tempu[t];
