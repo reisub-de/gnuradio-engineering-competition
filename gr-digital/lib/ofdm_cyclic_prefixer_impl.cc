@@ -105,13 +105,14 @@ namespace gr {
     {
       gr_complex *in = (gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
-      int symbols_to_read = 0;
+      int symbols_to_read;
 
       // 1) Figure out if we're in freewheeling or packet mode
       if (!d_length_tag_key_str.empty()) {
 	symbols_to_read = ninput_items[0];
 	noutput_items = symbols_to_read * d_output_size + d_delay_line.size();
-      } else {
+      }
+      else {
 	symbols_to_read = std::min(noutput_items / (int) d_output_size, ninput_items[0]);
 	noutput_items = symbols_to_read * d_output_size;
       }
@@ -149,25 +150,19 @@ namespace gr {
       //    - Propagate tags
       if (!d_length_tag_key_str.empty()) {
 	if (d_rolloff_len) {
-	  for (unsigned i = 0; i < d_delay_line.size(); i++) {
-	    *out++ = d_delay_line[i];
-	  }
-	  d_delay_line.assign(d_delay_line.size(), 0);
+          int delay_size = d_delay_line.size();
+          memcpy(out, &d_delay_line[0], delay_size * sizeof(gr_complex));
+          out += delay_size;
+	  d_delay_line.assign(delay_size, 0);
 	}
 	std::vector<tag_t> tags;
-	get_tags_in_range(
-	    tags, 0,
-	    nitems_read(0), nitems_read(0)+symbols_to_read
-	);
+	get_tags_in_range(tags, 0, nitems_read(0), nitems_read(0) + symbols_to_read);
 	for (unsigned i = 0; i < tags.size(); i++) {
 	  tags[i].offset = ((tags[i].offset - nitems_read(0)) * d_output_size) + nitems_written(0);
-	  add_item_tag(0,
-	      tags[i].offset,
-	      tags[i].key,
-	      tags[i].value
-	  );
+	  add_item_tag(0, tags[i].offset, tags[i].key, tags[i].value);
 	}
-      } else {
+      }
+      else {
 	consume_each(symbols_to_read);
       }
 
