@@ -2712,17 +2712,18 @@ namespace gr {
             memset(out, 0, sizeof(gr_complex)*left_nulls);    // Added
             out += left_nulls;
             for (int n = 0; n < C_PS; n++) {
-              if (p2_carrier_map[n] == P2PILOT_CARRIER) {
-                *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (p2_carrier_map[n] == P2PILOT_CARRIER_INVERTED) {
-                *out++ = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-              }
-              else if (p2_carrier_map[n] == P2PAPR_CARRIER) {
-                *out++ = zero;
-              }
-              else {
-                *out++ = *in++;
+              if(p2_carrier_map[n] == DATA_CARRIER) {
+                  *out++ = *in++;
+              } else {
+                  if (p2_carrier_map[n] == P2PILOT_CARRIER) {
+                    *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  }
+                  else if (p2_carrier_map[n] == P2PILOT_CARRIER_INVERTED) {
+                    *out++ = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  }
+                  else if (p2_carrier_map[n] == P2PAPR_CARRIER) {
+                    *out++ = zero;
+                  }
               }
             }
             /*for (int n = 0; n < right_nulls; n++) {         // Removed
