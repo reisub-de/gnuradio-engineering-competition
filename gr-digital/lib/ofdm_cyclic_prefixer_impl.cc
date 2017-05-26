@@ -117,17 +117,31 @@ namespace gr {
       }
 
       // 2) Do the cyclic prefixing and, optionally, the pulse shaping
-      for (int sym_idx = 0; sym_idx < symbols_to_read; sym_idx++) {
-	memcpy((void *)(out + d_cp_size), (void *) in, d_fft_len * sizeof(gr_complex));
-	memcpy((void *) out, (void *) (in + d_fft_len - d_cp_size), d_cp_size * sizeof(gr_complex));
-	if (d_rolloff_len) {
+      const int d_fft_size_byte = d_fft_len * sizeof(gr_complex);
+      const int d_cp_size_byte = d_cp_size * sizeof(gr_complex);
+      const int diff = d_fft_len - d_cp_size;
+      int sym_idx = 0;
+      if (!d_rolloff_len) {
+        while (sym_idx < symbols_to_read) {
+	  memcpy((void *)(out + d_cp_size), (void *) in, d_fft_size_byte);
+	  memcpy((void *) out, (void *) (in + diff), d_cp_size_byte);
+	  in += d_fft_len;
+  	  out += d_output_size;
+          sym_idx++;
+        }
+      }
+      else {
+        while (sym_idx < symbols_to_read) {
+	  memcpy((void *)(out + d_cp_size), (void *) in, d_fft_size_byte);
+	  memcpy((void *) out, (void *) (in + diff), d_cp_size_byte);
 	  for (int i = 0; i < d_rolloff_len-1; i++) {
 	    out[i] = out[i] * d_up_flank[i] + d_delay_line[i];
 	    d_delay_line[i] = in[i] * d_down_flank[i];
 	  }
-	}
-	in += d_fft_len;
-	out += d_output_size;
+	  in += d_fft_len;
+	  out += d_output_size;
+          sym_idx++;
+        }
       }
 
       // 3) If we're in packet mode:
