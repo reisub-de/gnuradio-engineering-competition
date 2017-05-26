@@ -355,11 +355,7 @@ namespace gr {
       int b;
       int i = 0;
 
-      // simplyfy things in the first iteration
-      if(in[i++])
-      	  crc = CRC_POLY;
-
-      for (int n = 1; n < length; n++) {
+      for (int n = 0; n < length; n++) {
         b = in[i++] ^ (crc & 0x01);
         crc >>= 1;
         if (b) {
@@ -431,8 +427,13 @@ namespace gr {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       // Calculate syncd, this should point to the MSB of the CRC
-      temp = (count) ? (188 - count) * 8 : count;
 
+      if (count) {
+    	temp = (188 - count) * 8;
+      }
+      else {
+    	temp = count;
+      }
       if (nibble == FALSE) {
         temp += 4;
       }
@@ -497,30 +498,27 @@ namespace gr {
           add_bbheader(&out[offset], count, padding, TRUE);
           offset += 80;
 
-          int len = (kbch - 80 - padding) / 8;
           if (input_mode == INPUTMODE_HIEFF) {
+        	int len = ((kbch - 80 - padding) / 8);
             for (int j = 0; j < len; j++) {
-              if (count) {
+              if (count == 0) {
+                if (*in != 0x47) {
+                  GR_LOG_WARN(d_logger, "Transport Stream sync error!");
+                }
+                j--;
+                in++;
+              }
+              else {
                 b = *in++;
                 for (int n = 7; n >= 0; n--) {
                   out[offset++] = b & (1 << n) ? 1 : 0;
                 }
               }
-              else {
-				if (*in != 0x47) {
-				  GR_LOG_WARN(d_logger, "Transport Stream sync error!");
-				}
-				j--;
-				in++;
-              }
               count = (count + 1) % 188;
             }
             consumed += len;
 
-            if(inband_type_b == FALSE)
-            	continue;
-
-            if (fec_block == 0) {
+            if (fec_block == 0 && inband_type_b == TRUE) {
               add_inband_type_b(&out[offset], ts_rate);
               offset += 104;
             }
@@ -547,7 +545,7 @@ namespace gr {
             }
             if (fec_block == 0 && inband_type_b == TRUE) {
               add_inband_type_b(&out[offset], ts_rate);
-              offset = offset + 104;
+              offset += 104;
             }
           }
           if (inband_type_b == TRUE) {
