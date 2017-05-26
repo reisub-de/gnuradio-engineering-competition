@@ -2722,9 +2722,6 @@ namespace gr {
       const int size_left_zeros = left_nulls * sizeof(gr_complex);
       const int size_right_zeros = right_nulls * sizeof(gr_complex);
 
-      int remaining_iter = C_PS % 10;
-      int num_iter = C_PS - remaining_iter;
-
       if (N_FC != 0) {
         L_FC = 1;
       }
@@ -2768,46 +2765,7 @@ namespace gr {
           pn_seq_j = pn_sequence[j];
           // Since init_pilots only affects values in the data_carrier_map array, only initialize them here
           init_pilots(j);
-          int n = 0;
-          int p;
-          while (n < num_iter) {
-            memcpy(out, in, 10 * sizeof(gr_complex));
-            p = 0;
-            while (p < 10) {
-              switch (data_carrier_map[n + p]) {
-                case SCATTERED_CARRIER:
-                  memmove(out + 1, out, (9 - p) * sizeof(gr_complex));
-                  in--;
-                  *out = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case SCATTERED_CARRIER_INVERTED:
-                  memmove(out + 1, out, (9 - p) * sizeof(gr_complex));
-                  in--;
-                  *out = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case CONTINUAL_CARRIER:
-                  memmove(out + 1, out, (9 - p) * sizeof(gr_complex));
-                  in--;
-                  *out = cp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case CONTINUAL_CARRIER_INVERTED:
-                  memmove(out + 1, out, (9 - p) * sizeof(gr_complex));
-                  in--;
-                  *out = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_seq_j];
-                  break;
-                case TRPAPR_CARRIER:
-                  memmove(out + 1, out, (9 - p) * sizeof(gr_complex));
-                  in--;
-                  *out = zero;
-                  break;
-              }
-              p++;
-              out++;
-            }
-            in += 10;
-            n += 10;
-          }
-          while (n < C_PS) {
+          for (int n = 0; n < C_PS; n++) {
             switch (data_carrier_map[n]) {
               case SCATTERED_CARRIER:
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_seq_j];
@@ -2823,12 +2781,10 @@ namespace gr {
                 break;
               case TRPAPR_CARRIER:
                 *out++ = zero;
-                break;
               default:
                 *out++ = *in++;
                 break;
             }
-            n++;
           }
           memset(out, 0, size_right_zeros);
           out -=  ofdm_fft_size - right_nulls;
