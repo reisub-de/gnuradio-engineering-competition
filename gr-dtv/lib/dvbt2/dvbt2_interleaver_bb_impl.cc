@@ -428,9 +428,8 @@ namespace gr {
 
 			  // access in[] via in_idx[] array
 			  int *idx = in_idx;
-			  unsigned char *data_idx = &tempu[nbch];
 			  for (int t = 0; t < 25920; t++) {
-				  *data_idx++ = in[*idx++];
+				  tempu[nbch + t] = in[*idx++];
 			  }
               in += (q_val * 360);
 
