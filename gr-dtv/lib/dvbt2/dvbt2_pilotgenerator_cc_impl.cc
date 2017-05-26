@@ -197,11 +197,13 @@ namespace gr {
               C_FC = 544;
               break;
             case PILOT_PP6:
+            case PILOT_PP7:
+            case PILOT_PP8:
               C_DATA = 0;
               N_FC = 0;
               C_FC = 0;
               break;
-            case PILOT_PP7:
+            /*case PILOT_PP7:
               C_DATA = 0;
               N_FC = 0;
               C_FC = 0;
@@ -210,7 +212,7 @@ namespace gr {
               C_DATA = 0;
               N_FC = 0;
               C_FC = 0;
-              break;
+              break; *///smthg wrong can group them as default
           }
           if (paprmode == PAPR_TR || paprmode == PAPR_BOTH) {
             if (C_DATA != 0) {
@@ -252,6 +254,7 @@ namespace gr {
               C_FC = 1088;
               break;
             case PILOT_PP6:
+            case PILOT_PP8:
               C_DATA = 0;
               N_FC = 0;
               C_FC = 0;
@@ -261,11 +264,11 @@ namespace gr {
               N_FC = 1632;
               C_FC = 1396;
               break;
-            case PILOT_PP8:
+            /*case PILOT_PP8:
               C_DATA = 0;
               N_FC = 0;
               C_FC = 0;
-              break;
+              break;*/ //pp6 and pp8 can group together
           }
           if (paprmode == PAPR_TR || paprmode == PAPR_BOTH) {
             if (C_DATA != 0) {
@@ -364,6 +367,7 @@ namespace gr {
                 C_FC = 4354;
                 break;
               case PILOT_PP6:
+              case PILOT_PP8:
                 C_DATA = 0;
                 N_FC = 0;
                 C_FC = 0;
@@ -373,12 +377,12 @@ namespace gr {
                 N_FC = 6532;
                 C_FC = 5585;
                 break;
-              case PILOT_PP8:
+              /*case PILOT_PP8:
                 C_DATA = 6698;
                 N_FC = 0;
                 C_FC = 0;
-                break;
-            }
+                break;*/
+            } // pp6 and pp8 can combine
           }
           else {
             switch (pilotpattern) {
@@ -543,6 +547,8 @@ namespace gr {
           if (carriermode == CARRIERS_NORMAL) {
             switch (pilotpattern) {
               case PILOT_PP1:
+              case PILOT_PP3:
+              case PILOT_PP5:
                 C_DATA = 0;
                 N_FC = 0;
                 C_FC = 0;
@@ -552,21 +558,21 @@ namespace gr {
                 N_FC = 22720;
                 C_FC = 20952;
                 break;
-              case PILOT_PP3:
+              /*case PILOT_PP3:
                 C_DATA = 0;
                 N_FC = 0;
                 C_FC = 0;
-                break;
+                break;*/
               case PILOT_PP4:
                 C_DATA = 26022;
                 N_FC = 24992;
                 C_FC = 22649;
                 break;
-              case PILOT_PP5:
+              /*case PILOT_PP5:
                 C_DATA = 0;
                 N_FC = 0;
                 C_FC = 0;
-                break;
+                break;*/
               case PILOT_PP6:
                 C_DATA = 26592;
                 N_FC = 26128;
@@ -582,11 +588,13 @@ namespace gr {
                 N_FC = 0;
                 C_FC = 0;
                 break;
-            }
+            }// group pp1 pp3 pp5
           }
           else {
             switch (pilotpattern) {
               case PILOT_PP1:
+              case PILOT_PP3:
+              case PILOT_PP5:
                 C_DATA = 0;
                 N_FC = 0;
                 C_FC = 0;
@@ -596,21 +604,21 @@ namespace gr {
                 N_FC = 23200;
                 C_FC = 21395;
                 break;
-              case PILOT_PP3:
+              /*case PILOT_PP3:
                 C_DATA = 0;
                 N_FC = 0;
                 C_FC = 0;
-                break;
+                break;*/
               case PILOT_PP4:
                 C_DATA = 26572;
                 N_FC = 25520;
                 C_FC = 23127;
                 break;
-              case PILOT_PP5:
+              /*case PILOT_PP5:
                 C_DATA = 0;
                 N_FC = 0;
                 C_FC = 0;
-                break;
+                break;*/
               case PILOT_PP6:
                 C_DATA = 27152;
                 N_FC = 26680;
@@ -626,7 +634,7 @@ namespace gr {
                 N_FC = 0;
                 C_FC = 0;
                 break;
-            }
+            }//group pp1 pp3 pp5
           }
           if (paprmode == PAPR_TR || paprmode == PAPR_BOTH) {
             if (C_DATA != 0) {
@@ -641,20 +649,21 @@ namespace gr {
           }
           break;
       }
+//changed if to else-if
       if (miso == FALSE) {
         if (guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) {
           N_FC = 0;
           C_FC = 0;
         }
-        if (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) {
+        else if (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) {
           N_FC = 0;
           C_FC = 0;
         }
-        if (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2) {
+        else if (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2) {
           N_FC = 0;
           C_FC = 0;
         }
-        if (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2) {
+        else if (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2) {
           N_FC = 0;
           C_FC = 0;
         }
@@ -669,7 +678,24 @@ namespace gr {
       else {
         step = 3;
       }
-      for (int i = 0; i < C_PS; i += step) {
+
+      if (miso == TRUE && miso_group == MISO_TX2) {
+        for (int i = 0; i < C_PS; i += step) {
+           if (((i / 3) % 2) && (i % 3 == 0)) {
+            p2_carrier_map[i] = P2PILOT_CARRIER_INVERTED;
+          }
+          else {
+            p2_carrier_map[i] = P2PILOT_CARRIER;
+          }
+      	}
+      }
+      else {
+        for (int i = 0; i < C_PS; i += step) {
+          p2_carrier_map[i] = P2PILOT_CARRIER;
+        }
+      } // replace the code below
+
+      /*for (int i = 0; i < C_PS; i += step) {
         if (miso == TRUE && miso_group == MISO_TX2) {
           if (((i / 3) % 2) && (i % 3 == 0)) {
             p2_carrier_map[i] = P2PILOT_CARRIER_INVERTED;
@@ -681,8 +707,35 @@ namespace gr {
         else {
           p2_carrier_map[i] = P2PILOT_CARRIER;
         }
-      }
+      }*/
+
       if (carriermode == CARRIERS_EXTENDED) {
+        if (miso == TRUE && miso_group == MISO_TX2) {
+	  for (int i = 0; i < K_EXT; i++) {
+		if (((i / 3) % 2) && (i % 3 == 0)) {
+			p2_carrier_map[i] = P2PILOT_CARRIER_INVERTED;
+		}
+		else {
+			p2_carrier_map[i] = P2PILOT_CARRIER;
+		}
+
+		if ((((i + (C_PS - K_EXT)) / 3) % 2) && ((i + (C_PS - K_EXT)) % 3 == 0)) {
+			p2_carrier_map[i + (C_PS - K_EXT)] = P2PILOT_CARRIER_INVERTED;
+		}
+		else {
+			p2_carrier_map[i + (C_PS - K_EXT)] = P2PILOT_CARRIER;
+		}
+	  }
+	}
+	else {
+		for (int i = 0; i < K_EXT; i++) {
+			p2_carrier_map[i] = P2PILOT_CARRIER;
+			p2_carrier_map[i + (C_PS - K_EXT)] = P2PILOT_CARRIER;
+		}
+	}
+      } // replace the block of code below
+
+      /*if (carriermode == CARRIERS_EXTENDED) {
         for (int i = 0; i < K_EXT; i++) {
           if (miso == TRUE && miso_group == MISO_TX2) {
             if (((i / 3) % 2) && (i % 3 == 0)) {
@@ -703,7 +756,8 @@ namespace gr {
             p2_carrier_map[i + (C_PS - K_EXT)] = P2PILOT_CARRIER;
           }
         }
-      }
+      }*/
+
       if (miso == TRUE) {
         p2_carrier_map[K_EXT + 1] = P2PILOT_CARRIER;
         p2_carrier_map[K_EXT + 2] = P2PILOT_CARRIER;
@@ -719,25 +773,25 @@ namespace gr {
             for (int i = 0; i < 10; i++) {
               ki = p2_papr_map_1k[i] + K_EXT;
               if (i < 9) {
-                if (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_1k[i + 1] + K_EXT))) {
+                if (((ki % 3) == 1) || (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_1k[i + 1] + K_EXT)))) {
                   p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 1) {
-                  p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
+                  p2_carrier_map[ki + 1] = P2PILOT_CARRIER; //combine into above
                 }
-              }
+              }*/
               if (i > 0) {
-                if (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_1k[i - 1] + K_EXT))) {
+                if (((ki % 3) == 2) || (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_1k[i - 1] + K_EXT)))) {
                   p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 2) {
-                  p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
+                  p2_carrier_map[ki - 1] = P2PILOT_CARRIER; //combine into above
                 }
-              }
+              }*/
             }
           }
           cp_bpsk[0] = gr_complex(4.0 / 3.0, 0.0);
@@ -753,25 +807,25 @@ namespace gr {
             for (int i = 0; i < 18; i++) {
               ki = p2_papr_map_2k[i] + K_EXT;
               if (i < 17) {
-                if (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_2k[i + 1] + K_EXT))) {
+                if (((ki % 3) == 1) || (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_2k[i + 1] + K_EXT)))) {
                   p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 1) {
                   p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
                 }
-              }
+              }*/
               if (i > 0) {
-                if (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_2k[i - 1] + K_EXT))) {
+                if (((ki % 3) == 2) || (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_2k[i - 1] + K_EXT)))) {
                   p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 2) {
                   p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
                 }
-              }
+              }*/
             }
           }
           cp_bpsk[0] = gr_complex(4.0 / 3.0, 0.0);
@@ -787,25 +841,25 @@ namespace gr {
             for (int i = 0; i < 36; i++) {
               ki = p2_papr_map_4k[i] + K_EXT;
               if (i < 35) {
-                if (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_4k[i + 1] + K_EXT))) {
+                if (((ki % 3) == 1) || (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_4k[i + 1] + K_EXT)))) {
                   p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 1) {
                   p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
                 }
-              }
+              }*/
               if (i > 0) {
-                if (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_4k[i - 1] + K_EXT))) {
+                if (((ki % 3) == 2) || (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_4k[i - 1] + K_EXT)))) {
                   p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 2) {
                   p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
                 }
-              }
+              }*/
             }
           }
           cp_bpsk[0] = gr_complex((4.0 * std::sqrt(2.0)) / 3.0, 0.0);
@@ -822,25 +876,25 @@ namespace gr {
             for (int i = 0; i < 72; i++) {
               ki = p2_papr_map_8k[i] + K_EXT;
               if (i < 71) {
-                if (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_8k[i + 1] + K_EXT))) {
+                if (((ki % 3) == 1) || (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_8k[i + 1] + K_EXT)))) {
                   p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 1) {
                   p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
                 }
-              }
+              }*/
               if (i > 0) {
-                if (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_8k[i - 1] + K_EXT))) {
+                if (((ki % 3) == 2) || (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_8k[i - 1] + K_EXT)))) {
                   p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 2) {
                   p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
                 }
-              }
+              }*/
             }
           }
           cp_bpsk[0] = gr_complex(8.0 / 3.0, 0.0);
@@ -857,25 +911,25 @@ namespace gr {
             for (int i = 0; i < 144; i++) {
               ki = p2_papr_map_16k[i] + K_EXT;
               if (i < 143) {
-                if (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_16k[i + 1] + K_EXT))) {
+                if (((ki % 3) == 1) || (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_16k[i + 1] + K_EXT)))) {
                   p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 1) {
                   p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
                 }
-              }
+              }*/
               if (i > 0) {
-                if (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_16k[i - 1] + K_EXT))) {
+                if (((ki % 3) == 2) || (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_16k[i - 1] + K_EXT)))) {
                   p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 2) {
                   p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
                 }
-              }
+              }*/
             }
           }
           cp_bpsk[0] = gr_complex(8.0 / 3.0, 0.0);
@@ -892,25 +946,25 @@ namespace gr {
             for (int i = 0; i < 288; i++) {
               ki = p2_papr_map_32k[i] + K_EXT;
               if (i < 287) {
-                if (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_32k[i + 1] + K_EXT))) {
+                if (((ki % 3) == 1) || (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_32k[i + 1] + K_EXT)))) {
                   p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 1) {
                   p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
                 }
-              }
+              }*/
               if (i > 0) {
-                if (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_32k[i - 1] + K_EXT))) {
+                if (((ki % 3) == 2) || (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_32k[i - 1] + K_EXT)))) {
                   p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
                 }
               }
-              else {
+              /*else {
                 if ((ki % 3) == 2) {
                   p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
                 }
-              }
+              }*/
             }
           }
           cp_bpsk[0] = gr_complex(8.0 / 3.0, 0.0);
