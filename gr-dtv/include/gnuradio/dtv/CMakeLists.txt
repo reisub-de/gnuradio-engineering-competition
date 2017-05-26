@@ -79,7 +79,6 @@ install(FILES
     catv_randomizer_bb.h
     catv_frame_sync_enc_bb.h
     catv_trellis_enc_bb.h
-
-    DESTINATION ${GR_INCLUDE_DIR}/gnuradio/dtv
+    competition.h DESTINATION ${GR_INCLUDE_DIR}/gnuradio/dtv
     COMPONENT "dtv_devel"
 )
