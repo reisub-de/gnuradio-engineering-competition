@@ -2688,7 +2688,7 @@ namespace gr {
       gr_complex *dst;
       int L_FC = 0;
 
-      int *prbs_idx; // idx pointer
+      //int *prbs_idx; // idx pointer
 
       zero = gr_complex(0.0, 0.0);
       if (N_FC != 0) {
@@ -2703,13 +2703,12 @@ namespace gr {
             }*/
             memset(out, 0, sizeof(gr_complex)*left_nulls);    // Added
             out += left_nulls;
-            prbs_idx = prbs + K_OFFSET;
             for (int n = 0; n < C_PS; n++) {
               if (p2_carrier_map[n] == P2PILOT_CARRIER) {
-                *out++ = p2_bpsk[*prbs_idx++ ^ pn_sequence[j]];
+                *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (p2_carrier_map[n] == P2PILOT_CARRIER_INVERTED) {
-                *out++ = p2_bpsk_inverted[*prbs_idx++ ^ pn_sequence[j]];
+                *out++ = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (p2_carrier_map[n] == P2PAPR_CARRIER) {
                 *out++ = zero;
@@ -2730,13 +2729,12 @@ namespace gr {
             }*/
             memset(out, 0, sizeof(gr_complex)*left_nulls);    // Added
             out += left_nulls;
-            prbs_idx = prbs + K_OFFSET;
             for (int n = 0; n < C_PS; n++) {
               if (fc_carrier_map[n] == SCATTERED_CARRIER) {
-                *out++ = sp_bpsk[*prbs_idx++ ^ pn_sequence[j]];
+                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (fc_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
-                *out++ = sp_bpsk_inverted[*prbs_idx++ ^ pn_sequence[j]];
+                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (fc_carrier_map[n] == TRPAPR_CARRIER) {
                 *out++ = zero;
@@ -2757,19 +2755,18 @@ namespace gr {
             }*/
             memset(out, 0, sizeof(gr_complex)*left_nulls);    // Added
             out += left_nulls;
-            prbs_idx = prbs + K_OFFSET;
             for (int n = 0; n < C_PS; n++) {
               if (data_carrier_map[n] == SCATTERED_CARRIER) {
-                *out++ = sp_bpsk[*prbs_idx++ ^ pn_sequence[j]];
+                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
-                *out++ = sp_bpsk_inverted[*prbs_idx++ ^ pn_sequence[j]];
+                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (data_carrier_map[n] == CONTINUAL_CARRIER) {
-                *out++ = cp_bpsk[*prbs_idx++ ^ pn_sequence[j]];
+                *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
-                *out++ = cp_bpsk_inverted[*prbs_idx++ ^ pn_sequence[j]];
+                *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (data_carrier_map[n] == TRPAPR_CARRIER) {
                 *out++ = zero;
