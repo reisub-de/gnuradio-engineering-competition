@@ -45,8 +45,8 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(gr_complex) * vlength))
     {
       int step, ki;
-      double x, sinc, sincrms = 0.0;
-      double fs, fstep, f = 0.0;
+      float x, sinc, sincrms = 0.0;
+      float fs, fstep, f = 0.0;
       miso_group = misogroup;
       if ((preamble == PREAMBLE_T2_SISO) || (preamble == PREAMBLE_T2_LITE_SISO)) {
         miso = FALSE;
@@ -1112,18 +1112,19 @@ namespace gr {
           break;
       }
       fstep = fs / vlength;
-      for (int i = 0; i < vlength / 2; i++) {
+      x = M_PI * f / fs;
+      sinc = 1.0;
+      sincrms += sinc * sinc;
+      inverse_sinc[i + (vlength / 2)] = gr_complex(1.0 / sinc, 0.0);
+      inverse_sinc[(vlength / 2) - i - 1] = gr_complex(1.0 / sinc, 0.0);
+      f += fstep;
+      for (int i = 1; i < vlength / 2; i++) {
         x = M_PI * f / fs;
-        if (i == 0) {
-          sinc = 1.0;
-        }
-        else {
-          sinc = sin(x) / x;
-        }
+        sinc = sin(x) / x;
         sincrms += sinc * sinc;
         inverse_sinc[i + (vlength / 2)] = gr_complex(1.0 / sinc, 0.0);
         inverse_sinc[(vlength / 2) - i - 1] = gr_complex(1.0 / sinc, 0.0);
-        f = f + fstep;
+        f += fstep;
       }
       sincrms = std::sqrt(sincrms / (vlength / 2));
       for (int i = 0; i < vlength; i++) {
@@ -2630,11 +2631,12 @@ namespace gr {
       } // end switch fft_size
 
       int certain_remainder = dx * (symbol % dy);
+      int dx_dy_prod = dx * dy;
       if (isMISO_TX2) {
         for (int i = 0; i < C_PS; i++) {
-          remainder = (i - K_EXT) % (dx * dy);
+          remainder = (i - K_EXT) % dx_dy_prod;
           if (remainder < 0) {
-            remainder += (dx * dy);
+            remainder += dx_dy_prod;
           }
           if (remainder == certain_remainder) {
             if ((i / dx) % 2) {
@@ -2645,11 +2647,20 @@ namespace gr {
             }
           }
         }
+        if (symbol % 2) {
+          data_carrier_map[0] = SCATTERED_CARRIER_INVERTED;
+          data_carrier_map[C_PS - 1] = SCATTERED_CARRIER_INVERTED;
+        }
+        else {
+          data_carrier_map[0] = SCATTERED_CARRIER;
+          data_carrier_map[C_PS - 1] = SCATTERED_CARRIER;
+        }
       }
       else {
+        // Optimization based on mathematical structure
+        // of modulo operator
         int i = -K_EXT;
         int iter_limit = C_PS - K_EXT;
-        int dx_dy_prod = dx * dy;
         while (i < iter_limit) {
           remainder = i % dx_dy_prod;
           if (remainder < 0) {
@@ -2663,18 +2674,6 @@ namespace gr {
           }
           i++;
         }
-      }
-      if (isMISO_TX2) {
-        if (symbol % 2) {
-          data_carrier_map[0] = SCATTERED_CARRIER_INVERTED;
-          data_carrier_map[C_PS - 1] = SCATTERED_CARRIER_INVERTED;
-        }
-        else {
-          data_carrier_map[0] = SCATTERED_CARRIER;
-          data_carrier_map[C_PS - 1] = SCATTERED_CARRIER;
-        }
-      }
-      else {
         data_carrier_map[0] = SCATTERED_CARRIER;
         data_carrier_map[C_PS - 1] = SCATTERED_CARRIER;
       }
