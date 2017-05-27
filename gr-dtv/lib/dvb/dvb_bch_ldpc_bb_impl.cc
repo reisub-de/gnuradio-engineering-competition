@@ -712,17 +712,20 @@ namespace gr {
       // ninput_items_required[0] = (noutput_items / frame_size) * nbch;
     }
 
+    //Every 'im' needs to be bch'd only once!
     #define LDPC_BF(TABLE_NAME, ROWS) \
     for (int row = 0; row < ROWS; row++) { \
       for (int n = 0; n < 360; n++) { \
         for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
-          ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
-          ldpc_encode.d[index] = im; \
+          ldpc_encode.item[index].bch = (col == 1); \
+          ldpc_encode.item[index].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+          ldpc_encode.item[index].d = im; \
           index++; \
         } \
         im++; \
       } \
     }
+
 
     void
     dvb_bch_ldpc_bb_impl::ldpc_lookup_generate(void)
@@ -939,18 +942,18 @@ namespace gr {
     int
     dvb_bch_ldpc_bb_impl::general_work_ldpc (int noutput_items,
                        gr_vector_int &ninput_items,
-                       unsigned char *in,
+                       unsigned char *in_ldpc,
                        gr_vector_void_star &output_items)
     {
-      unsigned char *out = (unsigned char *) output_items[0];
+      unsigned char *out_ldpc = (unsigned char *) output_items[0];
       const unsigned char *d;
       unsigned char *p;
       unsigned char *b = (unsigned char *) output_items[0];
       unsigned char *s;
       // Calculate the number of parity bits
       int plen = (frame_size_real + Xp) - nbch;
-      d = in;
-      p = &out[nbch];
+      d = in_ldpc;
+      p = &out_ldpc[nbch];
       int consumed = 0;
       int puncture, index;
 
@@ -958,46 +961,26 @@ namespace gr {
         if (Xs != 0) {
           s = &shortening_buffer[0];
           memset(s, 0, sizeof(unsigned char) * Xs);
-          memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
+          memcpy(&s[Xs], &in_ldpc[consumed], sizeof(unsigned char) * nbch);
           d = s;
         }
         if (P != 0) {
           p = &puncturing_buffer[nbch];
-          b = &out[i + nbch];
+          b = &out_ldpc[i + nbch];
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
 
-		//use memcpy instead of the for loop
-		memcpy(&out[i],&in[consumed],sizeof(unsigned char) * (int)nbch);
-		consumed += (int)nbch;
+        //use memcpy instead of the for loop
+        memcpy(&out_ldpc[i],&in_ldpc[consumed],sizeof(unsigned char) * (int)nbch);
+        consumed += (int)nbch;
 
-
-
-
-		//__m256i in_m256i = _mm256_set_epi64(&in[consumed],&in[consumed + 16]);
-		//__m256i out_m256i = _mm256_set_epi64(&out[i], &out[i+16]);
-
-		//nbch = 38880;
-		// frame_size = 64800;
-
-		/*__m256i *in_m256i;
-		for (unsigned int loop_i = 0; loop_i< nbch / 32; loop_i++) {//1215
-			in_m256i = (__m256i*)&in[consumed];
-			_mm256_store_si256((__m256i*)&out[i+32*loop_i], *in_m256i);
-			consumed += (int)32;
-		}*/
-
-        //for (int j = 0; j < (int)nbch; j++) {
-        //  out[i + j] = in[consumed];
-        //  consumed++;
-        //}
-
-
+        //nbch = 38880;
+        // frame_size = 64800;
 
         // now do the parity checking
         for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+          p[ldpc_encode.item[j].p] ^= d[ldpc_encode.item[j].d];
         }
         if (P != 0) {
           puncture = 0;
@@ -1014,13 +997,14 @@ namespace gr {
               b[index++] = p[j];
             }
           }
-          p = &out[nbch];
+          p = &out_ldpc[nbch];
         }
 
 
-		for (int j = 1; j < (plen - Xp); j++) {
-			p[j] ^= p[j - 1];
+        for (int j = 1; j < (plen - Xp); j++) {
+          p[j] ^= p[j - 1];
         }
+
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
             p[j + plen] = 0;
@@ -1030,13 +1014,672 @@ namespace gr {
         p += frame_size;
       }
 
+      // Tell runtime system how many output items we produced.
+      return noutput_items;
+    }
+
+
+    /*
+     * Polynomial calculation routines
+     * multiply polynomials
+     */
+    int
+    dvb_bch_ldpc_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
+    {
+
+
+      memset(out, 0, sizeof(int) * (lena + lenb));
+
+      for (int i = 0; i < lena; i++) {
+        for (int j = 0; j < lenb; j++) {
+          if (ina[i] * inb[j] > 0 ) {
+            out[i + j]++;    // count number of terms for this pwr of x
+          }
+        }
+      }
+      int max = 0;
+      for (int i = 0; i < lena + lenb; i++) {
+        out[i] = out[i] & 1;    // If even ignore the term
+        if(out[i]) {
+          max = i;
+        }
+      }
+      // return the size of array to house the result.
+      return max + 1;
+    }
+
+    /*
+     * Pack the polynomial into a 32 bit array
+     */
+    void
+    dvb_bch_ldpc_bb_impl::poly_pack(const int *pin, unsigned int* pout, int len)
+    {
+      int lw = len / 32;
+      int ptr = 0;
+      unsigned int temp;
+      if (len % 32) {
+        lw++;
+      }
+
+      for (int i = 0; i < lw; i++) {
+        temp = 0x80000000;
+        pout[i] = 0;
+        for (int j = 0; j < 32; j++) {
+          if (pin[ptr++]) {
+            pout[i] |= temp;
+          }
+          temp >>= 1;
+        }
+      }
+    }
+
+    void
+    dvb_bch_ldpc_bb_impl::poly_reverse(int *pin, int *pout, int len)
+    {
+      int c;
+      c = len - 1;
+
+      for (int i = 0; i < len; i++) {
+        pout[c--] = pin[i];
+      }
+    }
+
+    /*
+     *Shift a 128 bit register
+     */
+    inline void
+    dvb_bch_ldpc_bb_impl::reg_4_shift(unsigned int *sr)
+    {
+      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
+      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
+      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
+      sr[0] = (sr[0] >> 1);
+    }
+
+    /*
+     * Shift 160 bits
+     */
+    inline void
+    dvb_bch_ldpc_bb_impl::reg_5_shift(unsigned int *sr)
+    {
+      sr[4] = (sr[4] >> 1) | (sr[3] << 31);
+      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
+      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
+      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
+      sr[0] = (sr[0] >> 1);
+    }
+
+    /*
+     * Shift 192 bits
+     */
+    inline void
+    dvb_bch_ldpc_bb_impl::reg_6_shift(unsigned int *sr)
+    {
+      sr[5] = (sr[5] >> 1) | (sr[4] << 31);
+      sr[4] = (sr[4] >> 1) | (sr[3] << 31);
+      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
+      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
+      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
+      sr[0] = (sr[0] >> 1);
+    }
+
+    #if defined(__AVX2__)
+        //Modified from http://stackoverflow.com/questions/25248766/emulating-shifts-on-32-bytes-with-avx
+        //----------------------------------------------------------------------------
+        // bit shift right a 256-bit value using ymm registers
+        //          __m256i *data - data to shift
+        //          int count     - number of bits to shift
+        // return:  __m256i       - carry out bit(s)
+        inline bool dvb_bch_ldpc_bb_impl::bitShiftRight256ymm (__m256i *data, int count)
+           {
+           __m256i innerCarry, carryOut, rotate;
+
+           //innerCarry = _mm256_set_epi32(0,1,2,4,8,16,64,128);
+
+           innerCarry = _mm256_slli_epi64 (*data, 64 - count);                        // carry outs in bit (64-count) of each qword
+           rotate     = _mm256_permute4x64_epi64 (innerCarry, 0b00111001);            // rotate ymm RIGHT 64 bits (left was 0x93=0b10 01 00 11). Crosslane operation, may be slow
+           //innerCarry = _mm256_blend_epi32 (_mm256_setzero_si256 (), rotate, 0xFC); // clear highest qword
+           //blend chooses from either first or second operand, depending on third.
+           //0xFC is 0b11111100 (left) --> modify to 0b00111111 (right)
+           innerCarry = _mm256_blend_epi32 (_mm256_setzero_si256 (), rotate, 0b00111111);
+           *data      = _mm256_srli_epi64 (*data, count);                             // shift all qwords left
+           *data      = _mm256_or_si256 (*data, innerCarry);                          // propagate carrys
+           carryOut   = _mm256_xor_si256 (innerCarry, rotate);                        // clear all except highest qword
+           return !_mm256_testz_si256(carryOut,carryOut); //p1 & p2 == 0
+           }
+
+        //----------------------------------------------------------------------------
+
+        //http://stackoverflow.com/questions/746171/best-algorithm-for-bit-reversal-from-msb-lsb-to-lsb-msb-in-c
+        //not needed
+        inline unsigned int
+        dvb_bch_ldpc_bb_impl::reverse(register unsigned int x)
+        {
+            x = (((x & 0xaaaaaaaa) >> 1) | ((x & 0x55555555) << 1));
+            x = (((x & 0xcccccccc) >> 2) | ((x & 0x33333333) << 2));
+            x = (((x & 0xf0f0f0f0) >> 4) | ((x & 0x0f0f0f0f) << 4));
+            x = (((x & 0xff00ff00) >> 8) | ((x & 0x00ff00ff) << 8));
+            return((x >> 16) | (x << 16));
+        }
+    #endif
+
+    int
+    dvb_bch_ldpc_bb_impl::general_work_bch (int noutput_items,
+                       gr_vector_int &ninput_items,
+                       gr_vector_const_void_star &input_items,
+                       unsigned char *out_bch)
+    {
+      const unsigned char *in_bch = (const unsigned char *) input_items[0];
+      unsigned char b, temp;
+      unsigned int shift[6];
+      int consumed = 0;
+
+      #if defined(__AVX2__)
+      //Should do this only once, but causes segfault..
+      __m256i m_256_poly_n_12 = _mm256_set_epi32(0,
+                                                0,
+                                                m_poly_n_12[0],
+                                                m_poly_n_12[1],
+                                                m_poly_n_12[2],
+                                                m_poly_n_12[3],
+                                                m_poly_n_12[4],
+                                                m_poly_n_12[5]);
+      #endif
+
+      switch (bch_code) {
+        case BCH_CODE_N12:
+          //TODO: Make this pretty, use VOLK
+          #if defined(__AVX2__)
+          //#if false
+            #warning "USING AVX2"
+            {
+            for (int i = 0; i < noutput_items; i += nbch) {
+              //Zero the shift register
+              __m256i shift_vector = _mm256_setzero_si256();
+              // MSB of the codeword first
+              for (int j = 0; j < (int)kbch; j++) {
+                temp = *in_bch++;
+                *out_bch++ = temp;
+                bool carry = bitShiftRight256ymm(&shift_vector,1);
+                b = temp ^ carry; //(((int*) &carry)[7] != 0);
+                if (b) {
+                  shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
+                }
+              }
+              // Now add the parity bits to the output
+
+              //for (int n = 0; n < 192; n++) {
+              //  __m256i carry = bitShiftRight256ymm(&shift_vector,1);
+              //  *out_bch++ = (((int*) &carry)[7] != 0);
+              //}
+              //More efficient:
+              for(int n = 0; n < 6; n++) {
+                unsigned int shift_int = (((unsigned int*)&shift_vector)[n]);
+                for(int m = 0; m < 32; m++) {
+                  *out_bch++ = (char)(shift_int & 1);
+                  shift_int >>= 1;
+                }
+              }
+            }
+            consumed += (int)kbch;
+          }
+          #else
+            #warning "NOT USING AVX2"
+            for (int i = 0; i < noutput_items; i += nbch) {
+              //Zero the shift register
+              memset(shift, 0, sizeof(unsigned int) * 6);
+              // MSB of the codeword first
+              for (int j = 0; j < (int)kbch; j++) {
+                temp = *in_bch++;
+                *out_bch++ = temp;
+                consumed++;
+                b = (temp ^ (shift[5] & 1));
+                reg_6_shift(shift);
+                if (b) {
+                  shift[0] ^= m_poly_n_12[0];
+                  shift[1] ^= m_poly_n_12[1];
+                  shift[2] ^= m_poly_n_12[2];
+                  shift[3] ^= m_poly_n_12[3];
+                  shift[4] ^= m_poly_n_12[4];
+                  shift[5] ^= m_poly_n_12[5];
+                }
+              }
+              // Now add the parity bits to the output
+              /*for (int n = 0; n < 192; n++) {
+                *out_bch++ = (shift[5] & 1);
+                reg_6_shift(shift);
+              }*/
+              for(int n = 0; n < 6; n++) {
+                unsigned int shift_int = shift[5-n];
+                for(int m = 0; m < 32; m++) {
+                  *out_bch++ = (char)(shift_int & 1);
+                  shift_int >>= 1;
+                }
+              }
+            }
+          #endif
+
+          break;
+        case BCH_CODE_N10:
+          for (int i = 0; i < noutput_items; i += nbch) {
+            //Zero the shift register
+            memset(shift, 0, sizeof(unsigned int) * 5);
+            // MSB of the codeword first
+            for (int j = 0; j < (int)kbch; j++) {
+              temp = *in_bch++;
+              *out_bch++ = temp;
+              consumed++;
+              b = (temp ^ (shift[4] & 1));
+              reg_5_shift(shift);
+              if (b) {
+                shift[0] ^= m_poly_n_10[0];
+                shift[1] ^= m_poly_n_10[1];
+                shift[2] ^= m_poly_n_10[2];
+                shift[3] ^= m_poly_n_10[3];
+                shift[4] ^= m_poly_n_10[4];
+              }
+            }
+            // Now add the parity bits to the output
+            for( int n = 0; n < 160; n++ ) {
+              *out_bch++ = (shift[4] & 1);
+              reg_5_shift(shift);
+            }
+          }
+          break;
+        case BCH_CODE_N8:
+          for (int i = 0; i < noutput_items; i += nbch) {
+            //Zero the shift register
+            memset(shift, 0, sizeof(unsigned int) * 4);
+            // MSB of the codeword first
+            for (int j = 0; j < (int)kbch; j++) {
+              temp = *in_bch++;
+              *out_bch++ = temp;
+              consumed++;
+              b = temp ^ (shift[3] & 1);
+              reg_4_shift(shift);
+              if (b) {
+                shift[0] ^= m_poly_n_8[0];
+                shift[1] ^= m_poly_n_8[1];
+                shift[2] ^= m_poly_n_8[2];
+                shift[3] ^= m_poly_n_8[3];
+              }
+            }
+            // Now add the parity bits to the output
+            for (int n = 0; n < 128; n++) {
+              *out_bch++ = shift[3] & 1;
+              reg_4_shift(shift);
+            }
+          }
+          break;
+        case BCH_CODE_S12:
+          for (int i = 0; i < noutput_items; i += nbch) {
+            //Zero the shift register
+            memset(shift, 0, sizeof(unsigned int) * 6);
+            // MSB of the codeword first
+            for (int j = 0; j < (int)kbch; j++) {
+              temp = *in_bch++;
+              *out_bch++ = temp;
+              consumed++;
+              b = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
+              reg_6_shift(shift);
+              if (b) {
+                shift[0] ^= m_poly_s_12[0];
+                shift[1] ^= m_poly_s_12[1];
+                shift[2] ^= m_poly_s_12[2];
+                shift[3] ^= m_poly_s_12[3];
+                shift[4] ^= m_poly_s_12[4];
+                shift[5] ^= m_poly_s_12[5];
+              }
+            }
+            // Now add the parity bits to the output
+            for (int n = 0; n < 168; n++) {
+              *out_bch++ = (shift[5] & 0x01000000) ? 1 : 0;
+              reg_6_shift(shift);
+            }
+          }
+          break;
+        case BCH_CODE_M12:
+          for (int i = 0; i < noutput_items; i += nbch) {
+            //Zero the shift register
+            memset(shift, 0, sizeof(unsigned int) * 6);
+            // MSB of the codeword first
+            for (int j = 0; j < (int)kbch; j++) {
+              temp = *in_bch++;
+              *out_bch++ = temp;
+              consumed++;
+              b = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
+              reg_6_shift(shift);
+              if (b) {
+                shift[0] ^= m_poly_m_12[0];
+                shift[1] ^= m_poly_m_12[1];
+                shift[2] ^= m_poly_m_12[2];
+                shift[3] ^= m_poly_m_12[3];
+                shift[4] ^= m_poly_m_12[4];
+                shift[5] ^= m_poly_m_12[5];
+              }
+            }
+            // Now add the parity bits to the output
+            for (int n = 0; n < 180; n++) {
+              *out_bch++ = (shift[5] & 0x00001000) ? 1 : 0;
+              reg_6_shift(shift);
+            }
+          }
+          break;
+      }
+
       // Tell runtime system how many input items we consumed on
       // each input stream.
-      // consume_each (consumed);
+      // consume_each ((int) kbch);
 
       // Tell runtime system how many output items we produced.
       return noutput_items;
     }
+
+
+    int
+    dvb_bch_ldpc_bb_impl::general_work (int noutput_items,
+                       gr_vector_int &ninput_items,
+                       gr_vector_const_void_star &input_items,
+                       gr_vector_void_star &output_items)
+    {
+        //(noutput_items / nbch) * kbch
+        //noutput_items == multiple of frame_size
+        //frame_size = Nldpc = kldpc + parity bits
+        //ldpc input = kldpc = nbch
+        //nbch = kbch + parity bits
+        //gr_vector_void_star temp_items = (gr_vector_void_star)malloc(sizeof(char)*);
+        //gr_vector_void_star temp_items(noutput_items);
+        //temp_items.reserve(noutput_items/frame_size*nbch);
+
+
+
+        //general_work_bch(noutput_items/frame_size*kbch, ninput_items, input_items, temp_items);
+
+        const unsigned char *in_bch = (const unsigned char *) input_items[0];
+        unsigned char b_bch, temp;
+        unsigned int shift[6];
+        int consumed = 0;
+        int noutput_items_bch = noutput_items/frame_size*nbch; //TODO: ==??
+
+        unsigned char *out_bch = (unsigned char*) malloc(sizeof(unsigned char)*noutput_items);
+        unsigned char *in_ldpc = out_bch;
+
+        #if defined(__AVX2__)
+        //Should do this only once, but causes segfault..
+        __m256i m_256_poly_n_12 = _mm256_set_epi32(0,
+                                                  0,
+                                                  m_poly_n_12[0],
+                                                  m_poly_n_12[1],
+                                                  m_poly_n_12[2],
+                                                  m_poly_n_12[3],
+                                                  m_poly_n_12[4],
+                                                  m_poly_n_12[5]);
+        #endif
+
+        switch (bch_code) {
+          case BCH_CODE_N12:
+            //TODO: Make this pretty, use VOLK
+            #if defined(__AVX2__)
+            //#if false
+              #warning "USING AVX2"
+              {
+              for (int i = 0; i < noutput_items_bch; i += nbch) {
+                //Zero the shift register
+                __m256i shift_vector = _mm256_setzero_si256();
+                // MSB of the codeword first
+                for (int j = 0; j < (int)kbch; j++) {
+                  temp = *in_bch++;
+                  *out_bch++ = temp;
+                  bool carry = bitShiftRight256ymm(&shift_vector,1);
+                  b_bch = temp ^ carry; //(((int*) &carry)[7] != 0);
+                  if (b_bch) {
+                    shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
+                  }
+                }
+                // Now add the parity bits to the output
+
+                //for (int n = 0; n < 192; n++) {
+                //  __m256i carry = bitShiftRight256ymm(&shift_vector,1);
+                //  *out_bch++ = (((int*) &carry)[7] != 0);
+                //}
+                //More efficient:
+                for(int n = 0; n < 6; n++) {
+                  unsigned int shift_int = (((unsigned int*)&shift_vector)[n]);
+                  for(int m = 0; m < 32; m++) {
+                    *out_bch++ = (char)(shift_int & 1);
+                    shift_int >>= 1;
+                  }
+                }
+              }
+              consumed += (int)kbch;
+            }
+            #else
+              #warning "NOT USING AVX2"
+              for (int i = 0; i < noutput_items_bch; i += nbch) {
+                //Zero the shift register
+                memset(shift, 0, sizeof(unsigned int) * 6);
+                // MSB of the codeword first
+                for (int j = 0; j < (int)kbch; j++) {
+                  temp = *in_bch++;
+                  *out_bch++ = temp;
+                  consumed++;
+                  b_bch = (temp ^ (shift[5] & 1));
+                  reg_6_shift(shift);
+                  if (b_bch) {
+                    shift[0] ^= m_poly_n_12[0];
+                    shift[1] ^= m_poly_n_12[1];
+                    shift[2] ^= m_poly_n_12[2];
+                    shift[3] ^= m_poly_n_12[3];
+                    shift[4] ^= m_poly_n_12[4];
+                    shift[5] ^= m_poly_n_12[5];
+                  }
+                }
+                // Now add the parity bits to the output
+                /*for (int n = 0; n < 192; n++) {
+                  *out_bch++ = (shift[5] & 1);
+                  reg_6_shift(shift);
+                }*/
+                for(int n = 0; n < 6; n++) {
+                  unsigned int shift_int = shift[5-n];
+                  for(int m = 0; m < 32; m++) {
+                    *out_bch++ = (char)(shift_int & 1);
+                    shift_int >>= 1;
+                  }
+                }
+              }
+            #endif
+
+            break;
+          case BCH_CODE_N10:
+            for (int i = 0; i < noutput_items_bch; i += nbch) {
+              //Zero the shift register
+              memset(shift, 0, sizeof(unsigned int) * 5);
+              // MSB of the codeword first
+              for (int j = 0; j < (int)kbch; j++) {
+                temp = *in_bch++;
+                *out_bch++ = temp;
+                consumed++;
+                b_bch = (temp ^ (shift[4] & 1));
+                reg_5_shift(shift);
+                if (b_bch) {
+                  shift[0] ^= m_poly_n_10[0];
+                  shift[1] ^= m_poly_n_10[1];
+                  shift[2] ^= m_poly_n_10[2];
+                  shift[3] ^= m_poly_n_10[3];
+                  shift[4] ^= m_poly_n_10[4];
+                }
+              }
+              // Now add the parity bits to the output
+              for( int n = 0; n < 160; n++ ) {
+                *out_bch++ = (shift[4] & 1);
+                reg_5_shift(shift);
+              }
+            }
+            break;
+          case BCH_CODE_N8:
+            for (int i = 0; i < noutput_items_bch; i += nbch) {
+              //Zero the shift register
+              memset(shift, 0, sizeof(unsigned int) * 4);
+              // MSB of the codeword first
+              for (int j = 0; j < (int)kbch; j++) {
+                temp = *in_bch++;
+                *out_bch++ = temp;
+                consumed++;
+                b_bch = temp ^ (shift[3] & 1);
+                reg_4_shift(shift);
+                if (b_bch) {
+                  shift[0] ^= m_poly_n_8[0];
+                  shift[1] ^= m_poly_n_8[1];
+                  shift[2] ^= m_poly_n_8[2];
+                  shift[3] ^= m_poly_n_8[3];
+                }
+              }
+              // Now add the parity bits to the output
+              for (int n = 0; n < 128; n++) {
+                *out_bch++ = shift[3] & 1;
+                reg_4_shift(shift);
+              }
+            }
+            break;
+          case BCH_CODE_S12:
+            for (int i = 0; i < noutput_items_bch; i += nbch) {
+              //Zero the shift register
+              memset(shift, 0, sizeof(unsigned int) * 6);
+              // MSB of the codeword first
+              for (int j = 0; j < (int)kbch; j++) {
+                temp = *in_bch++;
+                *out_bch++ = temp;
+                consumed++;
+                b_bch = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
+                reg_6_shift(shift);
+                if (b_bch) {
+                  shift[0] ^= m_poly_s_12[0];
+                  shift[1] ^= m_poly_s_12[1];
+                  shift[2] ^= m_poly_s_12[2];
+                  shift[3] ^= m_poly_s_12[3];
+                  shift[4] ^= m_poly_s_12[4];
+                  shift[5] ^= m_poly_s_12[5];
+                }
+              }
+              // Now add the parity bits to the output
+              for (int n = 0; n < 168; n++) {
+                *out_bch++ = (shift[5] & 0x01000000) ? 1 : 0;
+                reg_6_shift(shift);
+              }
+            }
+            break;
+          case BCH_CODE_M12:
+            for (int i = 0; i < noutput_items_bch; i += nbch) {
+              //Zero the shift register
+              memset(shift, 0, sizeof(unsigned int) * 6);
+              // MSB of the codeword first
+              for (int j = 0; j < (int)kbch; j++) {
+                temp = *in_bch++;
+                *out_bch++ = temp;
+                consumed++;
+                b_bch = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
+                reg_6_shift(shift);
+                if (b_bch) {
+                  shift[0] ^= m_poly_m_12[0];
+                  shift[1] ^= m_poly_m_12[1];
+                  shift[2] ^= m_poly_m_12[2];
+                  shift[3] ^= m_poly_m_12[3];
+                  shift[4] ^= m_poly_m_12[4];
+                  shift[5] ^= m_poly_m_12[5];
+                }
+              }
+              // Now add the parity bits to the output
+              for (int n = 0; n < 180; n++) {
+                *out_bch++ = (shift[5] & 0x00001000) ? 1 : 0;
+                reg_6_shift(shift);
+              }
+            }
+            break;
+        }
+
+
+
+
+
+        //general_work_ldpc(noutput_items, ninput_items, temp_items, output_items);
+
+        unsigned char *out_ldpc = (unsigned char *) output_items[0];
+        const unsigned char *d;
+        unsigned char *p;
+        unsigned char *b = (unsigned char *) output_items[0];
+        unsigned char *s;
+        // Calculate the number of parity bits
+        int plen = (frame_size_real + Xp) - nbch;
+        d = in_ldpc;
+        p = &out_ldpc[nbch];
+        consumed = 0;
+        int puncture, index;
+
+        for (int i = 0; i < noutput_items; i += frame_size) {
+          if (Xs != 0) {
+            s = &shortening_buffer[0];
+            memset(s, 0, sizeof(unsigned char) * Xs);
+            memcpy(&s[Xs], &in_ldpc[consumed], sizeof(unsigned char) * nbch);
+            d = s;
+          }
+          if (P != 0) {
+            p = &puncturing_buffer[nbch];
+            b = &out_ldpc[i + nbch];
+          }
+
+          // First zero all the parity bits
+          memset(p, 0, sizeof(unsigned char) * plen);
+
+          //use memcpy instead of the for loop
+          memcpy(&out_ldpc[i],&in_ldpc[consumed],sizeof(unsigned char) * (int)nbch);
+          consumed += (int)nbch;
+
+          //nbch = 38880;
+          // frame_size = 64800;
+
+          // now do the parity checking
+          for (int j = 0; j < ldpc_encode.table_length; j++) {
+            p[ldpc_encode.item[j].p] ^= d[ldpc_encode.item[j].d];
+          }
+          if (P != 0) {
+            puncture = 0;
+            for (int j = 0; j < plen; j += P) {
+              p[j] = 0x55;
+              puncture++;
+              if (puncture == Xp) {
+                break;
+              }
+            }
+            index = 0;
+            for (int j = 0; j < plen; j++) {
+              if (p[j] != 0x55) {
+                b[index++] = p[j];
+              }
+            }
+            p = &out_ldpc[nbch];
+          }
+
+
+          for (int j = 1; j < (plen - Xp); j++) {
+            p[j] ^= p[j - 1];
+          }
+
+          if (signal_constellation == MOD_128APSK) {
+            for (int j = 0; j < 6; j++) {
+              p[j + plen] = 0;
+            }
+          }
+          d += nbch;
+          p += frame_size;
+        }
+
+
+
+        //free(out_bch);
+        consume_each ((int) kbch);
+        return noutput_items;
+    }
+
 
     const int dvb_bch_ldpc_bb_impl::ldpc_tab_1_4N[45][13]=
     {
@@ -5811,115 +6454,6 @@ namespace gr {
     };
 
 
-
-
-///////////////////////////////////////////////////////////////////////////
-
-
-    /*
-     * Polynomial calculation routines
-     * multiply polynomials
-     */
-    int
-    dvb_bch_ldpc_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
-    {
-
-
-      memset(out, 0, sizeof(int) * (lena + lenb));
-
-      for (int i = 0; i < lena; i++) {
-        for (int j = 0; j < lenb; j++) {
-          if (ina[i] * inb[j] > 0 ) {
-            out[i + j]++;    // count number of terms for this pwr of x
-          }
-        }
-      }
-      int max = 0;
-      for (int i = 0; i < lena + lenb; i++) {
-        out[i] = out[i] & 1;    // If even ignore the term
-        if(out[i]) {
-          max = i;
-        }
-      }
-      // return the size of array to house the result.
-      return max + 1;
-    }
-
-    /*
-     * Pack the polynomial into a 32 bit array
-     */
-    void
-    dvb_bch_ldpc_bb_impl::poly_pack(const int *pin, unsigned int* pout, int len)
-    {
-      int lw = len / 32;
-      int ptr = 0;
-      unsigned int temp;
-      if (len % 32) {
-        lw++;
-      }
-
-      for (int i = 0; i < lw; i++) {
-        temp = 0x80000000;
-        pout[i] = 0;
-        for (int j = 0; j < 32; j++) {
-          if (pin[ptr++]) {
-            pout[i] |= temp;
-          }
-          temp >>= 1;
-        }
-      }
-    }
-
-    void
-    dvb_bch_ldpc_bb_impl::poly_reverse(int *pin, int *pout, int len)
-    {
-      int c;
-      c = len - 1;
-
-      for (int i = 0; i < len; i++) {
-        pout[c--] = pin[i];
-      }
-    }
-
-    /*
-     *Shift a 128 bit register
-     */
-    inline void
-    dvb_bch_ldpc_bb_impl::reg_4_shift(unsigned int *sr)
-    {
-      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
-      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
-      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
-      sr[0] = (sr[0] >> 1);
-    }
-
-    /*
-     * Shift 160 bits
-     */
-    inline void
-    dvb_bch_ldpc_bb_impl::reg_5_shift(unsigned int *sr)
-    {
-      sr[4] = (sr[4] >> 1) | (sr[3] << 31);
-      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
-      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
-      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
-      sr[0] = (sr[0] >> 1);
-    }
-
-    /*
-     * Shift 192 bits
-     */
-    inline void
-    dvb_bch_ldpc_bb_impl::reg_6_shift(unsigned int *sr)
-    {
-      sr[5] = (sr[5] >> 1) | (sr[4] << 31);
-      sr[4] = (sr[4] >> 1) | (sr[3] << 31);
-      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
-      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
-      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
-      sr[0] = (sr[0] >> 1);
-    }
-
     void
     dvb_bch_ldpc_bb_impl::bch_poly_build_tables(void)
     {
@@ -6012,288 +6546,7 @@ namespace gr {
       poly_pack(polyout[0], m_poly_m_12, 180);
     }
 
-#if defined(__AVX2__)
-    //Modified from http://stackoverflow.com/questions/25248766/emulating-shifts-on-32-bytes-with-avx
-    //----------------------------------------------------------------------------
-    // bit shift right a 256-bit value using ymm registers
-    //          __m256i *data - data to shift
-    //          int count     - number of bits to shift
-    // return:  __m256i       - carry out bit(s)
-    inline bool dvb_bch_ldpc_bb_impl::bitShiftRight256ymm (__m256i *data, int count)
-       {
-       __m256i innerCarry, carryOut, rotate;
 
-       //innerCarry = _mm256_set_epi32(0,1,2,4,8,16,64,128);
-
-       innerCarry = _mm256_slli_epi64 (*data, 64 - count);                        // carry outs in bit (64-count) of each qword
-       rotate     = _mm256_permute4x64_epi64 (innerCarry, 0b00111001);            // rotate ymm RIGHT 64 bits (left was 0x93=0b10 01 00 11). Crosslane operation, may be slow
-       //innerCarry = _mm256_blend_epi32 (_mm256_setzero_si256 (), rotate, 0xFC); // clear highest qword
-       //blend chooses from either first or second operand, depending on third.
-       //0xFC is 0b11111100 (left) --> modify to 0b00111111 (right)
-       innerCarry = _mm256_blend_epi32 (_mm256_setzero_si256 (), rotate, 0b00111111);
-       *data      = _mm256_srli_epi64 (*data, count);                             // shift all qwords left
-       *data      = _mm256_or_si256 (*data, innerCarry);                          // propagate carrys
-       carryOut   = _mm256_xor_si256 (innerCarry, rotate);                        // clear all except highest qword
-       return !_mm256_testz_si256(carryOut,carryOut); //p1 & p2 == 0
-       }
-
-    //----------------------------------------------------------------------------
-
-    //http://stackoverflow.com/questions/746171/best-algorithm-for-bit-reversal-from-msb-lsb-to-lsb-msb-in-c
-    //not needed
-    inline unsigned int
-    dvb_bch_ldpc_bb_impl::reverse(register unsigned int x)
-    {
-        x = (((x & 0xaaaaaaaa) >> 1) | ((x & 0x55555555) << 1));
-        x = (((x & 0xcccccccc) >> 2) | ((x & 0x33333333) << 2));
-        x = (((x & 0xf0f0f0f0) >> 4) | ((x & 0x0f0f0f0f) << 4));
-        x = (((x & 0xff00ff00) >> 8) | ((x & 0x00ff00ff) << 8));
-        return((x >> 16) | (x << 16));
-    }
-#endif
-
-    int
-    dvb_bch_ldpc_bb_impl::general_work_bch (int noutput_items,
-                       gr_vector_int &ninput_items,
-                       gr_vector_const_void_star &input_items,
-                       unsigned char *out)
-    {
-      const unsigned char *in = (const unsigned char *) input_items[0];
-      unsigned char b, temp;
-      unsigned int shift[6];
-      int consumed = 0;
-
-      #if defined(__AVX2__)
-      //Should do this only once, but causes segfault..
-      __m256i m_256_poly_n_12 = _mm256_set_epi32(0,
-                                                0,
-                                                m_poly_n_12[0],
-                                                m_poly_n_12[1],
-                                                m_poly_n_12[2],
-                                                m_poly_n_12[3],
-                                                m_poly_n_12[4],
-                                                m_poly_n_12[5]);
-      #endif
-
-      switch (bch_code) {
-        case BCH_CODE_N12:
-          //TODO: Make this pretty, use VOLK
-          #if defined(__AVX2__)
-          //#if false
-            #warning "USING AVX2"
-            {
-            for (int i = 0; i < noutput_items; i += nbch) {
-              //Zero the shift register
-              __m256i shift_vector = _mm256_setzero_si256();
-              // MSB of the codeword first
-              for (int j = 0; j < (int)kbch; j++) {
-                temp = *in++;
-                *out++ = temp;
-                bool carry = bitShiftRight256ymm(&shift_vector,1);
-                b = temp ^ carry; //(((int*) &carry)[7] != 0);
-                if (b) {
-                  shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
-                }
-              }
-              // Now add the parity bits to the output
-
-              //for (int n = 0; n < 192; n++) {
-              //  __m256i carry = bitShiftRight256ymm(&shift_vector,1);
-              //  *out++ = (((int*) &carry)[7] != 0);
-              //}
-              //More efficient:
-              for(int n = 0; n < 6; n++) {
-                unsigned int shift_int = (((unsigned int*)&shift_vector)[n]);
-                for(int m = 0; m < 32; m++) {
-                  *out++ = (char)(shift_int & 1);
-                  shift_int >>= 1;
-                }
-              }
-            }
-            consumed += (int)kbch;
-          }
-          #else
-            #warning "NOT USING AVX2"
-            for (int i = 0; i < noutput_items; i += nbch) {
-              //Zero the shift register
-              memset(shift, 0, sizeof(unsigned int) * 6);
-              // MSB of the codeword first
-              for (int j = 0; j < (int)kbch; j++) {
-                temp = *in++;
-                *out++ = temp;
-                consumed++;
-                b = (temp ^ (shift[5] & 1));
-                reg_6_shift(shift);
-                if (b) {
-                  shift[0] ^= m_poly_n_12[0];
-                  shift[1] ^= m_poly_n_12[1];
-                  shift[2] ^= m_poly_n_12[2];
-                  shift[3] ^= m_poly_n_12[3];
-                  shift[4] ^= m_poly_n_12[4];
-                  shift[5] ^= m_poly_n_12[5];
-                }
-              }
-              // Now add the parity bits to the output
-              /*for (int n = 0; n < 192; n++) {
-                *out++ = (shift[5] & 1);
-                reg_6_shift(shift);
-              }*/
-              for(int n = 0; n < 6; n++) {
-                unsigned int shift_int = shift[5-n];
-                for(int m = 0; m < 32; m++) {
-                  *out++ = (char)(shift_int & 1);
-                  shift_int >>= 1;
-                }
-              }
-            }
-          #endif
-
-          break;
-        case BCH_CODE_N10:
-          for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 5);
-            // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              *out++ = temp;
-              consumed++;
-              b = (temp ^ (shift[4] & 1));
-              reg_5_shift(shift);
-              if (b) {
-                shift[0] ^= m_poly_n_10[0];
-                shift[1] ^= m_poly_n_10[1];
-                shift[2] ^= m_poly_n_10[2];
-                shift[3] ^= m_poly_n_10[3];
-                shift[4] ^= m_poly_n_10[4];
-              }
-            }
-            // Now add the parity bits to the output
-            for( int n = 0; n < 160; n++ ) {
-              *out++ = (shift[4] & 1);
-              reg_5_shift(shift);
-            }
-          }
-          break;
-        case BCH_CODE_N8:
-          for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 4);
-            // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              *out++ = temp;
-              consumed++;
-              b = temp ^ (shift[3] & 1);
-              reg_4_shift(shift);
-              if (b) {
-                shift[0] ^= m_poly_n_8[0];
-                shift[1] ^= m_poly_n_8[1];
-                shift[2] ^= m_poly_n_8[2];
-                shift[3] ^= m_poly_n_8[3];
-              }
-            }
-            // Now add the parity bits to the output
-            for (int n = 0; n < 128; n++) {
-              *out++ = shift[3] & 1;
-              reg_4_shift(shift);
-            }
-          }
-          break;
-        case BCH_CODE_S12:
-          for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
-            // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              *out++ = temp;
-              consumed++;
-              b = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
-              reg_6_shift(shift);
-              if (b) {
-                shift[0] ^= m_poly_s_12[0];
-                shift[1] ^= m_poly_s_12[1];
-                shift[2] ^= m_poly_s_12[2];
-                shift[3] ^= m_poly_s_12[3];
-                shift[4] ^= m_poly_s_12[4];
-                shift[5] ^= m_poly_s_12[5];
-              }
-            }
-            // Now add the parity bits to the output
-            for (int n = 0; n < 168; n++) {
-              *out++ = (shift[5] & 0x01000000) ? 1 : 0;
-              reg_6_shift(shift);
-            }
-          }
-          break;
-        case BCH_CODE_M12:
-          for (int i = 0; i < noutput_items; i += nbch) {
-            //Zero the shift register
-            memset(shift, 0, sizeof(unsigned int) * 6);
-            // MSB of the codeword first
-            for (int j = 0; j < (int)kbch; j++) {
-              temp = *in++;
-              *out++ = temp;
-              consumed++;
-              b = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
-              reg_6_shift(shift);
-              if (b) {
-                shift[0] ^= m_poly_m_12[0];
-                shift[1] ^= m_poly_m_12[1];
-                shift[2] ^= m_poly_m_12[2];
-                shift[3] ^= m_poly_m_12[3];
-                shift[4] ^= m_poly_m_12[4];
-                shift[5] ^= m_poly_m_12[5];
-              }
-            }
-            // Now add the parity bits to the output
-            for (int n = 0; n < 180; n++) {
-              *out++ = (shift[5] & 0x00001000) ? 1 : 0;
-              reg_6_shift(shift);
-            }
-          }
-          break;
-      }
-
-      // Tell runtime system how many input items we consumed on
-      // each input stream.
-      // consume_each ((int) kbch);
-
-      // Tell runtime system how many output items we produced.
-      return noutput_items;
-    }
-
-
-////////////////////////////////////////////////////////////////////////////////////////
-
-
-    int
-    dvb_bch_ldpc_bb_impl::general_work (int noutput_items,
-                       gr_vector_int &ninput_items,
-                       gr_vector_const_void_star &input_items,
-                       gr_vector_void_star &output_items)
-    {
-        //(noutput_items / nbch) * kbch
-        //noutput_items == multiple of frame_size
-        //frame_size = Nldpc = kldpc + parity bits
-        //ldpc input = kldpc = nbch
-        //nbch = kbch + parity bits
-        //gr_vector_void_star temp_items = (gr_vector_void_star)malloc(sizeof(char)*);
-        //gr_vector_void_star temp_items(noutput_items);
-        //temp_items.reserve(noutput_items/frame_size*nbch);
-        unsigned char *temp_items = (unsigned char*) malloc(sizeof(unsigned char)*frame_size);
-
-        general_work_bch(noutput_items/frame_size*kbch, ninput_items, input_items, temp_items);
-
-        //gr_vector_const_void_star temp_items_const(temp_items.begin(), temp_items.end());
-        general_work_ldpc(noutput_items, ninput_items, temp_items, output_items);
-
-        free(temp_items);
-
-        consume_each ((int) kbch);
-        return noutput_items;
-    }
 
 
 

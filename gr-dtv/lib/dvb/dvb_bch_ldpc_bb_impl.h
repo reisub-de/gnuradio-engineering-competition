@@ -25,10 +25,15 @@
 #include "dvb_defines.h"
 #include <immintrin.h>
 
+typedef struct ldpc_encode_table_item{
+    int d;
+    int p;
+    bool bch;
+}ldpc_encode_table_item;
+
 typedef struct{
     int table_length;
-    int d[LDPC_ENCODE_TABLE_LENGTH];
-    int p[LDPC_ENCODE_TABLE_LENGTH];
+    ldpc_encode_table_item item[LDPC_ENCODE_TABLE_LENGTH];
 }ldpc_encode_table;
 
 namespace gr {
