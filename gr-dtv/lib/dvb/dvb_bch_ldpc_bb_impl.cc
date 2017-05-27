@@ -717,20 +717,19 @@ namespace gr {
     #define LDPC_BF(TABLE_NAME, ROWS) \
     for (int row = 0; row < ROWS; row++) { \
       for (int n = 0; n < 360; n++) { \
+        bchd = false; \
         for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
-          ldpc_encode.item[index].bch = (col == 1); \
           ldpc_encode.item[index].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
           ldpc_encode.item[index].d = im; \
-          if(ldpc_encode.item[index].p >= (int)kbch || ldpc_encode.item[index].d >= (int)kbch) { \
-            ldpc_encode.item_nobch[index_nobch].bch = (col == 1); \
-            ldpc_encode.item_nobch[index_nobch].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
-            ldpc_encode.item_nobch[index_nobch].d = im; \
-            index_nobch++; \
-          } else { \
-            ldpc_encode.item_bch[index_bch].bch = (col == 1); \
+          if(!bchd && (ldpc_encode.item[index].p < (int)kbch && ldpc_encode.item[index].d < (int)kbch)) { \
+            bchd = true; \
             ldpc_encode.item_bch[index_bch].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
             ldpc_encode.item_bch[index_bch].d = im; \
             index_bch++; \
+          } else { \
+            ldpc_encode.item_nobch[index_nobch].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+            ldpc_encode.item_nobch[index_nobch].d = im; \
+            index_nobch++; \
           } \
           index++; \
         } \
@@ -746,6 +745,7 @@ namespace gr {
       int index, index_bch, index_nobch;
       int pbits;
       int q;
+      bool bchd;
       index = 0;
       index_bch = 0;
       index_nobch = 0;
@@ -953,7 +953,6 @@ namespace gr {
       ldpc_encode.table_length = index;
       ldpc_encode.table_length_nobch = index_nobch;
       ldpc_encode.table_length_bch = index_bch;
-      std::cout << index << ", " << index_nobch << ", " << index_bch << "\n";
     }
 
     int
@@ -1448,29 +1447,88 @@ namespace gr {
           //#if false
             #warning "USING AVX2"
             {
-            for (int i = 0; i < noutput_items_bch; i += nbch) {
-              //Zero the shift register
-              __m256i shift_vector = _mm256_setzero_si256();
-              // MSB of the codeword first
-              for (int j = 0; j < (int)kbch; j++) {
-                temp = *in_bch++;
-                *out_bch++ = temp;
-                bool carry = bitShiftRight256ymm(&shift_vector,1);
-                b_bch = temp ^ carry; //(((int*) &carry)[7] != 0);
-                if (b_bch) {
-                  shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
+              d = out_ldpc;
+              p = &out_ldpc[nbch];
+              int puncture, index;
+
+              for (int i = 0; i < noutput_items; i += frame_size) {
+                if (Xs != 0) {
+                  s = &shortening_buffer[0];
+                  memset(s, 0, sizeof(unsigned char) * Xs);
+                  memcpy(&s[Xs], &out_ldpc[consumed], sizeof(unsigned char) * nbch);
+                  d = s;
                 }
-              }
-              // Now add the parity bits to the output
-              for(int n = 0; n < 6; n++) {
-                unsigned int shift_int = (((unsigned int*)&shift_vector)[n]);
-                for(int m = 0; m < 32; m++) {
-                  *out_bch++ = (char)(shift_int & 1);
-                  shift_int >>= 1;
+                if (P != 0) {
+                  p = &puncturing_buffer[nbch];
+                  b = &out_ldpc[i + nbch];
                 }
-              }
+
+                //Zero all the LDPC parity bits
+                memset(p, 0, sizeof(unsigned char) * plen);
+
+                //Zero the shift register for BCH Code
+                __m256i shift_vector = _mm256_setzero_si256();
+
+                //copy input samples to output
+                memcpy(&out_ldpc[i],&in_bch[consumed],sizeof(unsigned char) * (int)kbch); //Missing last nbch - kbch bits, but not available yet!
+
+                // now do the parity checking of first kbch bits and generate ldpc parity
+                for (int j = 0; j < ldpc_encode.table_length_bch; j++) {
+                  temp = d[ldpc_encode.item_bch[j].d];
+                  p[ldpc_encode.item_bch[j].p] ^= temp;
+                  bool carry = bitShiftRight256ymm(&shift_vector,1);
+                  b_bch = temp ^ carry; //(((int*) &carry)[7] != 0);
+                  reg_6_shift(shift);
+                  if (b_bch) {
+                    shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
+                  }
+                }
+
+                // Now add the bch parity bits to the output (add the missing nbch - kbch bits)
+                unsigned char *bch_parity = &out_ldpc[i]+kbch;
+                for(int n = 0; n < 6; n++) {
+                  unsigned int shift_int = shift[5-n];
+                  for(int m = 0; m < 32; m++) {
+                    *bch_parity++ = (char)(shift_int & 1);
+                    shift_int >>= 1;
+                  }
+                }
+                // continue the ldpc parity checking
+                for (int j = 0; j < ldpc_encode.table_length_nobch; j++) {
+                  p[ldpc_encode.item_nobch[j].p] ^= d[ldpc_encode.item_nobch[j].d];
+                }
+
+                if (P != 0) {
+                  puncture = 0;
+                  for (int j = 0; j < plen; j += P) {
+                    p[j] = 0x55;
+                    puncture++;
+                    if (puncture == Xp) {
+                      break;
+                    }
+                  }
+                  index = 0;
+                  for (int j = 0; j < plen; j++) {
+                    if (p[j] != 0x55) {
+                      b[index++] = p[j];
+                    }
+                  }
+                  p = &out_ldpc[nbch];
+                }
+
+                for (int j = 1; j < (plen - Xp); j++) {
+                  p[j] ^= p[j - 1];
+                }
+
+                if (signal_constellation == MOD_128APSK) {
+                  for (int j = 0; j < 6; j++) {
+                    p[j + plen] = 0;
+                  }
+                }
+                d += nbch;
+                p += frame_size;
+                consumed += (int)kbch;
             }
-            consumed += (int)kbch;
           }
           #else
             #warning "NOT USING AVX2"
@@ -1503,20 +1561,15 @@ namespace gr {
               for (int j = 0; j < ldpc_encode.table_length_bch; j++) {
                 temp = d[ldpc_encode.item_bch[j].d];
                 p[ldpc_encode.item_bch[j].p] ^= temp;
-
-                if(ldpc_encode.item_bch[j].bch) {
-                  // std::cout << ldpc_encode.item_bch[j].d << "; "; //38688 Items --> kbch
-
-                  b_bch = (temp ^ (shift[5] & 1));
-                  reg_6_shift(shift);
-                  if (b_bch) {
-                    shift[0] ^= m_poly_n_12[0];
-                    shift[1] ^= m_poly_n_12[1];
-                    shift[2] ^= m_poly_n_12[2];
-                    shift[3] ^= m_poly_n_12[3];
-                    shift[4] ^= m_poly_n_12[4];
-                    shift[5] ^= m_poly_n_12[5];
-                  }
+                b_bch = (temp ^ (shift[5] & 1));
+                reg_6_shift(shift);
+                if (b_bch) {
+                  shift[0] ^= m_poly_n_12[0];
+                  shift[1] ^= m_poly_n_12[1];
+                  shift[2] ^= m_poly_n_12[2];
+                  shift[3] ^= m_poly_n_12[3];
+                  shift[4] ^= m_poly_n_12[4];
+                  shift[5] ^= m_poly_n_12[5];
                 }
               }
 
@@ -1535,7 +1588,6 @@ namespace gr {
                 p[ldpc_encode.item_nobch[j].p] ^= d[ldpc_encode.item_nobch[j].d];
               }
 
-              //std::cout << kbch << ", " << nbch << "\n";
               if (P != 0) {
                 puncture = 0;
                 for (int j = 0; j < plen; j += P) {

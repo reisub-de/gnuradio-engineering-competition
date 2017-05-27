@@ -28,7 +28,6 @@
 typedef struct ldpc_encode_table_item{
     int d;
     int p;
-    bool bch;
 }ldpc_encode_table_item;
 
 typedef struct{
