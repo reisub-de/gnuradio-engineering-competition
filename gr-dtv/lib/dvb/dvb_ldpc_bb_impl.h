@@ -32,8 +32,8 @@
 
 typedef struct{
     int table_length;
-    const int* d;
-    const int* p;
+    int d[LDPC_ENCODE_TABLE_LENGTH];
+    int p[LDPC_ENCODE_TABLE_LENGTH];
     std::vector<std::pair<int, int> > sorted_p_d;
 }ldpc_encode_table;
 
