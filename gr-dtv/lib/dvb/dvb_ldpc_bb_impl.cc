@@ -655,12 +655,13 @@ for (int row = 0; row < ROWS; row++) { \
           index = 0;
           **/
          puncture = 0;
+         boolean breakP = false;
           for (int j = 0; j < plen; j++) {
-        	  if (j % P == 0) {
+        	  if (j % P == 0 && !breakP) {
         		  p[j] = 0x55;
         		  puncture++;
         		  if (puncture == Xp) {
-        		         break;
+        			  breakP = true;
         		      }
         	  } else {
               b[index++] = p[j];
