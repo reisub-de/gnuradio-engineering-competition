@@ -40,7 +40,7 @@ namespace gr {
       unsigned int m_poly_s_12[6];
       unsigned int m_poly_m_12[6];
       std::bitset<192> polynome;
-      std::bitset<192> crcTable[65536];
+      std::bitset<192> crcTable[256];
       void CalculateCrcTable();
       int poly_mult(const int*, int, const int*, int, int*);
       void poly_pack(const int*, unsigned int*, int);
