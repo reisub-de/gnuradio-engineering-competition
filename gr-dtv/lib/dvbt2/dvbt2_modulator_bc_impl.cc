@@ -262,9 +262,9 @@ namespace gr {
               int j = cell_size - 1;
               int limit = cell_size + j;
               while (j < limit) {
-                //index = *in++;
-                //index_delay = in_delay[j % cell_size];
-                *out++ = gr_complex(m_256qam[(int)*in++].real(), m_256qam[(int)in_delay[j % cell_size]].imag());
+                index = *in++;
+                index_delay = in_delay[j % cell_size];
+                *out++ = gr_complex(m_256qam[index & 0xff].real(), m_256qam[index_delay & 0xff].imag());
                 j++;
               }
             }
