@@ -1111,22 +1111,23 @@ namespace gr {
           fs = 1.0;
           break;
       }
+      int vlength_half = vlength / 2;
       fstep = fs / vlength;
       x = M_PI * f / fs;
       sinc = 1.0;
       sincrms += sinc * sinc;
-      inverse_sinc[i + (vlength / 2)] = gr_complex(1.0 / sinc, 0.0);
-      inverse_sinc[(vlength / 2) - i - 1] = gr_complex(1.0 / sinc, 0.0);
+      inverse_sinc[vlength_half] = gr_complex(1.0 / sinc, 0.0);
+      inverse_sinc[vlength_half - 1] = gr_complex(1.0 / sinc, 0.0);
       f += fstep;
-      for (int i = 1; i < vlength / 2; i++) {
+      for (int i = 1; i < vlength_half; i++) {
         x = M_PI * f / fs;
         sinc = sin(x) / x;
         sincrms += sinc * sinc;
-        inverse_sinc[i + (vlength / 2)] = gr_complex(1.0 / sinc, 0.0);
-        inverse_sinc[(vlength / 2) - i - 1] = gr_complex(1.0 / sinc, 0.0);
+        inverse_sinc[i + vlength_half] = gr_complex(1.0 / sinc, 0.0);
+        inverse_sinc[vlength_half - i - 1] = gr_complex(1.0 / sinc, 0.0);
         f += fstep;
       }
-      sincrms = std::sqrt(sincrms / (vlength / 2));
+      sincrms = std::sqrt(sincrms / vlength_half);
       for (int i = 0; i < vlength; i++) {
         inverse_sinc[i] *= sincrms;
       }
