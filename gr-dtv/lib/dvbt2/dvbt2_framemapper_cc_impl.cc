@@ -1012,17 +1012,15 @@ namespace gr {
       int im;
       int index;
       int pbits;
-      int q;
       index = 0;
       im = 0;
 
       pbits = FRAME_SIZE_SHORT - NBCH_1_4;    //number of parity bits
-      q = 36;
 
       for (int row = 0; row < 9; row++) {
-        for(int n = 0; n < 360; n++) {
+        for(int n = 0; n < 12960; n += 36) {
           for (int col = 1; col <= ldpc_tab_1_4S[row][0]; col++) {
-            l1pre_ldpc_encode.p[index] = (ldpc_tab_1_4S[row][col] + (n * q)) % pbits;
+            l1pre_ldpc_encode.p[index] = (ldpc_tab_1_4S[row][col] + n) % pbits;
             l1pre_ldpc_encode.d[index] = im;
             index++;
           }
@@ -1165,7 +1163,9 @@ namespace gr {
       }
       offset_bits += add_crc32_bits(l1pre, offset_bits);
       /* Padding */
-      memset(&l1pre[offset_bits], 0, (KBCH_1_4 - offset_bits) * sizeof(L1Pre));
+      for (int n = KBCH_1_4 - offset_bits - 1; n >= 0; n--) {
+        l1pre[offset_bits++] = 0;
+      }
       /* BCH */
       offset_bits = 0;
       memset(shift, 0, sizeof(unsigned int) * 6);
