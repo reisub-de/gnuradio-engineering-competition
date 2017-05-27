@@ -139,27 +139,44 @@ namespace gr {
             break;
         }
       }
-      for (int i = 0; i < max_states; i++) {
-        if (i == 0 || i == 1) {
-          lfsr = 0;
+
+      // i = 0
+      permutations[q++] = 0;
+      // i = 1
+      lfsr = 1 << (pn_degree - 1);
+      if (lfsr < cell_size) {
+        permutations[q++] = lfsr;
+      }
+      // i = 2
+      lfsr = 1;
+      permutations[q++] = lfsr;
+      // remaining i
+      for (int i = 3; i < max_states; i += 2) {
+        // i uneven
+        result = 0;
+        for (int k = 0; k < xor_size; k++) {
+          result ^= (lfsr >> logic[k]) & 1;
         }
-        else if (i == 2) {
-          lfsr = 1;
+        lfsr &= pn_mask;
+        lfsr >>= 1;
+        lfsr |= result << (pn_degree - 2);
+        lfsr |= 1 << (pn_degree - 1);
+        if (lfsr < cell_size) {
+          permutations[q++] = lfsr;
         }
-        else {
-          result = 0;
-          for (int k = 0; k < xor_size; k++) {
-            result ^= (lfsr >> logic[k]) & 1;
-          }
-          lfsr &= pn_mask;
-          lfsr >>= 1;
-          lfsr |= result << (pn_degree - 2);
+        // i even
+        result = 0;
+        for (int k = 0; k < xor_size; k++) {
+          result ^= (lfsr >> logic[k]) & 1;
         }
-        lfsr |= (i % 2) << (pn_degree - 1);
+        lfsr &= pn_mask;
+        lfsr >>= 1;
+        lfsr |= result << (pn_degree - 2);
         if (lfsr < cell_size) {
           permutations[q++] = lfsr;
         }
       }
+
       if (tiblocks == 0) {
         FECBlocksPerSmallTIBlock = 1;
         FECBlocksPerBigTIBlock = 1;
