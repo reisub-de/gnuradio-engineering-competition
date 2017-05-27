@@ -33,7 +33,11 @@ typedef struct ldpc_encode_table_item{
 
 typedef struct{
     int table_length;
+    int table_length_nobch;
+    int table_length_bch;
     ldpc_encode_table_item item[LDPC_ENCODE_TABLE_LENGTH];
+    ldpc_encode_table_item item_bch[LDPC_ENCODE_TABLE_LENGTH];
+    ldpc_encode_table_item item_nobch[LDPC_ENCODE_TABLE_LENGTH];
 }ldpc_encode_table;
 
 namespace gr {
