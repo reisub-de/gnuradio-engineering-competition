@@ -441,6 +441,7 @@ namespace gr {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       // Add CRC to BB header, at end
+
       m_frame_offset_bits += add_crc8_bits(m_frame, BB_HEADER_LENGTH_BITS);
     }
 
@@ -499,8 +500,7 @@ namespace gr {
           offset += 80;
 
           if (input_mode == INPUTMODE_HIEFF) {
-        	int iterations = (int)((kbch - 80 - padding) / 8);
-            for (int j = 0; j < iterations; j++) {
+            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
               if (count == 0) {
                 if (*in != 0x47) {
                   GR_LOG_WARN(d_logger, "Transport Stream sync error!");
@@ -515,8 +515,8 @@ namespace gr {
                 }
               }
               count = (count + 1) % 188;
+              consumed++;
             }
-            consumed += iterations;
             if (fec_block == 0 && inband_type_b == TRUE) {
               add_inband_type_b(&out[offset], ts_rate);
               offset += 104;
