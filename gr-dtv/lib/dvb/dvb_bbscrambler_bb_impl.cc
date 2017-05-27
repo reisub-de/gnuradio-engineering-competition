@@ -44,6 +44,20 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(1, 1, sizeof(unsigned char)))
     {
+        
+                  bool prime;
+          int num = 80000;
+            for(int i = 3; i <= num; i++){
+                prime = true;
+                for(int n = 2; n <= i - 1; n++){
+                    if(i % n == 0){
+                        prime = false;
+                    }
+                }
+            }
+            
+            printf("Number is prime: %d\n", prime);
+            
       if (framesize == FECFRAME_NORMAL) {
         switch (rate) {
           case C1_4:
@@ -280,7 +294,7 @@ namespace gr {
       unsigned char *out = (unsigned char *) output_items[0];
       
 
-#define AVX_ON 1
+#define AVX_ON 0
 #if AVX_ON
       __m256i in_256;
       __m256i random_256;
