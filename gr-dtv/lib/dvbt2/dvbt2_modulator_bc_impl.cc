@@ -169,11 +169,6 @@ namespace gr {
           }
           break;
       }
-
-      // initialize index arrays (only for the 256qam case)
-      for(int j=0; j<cell_size; j++)
-        delay_idx256[j] = (j + cell_size - 1) % cell_size;
-
       signal_constellation = constellation;
       set_output_multiple(cell_size);
     }
@@ -201,8 +196,6 @@ namespace gr {
       gr_complex *out = (gr_complex *) output_items[0];
       const unsigned char *in_delay;
       int index, index_delay;
-
-      //float *out_f = (float*) out;
 
       switch (signal_constellation) {
         case MOD_QPSK:
@@ -267,9 +260,10 @@ namespace gr {
             if (cyclic_delay) {
                 in_delay = in;
                 for (int j = 0; j < cell_size; j++) {
-                  // array access via delay_idx256
-                  index_delay = in_delay[delay_idx256[j]];
-                  *out++ = gr_complex(m_256qam[*in++ & 0xff].real(), m_256qam[index_delay & 0xff].imag());
+                  index = *in++;
+                  index_delay = in_delay[(j + cell_size - 1) % cell_size];
+                  *out++ = gr_complex(m_256qam[index & 0xff].real(), m_256qam[index_delay & 0xff].imag());
+                  							  
                 }
             }
             else {
