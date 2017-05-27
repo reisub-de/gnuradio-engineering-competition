@@ -1473,12 +1473,12 @@ namespace gr {
                 memcpy(&out_ldpc[i],&in_bch[consumed],sizeof(unsigned char) * (int)kbch); //Missing last nbch - kbch bits, but not available yet!
 
                 // now do the parity checking of first kbch bits and generate ldpc parity
+                bool carry;
                 for (int j = 0; j < ldpc_encode.table_length_bch; j++) {
                   temp = d[ldpc_encode.item_bch[j].d];
                   p[ldpc_encode.item_bch[j].p] ^= temp;
-                  bool carry = bitShiftRight256ymm(&shift_vector,1);
+                  carry = bitShiftRight256ymm(&shift_vector,1);
                   b_bch = temp ^ carry; //(((int*) &carry)[7] != 0);
-                  reg_6_shift(shift);
                   if (b_bch) {
                     shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
                   }
@@ -1487,7 +1487,7 @@ namespace gr {
                 // Now add the bch parity bits to the output (add the missing nbch - kbch bits)
                 unsigned char *bch_parity = &out_ldpc[i]+kbch;
                 for(int n = 0; n < 6; n++) {
-                  unsigned int shift_int = shift[5-n];
+                  unsigned int shift_int = (((unsigned int*)&shift_vector)[n]);
                   for(int m = 0; m < 32; m++) {
                     *bch_parity++ = (char)(shift_int & 1);
                     shift_int >>= 1;
