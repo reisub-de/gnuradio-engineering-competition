@@ -497,7 +497,7 @@ namespace gr {
             padding = 0;
           }
           add_bbheader(&out[offset], count, padding, TRUE);
-          offset = offset + 80;
+          offset += 80;
 
           if (input_mode == INPUTMODE_HIEFF) {
             for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
@@ -519,7 +519,7 @@ namespace gr {
             }
             if (fec_block == 0 && inband_type_b == TRUE) {
               add_inband_type_b(&out[offset], ts_rate);
-              offset = offset + 104;
+              offset += 104;
             }
           }
           else {
