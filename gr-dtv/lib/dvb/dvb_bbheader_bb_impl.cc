@@ -368,7 +368,7 @@ namespace gr {
       }
 
       for (int n = 0; n < 8; n++) {
-        *in++ = (crc & (1 << n)) ? 1 : 0;	//in[i++]
+        *in++ = (crc & (1 << n)) ? 1 : 0;	//in[i++] 
       }
       return 8;// Length of CRC
     }
