@@ -47,7 +47,7 @@ namespace gr {
       double rotation_angle;
       double m_16qam_lookup[4] = {3.0, 1.0, -3.0, -1.0};
       double m_64qam_lookup[8] = {7.0, 5.0, 1.0, 3.0, -7.0, -5.0, -1.0, -3.0};
-      double m_256qam_lookup[16] = {15.0, 13.0, 9.0, 11.0, 1.0, 3.0, 7.0, 5.0, -15.0, -13.0, -9.0, -11.0, -1.0, -3.0, -7.0, -5.0};
+      float m_256qam_lookup[16] = {15.0, 13.0, 9.0, 11.0, 1.0, 3.0, 7.0, 5.0, -15.0, -13.0, -9.0, -11.0, -1.0, -3.0, -7.0, -5.0};
       int real_index, imag_index;
       gr_complex temp;
       cyclic_delay = FALSE;
@@ -256,17 +256,23 @@ namespace gr {
           }
           break;
         case MOD_256QAM:
-          if (cyclic_delay) { // Our case: 256-QAM, rotation = on --> cyclic_delay = true
+          if (cyclic_delay) {
+            // Our case: 256-QAM, rotation = on --> cyclic_delay = true
+            int j = cell_size - 1; 
             for (int i = 0; i < noutput_items; i += cell_size) {
               in_delay = in;
-              int j = cell_size - 1;
-              int limit = cell_size + j;
-              while (j < limit) {
+              
+              *out++ = gr_complex(m_256qam[(int)*in++].real(), m_256qam[(int)in_delay[j]].imag());
+              //int limit = cell_size + j;
+              //while (j < limit) {
+              for (int k = 0; k < cell_size - 1; ++k)
+              {
+                *out++ = gr_complex(m_256qam[(int)*in++].real(), m_256qam[(int)in_delay[k]].imag());
+              }
                 //index = *in++;
                 //index_delay = in_delay[j % cell_size];
-                *out++ = gr_complex(m_256qam[(int)*in++].real(), m_256qam[(int)in_delay[j % cell_size]].imag());
-                j++;
-              }
+                //j++;
+              //}
             }
           }
           else {
