@@ -218,29 +218,25 @@ namespace gr {
             FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
           }
           for (int r = 0; r < FECBlocksPerTIBlock; r++) {
-        shift = cell_size;
-        while (shift >= cell_size) {
-          temp = n;
-          shift = 0;
-          for (int p = pn_degree; p != 0; p--) {
+            shift = cell_size;
+            while (shift >= cell_size) {
+              temp = n;
+              shift = 0;
+              for (int p = 0; p < pn_degree; p++) {
                 shift |= temp & 1;
                 shift <<= 1;
                 temp >>= 1;
               }
               n++;
             }
-            int* ptr_permutations = permutations + shift - 1;
-            //gr_complex *ptr_time_interleave = time_interleave + index;
-            for (int w = cell_size; w != 0; w--) {
-              time_interleave[(*ptr_permutations++ % cell_size) + index] = *in++;
+            for (int w = 0; w < cell_size; w++) {
+              time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
             }
             index += cell_size;
           }
         }
         if (ti_blocks != 0) {
           ti_index = 0;
-          rows = cell_size / 5;
-
           for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; s++) {
             if (s < numSmallTIBlocks) {
               FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
@@ -249,6 +245,7 @@ namespace gr {
               FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
             }
             numCols = 5 * FECBlocksPerTIBlock;
+            rows = cell_size / 5;
             for (int j = 0; j < numCols; j++) {
               cols[j] = &time_interleave[(rows * j) + ti_index];
             }
