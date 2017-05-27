@@ -353,10 +353,12 @@ namespace gr {
     {
       int crc = 0;
       int b;
-      //int i = 0;
-
-      for (int n = 0; n < length; n++) {
-        b = *in++ ^ (crc & 0x01);		// in[i++]
+      // simplify things in the first iteration
+      if(*in++) {
+      	crc = CRC_POLY;
+      }
+      for (int n = 1; n < length; n++) {
+        b = *in++ ^ (crc & 0x01);
         crc >>= 1;
         if (b) {
           crc ^= CRC_POLY;
@@ -368,7 +370,7 @@ namespace gr {
       }
 
       for (int n = 0; n < 8; n++) {
-        *in++ = (crc & (1 << n)) ? 1 : 0;	//in[i++] 
+        *in++ = (crc & (1 << n)) ? 1 : 0;
       }
       return 8;// Length of CRC
     }
