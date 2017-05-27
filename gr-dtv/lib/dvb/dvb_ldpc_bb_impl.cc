@@ -655,7 +655,7 @@ for (int row = 0; row < ROWS; row++) { \
           index = 0;
           **/
          puncture = 0;
-         boolean breakP = false;
+         bool breakP = false;
           for (int j = 0; j < plen; j++) {
         	  if (j % P == 0 && !breakP) {
         		  p[j] = 0x55;
