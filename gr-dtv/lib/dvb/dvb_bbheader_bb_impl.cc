@@ -500,19 +500,20 @@ namespace gr {
           offset += 80;
 
           if (input_mode == INPUTMODE_HIEFF) {
-            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
-              if (count == 0) {
-                if (*in != 0x47) {
-                  GR_LOG_WARN(d_logger, "Transport Stream sync error!");
-                }
-                j--;
-                in++;
+        	int len = ((int)kbch - 80 - padding) / 8;
+            for (int j = 0; j < len; j++) {
+              if (count) {
+            	b = *in++;
+				for (int n = 7; n >= 0; n--) {
+				  out[offset++] = b & (1 << n) ? 1 : 0;
+				}
               }
               else {
-                b = *in++;
-                for (int n = 7; n >= 0; n--) {
-                  out[offset++] = b & (1 << n) ? 1 : 0;
-                }
+            	if (*in != 0x47) {
+            	  GR_LOG_WARN(d_logger, "Transport Stream sync error!");
+            	}
+            	j--;
+            	in++;
               }
               count = (count + 1) % 188;
               consumed++;

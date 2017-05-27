@@ -204,7 +204,7 @@ namespace gr {
                           gr_vector_void_star &output_items)
     {
       const gr_complex *in = (const gr_complex *) input_items[0];
-      gr_complex *out = (gr_complex *) output_items[0]; 
+      gr_complex *out = (gr_complex *) output_items[0];
       int FECBlocksPerTIBlock, n, shift, temp, index, rows, numCols, ti_index;
 
       for (int i = 0; i < noutput_items; i += interleaved_items) {
@@ -229,9 +229,8 @@ namespace gr {
               }
               n++;
             }
-            gr_complex *ptr_time_interleave = time_interleave + index;
             for (int w = 0; w < cell_size; w++) {
-              ptr_time_interleave[((permutations[w] + shift) % cell_size)] = *in++;
+              time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
             }
             index += cell_size;
           }
