@@ -2694,86 +2694,123 @@ namespace gr {
       }
       for (int i = 0; i < noutput_items; i += num_symbols) {
         for (int j = 0; j < num_symbols; j++) {
+          dst = ofdm_fft->get_inbuf();
           init_pilots(j);
           if (j < N_P2) {
-            for (int n = 0; n < left_nulls; n++) {
-              *out++ = zero;
-            }
-            for (int n = 0; n < C_PS; n++) {
+            for (int n = 0; n < C_PS / 2; n++) {
               if (p2_carrier_map[n] == P2PILOT_CARRIER) {
-                *out++ = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                dst[n + ofdm_fft_size - C_PS / 2] = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (p2_carrier_map[n] == P2PILOT_CARRIER_INVERTED) {
-                *out++ = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                dst[n + ofdm_fft_size - C_PS / 2] = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (p2_carrier_map[n] == P2PAPR_CARRIER) {
-                *out++ = zero;
+                dst[n + ofdm_fft_size - C_PS / 2] = zero;
               }
               else {
-                *out++ = *in++;
+                dst[n + ofdm_fft_size - C_PS / 2] = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
+            for (int n = 0; n < ofdm_fft_size - C_PS; n++) {
+              dst[n + C_PS / 2] = zero;
             }
+            for (int n = C_PS / 2; n < C_PS; n++) {
+              if (p2_carrier_map[n] == P2PILOT_CARRIER) {
+                dst[n - C_PS / 2] = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+              }
+              else if (p2_carrier_map[n] == P2PILOT_CARRIER_INVERTED) {
+                dst[n - C_PS / 2] = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+              }
+              else if (p2_carrier_map[n] == P2PAPR_CARRIER) {
+                dst[n - C_PS / 2] = zero;
+              }
+              else {
+                dst[n - C_PS / 2] = *in++;
+              }
+            }
+            
           }
           else if (j == (num_symbols - L_FC)) {
-            for (int n = 0; n < left_nulls; n++) {
-              *out++ = zero;
-            }
-            for (int n = 0; n < C_PS; n++) {
+            for (int n = 0; n < C_PS / 2; n++) {
               if (fc_carrier_map[n] == SCATTERED_CARRIER) {
-                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                dst[n + ofdm_fft_size - C_PS / 2] = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (fc_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
-                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                dst[n + ofdm_fft_size - C_PS / 2] = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (fc_carrier_map[n] == TRPAPR_CARRIER) {
-                *out++ = zero;
+                dst[n + ofdm_fft_size - C_PS / 2] = zero;
               }
               else {
-                *out++ = *in++;
+                dst[n + ofdm_fft_size - C_PS / 2] = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
+            for (int n = 0; n < ofdm_fft_size - C_PS; n++) {
+              dst[n + C_PS / 2] = zero;
+            }
+            for (int n = C_PS / 2; n < C_PS ; n++) {
+              if (fc_carrier_map[n] == SCATTERED_CARRIER) {
+                dst[n - C_PS / 2] = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+              }
+              else if (fc_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
+                dst[n - C_PS / 2] = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+              }
+              else if (fc_carrier_map[n] == TRPAPR_CARRIER) {
+                dst[n - C_PS / 2] = zero;
+              }
+              else {
+                dst[n - C_PS / 2] = *in++;
+              }
             }
           }
           else {
-            for (int n = 0; n < left_nulls; n++) {
-              *out++ = zero;
-            }
-            for (int n = 0; n < C_PS; n++) {
+            for (int n = 0; n < C_PS / 2; n++) {
               if (data_carrier_map[n] == SCATTERED_CARRIER) {
-                *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                dst[n + ofdm_fft_size - C_PS / 2] = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
-                *out++ = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                dst[n + ofdm_fft_size - C_PS / 2] = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (data_carrier_map[n] == CONTINUAL_CARRIER) {
-                *out++ = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                dst[n + ofdm_fft_size - C_PS / 2] = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
-                *out++ = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                dst[n + ofdm_fft_size - C_PS / 2] = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
               else if (data_carrier_map[n] == TRPAPR_CARRIER) {
-                *out++ = zero;
+                dst[n + ofdm_fft_size - C_PS / 2] = zero;
               }
               else {
-                *out++ = *in++;
+                dst[n + ofdm_fft_size - C_PS / 2] = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
-              *out++ = zero;
+            for (int n = 0; n < ofdm_fft_size - C_PS; n++) {
+              dst[n + C_PS / 2] = zero;
+            }
+            for (int n = C_PS / 2; n < C_PS; n++) {
+              if (data_carrier_map[n] == SCATTERED_CARRIER) {
+                dst[n - C_PS / 2] = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+              }
+              else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
+                dst[n - C_PS / 2] = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+              }
+              else if (data_carrier_map[n] == CONTINUAL_CARRIER) {
+                dst[n - C_PS / 2] = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+              }
+              else if (data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
+                dst[n - C_PS / 2] = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+              }
+              else if (data_carrier_map[n] == TRPAPR_CARRIER) {
+                dst[n - C_PS / 2] = zero;
+              }
+              else {
+                dst[n - C_PS / 2] = *in++;
+              }
             }
           }
-          out -= ofdm_fft_size;
           if (equalization_enable == EQUALIZATION_ON) {
-            volk_32fc_x2_multiply_32fc(out, out, inverse_sinc, ofdm_fft_size);
+            volk_32fc_x2_multiply_32fc(dst, dst, inverse_sinc, ofdm_fft_size);
           }
-          dst = ofdm_fft->get_inbuf();
-          memcpy(&dst[ofdm_fft_size / 2], &out[0], sizeof(gr_complex) * ofdm_fft_size / 2);
-          memcpy(&dst[0], &out[ofdm_fft_size / 2], sizeof(gr_complex) * ofdm_fft_size / 2);
           ofdm_fft->execute();
           volk_32fc_s32fc_multiply_32fc(out, ofdm_fft->get_outbuf(), normalization, ofdm_fft_size);
           out += ofdm_fft_size;
