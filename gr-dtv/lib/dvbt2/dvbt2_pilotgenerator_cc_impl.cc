@@ -2599,45 +2599,44 @@ namespace gr {
           break;
       }
     }
-    
+
     void
     dvbt2_pilotgenerator_cc_impl::update_pilots(int symbol)
     {
-      int remainder, shift;
-      for (int i = 0; i < C_PS; i++) {
-        cur_data_carrier_map[i] = data_carrier_map[i];
-        remainder = (i - K_EXT) % (dx * dy);
-        if (remainder < 0) {
-          remainder += (dx * dy);
-        }
-        if (remainder == (dx * (symbol % dy))) {
-          if (miso == TRUE && miso_group == MISO_TX2) {
-            if ((i / dx) % 2) {
-              cur_data_carrier_map[i] = SCATTERED_CARRIER_INVERTED;
-            }
-            else {
-              cur_data_carrier_map[i] = SCATTERED_CARRIER;
-            }
+      int shift;
+
+      memcpy(cur_data_carrier_map, data_carrier_map, C_PS * sizeof(int));
+
+      //insert scattered pilots
+      for (int i = dx * (symbol % dy) - K_EXT; i < C_PS - K_EXT; i+=dx*dy) {
+        if (miso == TRUE && miso_group == MISO_TX2) {
+          if ((i / dx) & 1) {
+            cur_data_carrier_map[i + K_EXT] = SCATTERED_CARRIER_INVERTED;
           }
           else {
-            cur_data_carrier_map[i] = SCATTERED_CARRIER;
+            cur_data_carrier_map[i + K_EXT] = SCATTERED_CARRIER;
           }
         }
-      }
-      if (miso == TRUE && miso_group == MISO_TX2) {
-        if (symbol % 2) {
-          cur_data_carrier_map[0] = SCATTERED_CARRIER_INVERTED;
-          cur_data_carrier_map[C_PS - 1] = SCATTERED_CARRIER_INVERTED;
-        }
         else {
+          cur_data_carrier_map[i + K_EXT] = SCATTERED_CARRIER;
+        }
+      }
+      //insert edge pilots
+      if (miso == TRUE && miso_group == MISO_TX2) {
+        if (symbol & 1) {
           cur_data_carrier_map[0] = SCATTERED_CARRIER;
           cur_data_carrier_map[C_PS - 1] = SCATTERED_CARRIER;
+        }
+        else {
+          cur_data_carrier_map[0] = SCATTERED_CARRIER_INVERTED;
+          cur_data_carrier_map[C_PS - 1] = SCATTERED_CARRIER_INVERTED;
         }
       }
       else {
         cur_data_carrier_map[0] = SCATTERED_CARRIER;
         cur_data_carrier_map[C_PS - 1] = SCATTERED_CARRIER;
       }
+      //insert "pilots" for PAPR reduction
       if (papr_mode == PAPR_TR || papr_mode == PAPR_BOTH) {
         if (carrier_mode == CARRIERS_NORMAL) {
           shift = dx * (symbol % dy);
@@ -2694,7 +2693,7 @@ namespace gr {
       gr_complex zero;
       gr_complex *dst;
       int L_FC = 0;
-            
+
       zero = gr_complex(0.0, 0.0);
       if (N_FC != 0) {
         L_FC = 1;
