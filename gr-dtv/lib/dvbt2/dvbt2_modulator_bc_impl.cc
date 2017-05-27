@@ -256,20 +256,24 @@ namespace gr {
           }
           break;
         case MOD_256QAM:
-          for (int i = 0; i < noutput_items; i += cell_size) {
-            if (cyclic_delay == FALSE) {
+          if (cyclic_delay) { // Our case: 256-QAM, rotation = on --> cyclic_delay = true
+            for (int i = 0; i < noutput_items; i += cell_size) {
+              in_delay = in;
+              int j = cell_size - 1;
+              int limit = cell_size + j;
+              while (j < limit) {
+                index = *in++;
+                index_delay = in_delay[j % cell_size];
+                *out++ = gr_complex(m_256qam[index & 0xff].real(), m_256qam[index_delay & 0xff].imag());
+                j++;
+              }
+            }
+          }
+          else {
+            for (int i = 0; i < noutput_items; i += cell_size) {
               for (int j = 0; j < cell_size; j++) {
                 index = *in++;
                 *out++ = m_256qam[index & 0xff];
-              }
-            }
-            else {
-              in_delay = in;
-              for (int j = 0; j < cell_size; j++) {
-                index = *in++;
-                index_delay = in_delay[(j + cell_size - 1) % cell_size];
-                *out++ = gr_complex(m_256qam[index & 0xff].real(),
-                                    m_256qam[index_delay & 0xff].imag());
               }
             }
           }

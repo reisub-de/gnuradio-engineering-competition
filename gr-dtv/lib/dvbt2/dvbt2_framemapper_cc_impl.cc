@@ -1651,8 +1651,8 @@ namespace gr {
       int diff_N_FC_C_FC = N_FC - C_FC;
       int num_dummy_randomize = mapped_items - stream_items - 1840 - (N_post / eta_mod) - diff_N_FC_C_FC;
 
-      for (int i = 0; i < noutput_items; i += mapped_items) {
-        if (N_P2 == 1) {
+      if (N_P2 == 1) {
+        for (int i = 0; i < noutput_items; i += mapped_items) {
           memcpy(out, &l1pre_cache[index], memcpy_size_l1precache);
           out += 1840;
           index += 1840;
@@ -1670,7 +1670,9 @@ namespace gr {
              *out++ = unmodulated;
           }
         }
-        else {
+      }
+      else {
+        for (int i = 0; i < noutput_items; i += mapped_items) {
           for (int j = 0; j < 1840; j++) {
             *interleave++ = l1pre_cache[index++];
           }
