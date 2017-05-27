@@ -43,7 +43,8 @@ namespace gr {
       : gr::sync_block("dvb_bbscrambler_bb",
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(1, 1, sizeof(unsigned char)))
-    {
+    {     
+        
       if (framesize == FECFRAME_NORMAL) {
         switch (rate) {
           case C1_4:
@@ -280,7 +281,7 @@ namespace gr {
       unsigned char *out = (unsigned char *) output_items[0];
       
 
-#define AVX_ON 1
+#define AVX_ON 0
 #if AVX_ON
       __m256i in_256;
       __m256i random_256;

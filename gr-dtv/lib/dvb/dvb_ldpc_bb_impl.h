@@ -32,8 +32,8 @@
 
 typedef struct{
     int table_length;
-    int d[LDPC_ENCODE_TABLE_LENGTH];
-    int p[LDPC_ENCODE_TABLE_LENGTH];
+    const int* d;
+    const int* p;
     std::vector<std::pair<int, int> > sorted_p_d;
 }ldpc_encode_table;
 
@@ -67,6 +67,8 @@ namespace gr {
       const static int ldpc_tab_2_5N[72][13];
       const static int ldpc_tab_1_2N[90][9];
       const static int ldpc_tab_3_5N[108][13];
+      const static int ldpc_tab_3_5N_108R[233280][2];
+
       const static int ldpc_tab_2_3N_DVBT2[120][14];
       const static int ldpc_tab_2_3N_DVBS2[120][14];
       const static int ldpc_tab_3_4N[135][13];
