@@ -43,12 +43,6 @@ namespace gr {
       gr_complex *time_interleave;
       gr_complex **cols;
 
-      int* idx_reg_1;
-      int* idx_reg_2;
-      int rows;
-      int cols_1;
-      int cols_2;
-
      public:
       dvbt2_cellinterleaver_cc_impl(dvb_framesize_t framesize, dvb_constellation_t constellation, int fecblocks, int tiblocks);
       ~dvbt2_cellinterleaver_cc_impl();

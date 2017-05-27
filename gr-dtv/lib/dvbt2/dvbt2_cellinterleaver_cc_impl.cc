@@ -187,37 +187,6 @@ namespace gr {
       fec_blocks = fecblocks;
       set_output_multiple(cell_size * fecblocks);
       interleaved_items = cell_size * fecblocks;
-
-
-      // changed --------------------------------------------------------------------------!!!!
-      int FECBlocksPerTIBlock, ti_index, k;
-      // --calc index 1
-      rows = cell_size / 5;
-      FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
-      cols_1 = 5 * FECBlocksPerTIBlock;
-
-      idx_reg_1 = (int*)malloc(cols_1 * numSmallTIBlocks * sizeof(int));
-      k = 0;
-      ti_index = 0;
-      for(int i = 0; i < numSmallTIBlocks; i++) {
-          for(int j = 0; j < cols_1; j++) {
-              idx_reg_1[k++] = rows * j + ti_index;
-          }
-          ti_index += rows * cols_1;
-      }
-
-      // --calc index 2
-      FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
-      cols_2 = 5 * FECBlocksPerTIBlock;
-
-      idx_reg_2 = (int*)malloc(cols_2 * FECBlocksPerBigTIBlock * sizeof(int));
-      k = 0;
-      for(int i = 0; i < numSmallTIBlocks; i++) {
-          for(int j = 0; j < cols_2; j++) {
-              idx_reg_2[k++] = rows * j + ti_index;
-          }
-          ti_index += rows * cols_2;
-      }
     }
 
     /*
@@ -236,7 +205,7 @@ namespace gr {
     {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
-      int FECBlocksPerTIBlock, n, shift, temp, index, m;
+      int FECBlocksPerTIBlock, n, shift, temp, index, rows, numCols, ti_index;
 
       for (int i = 0; i < noutput_items; i += interleaved_items) {
         index = 0;
@@ -267,38 +236,28 @@ namespace gr {
           }
         }
         if (ti_blocks != 0) {
-
-            // first run
-            int *idx_reg_1_ptr = idx_reg_1;
-            int s = 0;
-            m = 0;
-            for (; s < numSmallTIBlocks; s++) {
-              for (int j = 0; j < cols_1; j++) {
-                cols[j] = &time_interleave[*idx_reg_1_ptr++];
-                      }
-                      for (int k = 0; k < rows; k++) {
-
-                for (int w = 0; w < cols_1; w++) {
-                  *out++ = *(cols[w] + k);
-                            }
-                      }
-                    }
-
-            // sec run
-            m = 0;
-            int *idx_reg_2_ptr = idx_reg_2;
-            for (; s < numSmallTIBlocks + numBigTIBlocks; s++) {
-              for (int j = 0; j < cols_2; j++) {
-                cols[j] = &time_interleave[*idx_reg_2_ptr++];
-              }
-
-              for (int k = 0; k < rows; k++) {
-
-                for (int w = 0; w < cols_2; w++) {
-                  *out++ = *(cols[w] + k);
-                }
-              }
+          ti_index = 0;
+          for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; s++) {
+            if (s < numSmallTIBlocks) {
+              FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
             }
+            else {
+              FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
+            }
+            numCols = 5 * FECBlocksPerTIBlock;
+            rows = cell_size / 5;
+            for (int j = 0; j < numCols; j++) {
+              cols[j] = &time_interleave[(rows * j) + ti_index];
+            }
+            index = 0;
+            for (int k = 0; k < rows; k++) {
+              for (int w = 0; w < numCols; w++) {
+                *out++ = *(cols[w] + index);
+              }
+              index++;
+            }
+            ti_index += rows * numCols;
+          }
         }
         else {
           index = 0;

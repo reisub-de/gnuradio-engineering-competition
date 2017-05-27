@@ -26,9 +26,6 @@
 #include "dvbt2_pilotgenerator_cc_impl.h"
 #include <volk/volk.h>
 
-#include <stdio.h>
-#include <string.h>
-
 namespace gr {
   namespace dtv {
 
@@ -1180,10 +1177,8 @@ namespace gr {
       }
     }
 
-    void
-    dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
+    void dvbt2_pilotgenerator_cc_impl::init_pilots_preset()
     {
-      int remainder, shift;
       for (int i = 0; i < C_PS; i++) {
         data_carrier_map[i] = DATA_CARRIER;
       }
@@ -2518,6 +2513,7 @@ namespace gr {
               }
               break;
             case PILOT_PP7:
+              //-------------------------------------------------------------------------------------
               for (int i = 0; i < 15; i++) {
                 data_carrier_map[pp7_cp1[i]] = CONTINUAL_CARRIER;
               }
@@ -2601,6 +2597,12 @@ namespace gr {
           }
           break;
       }
+    }
+
+    void dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
+    {
+      int remainder, shift;
+      //--------------------------------------------------------------------------------here
       for (int i = 0; i < C_PS; i++) {
         remainder = (i - K_EXT) % (dx * dy);
         if (remainder < 0) {
@@ -2678,8 +2680,7 @@ namespace gr {
         }
       }
     }
-//--------------------------------------------------------------------------------------------------------------------------
-///TODO
+
     int
     dvbt2_pilotgenerator_cc_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -2692,18 +2693,23 @@ namespace gr {
       gr_complex *dst;
       int L_FC = 0;
 
+      // build pilots
+      init_pilots_preset();
+      memcpy(data_carrier_map_cpy, data_carrier_map, sizeof(int) * MAX_CARRIERS);
+
       zero = gr_complex(0.0, 0.0);
       if (N_FC != 0) {
         L_FC = 1;
       }
-      for (int i = 0; i < noutput_items; i += num_symbols) { //
+      for (int i = 0; i < noutput_items; i += num_symbols) {
         for (int j = 0; j < num_symbols; j++) {
+          memcpy(data_carrier_map, data_carrier_map_cpy, sizeof(int) * MAX_CARRIERS);
           init_pilots(j);
           if (j < N_P2) {
-            /*for (int n = 0; n < left_nulls; n++) {
+            /*for (int n = 0; n < left_nulls; n++) {          // Removed
               *out++ = zero;
             }*/
-            memset(out, 0, sizeof(gr_complex)*left_nulls); // Added
+            memset(out, 0, sizeof(gr_complex)*left_nulls);    // Added
             out += left_nulls;
             for (int n = 0; n < C_PS; n++) {
               if (p2_carrier_map[n] == P2PILOT_CARRIER) {
@@ -2719,14 +2725,18 @@ namespace gr {
                 *out++ = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
+            /*for (int n = 0; n < right_nulls; n++) {         // Removed
               *out++ = zero;
-            }
+            }*/
+            memset(out, 0, sizeof(gr_complex)*right_nulls);    // Added
+            out += right_nulls;
           }
           else if (j == (num_symbols - L_FC)) {
-            for (int n = 0; n < left_nulls; n++) {
+            /*for (int n = 0; n < left_nulls; n++) {         // Removed
               *out++ = zero;
-            }
+            }*/
+            memset(out, 0, sizeof(gr_complex)*left_nulls);    // Added
+            out += left_nulls;
             for (int n = 0; n < C_PS; n++) {
               if (fc_carrier_map[n] == SCATTERED_CARRIER) {
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
@@ -2741,14 +2751,18 @@ namespace gr {
                 *out++ = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
+            /*for (int n = 0; n < right_nulls; n++) {
               *out++ = zero;
-            }
+            }*/
+            memset(out, 0, sizeof(gr_complex)*right_nulls);    // Added
+            out += right_nulls;
           }
           else {
-            for (int n = 0; n < left_nulls; n++) {
+            /*for (int n = 0; n < left_nulls; n++) {
               *out++ = zero;
-            }
+            }*/
+            memset(out, 0, sizeof(gr_complex)*left_nulls);    // Added
+            out += left_nulls;
             for (int n = 0; n < C_PS; n++) {
               if (data_carrier_map[n] == SCATTERED_CARRIER) {
                 *out++ = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
@@ -2766,12 +2780,19 @@ namespace gr {
                 *out++ = zero;
               }
               else {
-                *out++ = *in++;
+                  if((*(int*)(data_carrier_map+n)) == 0) {
+                      memcpy(out, in, sizeof(gr_complex) * 4);
+                      out+=4; in+=4; n+=3;
+                  }
+                  else
+                    *out++ = *in++;
               }
             }
-            for (int n = 0; n < right_nulls; n++) {
+            /*for (int n = 0; n < right_nulls; n++) {
               *out++ = zero;
-            }
+            }*/
+            memset(out, 0, sizeof(gr_complex)*right_nulls);    // Added
+            out += right_nulls;
           }
           out -= ofdm_fft_size;
           if (equalization_enable == EQUALIZATION_ON) {
