@@ -626,6 +626,8 @@ namespace gr {
       unsigned int shift[6];
       std::bitset<192> parity_bits;
       int consumed = 0;
+      unsigned long msB_CRC;
+      unsigned short pos;
 
       switch (bch_code) {
         case BCH_CODE_N12:
@@ -642,9 +644,9 @@ namespace gr {
 	            b |= temp << (15 - e);
               }
 
-              unsigned long msB_CRC = (parity_bits >> 176).to_ulong();
+              msB_CRC = (parity_bits >> 176).to_ulong();
               /* XOR-in next input byte into MSB of crc and get this MSB, that's our new intermediate divident */
-              unsigned char pos = (unsigned char)(msB_CRC ^ b);
+              pos = (unsigned short)(msB_CRC ^ b);
               /* Shift out the MSB used for division per lookuptable and XOR with the remainder */
               parity_bits = (parity_bits << 16) ^ crcTable[pos];
             }
