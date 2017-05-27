@@ -1137,6 +1137,7 @@ namespace gr {
         throw std::bad_alloc();
       }
       num_symbols = numdatasyms + N_P2;
+      init_pilots();
       set_output_multiple(num_symbols);
     }
 
@@ -1178,9 +1179,8 @@ namespace gr {
     }
 
     void
-    dvbt2_pilotgenerator_cc_impl::init_pilots(int symbol)
+    dvbt2_pilotgenerator_cc_impl::init_pilots(void)
     {
-      int remainder, shift;
       for (int i = 0; i < C_PS; i++) {
         data_carrier_map[i] = DATA_CARRIER;
       }
@@ -2598,7 +2598,14 @@ namespace gr {
           }
           break;
       }
+    }
+    
+    void
+    dvbt2_pilotgenerator_cc_impl::update_pilots(int symbol)
+    {
+      int remainder, shift;
       for (int i = 0; i < C_PS; i++) {
+        cur_data_carrier_map[i] = data_carrier_map[i];
         remainder = (i - K_EXT) % (dx * dy);
         if (remainder < 0) {
           remainder += (dx * dy);
@@ -2606,30 +2613,30 @@ namespace gr {
         if (remainder == (dx * (symbol % dy))) {
           if (miso == TRUE && miso_group == MISO_TX2) {
             if ((i / dx) % 2) {
-              data_carrier_map[i] = SCATTERED_CARRIER_INVERTED;
+              cur_data_carrier_map[i] = SCATTERED_CARRIER_INVERTED;
             }
             else {
-              data_carrier_map[i] = SCATTERED_CARRIER;
+              cur_data_carrier_map[i] = SCATTERED_CARRIER;
             }
           }
           else {
-            data_carrier_map[i] = SCATTERED_CARRIER;
+            cur_data_carrier_map[i] = SCATTERED_CARRIER;
           }
         }
       }
       if (miso == TRUE && miso_group == MISO_TX2) {
         if (symbol % 2) {
-          data_carrier_map[0] = SCATTERED_CARRIER_INVERTED;
-          data_carrier_map[C_PS - 1] = SCATTERED_CARRIER_INVERTED;
+          cur_data_carrier_map[0] = SCATTERED_CARRIER_INVERTED;
+          cur_data_carrier_map[C_PS - 1] = SCATTERED_CARRIER_INVERTED;
         }
         else {
-          data_carrier_map[0] = SCATTERED_CARRIER;
-          data_carrier_map[C_PS - 1] = SCATTERED_CARRIER;
+          cur_data_carrier_map[0] = SCATTERED_CARRIER;
+          cur_data_carrier_map[C_PS - 1] = SCATTERED_CARRIER;
         }
       }
       else {
-        data_carrier_map[0] = SCATTERED_CARRIER;
-        data_carrier_map[C_PS - 1] = SCATTERED_CARRIER;
+        cur_data_carrier_map[0] = SCATTERED_CARRIER;
+        cur_data_carrier_map[C_PS - 1] = SCATTERED_CARRIER;
       }
       if (papr_mode == PAPR_TR || papr_mode == PAPR_BOTH) {
         if (carrier_mode == CARRIERS_NORMAL) {
@@ -2641,35 +2648,35 @@ namespace gr {
         switch (fft_size) {
           case FFTSIZE_1K:
             for (int i = 0; i < 10; i++) {
-              data_carrier_map[tr_papr_map_1k[i] + shift] = TRPAPR_CARRIER;
+              cur_data_carrier_map[tr_papr_map_1k[i] + shift] = TRPAPR_CARRIER;
             }
             break;
           case FFTSIZE_2K:
             for (int i = 0; i < 18; i++) {
-              data_carrier_map[tr_papr_map_2k[i] + shift] = TRPAPR_CARRIER;
+              cur_data_carrier_map[tr_papr_map_2k[i] + shift] = TRPAPR_CARRIER;
             }
             break;
           case FFTSIZE_4K:
             for (int i = 0; i < 36; i++) {
-              data_carrier_map[tr_papr_map_4k[i] + shift] = TRPAPR_CARRIER;
+              cur_data_carrier_map[tr_papr_map_4k[i] + shift] = TRPAPR_CARRIER;
             }
             break;
           case FFTSIZE_8K:
           case FFTSIZE_8K_T2GI:
             for (int i = 0; i < 72; i++) {
-              data_carrier_map[tr_papr_map_8k[i] + shift] = TRPAPR_CARRIER;
+              cur_data_carrier_map[tr_papr_map_8k[i] + shift] = TRPAPR_CARRIER;
             }
             break;
           case FFTSIZE_16K:
           case FFTSIZE_16K_T2GI:
             for (int i = 0; i < 144; i++) {
-              data_carrier_map[tr_papr_map_16k[i] + shift] = TRPAPR_CARRIER;
+              cur_data_carrier_map[tr_papr_map_16k[i] + shift] = TRPAPR_CARRIER;
             }
             break;
           case FFTSIZE_32K:
           case FFTSIZE_32K_T2GI:
             for (int i = 0; i < 288; i++) {
-              data_carrier_map[tr_papr_map_32k[i] + shift] = TRPAPR_CARRIER;
+              cur_data_carrier_map[tr_papr_map_32k[i] + shift] = TRPAPR_CARRIER;
             }
             break;
         }
@@ -2687,7 +2694,7 @@ namespace gr {
       gr_complex zero;
       gr_complex *dst;
       int L_FC = 0;
-
+            
       zero = gr_complex(0.0, 0.0);
       if (N_FC != 0) {
         L_FC = 1;
@@ -2695,7 +2702,6 @@ namespace gr {
       for (int i = 0; i < noutput_items; i += num_symbols) {
         for (int j = 0; j < num_symbols; j++) {
           dst = ofdm_fft->get_inbuf();
-          init_pilots(j);
           if (j < N_P2) {
             for (int n = 0; n < C_PS / 2; n++) {
               if (p2_carrier_map[n] == P2PILOT_CARRIER) {
@@ -2764,20 +2770,21 @@ namespace gr {
             }
           }
           else {
+            update_pilots(j);
             for (int n = 0; n < C_PS / 2; n++) {
-              if (data_carrier_map[n] == SCATTERED_CARRIER) {
+              if (cur_data_carrier_map[n] == SCATTERED_CARRIER) {
                 dst[n + ofdm_fft_size - C_PS / 2] = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
+              else if (cur_data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
                 dst[n + ofdm_fft_size - C_PS / 2] = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == CONTINUAL_CARRIER) {
+              else if (cur_data_carrier_map[n] == CONTINUAL_CARRIER) {
                 dst[n + ofdm_fft_size - C_PS / 2] = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
+              else if (cur_data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
                 dst[n + ofdm_fft_size - C_PS / 2] = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == TRPAPR_CARRIER) {
+              else if (cur_data_carrier_map[n] == TRPAPR_CARRIER) {
                 dst[n + ofdm_fft_size - C_PS / 2] = zero;
               }
               else {
@@ -2788,19 +2795,19 @@ namespace gr {
               dst[n + C_PS / 2] = zero;
             }
             for (int n = C_PS / 2; n < C_PS; n++) {
-              if (data_carrier_map[n] == SCATTERED_CARRIER) {
+              if (cur_data_carrier_map[n] == SCATTERED_CARRIER) {
                 dst[n - C_PS / 2] = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
+              else if (cur_data_carrier_map[n] == SCATTERED_CARRIER_INVERTED) {
                 dst[n - C_PS / 2] = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == CONTINUAL_CARRIER) {
+              else if (cur_data_carrier_map[n] == CONTINUAL_CARRIER) {
                 dst[n - C_PS / 2] = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
+              else if (cur_data_carrier_map[n] == CONTINUAL_CARRIER_INVERTED) {
                 dst[n - C_PS / 2] = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
               }
-              else if (data_carrier_map[n] == TRPAPR_CARRIER) {
+              else if (cur_data_carrier_map[n] == TRPAPR_CARRIER) {
                 dst[n - C_PS / 2] = zero;
               }
               else {
