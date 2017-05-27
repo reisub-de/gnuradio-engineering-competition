@@ -2627,15 +2627,16 @@ namespace gr {
               break;
           }
           break;
-      }
+      } // end switch fft_size
+
       int certain_remainder = dx * (symbol % dy);
-      for (int i = 0; i < C_PS; i++) {
-        remainder = (i - K_EXT) % (dx * dy);
-        if (remainder < 0) {
-          remainder += (dx * dy);
-        }
-        if (remainder == certain_remainder) {
-          if (isMISO_TX2) {
+      if (isMISO_TX2) {
+        for (int i = 0; i < C_PS; i++) {
+          remainder = (i - K_EXT) % (dx * dy);
+          if (remainder < 0) {
+            remainder += (dx * dy);
+          }
+          if (remainder == certain_remainder) {
             if ((i / dx) % 2) {
               data_carrier_map[i] = SCATTERED_CARRIER_INVERTED;
             }
@@ -2643,9 +2644,24 @@ namespace gr {
               data_carrier_map[i] = SCATTERED_CARRIER;
             }
           }
-          else {
-            data_carrier_map[i] = SCATTERED_CARRIER;
+        }
+      }
+      else {
+        int i = -K_EXT;
+        int iter_limit = C_PS - K_EXT;
+        int dx_dy_prod = dx * dy;
+        while (i < iter_limit) {
+          remainder = i % dx_dy_prod;
+          if (remainder < 0) {
+            remainder += dx_dy_prod;
           }
+          if (remainder == certain_remainder) {
+            for (int k = i + K_EXT; k < C_PS; k += dx_dy_prod) {
+              data_carrier_map[k] = SCATTERED_CARRIER;
+            }
+            break;
+          }
+          i++;
         }
       }
       if (isMISO_TX2) {
