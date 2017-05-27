@@ -669,8 +669,8 @@ namespace gr {
       else {
         step = 3;
       }
-      for (int i = 0; i < C_PS; i += step) {
-        if (miso == TRUE && miso_group == MISO_TX2) {
+      if (miso == TRUE && miso_group == MISO_TX2) {
+        for (int i = 0; i < C_PS; i += step) {
           if (((i / 3) % 2) && (i % 3 == 0)) {
             p2_carrier_map[i] = P2PILOT_CARRIER_INVERTED;
           }
@@ -678,13 +678,15 @@ namespace gr {
             p2_carrier_map[i] = P2PILOT_CARRIER;
           }
         }
-        else {
+      }
+      else {
+        for (int i = 0; i < C_PS; i += step) {
           p2_carrier_map[i] = P2PILOT_CARRIER;
         }
       }
       if (carriermode == CARRIERS_EXTENDED) {
-        for (int i = 0; i < K_EXT; i++) {
-          if (miso == TRUE && miso_group == MISO_TX2) {
+        if (miso == TRUE && miso_group == MISO_TX2) {
+          for (int i = 0; i < K_EXT; i++) {
             if (((i / 3) % 2) && (i % 3 == 0)) {
               p2_carrier_map[i] = P2PILOT_CARRIER_INVERTED;
             }
@@ -698,9 +700,12 @@ namespace gr {
               p2_carrier_map[i + (C_PS - K_EXT)] = P2PILOT_CARRIER;
             }
           }
-          else {
+        }
+        else {
+          int i_offset = C_PS - K_EXT;
+          for (int i = 0; i < K_EXT; i++) {
             p2_carrier_map[i] = P2PILOT_CARRIER;
-            p2_carrier_map[i + (C_PS - K_EXT)] = P2PILOT_CARRIER;
+            p2_carrier_map[i + i_offset] = P2PILOT_CARRIER;
           }
         }
       }
@@ -988,19 +993,20 @@ namespace gr {
       for (int i = 0; i < C_PS; i++) {
         fc_carrier_map[i] = DATA_CARRIER;
       }
-      for (int i = 0; i < C_PS; i++) {
-        if (i % dx == 0) {
-          if (miso == TRUE && miso_group == MISO_TX2) {
-            if ((i / dx) % 2) {
-              fc_carrier_map[i] = SCATTERED_CARRIER_INVERTED;
-            }
-            else {
-              fc_carrier_map[i] = SCATTERED_CARRIER;
-            }
+      
+      if (miso == TRUE && miso_group == MISO_TX2) {
+        for (int i = 0; i < C_PS; i += dx) {
+          if ((i / dx) % 2) {
+            fc_carrier_map[i] = SCATTERED_CARRIER_INVERTED;
           }
           else {
             fc_carrier_map[i] = SCATTERED_CARRIER;
           }
+        }
+      }
+      else {
+        for (int i = 0; i < C_PS; i += dx) {
+          fc_carrier_map[i] = SCATTERED_CARRIER;
         }
       }
       if (fftsize == FFTSIZE_1K && pilotpattern == PILOT_PP4) {
@@ -1116,15 +1122,17 @@ namespace gr {
       x = M_PI * f / fs;
       sinc = 1.0;
       sincrms += sinc * sinc;
-      inverse_sinc[vlength_half] = gr_complex(1.0 / sinc, 0.0);
-      inverse_sinc[vlength_half - 1] = gr_complex(1.0 / sinc, 0.0);
+      gr_complex inverse_sinc_i = gr_complex(1.0 / sinc, 0.0);
+      inverse_sinc[vlength_half] = inverse_sinc_i;
+      inverse_sinc[vlength_half - 1] = inverse_sinc_i;
       f += fstep;
       for (int i = 1; i < vlength_half; i++) {
         x = M_PI * f / fs;
         sinc = sin(x) / x;
         sincrms += sinc * sinc;
-        inverse_sinc[i + vlength_half] = gr_complex(1.0 / sinc, 0.0);
-        inverse_sinc[vlength_half - i - 1] = gr_complex(1.0 / sinc, 0.0);
+        inverse_sinc_i = gr_complex(1.0 / sinc, 0.0);
+        inverse_sinc[i + vlength_half] = inverse_sinc_i;
+        inverse_sinc[vlength_half - i - 1] = inverse_sinc_i;
         f += fstep;
       }
       sincrms = std::sqrt(sincrms / vlength_half);
