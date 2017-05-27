@@ -175,7 +175,6 @@ namespace gr {
       unsigned int pack;
       const int *twist;
       const int *mux;
-      int ulim;
       const unsigned char* c[16];
 
       switch (signal_constellation) {
@@ -236,13 +235,18 @@ namespace gr {
           c[6] = &tempv[rows * 6];
           c[7] = &tempv[rows * 7];
           for (int i = 0; i < noutput_items; i += packed_items) {
-            for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
-              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
+            for (int k = 0; k < nbch; k+=8) {
+              //copy in long words to improve throughput, nbch always multiple of 8
+              tempu[k] = *in++;
+              tempu[k+1] = *in++;
+              tempu[k+2] = *in++;
+              tempu[k+3] = *in++;
+              tempu[k+4] = *in++;
+              tempu[k+5] = *in++;
+              tempu[k+6] = *in++;
+              tempu[k+7] = *in++;
             }
-            for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
-              tempu[k] = in[k]; //copy remaining part
-            }
-            in+=nbch;
+
             for (int s = 0; s < 360; s++) {
               for (int t = 0; t < q_val; t++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -311,13 +315,17 @@ namespace gr {
           c[10] = &tempv[rows * 10];
           c[11] = &tempv[rows * 11];
           for (int i = 0; i < noutput_items; i += packed_items) {
-            for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
-              *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
+            for (int k = 0; k < nbch; k+=8) {
+              //copy in long words to improve throughput, nbch always multiple of 8
+              tempu[k] = *in++;
+              tempu[k+1] = *in++;
+              tempu[k+2] = *in++;
+              tempu[k+3] = *in++;
+              tempu[k+4] = *in++;
+              tempu[k+5] = *in++;
+              tempu[k+6] = *in++;
+              tempu[k+7] = *in++;
             }
-            for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
-              tempu[k] = in[k]; //copy remaining part
-            }
-            in+=nbch;
             for (int s = 0; s < 360; s++) {
               for (int t = 0; t < q_val; t++) {
                 tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -386,23 +394,17 @@ namespace gr {
             c[14] = &tempv[rows * 14];
             c[15] = &tempv[rows * 15];
             for (int i = 0; i < noutput_items; i += packed_items) {
-              ulim = 8*(nbch/8);
-              for (int k = 0; k < ulim; k+=8) {
-//                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
-                  tempu[k] = in[k];
-                  tempu[k+1] = in[k+1];
-                  tempu[k+2] = in[k+2];
-                  tempu[k+3] = in[k+3];
-                  tempu[k+4] = in[k+4];
-                  tempu[k+5] = in[k+5];
-                  tempu[k+6] = in[k+6];
-                  tempu[k+7] = in[k+7];
+              for (int k = 0; k < nbch; k+=8) {
+                //copy in long words to improve throughput, nbch always multiple of 8
+                tempu[k] = *in++;
+                tempu[k+1] = *in++;
+                tempu[k+2] = *in++;
+                tempu[k+3] = *in++;
+                tempu[k+4] = *in++;
+                tempu[k+5] = *in++;
+                tempu[k+6] = *in++;
+                tempu[k+7] = *in++;
               }
-              for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
-                tempu[k] = in[k]; //copy remaining part
-              }
-              in+=nbch;
-            
               for (int s = 0; s < 360; s++) {
                 for (int t = 0; t < q_val; t++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
@@ -422,7 +424,7 @@ namespace gr {
               int shift_vals[mod * 2];
               for(int i = 0; i < mod * 2; i++)
                 shift_vals[i] = ((mod * 2) - 1) - mux[i];
-              
+
               for (int j = 0; j < rows; j++) {
                 pack = 0;
                 pack |= c[0][j] << shift_vals[0];
@@ -467,14 +469,17 @@ namespace gr {
             c[6] = &tempv[rows * 6];
             c[7] = &tempv[rows * 7];
             for (int i = 0; i < noutput_items; i += packed_items) {
-              for (int k = 0; k < nbch; k+=sizeof(uint64_t)/sizeof(unsigned char)) {
-                *((uint64_t*) &tempu[k]) = *((uint64_t*) &in[k]); //copy in long words to improve throughput
+              for (int k = 0; k < nbch; k+=8) {
+                //copy in long words to improve throughput, nbch always multiple of 8
+                tempu[k] = *in++;
+                tempu[k+1] = *in++;
+                tempu[k+2] = *in++;
+                tempu[k+3] = *in++;
+                tempu[k+4] = *in++;
+                tempu[k+5] = *in++;
+                tempu[k+6] = *in++;
+                tempu[k+7] = *in++;
               }
-              for (int k = nbch-(nbch % (sizeof(unsigned uint64_t)/sizeof(unsigned char))); k < nbch; k++) {
-                tempu[k] = in[k]; //copy remaining part
-              }
-              in+=nbch;
-            
               for (int s = 0; s < 360; s++) {
                 for (int t = 0; t < q_val; t++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
