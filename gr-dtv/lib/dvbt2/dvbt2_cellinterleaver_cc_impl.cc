@@ -229,8 +229,9 @@ namespace gr {
               }
               n++;
             }
+            gr_complex *ptr_time_interleave = time_interleave + index;
             for (int w = 0; w < cell_size; w++) {
-              time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
+              ptr_time_interleave[((permutations[w] + shift) % cell_size)] = *in++;
             }
             index += cell_size;
           }
