@@ -25,10 +25,6 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
 
-#include "c3_5_ldpc_defines.h"
-//#include <stdio.h>
-//#include <stdlib.h>
-
 namespace gr {
   namespace dtv {
 
@@ -356,25 +352,7 @@ namespace gr {
       code_rate = rate;
       signal_constellation = constellation;
       dvb_standard = standard;
-      
-      ldpc_encode_table tmp = C3_5_LDPC_ENCODE;
-      ldpc_encode = tmp;
-      //ldpc_lookup_generate();
-      
-		/*//Debug - Printing to file the constants
-		FILE *fp;
-		fp = fopen("/home/rajkumar/rs_eng_comp/gnuradio/gr-dtv/lib/dvb/Output.txt", "w");// "w" means that we are going to write on this file
-		//fprintf(fp,"\nldpc_encode_table\n");
-		//fprintf(fp,"\n\nldpc_encode_table.table_length\n%d\n\n",ldpc_encode_table.table_length);
-		fprintf(fp, "{ %d, \n{ ", ldpc_encode.table_length);
-		for (int i=0; i<648000;i++) fprintf(fp, "%d, ", ldpc_encode.d[i]);
-		fprintf(fp, " }, \n{");
-		for (int i=0; i<648000;i++) fprintf(fp, "%d, ", ldpc_encode.p[i]);
-		fprintf(fp, "} };");
-		fclose(fp);
-		//fprintf(fp, "This is being written in the file. This is an int variable: %d", myInt);
-		//EndOf Debug */
-      
+      ldpc_lookup_generate();
       if (signal_constellation == MOD_128APSK) {
         frame_size += 6;
       }
@@ -630,8 +608,14 @@ for (int row = 0; row < ROWS; row++) { \
       unsigned char *p;
       unsigned char *b = (unsigned char *) output_items[0];
       unsigned char *s;
+      
+      int Xs_size = sizeof(unsigned char) * Xs;
+      unsigned int nbch_size = sizeof(unsigned char) * nbch;
+      int nbch_int = (int) nbch;
+      
       // Calculate the number of parity bits
       int plen = (frame_size_real + Xp) - nbch;
+      int plen_size = sizeof(unsigned char) * plen;
       d = in;
       p = &out[nbch];
       int consumed = 0;
@@ -640,8 +624,8 @@ for (int row = 0; row < ROWS; row++) { \
       for (int i = 0; i < noutput_items; i += frame_size) {
         if (Xs != 0) {
           s = &shortening_buffer[0];
-          memset(s, 0, sizeof(unsigned char) * Xs);
-          memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
+          memset(s, 0, Xs_size);
+          memcpy(&s[Xs], &in[consumed], nbch_size);
           d = s;
         }
         if (P != 0) {
@@ -649,9 +633,8 @@ for (int row = 0; row < ROWS; row++) { \
           b = &out[i + nbch];
         }
         // First zero all the parity bits
-        memset(p, 0, sizeof(unsigned char) * plen);
-        //p = (unsigned char*) calloc(plen, sizeof(unsigned char));
-        for (int j = 0; j < (int)nbch; j++) {
+        memset(p, 0, plen_size);
+        for (int j = 0; j < nbch_int; j++) {
           out[i + j] = in[consumed];
           consumed++;
         }
