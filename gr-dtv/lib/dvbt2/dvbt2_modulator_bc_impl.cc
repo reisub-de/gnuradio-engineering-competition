@@ -150,8 +150,6 @@ namespace gr {
             temp = std::exp(gr_complexd(0.0, rotation_angle));
             for (int i = 0; i < 256; i++) {
               m_256qam[i] *= temp;
-              //m_256qam_arr[i][0] = m_256qam[i].real();
-              //m_256qam_arr[i][1] = m_256qam[i].imag();
             }
           }
           break;
@@ -171,6 +169,11 @@ namespace gr {
           }
           break;
       }
+
+      // initialize index arrays (only for the 256qam case)
+      for(int j=0; j<cell_size; j++)
+        delay_idx256[j] = (j + cell_size - 1) % cell_size;
+
       signal_constellation = constellation;
       set_output_multiple(cell_size);
     }
@@ -264,10 +267,9 @@ namespace gr {
             if (cyclic_delay) {
                 in_delay = in;
                 for (int j = 0; j < cell_size; j++) {
-                  index = *in++;
-                  index_delay = in_delay[(j + cell_size - 1) % cell_size];
-                  *out++ = gr_complex(m_256qam[index & 0xff].real(), m_256qam[index_delay & 0xff].imag());
-                  							  
+                  // array access via delay_idx256
+                  index_delay = in_delay[delay_idx256[j]];
+                  *out++ = gr_complex(m_256qam[*in++ & 0xff].real(), m_256qam[index_delay & 0xff].imag());
                 }
             }
             else {
