@@ -654,6 +654,7 @@ for (int row = 0; row < ROWS; row++) { \
           }
           index = 0;
           **/
+        index = 0;
          puncture = 0;
          bool breakP = false;
           for (int j = 0; j < plen; j++) {
