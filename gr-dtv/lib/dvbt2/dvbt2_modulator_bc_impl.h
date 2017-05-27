@@ -38,7 +38,7 @@ namespace gr {
       gr_complex m_64qam[64];
       gr_complex m_256qam[256];
 
-      // index array for the 256qam case
+      // index array for the 256qam case 
       int delay_idx256[8100];
 
 
