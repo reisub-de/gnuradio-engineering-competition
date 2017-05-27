@@ -632,8 +632,8 @@ for (int row = 0; row < ROWS; row++) { \
           out[i + j] = in[consumed];
           consumed++;
         }
-        //std::copy(in + consumed,in + consumed+(int)nbch-2,out+i);
-        //consumed = consumed + (int)nbch - 1;
+        std::copy(in + consumed,in + consumed+(int)nbch - 1, out+i);
+        consumed = consumed + (int)nbch;
         // now do the parity checking
         for (int j = 0; j < ldpc_encode.table_length; j++) {
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
@@ -644,7 +644,7 @@ for (int row = 0; row < ROWS; row++) { \
 
 
 
-          /**puncture = 0;
+          puncture = 0;
           for (int j = 0; j < plen; j += P) {
             p[j] = 0x55;
             puncture++;
@@ -653,26 +653,12 @@ for (int row = 0; row < ROWS; row++) { \
             }
           }
           index = 0;
-          **/
-        index = 0;
-         puncture = 0;
-         bool breakP = false;
           for (int j = 0; j < plen; j++) {
-        	  if (j % P == 0 && !breakP) {
-        		  p[j] = 0x55;
-        		  puncture++;
-        		  if (puncture == Xp) {
-        			  breakP = true;
-        		      }
-        	  } else {
+              if (p[j] != 0x55) {
               b[index++] = p[j];
             }
           }
           p = &out[nbch];
-
-
-
-
 
         }
 
