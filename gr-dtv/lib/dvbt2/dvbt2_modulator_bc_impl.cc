@@ -261,19 +261,16 @@ namespace gr {
             int j = cell_size - 1; 
             for (int i = 0; i < noutput_items; i += cell_size) {
               in_delay = in;
-              
+              //first pick the last value by cellsize - 1 and then loop through all the others
               *out++ = gr_complex(m_256qam[(int)*in++].real(), m_256qam[(int)in_delay[j]].imag());
-              //int limit = cell_size + j;
-              //while (j < limit) {
+
+              //safe modulation operation here
               for (int k = 0; k < cell_size - 1; ++k)
               {
                 *out++ = gr_complex(m_256qam[(int)*in++].real(), m_256qam[(int)in_delay[k]].imag());
               }
-                //index = *in++;
-                //index_delay = in_delay[j % cell_size];
-                //j++;
-              //}
             }
+            
           }
           else {
             for (int i = 0; i < noutput_items; i += cell_size) {

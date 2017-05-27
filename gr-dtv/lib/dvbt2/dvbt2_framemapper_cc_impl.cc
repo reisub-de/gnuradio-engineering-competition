@@ -1645,13 +1645,14 @@ namespace gr {
       int read, save, count = 0;
       gr_complex *interleave = zigzag_interleave;
 
-      int memcpy_size_l1precache = 1840 * sizeof(gr_complex);
-      int memcpy_size_out = stream_items * sizeof(gr_complex);
-      int out_update = N_post / eta_mod;
-      int diff_N_FC_C_FC = N_FC - C_FC;
-      int num_dummy_randomize = mapped_items - stream_items - 1840 - (N_post / eta_mod) - diff_N_FC_C_FC;
-
       if (N_P2 == 1) {
+        int memcpy_size_l1precache = 1840 * sizeof(gr_complex);
+        int memcpy_size_out = stream_items * sizeof(gr_complex);
+        int out_update = N_post / eta_mod;
+        int diff_N_FC_C_FC = N_FC - C_FC;
+        int memset_size = diff_N_FC_C_FC * sizeof(gr_complex);
+        int num_dummy_randomize = mapped_items - stream_items - 1840 - (N_post / eta_mod) - diff_N_FC_C_FC;
+        int memcpy_dummy_size = num_dummy_randomize * sizeof(gr_complex);
         for (int i = 0; i < noutput_items; i += mapped_items) {
           memcpy(out, &l1pre_cache[index], memcpy_size_l1precache);
           out += 1840;
@@ -1663,11 +1664,14 @@ namespace gr {
           out += stream_items;
           in += stream_items;
           index = 0;
-          for (int j = 0; j < num_dummy_randomize; j++) {
-            *out++ = dummy_randomize[index++];
+          if (num_dummy_randomize > 0) {
+            memcpy(out, &dummy_randomize[index], memcpy_dummy_size);
+            out += num_dummy_randomize;
+            index += num_dummy_randomize;
           }
-          for (int j = 0; j < N_FC - C_FC; j++) {
-             *out++ = unmodulated;
+          if (diff_N_FC_C_FC > 0) {
+            memset(out, 0, memset_size);
+            out += diff_N_FC_C_FC;
           }
         }
       }
