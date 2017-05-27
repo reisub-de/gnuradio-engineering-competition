@@ -427,13 +427,19 @@ namespace gr {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       // Calculate syncd, this should point to the MSB of the CRC
-      temp = count;
-      if (temp == 0) {
-        temp = count;
+      if(count) {
+    	temp = (188 - count) * 8;
       }
       else {
-        temp = (188 - count) * 8;
+    	  temp = 0;
       }
+      //temp = count;
+      //if (temp == 0) {
+      //  temp = count;
+      //}
+      //else {
+      //  temp = (188 - count) * 8;
+      //}
       if (nibble == FALSE) {
         temp += 4;
       }
@@ -441,7 +447,6 @@ namespace gr {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       // Add CRC to BB header, at end
-
       m_frame_offset_bits += add_crc8_bits(m_frame, BB_HEADER_LENGTH_BITS);
     }
 
@@ -516,9 +521,8 @@ namespace gr {
             	in++;
               }
               count = (count + 1) % 188;
-              //consumed++;
+              consumed++;
             }
-            consumed += len;
             if (fec_block == 0 && inband_type_b == TRUE) {
               add_inband_type_b(&out[offset], ts_rate);
               offset += 104;
