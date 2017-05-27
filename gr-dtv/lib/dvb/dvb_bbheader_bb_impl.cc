@@ -353,10 +353,10 @@ namespace gr {
     {
       int crc = 0;
       int b;
-      int i = 0;
+      //int i = 0;
 
       for (int n = 0; n < length; n++) {
-        b = in[i++] ^ (crc & 0x01);
+        b = *in++ ^ (crc & 0x01);		// in[i++]
         crc >>= 1;
         if (b) {
           crc ^= CRC_POLY;
@@ -368,7 +368,7 @@ namespace gr {
       }
 
       for (int n = 0; n < 8; n++) {
-        in[i++] = (crc & (1 << n)) ? 1 : 0;
+        *in++ = (crc & (1 << n)) ? 1 : 0;	//in[i++]
       }
       return 8;// Length of CRC
     }
@@ -433,13 +433,6 @@ namespace gr {
       else {
     	  temp = 0;
       }
-      //temp = count;
-      //if (temp == 0) {
-      //  temp = count;
-      //}
-      //else {
-      //  temp = (188 - count) * 8;
-      //}
       if (nibble == FALSE) {
         temp += 4;
       }
@@ -505,7 +498,7 @@ namespace gr {
           offset += 80;
 
           if (input_mode == INPUTMODE_HIEFF) {
-        	int len = ((int)kbch - 80 - padding) / 8;
+        	int len = (kbch - 80 - padding) / 8;
             for (int j = 0; j < len; j++) {
               if (count) {
             	b = *in++;
