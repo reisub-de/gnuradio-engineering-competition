@@ -66,7 +66,7 @@ namespace gr {
       unsigned char crc_tab[256];
       void add_bbheader(unsigned char *, int, int, bool);
       void build_crc8_table(void);
-      int add_crc8_bits(unsigned char *, int);
+      void add_crc8_bits(unsigned char *, int);
       void add_inband_type_b(unsigned char *, int);
 
      public:

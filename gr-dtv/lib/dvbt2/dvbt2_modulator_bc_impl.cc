@@ -47,7 +47,7 @@ namespace gr {
       double rotation_angle;
       double m_16qam_lookup[4] = {3.0, 1.0, -3.0, -1.0};
       double m_64qam_lookup[8] = {7.0, 5.0, 1.0, 3.0, -7.0, -5.0, -1.0, -3.0};
-      double m_256qam_lookup[16] = {15.0, 13.0, 9.0, 11.0, 1.0, 3.0, 7.0, 5.0, -15.0, -13.0, -9.0, -11.0, -1.0, -3.0, -7.0, -5.0};
+      double m_256qam_lookup[16] = {1.1504, 0.9971, 0.6903, 0.8437, 0.0767, 0.2301, 0.5369, 0.3835, -1.1504, -0.9971, -0.6903, -0.8437, -0.0767, -0.2301, -0.5369, -0.3835};
       int real_index, imag_index;
       gr_complex temp;
       cyclic_delay = FALSE;
@@ -138,15 +138,14 @@ namespace gr {
           }
           break;
         case MOD_256QAM:
-          normalization = std::sqrt(170.0);
           for (int i = 0; i < 256; i++) {
             real_index = ((i & 0x80) >> 4) | ((i & 0x20) >> 3) | ((i & 0x8) >> 2) | ((i & 0x2) >> 1);
             imag_index = ((i & 0x40) >> 3) | ((i & 0x10) >> 2) | ((i & 0x4) >> 1) | ((i & 0x1) >> 0);
-            m_256qam[i] = gr_complex(m_256qam_lookup[real_index] / normalization, m_256qam_lookup[imag_index] / normalization);
+            m_256qam[i] = gr_complex(m_256qam_lookup[real_index], m_256qam_lookup[imag_index]);
           }
           if (rotation == ROTATION_ON) {
             cyclic_delay = TRUE;
-            rotation_angle = (2.0 * M_PI * 3.576334375) / 360.0;
+            rotation_angle = 0.0624;
             temp = std::exp(gr_complexd(0.0, rotation_angle));
             for (int i = 0; i < 256; i++) {
               m_256qam[i] *= temp;
