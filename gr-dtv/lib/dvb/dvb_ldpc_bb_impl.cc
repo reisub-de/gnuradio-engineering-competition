@@ -632,7 +632,7 @@ for (int row = 0; row < ROWS; row++) { \
           out[i + j] = in[consumed];
           consumed++;
         } **/
-        std::copy(in[consumed],in[consumed+(int)nbch-2],out[i]);
+        std::copy(in + consumed,in + consumed+(int)nbch-2,out+i);
         consumed = consumed + (int)nbch - 1;
         // now do the parity checking
         for (int j = 0; j < ldpc_encode.table_length; j++) {
