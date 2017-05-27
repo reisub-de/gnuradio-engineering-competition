@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -24,6 +24,7 @@
 
 #include <gnuradio/io_signature.h>
 #include "dvb_ldpc_bb_impl.h"
+#include "dvb_ldpc_bb_impl_lut.h"
 
 namespace gr {
   namespace dtv {
@@ -382,7 +383,7 @@ for (int row = 0; row < ROWS; row++) { \
     } \
     im++; \
   } \
-} 
+}
 
     void
     dvb_ldpc_bb_impl::ldpc_lookup_generate(void)
@@ -401,19 +402,52 @@ for (int row = 0; row < ROWS; row++) { \
         if (code_rate == C1_4) {
           LDPC_BF(ldpc_tab_1_4N,  45);
         }
-        if (code_rate == C1_3) {
+        else if (code_rate == C1_3) {
           LDPC_BF(ldpc_tab_1_3N,  60);
         }
-        if (code_rate == C2_5) {
+        else if (code_rate == C2_5) {
           LDPC_BF(ldpc_tab_2_5N,  72);
         }
-        if (code_rate == C1_2) {
+        else if (code_rate == C1_2) {
           LDPC_BF(ldpc_tab_1_2N,  90);
         }
-        if (code_rate == C3_5) {
-          LDPC_BF(ldpc_tab_3_5N,  108);
+        else if (code_rate == C3_5) {
+          //LDPC_BF(ldpc_tab_3_5N,  108);
+
+          //ldpc_encode.table_length = index;
+          //for (int i_p = 0; i_p < 25920; i_p++) {
+          //  int i_new = 1;
+          //  for (int i_t = 0; i_t < ldpc_encode.table_length; i_t++) {
+          //    if (ldpc_encode.p[i_t] == i_p) {
+          //      tab_i_data[i_p][i_new++] = ldpc_encode.d[i_t];
+          //    }
+          //  }
+          //  tab_i_data[i_p][0] = i_new;
+          //}
+
+          //// Print LUT ready for pasting
+          //printf("const int dvb_ldpc_bb_impl::tab_i_data[%i][%i] = {\n", 25920, 11);
+          //for (int i_p = 0; i_p < 25920; i_p++) {
+          //  printf("\t{");
+          //  for (int i_d = 0; i_d < 11; i_d++) {
+          //    printf("%i", tab_i_data[i_p][i_d]);
+          //    if (i_d != 11 -1) {
+          //      printf(", ");
+          //    }
+          //    else {
+          //      printf("}");
+          //    }
+          //  }
+          //  if (i_p != 25920 - 1) {
+          //    printf(",\n");
+          //  }
+          //  else {
+          //    printf("\n};\n");
+          //  }
+          //}
+
         }
-        if (code_rate == C2_3) {
+        else if (code_rate == C2_3) {
           if (dvb_standard == STANDARD_DVBT2) {
             LDPC_BF(ldpc_tab_2_3N_DVBT2, 120);
           }
@@ -421,91 +455,91 @@ for (int row = 0; row < ROWS; row++) { \
             LDPC_BF(ldpc_tab_2_3N_DVBS2, 120);
           }
         }
-        if (code_rate == C3_4) {
+        else if (code_rate == C3_4) {
           LDPC_BF(ldpc_tab_3_4N,  135);
         }
-        if (code_rate == C4_5) {
+        else if (code_rate == C4_5) {
           LDPC_BF(ldpc_tab_4_5N,  144);
         }
-        if (code_rate == C5_6) {
+        else if (code_rate == C5_6) {
           LDPC_BF(ldpc_tab_5_6N,  150);
         }
-        if (code_rate == C8_9) {
+        else if (code_rate == C8_9) {
           LDPC_BF(ldpc_tab_8_9N,  160);
         }
-        if (code_rate == C9_10) {
+        else if (code_rate == C9_10) {
           LDPC_BF(ldpc_tab_9_10N, 162);
         }
-        if (code_rate == C2_9_VLSNR) {
+        else if (code_rate == C2_9_VLSNR) {
           LDPC_BF(ldpc_tab_2_9N,      40);
         }
-        if (code_rate == C13_45) {
+        else if (code_rate == C13_45) {
           LDPC_BF(ldpc_tab_13_45N,    52);
         }
-        if (code_rate == C9_20) {
+        else if (code_rate == C9_20) {
           LDPC_BF(ldpc_tab_9_20N,     81);
         }
-        if (code_rate == C90_180) {
+        else if (code_rate == C90_180) {
           LDPC_BF(ldpc_tab_90_180N,   90);
         }
-        if (code_rate == C96_180) {
+        else if (code_rate == C96_180) {
           LDPC_BF(ldpc_tab_96_180N,   96);
         }
-        if (code_rate == C11_20) {
+        else if (code_rate == C11_20) {
           LDPC_BF(ldpc_tab_11_20N,    99);
         }
-        if (code_rate == C100_180) {
+        else if (code_rate == C100_180) {
           LDPC_BF(ldpc_tab_100_180N, 100);
         }
-        if (code_rate == C104_180) {
+        else if (code_rate == C104_180) {
           LDPC_BF(ldpc_tab_104_180N, 104);
         }
-        if (code_rate == C26_45) {
+        else if (code_rate == C26_45) {
           LDPC_BF(ldpc_tab_26_45N,   104);
         }
-        if (code_rate == C18_30) {
+        else if (code_rate == C18_30) {
           LDPC_BF(ldpc_tab_18_30N,   108);
         }
-        if (code_rate == C28_45) {
+        else if (code_rate == C28_45) {
           LDPC_BF(ldpc_tab_28_45N,   112);
         }
-        if (code_rate == C23_36) {
+        else if (code_rate == C23_36) {
           LDPC_BF(ldpc_tab_23_36N,   115);
         }
-        if (code_rate == C116_180) {
+        else if (code_rate == C116_180) {
           LDPC_BF(ldpc_tab_116_180N, 116);
         }
-        if (code_rate == C20_30) {
+        else if (code_rate == C20_30) {
           LDPC_BF(ldpc_tab_20_30N,   120);
         }
-        if (code_rate == C124_180) {
+        else if (code_rate == C124_180) {
           LDPC_BF(ldpc_tab_124_180N, 124);
         }
-        if (code_rate == C25_36) {
+        else if (code_rate == C25_36) {
           LDPC_BF(ldpc_tab_25_36N,   125);
         }
-        if (code_rate == C128_180) {
+        else if (code_rate == C128_180) {
           LDPC_BF(ldpc_tab_128_180N, 128);
         }
-        if (code_rate == C13_18) {
+        else if (code_rate == C13_18) {
           LDPC_BF(ldpc_tab_13_18N,   130);
         }
-        if (code_rate == C132_180) {
+        else if (code_rate == C132_180) {
           LDPC_BF(ldpc_tab_132_180N, 132);
         }
-        if (code_rate == C22_30) {
+        else if (code_rate == C22_30) {
           LDPC_BF(ldpc_tab_22_30N,   132);
         }
-        if (code_rate == C135_180) {
+        else if (code_rate == C135_180) {
           LDPC_BF(ldpc_tab_135_180N, 135);
         }
-        if (code_rate == C140_180) {
+        else if (code_rate == C140_180) {
           LDPC_BF(ldpc_tab_140_180N, 140);
         }
-        if (code_rate == C7_9) {
+        else if (code_rate == C7_9) {
           LDPC_BF(ldpc_tab_7_9N,     140);
         }
-        if (code_rate == C154_180) {
+        else if (code_rate == C154_180) {
           LDPC_BF(ldpc_tab_154_180N, 154);
         }
       }
@@ -513,16 +547,16 @@ for (int row = 0; row < ROWS; row++) { \
         if (code_rate == C1_4) {
           LDPC_BF(ldpc_tab_1_4S, 9);
         }
-        if (code_rate == C1_3) {
+        else if (code_rate == C1_3) {
           LDPC_BF(ldpc_tab_1_3S, 15);
         }
-        if (code_rate == C2_5) {
+        else if (code_rate == C2_5) {
           LDPC_BF(ldpc_tab_2_5S, 18);
         }
-        if (code_rate == C1_2) {
+        else if (code_rate == C1_2) {
           LDPC_BF(ldpc_tab_1_2S, 20);
         }
-        if (code_rate == C3_5) {
+        else if (code_rate == C3_5) {
           if (dvb_standard == STANDARD_DVBT2) {
             LDPC_BF(ldpc_tab_3_5S_DVBT2, 27);
           }
@@ -530,55 +564,55 @@ for (int row = 0; row < ROWS; row++) { \
             LDPC_BF(ldpc_tab_3_5S_DVBS2, 27);
           }
         }
-        if (code_rate == C2_3) {
+        else if (code_rate == C2_3) {
           LDPC_BF(ldpc_tab_2_3S, 30);
         }
-        if (code_rate == C3_4) {
+        else if (code_rate == C3_4) {
           LDPC_BF(ldpc_tab_3_4S, 33);
         }
-        if (code_rate == C4_5) {
+        else if (code_rate == C4_5) {
           LDPC_BF(ldpc_tab_4_5S, 35);
         }
-        if (code_rate == C5_6) {
+        else if (code_rate == C5_6) {
           LDPC_BF(ldpc_tab_5_6S, 37);
         }
-        if (code_rate == C8_9) {
+        else if (code_rate == C8_9) {
           LDPC_BF(ldpc_tab_8_9S, 40);
         }
-        if (code_rate == C11_45) {
+        else if (code_rate == C11_45) {
           LDPC_BF(ldpc_tab_11_45S, 11);
         }
-        if (code_rate == C4_15) {
+        else if (code_rate == C4_15) {
           LDPC_BF(ldpc_tab_4_15S,  12);
         }
-        if (code_rate == C14_45) {
+        else if (code_rate == C14_45) {
           LDPC_BF(ldpc_tab_14_45S, 14);
         }
-        if (code_rate == C7_15) {
+        else if (code_rate == C7_15) {
           LDPC_BF(ldpc_tab_7_15S,  21);
         }
-        if (code_rate == C8_15) {
+        else if (code_rate == C8_15) {
           LDPC_BF(ldpc_tab_8_15S,  24);
         }
-        if (code_rate == C26_45) {
+        else if (code_rate == C26_45) {
           LDPC_BF(ldpc_tab_26_45S, 26);
         }
-        if (code_rate == C32_45) {
+        else if (code_rate == C32_45) {
           LDPC_BF(ldpc_tab_32_45S, 32);
         }
-        if (code_rate == C1_5_VLSNR_SF2) {
+        else if (code_rate == C1_5_VLSNR_SF2) {
           LDPC_BF(ldpc_tab_1_4S,    9);
         }
-        if (code_rate == C11_45_VLSNR_SF2) {
+        else if (code_rate == C11_45_VLSNR_SF2) {
           LDPC_BF(ldpc_tab_11_45S, 11);
         }
-        if (code_rate == C1_5_VLSNR) {
+        else if (code_rate == C1_5_VLSNR) {
           LDPC_BF(ldpc_tab_1_4S,    9);
         }
-        if (code_rate == C4_15_VLSNR) {
+        else if (code_rate == C4_15_VLSNR) {
           LDPC_BF(ldpc_tab_4_15S,  12);
         }
-        if (code_rate == C1_3_VLSNR) {
+        else if (code_rate == C1_3_VLSNR) {
           LDPC_BF(ldpc_tab_1_3S,   15);
         }
       }
@@ -586,10 +620,10 @@ for (int row = 0; row < ROWS; row++) { \
         if (code_rate == C1_5_MEDIUM) {
           LDPC_BF(ldpc_tab_1_5M,   18);
         }
-        if (code_rate == C11_45_MEDIUM) {
+        else if (code_rate == C11_45_MEDIUM) {
           LDPC_BF(ldpc_tab_11_45M, 22);
         }
-        if (code_rate == C1_3_MEDIUM) {
+        else if (code_rate == C1_3_MEDIUM) {
           LDPC_BF(ldpc_tab_1_3M,   30);
         }
       }
@@ -606,60 +640,70 @@ for (int row = 0; row < ROWS; row++) { \
       unsigned char *out = (unsigned char *) output_items[0];
       const unsigned char *d;
       unsigned char *p;
-      unsigned char *b = (unsigned char *) output_items[0];
-      unsigned char *s;
+      //unsigned char *b = (unsigned char *) output_items[0];
+      //unsigned char *s;
       // Calculate the number of parity bits
       int plen = (frame_size_real + Xp) - nbch;
       d = in;
       p = &out[nbch];
       int consumed = 0;
-      int puncture, index;
+      //int puncture, index;
 
       for (int i = 0; i < noutput_items; i += frame_size) {
-        if (Xs != 0) {
-          s = &shortening_buffer[0];
-          memset(s, 0, sizeof(unsigned char) * Xs);
-          memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
-          d = s;
-        }
-        if (P != 0) {
-          p = &puncturing_buffer[nbch];
-          b = &out[i + nbch];
-        }
+        //if (Xs != 0) {
+        //  s = &shortening_buffer[0];
+        //  memset(s, 0, sizeof(unsigned char) * Xs);
+        //  memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
+        //  d = s;
+        //}
+        //if (P != 0) {
+        //  p = &puncturing_buffer[nbch];
+        //  b = &out[i + nbch];
+        //}
+
+        // Copy the info bits
+        memcpy(&out[i], d, nbch);
+        consumed += nbch;
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
-        for (int j = 0; j < (int)nbch; j++) {
-          out[i + j] = in[consumed];
-          consumed++;
-        }
+
         // now do the parity checking
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
-        }
-        if (P != 0) {
-          puncture = 0;
-          for (int j = 0; j < plen; j += P) {
-            p[j] = 0x55;
-            puncture++;
-            if (puncture == Xp) {
-              break;
-            }
+        //for (int j = 0; j < ldpc_encode.table_length; j++) {
+        //  p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+        //}
+        //if (P != 0) {
+        //  puncture = 0;
+        //  for (int j = 0; j < plen; j += P) {
+        //    p[j] = 0x55;
+        //    puncture++;
+        //    if (puncture == Xp) {
+        //      break;
+        //    }
+        //  }
+        //  index = 0;
+        //  for (int j = 0; j < plen; j++) {
+        //    if (p[j] != 0x55) {
+        //      b[index++] = p[j];
+        //    }
+        //  }
+        //  p = &out[nbch];
+        //}
+        //for (int j = 1; j < (plen - Xp); j++) {
+        //  p[j] ^= p[j-1];
+        //}
+        //if (signal_constellation == MOD_128APSK) {
+        //  for (int j = 0; j < 6; j++) {
+        //    p[j + plen] = 0;
+        //  }
+        //}
+
+        // Let's do it my way
+        unsigned char p_bit = 0;
+        for (int i_p = 0; i_p < plen; i_p++) {
+          for (int i_d = 1; i_d < tab_i_data[i_p][0]; i_d++) {
+            p_bit ^= d[tab_i_data[i_p][i_d]];
           }
-          index = 0;
-          for (int j = 0; j < plen; j++) {
-            if (p[j] != 0x55) {
-              b[index++] = p[j];
-            }
-          }
-          p = &out[nbch];
-        }
-        for (int j = 1; j < (plen - Xp); j++) {
-          p[j] ^= p[j-1];
-        }
-        if (signal_constellation == MOD_128APSK) {
-          for (int j = 0; j < 6; j++) {
-            p[j + plen] = 0;
-          }
+          p[i_p] = p_bit;
         }
         d += nbch;
         p += frame_size;
@@ -5447,4 +5491,3 @@ for (int row = 0; row < ROWS; row++) { \
 
   } /* namespace dtv */
 } /* namespace gr */
-
