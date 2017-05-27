@@ -38,6 +38,8 @@ namespace gr {
       gr_complex m_64qam[64];
       gr_complex m_256qam[256];
 
+      float m_256qam_arr[256][2]; // test
+
      public:
       dvbt2_modulator_bc_impl(dvb_framesize_t framesize, dvb_constellation_t constellation, dvbt2_rotation_t rotation);
       ~dvbt2_modulator_bc_impl();

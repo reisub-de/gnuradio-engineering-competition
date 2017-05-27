@@ -150,6 +150,8 @@ namespace gr {
             temp = std::exp(gr_complexd(0.0, rotation_angle));
             for (int i = 0; i < 256; i++) {
               m_256qam[i] *= temp;
+              m_256qam_arr[i][0] = m_256qam[i].real();
+              m_256qam_arr[i][1] = m_256qam[i].imag();
             }
           }
           break;
@@ -196,6 +198,8 @@ namespace gr {
       gr_complex *out = (gr_complex *) output_items[0];
       const unsigned char *in_delay;
       int index, index_delay;
+
+      float *out_f = (float*) out;
 
       switch (signal_constellation) {
         case MOD_QPSK:
@@ -257,20 +261,22 @@ namespace gr {
           break;
         case MOD_256QAM:
           for (int i = 0; i < noutput_items; i += cell_size) {
-            if (cyclic_delay == FALSE) {
-              for (int j = 0; j < cell_size; j++) {
-                index = *in++;
-                *out++ = m_256qam[index & 0xff];
-              }
+            if (cyclic_delay) {
+                in_delay = in;
+                for (int j = 0; j < cell_size; j++) {
+                  index = *in++;
+                  index_delay = in_delay[(j + cell_size - 1) % cell_size];
+                  /**out++ = gr_complex(m_256qam[index & 0xff].real(),
+                                      m_256qam[index_delay & 0xff].imag());*/
+                  *out_f++ = m_256qam_arr[index & 0xff][0];
+                  *out_f++ = m_256qam_arr[index_delay & 0xff][1];
+                }
             }
             else {
-              in_delay = in;
-              for (int j = 0; j < cell_size; j++) {
-                index = *in++;
-                index_delay = in_delay[(j + cell_size - 1) % cell_size];
-                *out++ = gr_complex(m_256qam[index & 0xff].real(),
-                                    m_256qam[index_delay & 0xff].imag());
-              }
+                for (int j = 0; j < cell_size; j++) {
+                  index = *in++;
+                  *out++ = m_256qam[index & 0xff];
+                }
             }
           }
           break;

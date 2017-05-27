@@ -353,10 +353,10 @@ namespace gr {
     {
       int crc = 0;
       int b;
-      //int i = 0;
+      int i = 0;
 
       for (int n = 0; n < length; n++) {
-        b = *in++ ^ (crc & 0x01);		// in[i++]
+        b = in[i++] ^ (crc & 0x01);
         crc >>= 1;
         if (b) {
           crc ^= CRC_POLY;
@@ -368,7 +368,7 @@ namespace gr {
       }
 
       for (int n = 0; n < 8; n++) {
-        *in++ = (crc & (1 << n)) ? 1 : 0;	//in[i++]
+        in[i++] = (crc & (1 << n)) ? 1 : 0;
       }
       return 8;// Length of CRC
     }
@@ -427,11 +427,12 @@ namespace gr {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       // Calculate syncd, this should point to the MSB of the CRC
-      if(count) {
-    	temp = (188 - count) * 8;
+      temp = count;
+      if (temp == 0) {
+        temp = count;
       }
       else {
-    	  temp = 0;
+        temp = (188 - count) * 8;
       }
       if (nibble == FALSE) {
         temp += 4;
@@ -440,7 +441,8 @@ namespace gr {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       // Add CRC to BB header, at end
-      m_frame_offset_bits += add_crc8_bits(m_frame, BB_HEADER_LENGTH_BITS);
+      int len = BB_HEADER_LENGTH_BITS;
+      m_frame_offset_bits += add_crc8_bits(m_frame, len);
     }
 
     void
@@ -495,30 +497,29 @@ namespace gr {
             padding = 0;
           }
           add_bbheader(&out[offset], count, padding, TRUE);
-          offset += 80;
+          offset = offset + 80;
 
           if (input_mode == INPUTMODE_HIEFF) {
-        	int len = (kbch - 80 - padding) / 8;
-            for (int j = 0; j < len; j++) {
-              if (count) {
-            	b = *in++;
-				for (int n = 7; n >= 0; n--) {
-				  out[offset++] = b & (1 << n) ? 1 : 0;
-				}
+            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
+              if (count == 0) {
+                if (*in != 0x47) {
+                  GR_LOG_WARN(d_logger, "Transport Stream sync error!");
+                }
+                j--;
+                in++;
               }
               else {
-            	if (*in != 0x47) {
-            	  GR_LOG_WARN(d_logger, "Transport Stream sync error!");
-            	}
-            	j--;
-            	in++;
+                b = *in++;
+                for (int n = 7; n >= 0; n--) {
+                  out[offset++] = b & (1 << n) ? 1 : 0;
+                }
               }
               count = (count + 1) % 188;
               consumed++;
             }
             if (fec_block == 0 && inband_type_b == TRUE) {
               add_inband_type_b(&out[offset], ts_rate);
-              offset += 104;
+              offset = offset + 104;
             }
           }
           else {
