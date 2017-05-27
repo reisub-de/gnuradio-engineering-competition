@@ -29,6 +29,7 @@
 #include <fstream>
 #include <boost/thread.hpp>
 #include <algorithm>
+#include "immintrin.h"
 
 namespace gr {
   namespace dtv {
@@ -688,8 +689,9 @@ for (int row = 0; row < ROWS; row++) { \
           p = &out[nbch];
         }
 
-        for (int j = 1; j < (plen - Xp); j++) {
+        for (int j = 1; j < (plen - Xp); j+=2) {
             p[j] ^= p[j-1];
+            p[j+1] ^= p[j];
         }
         
         if (signal_constellation == MOD_128APSK) {
@@ -709,24 +711,20 @@ for (int row = 0; row < ROWS; row++) { \
       return noutput_items;
     }
 
-    void dvb_ldpc_bb_impl::doParityCheck(unsigned char* p, const unsigned char* d, int counter, int start)
+
+    inline void dvb_ldpc_bb_impl::doParityCheck(unsigned char* p, const unsigned char* d, int counter, int start)
     {
-         for (int j = start; j < counter; j+=36) {
+
+        // Use parallel processing on GPU
+         _Cilk_for (int j = start; j < counter; j+=9) {
             // For faster check, enroll the For Loop
             // The table is always a multiple of 360
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]] ^ d[ldpc_encode.d[j+1]] ^ d[ldpc_encode.d[j+2]]
                                 ^ d[ldpc_encode.d[j+3]] ^ d[ldpc_encode.d[j+4]] ^ d[ldpc_encode.d[j+5]]
                                 ^ d[ldpc_encode.d[j+6]] ^ d[ldpc_encode.d[j+7]] ^ d[ldpc_encode.d[j+8]];
-          p[ldpc_encode.p[j+9]] ^= d[ldpc_encode.d[j+9]] ^ d[ldpc_encode.d[j+10]] ^ d[ldpc_encode.d[j+11]]
-                                ^ d[ldpc_encode.d[j+12]] ^ d[ldpc_encode.d[j+13]] ^ d[ldpc_encode.d[j+14]]
-                                ^ d[ldpc_encode.d[j+15]] ^ d[ldpc_encode.d[j+16]] ^ d[ldpc_encode.d[j+17]];
-          p[ldpc_encode.p[j+18]] ^= d[ldpc_encode.d[j+18]] ^ d[ldpc_encode.d[j+19]] ^ d[ldpc_encode.d[j+20]]
-                                ^ d[ldpc_encode.d[j+21]] ^ d[ldpc_encode.d[j+22]] ^ d[ldpc_encode.d[j+23]]
-                                ^ d[ldpc_encode.d[j+24]] ^ d[ldpc_encode.d[j+25]] ^ d[ldpc_encode.d[j+26]];
-          p[ldpc_encode.p[j+27]] ^= d[ldpc_encode.d[j+27]] ^ d[ldpc_encode.d[j+28]] ^ d[ldpc_encode.d[j+29]]
-                                ^ d[ldpc_encode.d[j+30]] ^ d[ldpc_encode.d[j+31]] ^ d[ldpc_encode.d[j+32]]
-                                ^ d[ldpc_encode.d[j+33]] ^ d[ldpc_encode.d[j+34]] ^ d[ldpc_encode.d[j+35]];
-        }       
+        }      
+        
+        //d_128 = _mm_loadu_si128((__m128i*) &in[i + j]);
     }
     
     const int dvb_ldpc_bb_impl::ldpc_tab_1_4N[45][13]=
