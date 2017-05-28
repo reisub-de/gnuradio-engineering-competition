@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -187,6 +187,15 @@ namespace gr {
       fec_blocks = fecblocks;
       set_output_multiple(cell_size * fecblocks);
       interleaved_items = cell_size * fecblocks;
+
+
+      tab_i_ti = (int *) malloc(sizeof(int) * cell_size * fecblocks);
+      if (tab_i_ti == NULL) {
+        GR_LOG_FATAL(d_logger, "Cell/Time Interleaver, cannot allocate memory for tab_i_ti.");
+        throw std::bad_alloc();
+      }
+
+      build_ti_index_lut();
     }
 
     /*
@@ -196,6 +205,42 @@ namespace gr {
     {
       free(cols);
       free(time_interleave);
+      free(tab_i_ti);
+    }
+
+    void
+    dvbt2_cellinterleaver_cc_impl::build_ti_index_lut()
+    {
+      int FECBlocksPerTIBlock, n, shift, temp, index;
+
+      index = 0;
+      int *tab_write_p = tab_i_ti;
+      for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; s++) {
+        n = 0;
+        if (s < numSmallTIBlocks) {
+          FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
+        }
+        else {
+          FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
+        }
+        for (int r = 0; r < FECBlocksPerTIBlock; r++) {
+          shift = cell_size;
+          while (shift >= cell_size) {
+            temp = n;
+            shift = 0;
+            for (int p = 0; p < pn_degree; p++) {
+              shift |= temp & 1;
+              shift <<= 1;
+              temp >>= 1;
+            }
+            n++;
+          }
+          for (int w = 0; w < cell_size; w++) {
+            *tab_write_p++ = ((permutations[w] + shift) % cell_size) + index;
+          }
+          index += cell_size;
+        }
+      }
     }
 
     int
@@ -205,38 +250,16 @@ namespace gr {
     {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
-      int FECBlocksPerTIBlock, n, shift, temp, index, rows, numCols, ti_index;
+      int FECBlocksPerTIBlock, index, rows, numCols, ti_index;
 
       for (int i = 0; i < noutput_items; i += interleaved_items) {
         index = 0;
-        for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; s++) {
-          n = 0;
-          if (s < numSmallTIBlocks) {
-            FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
-          }
-          else {
-            FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
-          }
-          for (int r = 0; r < FECBlocksPerTIBlock; r++) {
-            shift = cell_size;
-            while (shift >= cell_size) {
-              temp = n;
-              shift = 0;
-              for (int p = 0; p < pn_degree; p++) {
-                shift |= temp & 1;
-                shift <<= 1;
-                temp >>= 1;
-              }
-              n++;
-            }
-            for (int w = 0; w < cell_size; w++) {
-              time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
-            }
-            index += cell_size;
-          }
+        for (int s = 0; s < interleaved_items; s++) {
+          time_interleave[tab_i_ti[s]] = *in++;
         }
         if (ti_blocks != 0) {
           ti_index = 0;
+          rows = cell_size / 5;
           for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; s++) {
             if (s < numSmallTIBlocks) {
               FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
@@ -245,7 +268,6 @@ namespace gr {
               FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
             }
             numCols = 5 * FECBlocksPerTIBlock;
-            rows = cell_size / 5;
             for (int j = 0; j < numCols; j++) {
               cols[j] = &time_interleave[(rows * j) + ti_index];
             }
@@ -273,4 +295,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-

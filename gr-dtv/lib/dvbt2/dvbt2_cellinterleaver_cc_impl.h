@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -42,6 +42,9 @@ namespace gr {
       int interleaved_items;
       gr_complex *time_interleave;
       gr_complex **cols;
+      int *tab_i_ti;
+
+      void build_ti_index_lut();
 
      public:
       dvbt2_cellinterleaver_cc_impl(dvb_framesize_t framesize, dvb_constellation_t constellation, int fecblocks, int tiblocks);
@@ -56,4 +59,3 @@ namespace gr {
 } // namespace gr
 
 #endif /* INCLUDED_DTV_DVBT2_CELLINTERLEAVER_CC_IMPL_H */
-
