@@ -737,14 +737,16 @@ namespace gr {
           ldpc_encode.item[index].d = im; \
           if(!bchd && (ldpc_encode.item[index].p < (int)kbch && ldpc_encode.item[index].d < (int)kbch)) { \
             bchd = true; \
-            ldpc_encode.item_bch[index_bch].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
-            ldpc_encode.item_bch[index_bch].d = im; \
+            ldpc_encode.item_bch[index_bch] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
             index_bch++; \
           } else { \
-            ldpc_encode.item_nobch[index_nobch].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
-            ldpc_encode.item_nobch[index_nobch].d = im; \
-            index_nobch++; \
-          } \
+            if (TABLE_NAME[row][0] == 12) { \
+              ldpc_encode.item_nobch_1[index_nobch_1] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+              index_nobch_1++; \
+            } else { \
+              ldpc_encode.item_nobch_2[index_nobch_2] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+              index_nobch_2++; \
+          }}\
           index++; \
         } \
         im++; \
@@ -756,13 +758,14 @@ namespace gr {
     dvb_bch_ldpc_bb_impl::ldpc_lookup_generate(void)
     {
       int im;
-      int index, index_bch, index_nobch;
+      int index, index_bch, index_nobch, index_nobch_1, index_nobch_2;
       int pbits;
       int q;
       bool bchd;
       index = 0;
       index_bch = 0;
-      index_nobch = 0;
+      index_nobch_1 = 0;
+      index_nobch_2 = 0;
       im = 0;
 
       pbits = (frame_size_real + Xp) - nbch;    //number of parity bits
@@ -965,6 +968,8 @@ namespace gr {
         }
       }
       ldpc_encode.table_length = index;
+      ldpc_encode.table_length_nobch_1 = index_nobch_1;
+      ldpc_encode.table_length_nobch_2 = index_nobch_2;
       ldpc_encode.table_length_nobch = index_nobch;
       ldpc_encode.table_length_bch = index_bch;
     }
@@ -1488,9 +1493,11 @@ namespace gr {
 
                 // now do the parity checking of first kbch bits and generate ldpc parity
                 bool carry;
+                index = 0;
                 for (int j = 0; j < ldpc_encode.table_length_bch; j++) {
-                  temp = d[ldpc_encode.item_bch[j].d];
-                  p[ldpc_encode.item_bch[j].p] ^= temp;
+                  temp = d[index];
+                  index++;
+                  p[ldpc_encode.item_bch[j]] ^= temp;
                   carry = bitShiftRight256ymm(&shift_vector,1);
                   b_bch = temp ^ carry; //(((int*) &carry)[7] != 0);
                   if (b_bch) {
@@ -1508,8 +1515,33 @@ namespace gr {
                   }
                 }
                 // continue the ldpc parity checking
-                for (int j = 0; j < ldpc_encode.table_length_nobch; j++) {
-                  p[ldpc_encode.item_nobch[j].p] ^= d[ldpc_encode.item_nobch[j].d];
+                index = 0;
+                for (int j = 0; j < ldpc_encode.table_length_nobch_1; j+=11) {
+                  p[ldpc_encode.item_nobch_1[j]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+1]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+2]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+3]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+4]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+5]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+6]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+7]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+8]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+9]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+10]] ^= d[index];
+                  index++;
+                }
+
+                int j = 0;
+                for (; index < (int)kbch; j+=2) {
+                  p[ldpc_encode.item_nobch_2[j]] ^= d[index];
+                  p[ldpc_encode.item_nobch_2[j+1]] ^= d[index];
+                  index++;
+                }
+                for (; j < ldpc_encode.table_length_nobch_2; j+=3) {
+                  p[ldpc_encode.item_nobch_2[j]] ^= d[index];
+                  p[ldpc_encode.item_nobch_2[j+1]] ^= d[index];
+                  p[ldpc_encode.item_nobch_2[j+2]] ^= d[index];
+                  index++;
                 }
 
                 if (P != 0) {
@@ -1572,9 +1604,11 @@ namespace gr {
               memcpy(&out_ldpc[i],&in_bch[consumed],sizeof(unsigned char) * (int)kbch); //Missing last nbch - kbch bits, but not available yet!
 
               // now do the parity checking of first kbch bits
+              index = 0;
               for (int j = 0; j < ldpc_encode.table_length_bch; j++) {
-                temp = d[ldpc_encode.item_bch[j].d];
-                p[ldpc_encode.item_bch[j].p] ^= temp;
+                temp = d[index];
+                index++;
+                p[ldpc_encode.item_bch[j]] ^= temp;
                 b_bch = (temp ^ (shift[5] & 1));
                 reg_6_shift(shift);
                 if (b_bch) {
@@ -1597,9 +1631,35 @@ namespace gr {
                 }
               }
 
+//jumpdest
               // continue the parity checking
-              for (int j = 0; j < ldpc_encode.table_length_nobch; j++) {
-                p[ldpc_encode.item_nobch[j].p] ^= d[ldpc_encode.item_nobch[j].d];
+              index = 0;
+              for (int j = 0; j < ldpc_encode.table_length_nobch_1; j+=11) {
+                p[ldpc_encode.item_nobch_1[j]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+1]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+2]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+3]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+4]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+5]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+6]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+7]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+8]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+9]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+10]] ^= d[index];
+                index++;
+              }
+
+              int j = 0;
+              for (; index < (int)kbch; j+=2) {
+                p[ldpc_encode.item_nobch_2[j]] ^= d[index];
+                p[ldpc_encode.item_nobch_2[j+1]] ^= d[index];
+                index++;
+              }
+              for (; j < ldpc_encode.table_length_nobch_2; j+=3) {
+                p[ldpc_encode.item_nobch_2[j]] ^= d[index];
+                p[ldpc_encode.item_nobch_2[j+1]] ^= d[index];
+                p[ldpc_encode.item_nobch_2[j+2]] ^= d[index];
+                index++;
               }
 
               if (P != 0) {

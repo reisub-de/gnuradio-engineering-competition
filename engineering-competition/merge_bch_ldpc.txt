@@ -31,3 +31,12 @@ dtv_dvbt2_p1insertion_cc_0:             17.623.052
 dtv_dvbt2_pilotgenerator_cc_0:          96.021.472
 
 sum: 1.011.323.574
+     0.005
+     0.530
+     0.430
+
+
+
+464...
+530
+423...
