@@ -774,7 +774,7 @@ namespace gr {
 
       for (int i = 0; i < noutput_items; i += interleaved_items) {
         for (int j = 0; j < N_P2; j++) {
-          if ((symbol % 2) == 0) {
+          if ((symbol & 1) == 0) {
             H = HevenP2;
           }
           else {
@@ -787,7 +787,7 @@ namespace gr {
           in += C_P2;
         }
         for (int j = 0; j < num_data_symbols; j++) {
-          if ((symbol % 2) == 0) {
+          if ((symbol & 1) == 0) {
             H = Heven;
           }
           else {
@@ -800,7 +800,7 @@ namespace gr {
           in += C_DATA;
         }
         if (N_FC != 0) {
-          if ((symbol % 2) == 0) {
+          if ((symbol & 1) == 0) {
             H = HevenFC;
           }
           else {
