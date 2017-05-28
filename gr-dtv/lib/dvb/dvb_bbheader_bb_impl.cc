@@ -52,15 +52,6 @@ namespace gr {
       BBHeader *f = &m_format[0].bb_header;
       if (framesize == FECFRAME_NORMAL) {
         switch (rate) {
-          case C1_4:
-            kbch = 16008;
-            break;
-          case C1_3:
-            kbch = 21408;
-            break;
-          case C2_5:
-            kbch = 25728;
-            break;
           case C1_2:
             kbch = 32208;
             break;
@@ -79,84 +70,6 @@ namespace gr {
           case C5_6:
             kbch = 53840;
             break;
-          case C8_9:
-            kbch = 57472;
-            break;
-          case C9_10:
-            kbch = 58192;
-            break;
-          case C2_9_VLSNR:
-            kbch = 14208;
-            break;
-          case C13_45:
-            kbch = 18528;
-            break;
-          case C9_20:
-            kbch = 28968;
-            break;
-          case C90_180:
-            kbch = 32208;
-            break;
-          case C96_180:
-            kbch = 34368;
-            break;
-          case C11_20:
-            kbch = 35448;
-            break;
-          case C100_180:
-            kbch = 35808;
-            break;
-          case C104_180:
-            kbch = 37248;
-            break;
-          case C26_45:
-            kbch = 37248;
-            break;
-          case C18_30:
-            kbch = 38688;
-            break;
-          case C28_45:
-            kbch = 40128;
-            break;
-          case C23_36:
-            kbch = 41208;
-            break;
-          case C116_180:
-            kbch = 41568;
-            break;
-          case C20_30:
-            kbch = 43008;
-            break;
-          case C124_180:
-            kbch = 44448;
-            break;
-          case C25_36:
-            kbch = 44808;
-            break;
-          case C128_180:
-            kbch = 45888;
-            break;
-          case C13_18:
-            kbch = 46608;
-            break;
-          case C132_180:
-            kbch = 47328;
-            break;
-          case C22_30:
-            kbch = 47328;
-            break;
-          case C135_180:
-            kbch = 48408;
-            break;
-          case C140_180:
-            kbch = 50208;
-            break;
-          case C7_9:
-            kbch = 50208;
-            break;
-          case C154_180:
-            kbch = 55248;
-            break;
           default:
             kbch = 0;
             break;
@@ -166,12 +79,6 @@ namespace gr {
         switch (rate) {
           case C1_4:
             kbch = 3072;
-            break;
-          case C1_3:
-            kbch = 5232;
-            break;
-          case C2_5:
-            kbch = 6312;
             break;
           case C1_2:
             kbch = 7032;
@@ -190,45 +97,6 @@ namespace gr {
             break;
           case C5_6:
             kbch = 13152;
-            break;
-          case C8_9:
-            kbch = 14232;
-            break;
-          case C11_45:
-            kbch = 3792;
-            break;
-          case C4_15:
-            kbch = 4152;
-            break;
-          case C14_45:
-            kbch = 4872;
-            break;
-          case C7_15:
-            kbch = 7392;
-            break;
-          case C8_15:
-            kbch = 8472;
-            break;
-          case C26_45:
-            kbch = 9192;
-            break;
-          case C32_45:
-            kbch = 11352;
-            break;
-          case C1_5_VLSNR_SF2:
-            kbch = 2512;
-            break;
-          case C11_45_VLSNR_SF2:
-            kbch = 3792;
-            break;
-          case C1_5_VLSNR:
-            kbch = 3072;
-            break;
-          case C4_15_VLSNR:
-            kbch = 4152;
-            break;
-          case C1_3_VLSNR:
-            kbch = 5232;
             break;
           default:
             kbch = 0;
@@ -262,7 +130,7 @@ namespace gr {
       f->issyi   = ISSYI_NOT_ACTIVE;
       f->npd     = NPD_NOT_ACTIVE;
       if (mode == INPUTMODE_NORMAL) {
-        f->upl  = 188 * 8;
+        f->upl  = 1504;
         f->dfl  = kbch - 80;
         f->sync = 0x47;
       }
@@ -287,7 +155,7 @@ namespace gr {
       fec_blocks = fecblocks;
       fec_block = 0;
       ts_rate = tsrate;
-      extra = (((kbch - 80) / 8) / 187) + 1;
+      extra = (kbch/1496)+1;
       if (framesize != FECFRAME_MEDIUM) {
         set_output_multiple(kbch);
       }
@@ -308,14 +176,14 @@ namespace gr {
     {
       if (input_mode == INPUTMODE_NORMAL) {
         if (frame_size != FECFRAME_MEDIUM) {
-          ninput_items_required[0] = ((noutput_items - 80) / 8);
+          ninput_items_required[0] = (noutput_items/8) - 10;
         }
         else {
-          ninput_items_required[0] = ((noutput_items - 160) / 8);
+          ninput_items_required[0] = (noutput_items/8) - 20;
         }
       }
       else {
-        ninput_items_required[0] = ((noutput_items - 80) / 8) + extra;
+        ninput_items_required[0] = (noutput_items/8) - 10 + extra;
       }
     }
 
@@ -432,7 +300,7 @@ namespace gr {
         temp = count;
       }
       else {
-        temp = (188 - count) * 8;
+        temp = 1504 - (count*8);
       }
       if (nibble == FALSE) {
         temp += 4;
@@ -500,7 +368,7 @@ namespace gr {
           offset = offset + 80;
 
           if (input_mode == INPUTMODE_HIEFF) {
-            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
+            for (int j = 0; j < (int)((kbch-padding)/8-10); j++) {
               if (count == 0) {
                 if (*in != 0x47) {
                   GR_LOG_WARN(d_logger, "Transport Stream sync error!");
@@ -523,7 +391,7 @@ namespace gr {
             }
           }
           else {
-            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
+            for (int j = 0; j < (int)((kbch-padding)/8-10); j++) {
               if (count == 0) {
                 if (*in != 0x47) {
                   GR_LOG_WARN(d_logger, "Transport Stream sync error!");
@@ -555,7 +423,7 @@ namespace gr {
           padding = 0;
           add_bbheader(&out[offset], count, padding, nibble);
           offset = offset + 80;
-          for (int j = 0; j < (int)((kbch - 80) / 4); j++) {
+          for (int j = 0; j < (int)(kbch/4 - 20); j++) {
             if (nibble == TRUE) {
               if (count == 0) {
                 if (*in != 0x47) {

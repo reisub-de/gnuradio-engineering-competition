@@ -45,21 +45,6 @@ namespace gr {
     {
       if (framesize == FECFRAME_NORMAL) {
         switch (rate) {
-          case C1_4:
-            kbch = 16008;
-            nbch = 16200;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C1_3:
-            kbch = 21408;
-            nbch = 21600;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C2_5:
-            kbch = 25728;
-            nbch = 25920;
-            bch_code = BCH_CODE_N12;
-            break;
           case C1_2:
             kbch = 32208;
             nbch = 32400;
@@ -90,136 +75,6 @@ namespace gr {
             nbch = 54000;
             bch_code = BCH_CODE_N10;
             break;
-          case C8_9:
-            kbch = 57472;
-            nbch = 57600;
-            bch_code = BCH_CODE_N8;
-            break;
-          case C9_10:
-            kbch = 58192;
-            nbch = 58320;
-            bch_code = BCH_CODE_N8;
-            break;
-          case C2_9_VLSNR:
-            kbch = 14208;
-            nbch = 14400;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C13_45:
-            kbch = 18528;
-            nbch = 18720;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C9_20:
-            kbch = 28968;
-            nbch = 29160;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C90_180:
-            kbch = 32208;
-            nbch = 32400;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C96_180:
-            kbch = 34368;
-            nbch = 34560;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C11_20:
-            kbch = 35448;
-            nbch = 35640;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C100_180:
-            kbch = 35808;
-            nbch = 36000;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C104_180:
-            kbch = 37248;
-            nbch = 37440;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C26_45:
-            kbch = 37248;
-            nbch = 37440;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C18_30:
-            kbch = 38688;
-            nbch = 38880;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C28_45:
-            kbch = 40128;
-            nbch = 40320;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C23_36:
-            kbch = 41208;
-            nbch = 41400;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C116_180:
-            kbch = 41568;
-            nbch = 41760;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C20_30:
-            kbch = 43008;
-            nbch = 43200;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C124_180:
-            kbch = 44448;
-            nbch = 44640;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C25_36:
-            kbch = 44808;
-            nbch = 45000;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C128_180:
-            kbch = 45888;
-            nbch = 46080;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C13_18:
-            kbch = 46608;
-            nbch = 46800;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C132_180:
-            kbch = 47328;
-            nbch = 47520;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C22_30:
-            kbch = 47328;
-            nbch = 47520;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C135_180:
-            kbch = 48408;
-            nbch = 48600;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C140_180:
-            kbch = 50208;
-            nbch = 50400;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C7_9:
-            kbch = 50208;
-            nbch = 50400;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C154_180:
-            kbch = 55248;
-            nbch = 55440;
-            bch_code = BCH_CODE_N12;
-            break;
           default:
             kbch = 0;
             nbch = 0;
@@ -232,16 +87,6 @@ namespace gr {
           case C1_4:
             kbch = 3072;
             nbch = 3240;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C1_3:
-            kbch = 5232;
-            nbch = 5400;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C2_5:
-            kbch = 6312;
-            nbch = 6480;
             bch_code = BCH_CODE_S12;
             break;
           case C1_2:
@@ -272,71 +117,6 @@ namespace gr {
           case C5_6:
             kbch = 13152;
             nbch = 13320;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C8_9:
-            kbch = 14232;
-            nbch = 14400;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C11_45:
-            kbch = 3792;
-            nbch = 3960;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C4_15:
-            kbch = 4152;
-            nbch = 4320;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C14_45:
-            kbch = 4872;
-            nbch = 5040;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C7_15:
-            kbch = 7392;
-            nbch = 7560;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C8_15:
-            kbch = 8472;
-            nbch = 8640;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C26_45:
-            kbch = 9192;
-            nbch = 9360;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C32_45:
-            kbch = 11352;
-            nbch = 11520;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C1_5_VLSNR_SF2:
-            kbch = 2512;
-            nbch = 2680;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C11_45_VLSNR_SF2:
-            kbch = 3792;
-            nbch = 3960;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C1_5_VLSNR:
-            kbch = 3072;
-            nbch = 3240;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C4_15_VLSNR:
-            kbch = 4152;
-            nbch = 4320;
-            bch_code = BCH_CODE_S12;
-            break;
-          case C1_3_VLSNR:
-            kbch = 5232;
-            nbch = 5400;
             bch_code = BCH_CODE_S12;
             break;
           default:
