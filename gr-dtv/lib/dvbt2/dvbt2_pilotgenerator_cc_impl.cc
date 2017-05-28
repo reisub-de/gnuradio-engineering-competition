@@ -51,6 +51,11 @@ namespace gr {
       if ((preamble == PREAMBLE_T2_SISO) || (preamble == PREAMBLE_T2_LITE_SISO)) {
         miso = FALSE;
         switch (fftsize) {
+          case FFTSIZE_32K:
+          case FFTSIZE_32K_T2GI:
+            N_P2 = 1;
+            C_P2 = 22432;
+            break;
           case FFTSIZE_1K:
             N_P2 = 16;
             C_P2 = 558;
@@ -72,11 +77,6 @@ namespace gr {
           case FFTSIZE_16K_T2GI:
             N_P2 = 1;
             C_P2 = 8944;
-            break;
-          case FFTSIZE_32K:
-          case FFTSIZE_32K_T2GI:
-            N_P2 = 1;
-            C_P2 = 22432;
             break;
         }
       }
@@ -113,6 +113,19 @@ namespace gr {
         }
       }
       switch (fftsize) {
+        case FFTSIZE_32K:
+        case FFTSIZE_32K_T2GI:
+          if (carriermode == CARRIERS_NORMAL) {
+            C_PS = 27265;
+            K_EXT = 0;
+            K_OFFSET = 288;
+          }
+          else {
+            C_PS = 27841;
+            K_EXT = 288;
+            K_OFFSET = 0;
+          }
+          break;
         case FFTSIZE_1K:
           C_PS = 853;
           K_EXT = 0;
@@ -154,21 +167,110 @@ namespace gr {
             K_OFFSET = 0;
           }
           break;
+      }
+      switch (fftsize) {
         case FFTSIZE_32K:
         case FFTSIZE_32K_T2GI:
           if (carriermode == CARRIERS_NORMAL) {
-            C_PS = 27265;
-            K_EXT = 0;
-            K_OFFSET = 288;
+            switch (pilotpattern) {
+              case PILOT_PP1:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP2:
+                C_DATA = 24886;
+                N_FC = 22720;
+                C_FC = 20952;
+                break;
+              case PILOT_PP3:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP4:
+                C_DATA = 26022;
+                N_FC = 24992;
+                C_FC = 22649;
+                break;
+              case PILOT_PP5:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP6:
+                C_DATA = 26592;
+                N_FC = 26128;
+                C_FC = 23603;
+                break;
+              case PILOT_PP7:
+                C_DATA = 26836;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP8:
+                C_DATA = 26812;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+            }
           }
           else {
-            C_PS = 27841;
-            K_EXT = 288;
-            K_OFFSET = 0;
+            switch (pilotpattern) {
+              case PILOT_PP7:
+                C_DATA = 27404;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP1:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP2:
+                C_DATA = 25412;
+                N_FC = 23200;
+                C_FC = 21395;
+                break;
+              case PILOT_PP3:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP4:
+                C_DATA = 26572;
+                N_FC = 25520;
+                C_FC = 23127;
+                break;
+              case PILOT_PP5:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP6:
+                C_DATA = 27152;
+                N_FC = 26680;
+                C_FC = 24102;
+                break;
+              case PILOT_PP8:
+                C_DATA = 27376;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+            }
+          }
+          if (paprmode == PAPR_TR || paprmode == PAPR_BOTH) {
+            if (C_DATA != 0) {
+              C_DATA -= 288;
+            }
+            if (N_FC != 0) {
+              N_FC -= 288;
+            }
+            if (C_FC != 0) {
+              C_FC -= 288;
+            }
           }
           break;
-      }
-      switch (fftsize) {
         case FFTSIZE_1K:
           switch (pilotpattern) {
             case PILOT_PP1:
@@ -538,108 +640,6 @@ namespace gr {
             }
           }
           break;
-        case FFTSIZE_32K:
-        case FFTSIZE_32K_T2GI:
-          if (carriermode == CARRIERS_NORMAL) {
-            switch (pilotpattern) {
-              case PILOT_PP1:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP2:
-                C_DATA = 24886;
-                N_FC = 22720;
-                C_FC = 20952;
-                break;
-              case PILOT_PP3:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP4:
-                C_DATA = 26022;
-                N_FC = 24992;
-                C_FC = 22649;
-                break;
-              case PILOT_PP5:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP6:
-                C_DATA = 26592;
-                N_FC = 26128;
-                C_FC = 23603;
-                break;
-              case PILOT_PP7:
-                C_DATA = 26836;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP8:
-                C_DATA = 26812;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-            }
-          }
-          else {
-            switch (pilotpattern) {
-              case PILOT_PP1:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP2:
-                C_DATA = 25412;
-                N_FC = 23200;
-                C_FC = 21395;
-                break;
-              case PILOT_PP3:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP4:
-                C_DATA = 26572;
-                N_FC = 25520;
-                C_FC = 23127;
-                break;
-              case PILOT_PP5:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP6:
-                C_DATA = 27152;
-                N_FC = 26680;
-                C_FC = 24102;
-                break;
-              case PILOT_PP7:
-                C_DATA = 27404;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP8:
-                C_DATA = 27376;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-            }
-          }
-          if (paprmode == PAPR_TR || paprmode == PAPR_BOTH) {
-            if (C_DATA != 0) {
-              C_DATA -= 288;
-            }
-            if (N_FC != 0) {
-              N_FC -= 288;
-            }
-            if (C_FC != 0) {
-              C_FC -= 288;
-            }
-          }
-          break;
       }
       if (miso == FALSE) {
         if (guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) {
@@ -660,16 +660,31 @@ namespace gr {
         }
       }
       init_prbs();
-      for (int i = 0; i < C_PS; i++) {
-        p2_carrier_map[i] = DATA_CARRIER;
-      }
       if ((fftsize == FFTSIZE_32K || fftsize == FFTSIZE_32K_T2GI) && (miso == FALSE)) {
-        step = 6;
+        int i = 0;
+        for (int j = 0; j < C_PS; j += 6) {
+          p2_carrier_map[i++] = P2PILOT_CARRIER;
+          p2_carrier_map[i++] = DATA_CARRIER;
+          p2_carrier_map[i++] = DATA_CARRIER;
+          p2_carrier_map[i++] = DATA_CARRIER;
+          p2_carrier_map[i++] = DATA_CARRIER;
+          p2_carrier_map[i++] = DATA_CARRIER;
+        }
       }
       else {
         step = 3;
+        if (miso == FALSE && miso_group != MISO_TX2) {
+          for (int i = 0; i < C_PS; i += 3) {
+            p2_carrier_map[i] = P2PILOT_CARRIER;
+            p2_carrier_map[i + 1] = DATA_CARRIER;
+            p2_carrier_map[i + 2] = DATA_CARRIER;
+          }
+        } 
       }
       if (miso == TRUE && miso_group == MISO_TX2) {
+        for (int i = 0; i < C_PS; i++) {
+          p2_carrier_map[i] = DATA_CARRIER;
+        }
         for (int i = 0; i < C_PS; i += step) {
           if (((i / 3) % 2) && (i % 3 == 0)) {
             p2_carrier_map[i] = P2PILOT_CARRIER_INVERTED;
@@ -677,11 +692,6 @@ namespace gr {
           else {
             p2_carrier_map[i] = P2PILOT_CARRIER;
           }
-        }
-      }
-      else {
-        for (int i = 0; i < C_PS; i += step) {
-          p2_carrier_map[i] = P2PILOT_CARRIER;
         }
       }
       if (carriermode == CARRIERS_EXTENDED) {
@@ -716,6 +726,41 @@ namespace gr {
         p2_carrier_map[C_PS - K_EXT - 3] = P2PILOT_CARRIER;
       }
       switch (fftsize) {
+        case FFTSIZE_32K:
+        case FFTSIZE_32K_T2GI:
+          for (int i = 0; i < 288; i++) {
+            p2_carrier_map[p2_papr_map_32k[i] + K_EXT] = P2PAPR_CARRIER;
+          }
+          if (miso == TRUE) {
+            for (int i = 0; i < 288; i++) {
+              ki = p2_papr_map_32k[i] + K_EXT;
+              if (i < 287) {
+                if (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_32k[i + 1] + K_EXT))) {
+                  p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
+                }
+              }
+              else {
+                if ((ki % 3) == 1) {
+                  p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
+                }
+              }
+              if (i > 0) {
+                if (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_32k[i - 1] + K_EXT))) {
+                  p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
+                }
+              }
+              else {
+                if ((ki % 3) == 2) {
+                  p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
+                }
+              }
+            }
+          }
+          cp_bpsk[0] = gr_complex(8.0 / 3.0, 0.0);
+          cp_bpsk[1] = gr_complex(-8.0 / 3.0, 0.0);
+          cp_bpsk_inverted[0] = gr_complex(-8.0 / 3.0, 0.0);
+          cp_bpsk_inverted[1] = gr_complex(8.0 / 3.0, 0.0);
+          break;
         case FFTSIZE_1K:
           for (int i = 0; i < 10; i++) {
             p2_carrier_map[p2_papr_map_1k[i]] = P2PAPR_CARRIER;
@@ -888,43 +933,16 @@ namespace gr {
           cp_bpsk_inverted[0] = gr_complex(-8.0 / 3.0, 0.0);
           cp_bpsk_inverted[1] = gr_complex(8.0 / 3.0, 0.0);
           break;
-        case FFTSIZE_32K:
-        case FFTSIZE_32K_T2GI:
-          for (int i = 0; i < 288; i++) {
-            p2_carrier_map[p2_papr_map_32k[i] + K_EXT] = P2PAPR_CARRIER;
-          }
-          if (miso == TRUE) {
-            for (int i = 0; i < 288; i++) {
-              ki = p2_papr_map_32k[i] + K_EXT;
-              if (i < 287) {
-                if (((ki % 3) == 1) && ((ki + 1) != (p2_papr_map_32k[i + 1] + K_EXT))) {
-                  p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
-                }
-              }
-              else {
-                if ((ki % 3) == 1) {
-                  p2_carrier_map[ki + 1] = P2PILOT_CARRIER;
-                }
-              }
-              if (i > 0) {
-                if (((ki % 3) == 2) && ((ki - 1) != (p2_papr_map_32k[i - 1] + K_EXT))) {
-                  p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
-                }
-              }
-              else {
-                if ((ki % 3) == 2) {
-                  p2_carrier_map[ki - 1] = P2PILOT_CARRIER;
-                }
-              }
-            }
-          }
-          cp_bpsk[0] = gr_complex(8.0 / 3.0, 0.0);
-          cp_bpsk[1] = gr_complex(-8.0 / 3.0, 0.0);
-          cp_bpsk_inverted[0] = gr_complex(-8.0 / 3.0, 0.0);
-          cp_bpsk_inverted[1] = gr_complex(8.0 / 3.0, 0.0);
-          break;
       }
       switch (pilotpattern) {
+        case PILOT_PP7:
+          sp_bpsk[0] = gr_complex(7.0 / 3.0, 0.0);
+          sp_bpsk[1] = gr_complex(-7.0 / 3.0, 0.0);
+          sp_bpsk_inverted[0] = gr_complex(-7.0 / 3.0, 0.0);
+          sp_bpsk_inverted[1] = gr_complex(7.0 / 3.0, 0.0);
+          dx = 24;
+          dy = 4;
+          break;
         case PILOT_PP1:
           sp_bpsk[0] = gr_complex(4.0 / 3.0, 0.0);
           sp_bpsk[1] = gr_complex(-4.0 / 3.0, 0.0);
@@ -973,14 +991,6 @@ namespace gr {
           dx = 24;
           dy = 2;
           break;
-        case PILOT_PP7:
-          sp_bpsk[0] = gr_complex(7.0 / 3.0, 0.0);
-          sp_bpsk[1] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[0] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[1] = gr_complex(7.0 / 3.0, 0.0);
-          dx = 24;
-          dy = 4;
-          break;
         case PILOT_PP8:
           sp_bpsk[0] = gr_complex(7.0 / 3.0, 0.0);
           sp_bpsk[1] = gr_complex(-7.0 / 3.0, 0.0);
@@ -993,7 +1003,6 @@ namespace gr {
       for (int i = 0; i < C_PS; i++) {
         fc_carrier_map[i] = DATA_CARRIER;
       }
-      
       if (miso == TRUE && miso_group == MISO_TX2) {
         for (int i = 0; i < C_PS; i += dx) {
           if ((i / dx) % 2) {
@@ -1009,13 +1018,7 @@ namespace gr {
           fc_carrier_map[i] = SCATTERED_CARRIER;
         }
       }
-      if (fftsize == FFTSIZE_1K && pilotpattern == PILOT_PP4) {
-        fc_carrier_map[C_PS - 2] = SCATTERED_CARRIER;
-      }
-      else if (fftsize == FFTSIZE_1K && pilotpattern == PILOT_PP5) {
-        fc_carrier_map[C_PS - 2] = SCATTERED_CARRIER;
-      }
-      else if (fftsize == FFTSIZE_2K && pilotpattern == PILOT_PP7) {
+      if ((fftsize == FFTSIZE_1K && (pilotpattern == PILOT_PP4 || pilotpattern == PILOT_PP5)) || (fftsize == FFTSIZE_2K && pilotpattern == PILOT_PP7)) {
         fc_carrier_map[C_PS - 2] = SCATTERED_CARRIER;
       }
       if (miso == TRUE && miso_group == MISO_TX2) {
@@ -1183,11 +1186,16 @@ namespace gr {
         }
       }
 
-      for (int i = 0; i < (CHIPS / 8); i++) {
-        for (int k = 7; k >= 0; k--) {
-          pn_sequence[j] = (pn_sequence_table[i] >> k) & 0x1;
-          ++j;
-        }
+      const int limit = CHIPS / 8;
+      for (int i = 0; i < limit; i++) {
+        pn_sequence[j++] = (pn_sequence_table[i] >> 7) & 0x1;
+        pn_sequence[j++] = (pn_sequence_table[i] >> 6) & 0x1;        
+        pn_sequence[j++] = (pn_sequence_table[i] >> 5) & 0x1;
+        pn_sequence[j++] = (pn_sequence_table[i] >> 4) & 0x1;
+        pn_sequence[j++] = (pn_sequence_table[i] >> 3) & 0x1;
+        pn_sequence[j++] = (pn_sequence_table[i] >> 2) & 0x1;        
+        pn_sequence[j++] = (pn_sequence_table[i] >> 1) & 0x1;
+        pn_sequence[j++] = pn_sequence_table[i] & 0x1;
       }
     }
 
@@ -2669,7 +2677,7 @@ namespace gr {
         // Optimization based on mathematical structure
         // of modulo operator
         int i = -K_EXT;
-        int iter_limit = C_PS - K_EXT;
+        const int iter_limit = C_PS - K_EXT;
         while (i < iter_limit) {
           remainder = i % dx_dy_prod;
           if (remainder < 0) {
@@ -2739,114 +2747,111 @@ namespace gr {
     {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
-      int L_FC = 0;
 
       const int size_gr_complex = sizeof(gr_complex);
       const int size_left_zeros = left_nulls * size_gr_complex;
       const int size_right_zeros = right_nulls * size_gr_complex;
       const int reset_out = ofdm_fft_size - right_nulls;
 
-      int limit = num_symbols - L_FC;
 
       if (N_FC != 0) {
-        L_FC = 1;
-      }
+        // L_FC = 1;
+        const int limit = num_symbols - 1;
 
-      for (int i = 0; i < noutput_items; i += num_symbols) {
-        int j = 0;
-        int n;
+        for (int i = 0; i < noutput_items; i += num_symbols) {
+          int j = 0;
+          int n;
 
-        // At first do all the first N_P2 (= 1 here) OFDM-symbols
-        while (j < N_P2) {
-          memset(out, 0, size_left_zeros);
-          out += left_nulls;
-          n = 0;
-          while (n < C_PS) {
-            switch (p2_carrier_map[n]) {
-              case P2PILOT_CARRIER:
-                *out = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-                break;
-              case P2PILOT_CARRIER_INVERTED:
-                *out = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-                break;
-              case P2PAPR_CARRIER:
-                memset(out, 0, size_gr_complex);
-                break;
-              default:
-                *out = *in++;
-                break;
+          // At first do all the first N_P2 (= 1 here) OFDM-symbols
+          while (j < N_P2) {
+            memset(out, 0, size_left_zeros);
+            out += left_nulls;
+            n = 0;
+            while (n < C_PS) {
+              switch (p2_carrier_map[n]) {
+                case P2PILOT_CARRIER:
+                  *out = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case P2PILOT_CARRIER_INVERTED:
+                  *out = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case P2PAPR_CARRIER:
+                  memset(out, 0, size_gr_complex);
+                  break;
+                default:
+                  *out = *in++;
+                  break;
+              }
+              out++;
+              n++;
             }
-            out++;
-            n++;
+            memset(out, 0, size_right_zeros);
+            out -=  reset_out;
+            generate_ofdm_symbol(out);
+            out += ofdm_fft_size;
+            ++j;
           }
-          memset(out, 0, size_right_zeros);
-          out -=  reset_out;
-          generate_ofdm_symbol(out);
-          out += ofdm_fft_size;
-          ++j;
-        }
 
-        // Then do the symbols N_P2 to num_symbols - L_FC - 1
-        int counter_data_carriers = 0;
-        while (j < limit) {
-          memset(out, 0, size_left_zeros);
-          out += left_nulls;
-          // Since init_pilots only affects values in the data_carrier_map array, only initialize it here
-          init_pilots(j);
-          n = 0;
-          while (n < C_PS) {
-            switch (data_carrier_map[n]) {
-              case SCATTERED_CARRIER:
-                memcpy(out, in, counter_data_carriers * size_gr_complex);
-                out += counter_data_carriers;
-                in += counter_data_carriers;
-                counter_data_carriers = 0;
-                *out = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-                break;
-              case SCATTERED_CARRIER_INVERTED:
-                memcpy(out, in, counter_data_carriers * size_gr_complex);
-                out += counter_data_carriers;
-                in += counter_data_carriers;
-                counter_data_carriers = 0;
-                *out = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-                break;
-              case CONTINUAL_CARRIER:
-                memcpy(out, in, counter_data_carriers * size_gr_complex);
-                out += counter_data_carriers;
-                in += counter_data_carriers;
-                counter_data_carriers = 0;
-                *out = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-                break;
-              case CONTINUAL_CARRIER_INVERTED:
-                memcpy(out, in, counter_data_carriers * size_gr_complex);
-                out += counter_data_carriers;
-                in += counter_data_carriers;
-                counter_data_carriers = 0;
-                *out = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
-                break;
-              case TRPAPR_CARRIER:
-                memcpy(out, in, counter_data_carriers * size_gr_complex);
-                out += counter_data_carriers;
-                in += counter_data_carriers;
-                counter_data_carriers = 0;
-                memset(out, 0, size_gr_complex);
-              default:
-                counter_data_carriers++;
-                n++;
-                continue;
+          // Then do the symbols N_P2 to num_symbols - 2
+          int counter_data_carriers = 0;
+          while (j < limit) {
+            memset(out, 0, size_left_zeros);
+            out += left_nulls;
+            // Since init_pilots only affects values in the data_carrier_map array, only initialize it here
+            init_pilots(j);
+            n = 0;
+            while (n < C_PS) {
+              switch (data_carrier_map[n]) {
+                case SCATTERED_CARRIER:
+                  memcpy(out, in, counter_data_carriers * size_gr_complex);
+                  out += counter_data_carriers;
+                  in += counter_data_carriers;
+                  counter_data_carriers = 0;
+                  *out = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case SCATTERED_CARRIER_INVERTED:
+                  memcpy(out, in, counter_data_carriers * size_gr_complex);
+                  out += counter_data_carriers;
+                  in += counter_data_carriers;
+                  counter_data_carriers = 0;
+                  *out = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case CONTINUAL_CARRIER:
+                  memcpy(out, in, counter_data_carriers * size_gr_complex);
+                  out += counter_data_carriers;
+                  in += counter_data_carriers;
+                  counter_data_carriers = 0;
+                  *out = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case CONTINUAL_CARRIER_INVERTED:
+                  memcpy(out, in, counter_data_carriers * size_gr_complex);
+                  out += counter_data_carriers;
+                  in += counter_data_carriers;
+                  counter_data_carriers = 0;
+                  *out = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case TRPAPR_CARRIER:
+                  memcpy(out, in, counter_data_carriers * size_gr_complex);
+                  out += counter_data_carriers;
+                  in += counter_data_carriers;
+                  counter_data_carriers = 0;
+                  memset(out, 0, size_gr_complex);
+                default:
+                  counter_data_carriers++;
+                  n++;
+                  continue;
+              }
+              out++;
+              n++;
             }
-            out++;
-            n++;
+            memset(out, 0, size_right_zeros);
+            out -=  reset_out;
+            generate_ofdm_symbol(out);
+            out += ofdm_fft_size;
+            ++j;
           }
-          memset(out, 0, size_right_zeros);
-          out -=  reset_out;
-          generate_ofdm_symbol(out);
-          out += ofdm_fft_size;
-          ++j;
-        }
         
-        if (L_FC == 1) {
-          // Now do symbol j = limit = num_symbols - L_FC
+          // Now do symbol j = limit = num_symbols - 1
           memset(out, 0, size_left_zeros);
           out += left_nulls;
           n = 0;
@@ -2873,9 +2878,109 @@ namespace gr {
           generate_ofdm_symbol(out);
           out += ofdm_fft_size;
           ++j;
-        }
 
-      } // end for iteration over output_items
+        } // end for iteration over output_items
+        
+      } // end if 
+      else {
+        // L_FC = 0;
+
+        for (int i = 0; i < noutput_items; i += num_symbols) {
+          int j = 0;
+          int n;
+
+          // At first do all the first N_P2 (= 1 here) OFDM-symbols
+          while (j < N_P2) {
+            memset(out, 0, size_left_zeros);
+            out += left_nulls;
+            n = 0;
+            while (n < C_PS) {
+              switch (p2_carrier_map[n]) {
+                case P2PILOT_CARRIER:
+                  *out = p2_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case P2PILOT_CARRIER_INVERTED:
+                  *out = p2_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case P2PAPR_CARRIER:
+                  memset(out, 0, size_gr_complex);
+                  break;
+                default:
+                  *out = *in++;
+                  break;
+              }
+              out++;
+              n++;
+            }
+            memset(out, 0, size_right_zeros);
+            out -=  reset_out;
+            generate_ofdm_symbol(out);
+            out += ofdm_fft_size;
+            ++j;
+          }
+
+          // Then do the symbols N_P2 to num_symbols - 1
+          int counter_data_carriers = 0;
+          while (j < num_symbols) {
+            memset(out, 0, size_left_zeros);
+            out += left_nulls;
+            // Since init_pilots only affects values in the data_carrier_map array, only initialize it here
+            init_pilots(j);
+            n = 0;
+            while (n < C_PS) {
+              switch (data_carrier_map[n]) {
+                case SCATTERED_CARRIER:
+                  memcpy(out, in, counter_data_carriers * size_gr_complex);
+                  out += counter_data_carriers;
+                  in += counter_data_carriers;
+                  counter_data_carriers = 0;
+                  *out = sp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case SCATTERED_CARRIER_INVERTED:
+                  memcpy(out, in, counter_data_carriers * size_gr_complex);
+                  out += counter_data_carriers;
+                  in += counter_data_carriers;
+                  counter_data_carriers = 0;
+                  *out = sp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case CONTINUAL_CARRIER:
+                  memcpy(out, in, counter_data_carriers * size_gr_complex);
+                  out += counter_data_carriers;
+                  in += counter_data_carriers;
+                  counter_data_carriers = 0;
+                  *out = cp_bpsk[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case CONTINUAL_CARRIER_INVERTED:
+                  memcpy(out, in, counter_data_carriers * size_gr_complex);
+                  out += counter_data_carriers;
+                  in += counter_data_carriers;
+                  counter_data_carriers = 0;
+                  *out = cp_bpsk_inverted[prbs[n + K_OFFSET] ^ pn_sequence[j]];
+                  break;
+                case TRPAPR_CARRIER:
+                  memcpy(out, in, counter_data_carriers * size_gr_complex);
+                  out += counter_data_carriers;
+                  in += counter_data_carriers;
+                  counter_data_carriers = 0;
+                  memset(out, 0, size_gr_complex);
+                default:
+                  counter_data_carriers++;
+                  n++;
+                  continue;
+              }
+              out++;
+              n++;
+            }
+            memset(out, 0, size_right_zeros);
+            out -=  reset_out;
+            generate_ofdm_symbol(out);
+            out += ofdm_fft_size;
+            ++j;
+          }
+
+        } // end for iteration over output_items
+      }
+      
 
       // Tell runtime system how many input items we consumed on
       // each input stream.
