@@ -262,7 +262,7 @@ namespace gr {
       f->issyi   = ISSYI_NOT_ACTIVE;
       f->npd     = NPD_NOT_ACTIVE;
       if (mode == INPUTMODE_NORMAL) {
-        f->upl  = 1504;
+        f->upl  = 188 * 8;
         f->dfl  = kbch - 80;
         f->sync = 0x47;
       }
@@ -287,7 +287,7 @@ namespace gr {
       fec_blocks = fecblocks;
       fec_block = 0;
       ts_rate = tsrate;
-      extra = (kbch/1496)+1;
+      extra = (((kbch - 80) / 8) / 187) + 1;
       if (framesize != FECFRAME_MEDIUM) {
         set_output_multiple(kbch);
       }
@@ -308,16 +308,17 @@ namespace gr {
     {
       if (input_mode == INPUTMODE_NORMAL) {
         if (frame_size != FECFRAME_MEDIUM) {
-          ninput_items_required[0] = (noutput_items/8) - 10;
+          ninput_items_required[0] = ((noutput_items - 80) / 8);
         }
         else {
-          ninput_items_required[0] = (noutput_items/8) - 20;
+          ninput_items_required[0] = ((noutput_items - 160) / 8);
         }
       }
       else {
-        ninput_items_required[0] = (noutput_items/8) - 10 + extra;
+        ninput_items_required[0] = ((noutput_items - 80) / 8) + extra;
       }
     }
+
 #define CRC_POLY 0xAB
 // Reversed
 #define CRC_POLYR 0xD5
@@ -347,7 +348,7 @@ namespace gr {
      *
      * The polynomial has been reversed
      */
-    void
+    int
     dvb_bbheader_bb_impl::add_crc8_bits(unsigned char *in, int length)
     {
       int crc = 0;
@@ -369,7 +370,7 @@ namespace gr {
       for (int n = 0; n < 8; n++) {
         in[i++] = (crc & (1 << n)) ? 1 : 0;
       }
-      //return 8;// Length of CRC
+      return 8;// Length of CRC
     }
 
     void
@@ -440,8 +441,8 @@ namespace gr {
         m_frame[m_frame_offset_bits++] = temp & (1 << n) ? 1 : 0;
       }
       // Add CRC to BB header, at end
-      //int len = BB_HEADER_LENGTH_BITS;
-      m_frame_offset_bits += 8;
+      int len = BB_HEADER_LENGTH_BITS;
+      m_frame_offset_bits += add_crc8_bits(m_frame, len);
     }
 
     void
@@ -499,7 +500,7 @@ namespace gr {
           offset = offset + 80;
 
           if (input_mode == INPUTMODE_HIEFF) {
-            for (int j = 0; j < (int)((kbch-padding)/8-10); j++) {
+            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
               if (count == 0) {
                 if (*in != 0x47) {
                   GR_LOG_WARN(d_logger, "Transport Stream sync error!");
@@ -522,7 +523,7 @@ namespace gr {
             }
           }
           else {
-            for (int j = 0; j < (int)((kbch-padding)/8-10); j++) {
+            for (int j = 0; j < (int)((kbch - 80 - padding) / 8); j++) {
               if (count == 0) {
                 if (*in != 0x47) {
                   GR_LOG_WARN(d_logger, "Transport Stream sync error!");
@@ -554,7 +555,7 @@ namespace gr {
           padding = 0;
           add_bbheader(&out[offset], count, padding, nibble);
           offset = offset + 80;
-          for (int j = 0; j < (int)(kbch/4 - 20); j++) {
+          for (int j = 0; j < (int)((kbch - 80) / 4); j++) {
             if (nibble == TRUE) {
               if (count == 0) {
                 if (*in != 0x47) {
