@@ -29,7 +29,7 @@
 #define MAX_CARRIERS 27841
 
 enum dvbt2_carrier_type_t {
-  DATA_CARRIER, // changed form 1 -> 0
+  DATA_CARRIER = 1,
   P2PILOT_CARRIER,
   P2PAPR_CARRIER,
   TRPAPR_CARRIER,
@@ -66,8 +66,8 @@ namespace gr {
       int prbs[MAX_CARRIERS];
       int pn_sequence[CHIPS];
       int p2_carrier_map[MAX_CARRIERS];
-      char data_carrier_map[MAX_CARRIERS];
-      char data_carrier_map_cpy[MAX_CARRIERS]; // added
+      int data_carrier_map[MAX_CARRIERS];
+      int data_carrier_map_cpy[MAX_CARRIERS]; // added
       int fc_carrier_map[MAX_CARRIERS];
       int N_P2;
       int C_P2;
@@ -81,7 +81,6 @@ namespace gr {
       int dy;
       int miso;
       int miso_group;
-      int *remainder_look_up; // added
       void init_prbs(void);
       void init_pilots_preset(); // added
       void init_pilots(int);

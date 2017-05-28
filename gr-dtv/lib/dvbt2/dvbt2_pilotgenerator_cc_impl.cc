@@ -1138,15 +1138,6 @@ namespace gr {
       }
       num_symbols = numdatasyms + N_P2;
       set_output_multiple(num_symbols);
-
-      // init remainder array       // added
-      remainder_look_up = (int*)malloc(sizeof(int)*C_PS);
-      for (int i = 0; i < C_PS; i++) {
-          remainder_look_up[i] = (i - K_EXT) % (dx * dy);
-          if (remainder_look_up[i] < 0) {
-            remainder_look_up[i]+= (dx * dy);
-          }
-      }
     }
 
     /*
@@ -1154,7 +1145,6 @@ namespace gr {
      */
     dvbt2_pilotgenerator_cc_impl::~dvbt2_pilotgenerator_cc_impl()
     {
-      free(remainder_look_up);
       delete ofdm_fft;
     }
 
@@ -2614,7 +2604,11 @@ namespace gr {
       int remainder, shift;
       //--------------------------------------------------------------------------------here
       for (int i = 0; i < C_PS; i++) {
-        if (remainder_look_up[i] == (dx * (symbol % dy))) {
+        remainder = (i - K_EXT) % (dx * dy);
+        if (remainder < 0) {
+          remainder += (dx * dy);
+        }
+        if (remainder == (dx * (symbol % dy))) {
           if (miso == TRUE && miso_group == MISO_TX2) {
             if ((i / dx) % 2) {
               data_carrier_map[i] = SCATTERED_CARRIER_INVERTED;
@@ -2786,12 +2780,7 @@ namespace gr {
                 *out++ = zero;
               }
               else {
-                  /*if((*(int*)(data_carrier_map+n)) == 0) {
-                      memcpy(out, in, sizeof(gr_complex) * 4);
-                      out+=4; in+=4; n+=3;
-                  }
-                  else*/
-                    *out++ = *in++;
+                *out++ = *in++;
               }
             }
             /*for (int n = 0; n < right_nulls; n++) {
