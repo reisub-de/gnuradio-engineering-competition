@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -51,6 +51,8 @@ namespace gr {
       unsigned char shortening_buffer[FRAME_SIZE_NORMAL];
       void ldpc_lookup_generate(void);
       ldpc_encode_table ldpc_encode;
+      static const int tab_i_data[25920][11];
+      //int tab_i_data[25920][11];
 
       const static int ldpc_tab_1_4N[45][13];
       const static int ldpc_tab_1_3N[60][13];
@@ -130,4 +132,3 @@ namespace gr {
 } // namespace gr
 
 #endif /* INCLUDED_DTV_DVB_LDPC_BB_IMPL_H */
-
