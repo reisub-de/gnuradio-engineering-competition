@@ -679,7 +679,7 @@ namespace gr {
               if (b) {
                 shift[0] ^= m_poly_n_8[0];
                 shift[1] ^= m_poly_n_8[1];
-                shift[2] ^= m_poly_n_8[2];
+                shift[2] ^= m_poly_n_8[2]; 
                 shift[3] ^= m_poly_n_8[3];
               }
             }
