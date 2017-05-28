@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -510,9 +510,14 @@ namespace gr {
               }
               else {
                 b = *in++;
-                for (int n = 7; n >= 0; n--) {
-                  out[offset++] = b & (1 << n) ? 1 : 0;
-                }
+                out[offset++] = b & (1 << 7) ? 1 : 0;
+                out[offset++] = b & (1 << 6) ? 1 : 0;
+                out[offset++] = b & (1 << 5) ? 1 : 0;
+                out[offset++] = b & (1 << 4) ? 1 : 0;
+                out[offset++] = b & (1 << 3) ? 1 : 0;
+                out[offset++] = b & (1 << 2) ? 1 : 0;
+                out[offset++] = b & (1 << 1) ? 1 : 0;
+                out[offset++] = b & (1 << 0) ? 1 : 0;
               }
               count = (count + 1) % 188;
               consumed++;
@@ -597,4 +602,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-
