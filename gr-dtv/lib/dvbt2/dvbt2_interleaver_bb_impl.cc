@@ -166,9 +166,14 @@ namespace gr {
     dvbt2_interleaver_bb_impl::func_handler_mod_qpsk_c13_c25(FuncHandlerDataStruct data) {
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
+      const int idx = data.idx;
+      const int num_core = data.num_core;
+      const int val_packed_items = data.val_packed_items;
       const int rows = data.rows;
       const int local_nbch = data.local_nbch;
       const int local_q_val = data.local_q_val;
+
+      gr::thread::thread_bind_to_processor((idx / val_packed_items) % num_core);
 
       unsigned char local_tempu[FRAME_SIZE_NORMAL];
       unsigned char *local_tempu_ptr = local_tempu;
@@ -191,7 +196,12 @@ namespace gr {
     dvbt2_interleaver_bb_impl::func_handler_mod_qpsk_rest(FuncHandlerDataStruct data) {
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
+      const int idx = data.idx;
+      const int num_core = data.num_core;
+      const int val_packed_items = data.val_packed_items;
       const int rows = data.rows;
+
+      gr::thread::thread_bind_to_processor((idx / val_packed_items) % num_core);
 
       for (int j = 0; j < rows; j++) {
         *out++ = (*in++ << 1) | *in++;
@@ -207,9 +217,14 @@ namespace gr {
     ) {
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
+      const int idx = data.idx;
+      const int num_core = data.num_core;
+      const int val_packed_items = data.val_packed_items;
       const int rows = data.rows;
       const int local_nbch = data.local_nbch;
       const int local_q_val = data.local_q_val;
+
+      gr::thread::thread_bind_to_processor((idx / val_packed_items) % num_core);
 
       unsigned char tempu[FRAME_SIZE_NORMAL];
       unsigned char tempv[FRAME_SIZE_NORMAL];
@@ -283,9 +298,14 @@ namespace gr {
     ) {
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
+      const int idx = data.idx;
+      const int num_core = data.num_core;
+      const int val_packed_items = data.val_packed_items;
       const int rows = data.rows;
       const int local_nbch = data.local_nbch;
       const int local_q_val = data.local_q_val;
+
+      gr::thread::thread_bind_to_processor((idx / val_packed_items) % num_core);
 
       unsigned char tempu[FRAME_SIZE_NORMAL];
       unsigned char tempv[FRAME_SIZE_NORMAL];
@@ -367,9 +387,14 @@ namespace gr {
     ) {
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
+      const int idx = data.idx;
+      const int num_core = data.num_core;
+      const int val_packed_items = data.val_packed_items;
       const int rows = data.rows;
       const int local_nbch = data.local_nbch;
       const int local_q_val = data.local_q_val;
+
+      gr::thread::thread_bind_to_processor((idx / val_packed_items) % num_core);
 
       unsigned char tempu[FRAME_SIZE_NORMAL];
       unsigned char tempv[FRAME_SIZE_NORMAL];
@@ -460,9 +485,14 @@ namespace gr {
     ) {
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
+      const int idx = data.idx;
+      const int num_core = data.num_core;
+      const int val_packed_items = data.val_packed_items;
       const int rows = data.rows;
       const int local_nbch = data.local_nbch;
       const int local_q_val = data.local_q_val;
+
+      gr::thread::thread_bind_to_processor((idx / val_packed_items) % num_core);
 
       unsigned char tempu[FRAME_SIZE_NORMAL];
       unsigned char tempv[FRAME_SIZE_NORMAL];
@@ -558,6 +588,9 @@ namespace gr {
                 FuncHandlerDataStruct data(
                                             in,
                                             out,
+                                              i,
+                                              max_thread_num,
+                                              packed_items,
                                             rows,
                                             nbch,
                                             q_val
@@ -571,6 +604,9 @@ namespace gr {
                 FuncHandlerDataStruct data(
                                             in,
                                             out,
+                                              i,
+                                              max_thread_num,
+                                              packed_items,
                                             rows,
                                             nbch,
                                             q_val
@@ -618,6 +654,9 @@ namespace gr {
                 FuncHandlerDataStruct data(
                                             in,
                                             out,
+                                              i,
+                                              max_thread_num,
+                                              packed_items,
                                             rows,
                                             nbch,
                                             q_val
@@ -670,6 +709,9 @@ namespace gr {
                 FuncHandlerDataStruct data(
                                             in,
                                             out,
+                                              i,
+                                              max_thread_num,
+                                              packed_items,
                                             rows,
                                             nbch,
                                             q_val
@@ -714,6 +756,9 @@ namespace gr {
                   FuncHandlerDataStruct data(
                                               in,
                                               out,
+                                              i,
+                                              max_thread_num,
+                                              packed_items,
                                               rows,
                                               nbch,
                                               q_val
@@ -748,6 +793,9 @@ namespace gr {
                   FuncHandlerDataStruct data(
                                               in,
                                               out,
+                                              i,
+                                              max_thread_num,
+                                              packed_items,
                                               rows,
                                               nbch,
                                               q_val

@@ -74,11 +74,11 @@ namespace gr {
       static inline void reg_6_shift(unsigned int*);
 
       // Multi-thread handler
-      static void bch_code_n12_handler(const unsigned char*, unsigned char*, unsigned int);
-      static void bch_code_n10_handler(const unsigned char*, unsigned char*, unsigned int);
-      static void bch_code_n8_handler(const unsigned char*, unsigned char*, unsigned int);
-      static void bch_code_s12_handler(const unsigned char*, unsigned char*, unsigned int);
-      static void bch_code_m12_handler(const unsigned char*, unsigned char*, unsigned int);
+      static void bch_code_n12_handler(const unsigned char*, unsigned char*, unsigned int, const int, const unsigned int);
+      static void bch_code_n10_handler(const unsigned char*, unsigned char*, unsigned int, const int, const unsigned int);
+      static void bch_code_n8_handler(const unsigned char*, unsigned char*, unsigned int, const int, const unsigned int);
+      static void bch_code_s12_handler(const unsigned char*, unsigned char*, unsigned int, const int, const unsigned int);
+      static void bch_code_m12_handler(const unsigned char*, unsigned char*, unsigned int, const int, const unsigned int);
 
 
      public:
