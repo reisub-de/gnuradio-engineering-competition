@@ -281,7 +281,7 @@ namespace gr {
       unsigned char *out = (unsigned char *) output_items[0];
       
 
-#define AVX_ON 0
+#define AVX_ON 1
 #if AVX_ON
       __m256i in_256;
       __m256i random_256;

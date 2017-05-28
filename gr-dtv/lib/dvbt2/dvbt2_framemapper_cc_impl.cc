@@ -901,14 +901,15 @@ namespace gr {
     {
       int crc = 0xffffffff;
       int b;
-      int i = 0;
 
-      for (int n = 0; n < length; n++) {
-        b = in[i++] ^ ((crc >> 31) & 0x01);
+      int i = 0;
+      while (i < length) {
+        b = in[i] ^ ((crc >> 31) & 0x01);
         crc <<= 1;
         if (b) {
           crc ^= CRC_POLY;
         }
+        i++;
       }
 
       for (int n = 31; n >= 0; n--) {
@@ -1011,17 +1012,15 @@ namespace gr {
       int im;
       int index;
       int pbits;
-      int q;
       index = 0;
       im = 0;
 
       pbits = FRAME_SIZE_SHORT - NBCH_1_4;    //number of parity bits
-      q = 36;
 
       for (int row = 0; row < 9; row++) {
-        for(int n = 0; n < 360; n++) {
+        for(int n = 0; n < 12960; n += 36) {
           for (int col = 1; col <= ldpc_tab_1_4S[row][0]; col++) {
-            l1pre_ldpc_encode.p[index] = (ldpc_tab_1_4S[row][col] + (n * q)) % pbits;
+            l1pre_ldpc_encode.p[index] = (ldpc_tab_1_4S[row][col] + n) % pbits;
             l1pre_ldpc_encode.d[index] = im;
             index++;
           }
@@ -1037,17 +1036,15 @@ namespace gr {
       int im;
       int index;
       int pbits;
-      int q;
       index = 0;
       im = 0;
 
       pbits = FRAME_SIZE_SHORT - NBCH_1_2;    //number of parity bits
-      q = 25;
 
       for (int row = 0; row < 20; row++) {
-        for(int n = 0; n < 360; n++) {
+        for(int n = 0; n < 9000; n += 25) {
           for (int col = 1; col <= ldpc_tab_1_2S[row][0]; col++) {
-            l1post_ldpc_encode.p[index] = (ldpc_tab_1_2S[row][col] + (n * q)) % pbits;
+            l1post_ldpc_encode.p[index] = (ldpc_tab_1_2S[row][col] + n) % pbits;
             l1post_ldpc_encode.d[index] = im;
             index++;
           }
@@ -1217,12 +1214,13 @@ namespace gr {
       for (int w = 0; w < KSIG_PRE; w++) {
         out[index++] = m_bpsk[l1_temp[w]];
       }
-      for (int w = 0; w < NBCH_PARITY; w++) {
-        out[index++] = m_bpsk[l1_temp[w + KBCH_1_4]];
+      int iter_limit = NBCH_PARITY + KBCH_1_4;
+      for (int w = KBCH_1_4; w < iter_limit; w++) {
+        out[index++] = m_bpsk[l1_temp[w]];
       }
-      for (int w = 0; w < FRAME_SIZE_SHORT - NBCH_1_4; w++) {
-        if (l1_temp[w + NBCH_1_4] != 0x55) {
-          out[index++] = m_bpsk[l1_temp[w + NBCH_1_4]];
+      for (int w = NBCH_1_4; w < FRAME_SIZE_SHORT; w++) {
+        if (l1_temp[w] != 0x55) {
+          out[index++] = m_bpsk[l1_temp[w]];
         }
       }
     }
@@ -1409,7 +1407,7 @@ namespace gr {
       }
       memset(l1_map, 0, KBCH_1_2);
       if (offset_bits <= 360) {
-        m = 20 - 1;
+        m = 19;
         last = 360 - offset_bits;
       }
       else {
@@ -1515,12 +1513,13 @@ namespace gr {
           l1_interleave[index++] = l1_temp[w];
         }
       }
-      for (int w = 0; w < NBCH_PARITY; w++) {
-        l1_interleave[index++] = l1_temp[w + KBCH_1_2];
+      int limit = NBCH_PARITY + KBCH_1_2;
+      for (int w = KBCH_1_2; w < limit; w++) {
+        l1_interleave[index++] = l1_temp[w];
       }
-      for (int w = 0; w < FRAME_SIZE_SHORT - NBCH_1_2; w++) {
-        if (l1_temp[w + NBCH_1_2] != 0x55) {
-          l1_interleave[index++] = l1_temp[w + NBCH_1_2];
+      for (int w = NBCH_1_2; w < FRAME_SIZE_SHORT; w++) {
+        if (l1_temp[w] != 0x55) {
+          l1_interleave[index++] = l1_temp[w];
         }
       }
       /* Bit interleave for 16QAM and 64QAM */
@@ -1646,13 +1645,13 @@ namespace gr {
       gr_complex *interleave = zigzag_interleave;
 
       if (N_P2 == 1) {
-        int memcpy_size_l1precache = 1840 * sizeof(gr_complex);
-        int memcpy_size_out = stream_items * sizeof(gr_complex);
-        int out_update = N_post / eta_mod;
-        int diff_N_FC_C_FC = N_FC - C_FC;
-        int memset_size = diff_N_FC_C_FC * sizeof(gr_complex);
-        int num_dummy_randomize = mapped_items - stream_items - 1840 - (N_post / eta_mod) - diff_N_FC_C_FC;
-        int memcpy_dummy_size = num_dummy_randomize * sizeof(gr_complex);
+        const int memcpy_size_l1precache = 1840 * sizeof(gr_complex);
+        const int memcpy_size_out = stream_items * sizeof(gr_complex);
+        const int out_update = N_post / eta_mod;
+        const int diff_N_FC_C_FC = N_FC - C_FC;
+        const int memset_size = diff_N_FC_C_FC * sizeof(gr_complex);
+        const int num_dummy_randomize = mapped_items - stream_items - 1840 - (N_post / eta_mod) - diff_N_FC_C_FC;
+        const int memcpy_dummy_size = num_dummy_randomize * sizeof(gr_complex);
         for (int i = 0; i < noutput_items; i += mapped_items) {
           memcpy(out, &l1pre_cache[index], memcpy_size_l1precache);
           out += 1840;
