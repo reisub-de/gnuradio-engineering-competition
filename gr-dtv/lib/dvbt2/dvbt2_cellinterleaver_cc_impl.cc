@@ -53,6 +53,14 @@ namespace gr {
       int *logic;
       if (framesize == FECFRAME_NORMAL) {
         switch (constellation) {
+          case MOD_256QAM:
+            cell_size = 8100;
+            pn_degree = 13;
+            pn_mask = 0xfff;
+            max_states = 8192;
+            logic = &logic13[0];
+            xor_size = 4;
+            break;
           case MOD_QPSK:
             cell_size = 32400;
             pn_degree = 15;
@@ -76,14 +84,6 @@ namespace gr {
             max_states = 16384;
             logic = &logic14[0];
             xor_size = 6;
-            break;
-          case MOD_256QAM:
-            cell_size = 8100;
-            pn_degree = 13;
-            pn_mask = 0xfff;
-            max_states = 8192;
-            logic = &logic13[0];
-            xor_size = 4;
             break;
           default:
             cell_size = 32400;
