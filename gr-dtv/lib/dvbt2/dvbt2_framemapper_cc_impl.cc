@@ -47,7 +47,7 @@ namespace gr {
       L1Post *l1postinit = &L1_Signalling[0].l1post_data;
       double normalization;
       double m_16qam_lookup[4] = {3.0, 1.0, -3.0, -1.0};
-      double m_64qam_lookup[8] = { 1.0801, 0.7715, 0.1543, 0.4629, -1.0801, -0.7715, -0.1543, -0.4629};
+      double m_64qam_lookup[8] = {7.0, 5.0, 1.0, 3.0, -7.0, -5.0, -1.0, -3.0};
       int real_index, imag_index;
       int N_punc_temp, N_post_temp;
       if (framesize == FECFRAME_NORMAL) {
@@ -255,10 +255,11 @@ namespace gr {
           eta_mod = 4;
           break;
         case L1_MOD_64QAM:
+          normalization = sqrt(42);
           for (int i = 0; i < 64; i++) {
             real_index = ((i & 0x20) >> 3) | ((i & 0x8) >> 2) | ((i & 0x2) >> 1);
             imag_index = ((i & 0x10) >> 2) | ((i & 0x4) >> 1) | ((i & 0x1) >> 0);
-            m_64qam[i] = gr_complex(m_64qam_lookup[real_index], m_64qam_lookup[imag_index]);
+            m_64qam[i] = gr_complex(m_64qam_lookup[real_index] / normalization, m_64qam_lookup[imag_index] / normalization);
           }
           eta_mod = 6;
           break;
