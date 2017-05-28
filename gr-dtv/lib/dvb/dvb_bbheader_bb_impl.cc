@@ -510,20 +510,18 @@ namespace gr {
               }
               else {
                 b = *in++;
-
 				/*for (int n = 7; n >= 0; n--) {
                   out[offset++] = b & (1 << n) ? 1 : 0;
                 }*/
                 //loop unrolling
-                out[offset++] = b & 0x80 ? 1 : 0;
-                out[offset++] = b & 0x40 ? 1 : 0;
-                out[offset++] = b & 0x20 ? 1 : 0;
-                out[offset++] = b & 0x10 ? 1 : 0;
-                out[offset++] = b & 0x08 ? 1 : 0;
-                out[offset++] = b & 0x04 ? 1 : 0;
-                out[offset++] = b & 0x02 ? 1 : 0;
-                out[offset++] = b & 0x01 ? 1 : 0;
-                
+                out[offset++] = (b & 0x80)>>7;
+                out[offset++] = (b & 0x40)>>6; 
+                out[offset++] = (b & 0x20)>>5; 
+                out[offset++] = (b & 0x10)>>4; 
+                out[offset++] = (b & 0x08)>>3; 
+                out[offset++] = (b & 0x04)>>2; 
+                out[offset++] = (b & 0x02)>>1; 
+                out[offset++] = b & 0x01; 
               }
               count = (count + 1) % 188;
               consumed++;
