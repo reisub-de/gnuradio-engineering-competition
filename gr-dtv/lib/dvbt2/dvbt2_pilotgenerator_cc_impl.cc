@@ -1139,6 +1139,15 @@ namespace gr {
       num_symbols = numdatasyms + N_P2;
       set_output_multiple(num_symbols);
 
+      // init remainder array
+      remainder_look_up = (int*)malloc(sizeof(int)*C_PS);
+      for (int i = 0; i < C_PS; i++) {
+          remainder_look_up[i] = (i - K_EXT) % (dx * dy);
+          if (remainder_look_up[i] < 0) {
+            remainder_look_up[i]+= (dx * dy);
+          }
+      }
+
       symbol_look_up = (int*)malloc(sizeof(int)*num_symbols);
       for(int i = 0; i < num_symbols; i++) {
           symbol_look_up[i] = dx * (i % dy);
@@ -1152,6 +1161,7 @@ namespace gr {
     {
       delete ofdm_fft;
       free(symbol_look_up);
+      free(remainder_look_up);
     }
 
     void
@@ -2610,11 +2620,7 @@ namespace gr {
       int remainder, shift;
       //--------------------------------------------------------------------------------here
       for (int i = 0; i < C_PS; i++) {
-        remainder = (i - K_EXT) % (dx * dy);
-        if (remainder < 0) {
-          remainder += (dx * dy);
-        }
-        if (remainder == symbol_look_up[symbol]) {
+        if (remainder_look_up[i] == symbol_look_up[symbol]) {
           if (miso == TRUE && miso_group == MISO_TX2) {
             if ((i / dx) % 2) {
               data_carrier_map[i] = SCATTERED_CARRIER_INVERTED;

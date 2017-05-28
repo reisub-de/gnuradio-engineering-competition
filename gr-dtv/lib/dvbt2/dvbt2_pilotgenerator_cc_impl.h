@@ -81,6 +81,7 @@ namespace gr {
       int dy;
       int miso;
       int miso_group;
+      int *remainder_look_up;
       int *symbol_look_up;
 
       void init_prbs(void);
