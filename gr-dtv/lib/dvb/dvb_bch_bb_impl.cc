@@ -374,6 +374,7 @@ namespace gr {
       }
 
       bch_poly_build_tables();
+      
       set_output_multiple(nbch);
     }
 
@@ -495,7 +496,15 @@ namespace gr {
     void
     dvb_bch_bb_impl::bch_poly_build_tables(void)
     {
-      // Normal polynomials
+      int len;
+      int polyout[2][200];
+
+    switch (bch_code) {
+        case BCH_CODE_N12:
+        case BCH_CODE_N10:
+        case BCH_CODE_N8:
+        {
+                  // Normal polynomials
       const int polyn01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1};
       const int polyn02[]={1,1,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1};
       const int polyn03[]={1,0,1,1,1,1,0,1,1,1,1,1,0,0,0,0,1};
@@ -508,38 +517,7 @@ namespace gr {
       const int polyn10[]={1,1,1,0,0,1,0,1,1,0,1,0,1,1,1,0,1};
       const int polyn11[]={1,0,1,1,0,1,0,0,0,1,0,1,1,1,0,0,1};
       const int polyn12[]={1,1,0,0,0,1,1,1,0,1,0,1,1,0,0,0,1};
-
-      // Medium polynomials
-      const int polym01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,1};
-      const int polym02[]={1,1,0,0,1,0,0,1,0,0,1,1,0,0,0,1};
-      const int polym03[]={1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1};
-      const int polym04[]={1,0,1,1,0,1,1,0,1,0,1,1,0,0,0,1};
-      const int polym05[]={1,1,1,0,1,0,1,1,0,0,1,0,1,0,0,1};
-      const int polym06[]={1,0,0,0,1,0,1,1,0,0,0,0,1,1,0,1};
-      const int polym07[]={1,0,1,0,1,1,0,1,0,0,0,1,1,0,1,1};
-      const int polym08[]={1,0,1,0,1,0,1,0,1,1,0,1,0,0,1,1};
-      const int polym09[]={1,1,1,0,1,1,0,1,0,1,0,1,1,1,0,1};
-      const int polym10[]={1,1,1,1,1,0,0,1,0,0,1,1,1,1,0,1};
-      const int polym11[]={1,1,1,0,1,0,0,0,0,1,0,1,0,0,0,1};
-      const int polym12[]={1,0,1,0,1,0,0,0,1,0,1,1,0,1,1,1};
-
-      // Short polynomials
-      const int polys01[]={1,1,0,1,0,1,0,0,0,0,0,0,0,0,1};
-      const int polys02[]={1,0,0,0,0,0,1,0,1,0,0,1,0,0,1};
-      const int polys03[]={1,1,1,0,0,0,1,0,0,1,1,0,0,0,1};
-      const int polys04[]={1,0,0,0,1,0,0,1,1,0,1,0,1,0,1};
-      const int polys05[]={1,0,1,0,1,0,1,0,1,1,0,1,0,1,1};
-      const int polys06[]={1,0,0,1,0,0,0,1,1,1,0,0,0,1,1};
-      const int polys07[]={1,0,1,0,0,1,1,1,0,0,1,1,0,1,1};
-      const int polys08[]={1,0,0,0,0,1,0,0,1,1,1,1,0,0,1};
-      const int polys09[]={1,1,1,1,0,0,0,0,0,1,1,0,0,0,1};
-      const int polys10[]={1,0,0,1,0,0,1,0,0,1,0,1,1,0,1};
-      const int polys11[]={1,0,0,0,1,0,0,0,0,0,0,1,1,0,1};
-      const int polys12[]={1,1,1,1,0,1,1,1,1,0,1,0,0,1,1};
-
-      int len;
-      int polyout[2][200];
-
+      
       len = poly_mult(polyn01, 17, polyn02,    17,  polyout[0]);
       len = poly_mult(polyn03, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn04, 17, polyout[1], len, polyout[0]);
@@ -556,7 +534,24 @@ namespace gr {
       len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
       len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_n_12, 192);
-
+      break;
+      }
+      case BCH_CODE_S12:
+        {
+                  // Short polynomials
+      const int polys01[]={1,1,0,1,0,1,0,0,0,0,0,0,0,0,1};
+      const int polys02[]={1,0,0,0,0,0,1,0,1,0,0,1,0,0,1};
+      const int polys03[]={1,1,1,0,0,0,1,0,0,1,1,0,0,0,1};
+      const int polys04[]={1,0,0,0,1,0,0,1,1,0,1,0,1,0,1};
+      const int polys05[]={1,0,1,0,1,0,1,0,1,1,0,1,0,1,1};
+      const int polys06[]={1,0,0,1,0,0,0,1,1,1,0,0,0,1,1};
+      const int polys07[]={1,0,1,0,0,1,1,1,0,0,1,1,0,1,1};
+      const int polys08[]={1,0,0,0,0,1,0,0,1,1,1,1,0,0,1};
+      const int polys09[]={1,1,1,1,0,0,0,0,0,1,1,0,0,0,1};
+      const int polys10[]={1,0,0,1,0,0,1,0,0,1,0,1,1,0,1};
+      const int polys11[]={1,0,0,0,1,0,0,0,0,0,0,1,1,0,1};
+      const int polys12[]={1,1,1,1,0,1,1,1,1,0,1,0,0,1,1};
+      
       len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
       len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
       len = poly_mult(polys04, 15, polyout[1], len, polyout[0]);
@@ -569,7 +564,24 @@ namespace gr {
       len = poly_mult(polys11, 15, polyout[0], len, polyout[1]);
       len = poly_mult(polys12, 15, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_s_12, 168);
-
+      break;
+        }
+        case BCH_CODE_M12:
+        {
+                  // Medium polynomials
+      const int polym01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,1};
+      const int polym02[]={1,1,0,0,1,0,0,1,0,0,1,1,0,0,0,1};
+      const int polym03[]={1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1};
+      const int polym04[]={1,0,1,1,0,1,1,0,1,0,1,1,0,0,0,1};
+      const int polym05[]={1,1,1,0,1,0,1,1,0,0,1,0,1,0,0,1};
+      const int polym06[]={1,0,0,0,1,0,1,1,0,0,0,0,1,1,0,1};
+      const int polym07[]={1,0,1,0,1,1,0,1,0,0,0,1,1,0,1,1};
+      const int polym08[]={1,0,1,0,1,0,1,0,1,1,0,1,0,0,1,1};
+      const int polym09[]={1,1,1,0,1,1,0,1,0,1,0,1,1,1,0,1};
+      const int polym10[]={1,1,1,1,1,0,0,1,0,0,1,1,1,1,0,1};
+      const int polym11[]={1,1,1,0,1,0,0,0,0,1,0,1,0,0,0,1};
+      const int polym12[]={1,0,1,0,1,0,0,0,1,0,1,1,0,1,1,1};
+      
       len = poly_mult(polym01, 16, polym02,    16,  polyout[0]);
       len = poly_mult(polym03, 16, polyout[0], len, polyout[1]);
       len = poly_mult(polym04, 16, polyout[1], len, polyout[0]);
@@ -582,6 +594,9 @@ namespace gr {
       len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
       len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
       poly_pack(polyout[0], m_poly_m_12, 180);
+      break;
+        }
+    }
     }
 
     int
@@ -626,12 +641,9 @@ namespace gr {
             
             // Now add the parity bits to the output
             for(int n = 0; n < 192; n++) {
-              //*out++ = (shift[5] & 1);
-                out[n] = (shift[5] & 1);
+              *out++ = (shift[5] & 1);
                 reg_6_shift(shift);
             }
-
-            out += 192;
           }
           break;
         case BCH_CODE_N10:
