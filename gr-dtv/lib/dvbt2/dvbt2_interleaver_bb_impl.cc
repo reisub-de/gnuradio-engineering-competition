@@ -25,6 +25,30 @@
 #include <gnuradio/io_signature.h>
 #include "dvbt2_interleaver_bb_impl.h"
 
+// intrinsics required for sse implementation
+// TODO: move functionality to volk
+#include <emmintrin.h>
+#include <pmmintrin.h>
+#include <tmmintrin.h>
+#include <smmintrin.h>
+
+// helper function for sse implementation
+// takes 8 bytes from b and returns a byte of the lsbs of each b
+// if n>0, take n bytes from b and 8-n bytes from a
+uint8_t bits_to_byte_msb_twist(uint8_t* a, uint8_t* b, uint8_t n) {
+  __m128i temp = _mm_loadl_epi64((__m128i*)(a-n)); // subtracting n gives already correctly shifted data
+  if (n > 0) {
+    __m128i temp2 = _mm_loadl_epi64((__m128i*)b);
+    __m128i blendmask = _mm_set_epi8(128,128,128,128,128,128,128,128,
+       n>7?128:0, n>6?128:0, n>5?128:0, n>4?128:0, n>3?128:0, n>2?128:0, n>1?128:0, n>0?128:0);
+    temp = _mm_blendv_epi8(temp, temp2, blendmask);
+  }
+  __m128i shufmask = _mm_set_epi8(128,128,128,128,128,128,128,128,0,1,2,3,4,5,6,7);
+  temp = _mm_shuffle_epi8(temp, shufmask);
+  temp = _mm_slli_epi64(temp, 7);
+  return _mm_movemask_epi8(temp) & 0xff;
+}
+
 namespace gr {
   namespace dtv {
 
@@ -376,13 +400,8 @@ namespace gr {
               mux = &mux256[0];
             }
             for (int i = 0; i < noutput_items; i += packed_items) {
-              #if 1 // new implementation, only tested for qval=72, K=38880, channels=16, rows=4050
-              // if (!debug_wrote_input) {
-              //  FILE* f = fopen("/home/fabian/interleave-new-in.bin", "wb");
-              //  fwrite(in, ninput_items[0], 1, f);
-              //  fclose(f);
-              //  debug_wrote_input = true;
-              // }
+              // new implementation, only tested for qval=72, K=38880, channels=16, rows=4050
+              // uses dirty sse instructions, move to volk in the future
               const int a=360;
               const int channels = mod*2;
               rows = frame_size/channels; // 4050
@@ -390,7 +409,6 @@ namespace gr {
               const int full_columns_bits = full_columns*rows;
               const int last_info_column_bits = nbch-full_columns_bits;
               unsigned char* ut;
-              unsigned char* vt;
               // parity interleaving
               // only copy bytes starting at the first row which is not completely filled with information bits
               memcpy(tempu, in+full_columns*rows, last_info_column_bits);
@@ -399,128 +417,46 @@ namespace gr {
                 for (int s=0; s<a; s++)
                   *ut++ = in[nbch+q_val*s+t];
               // column twist interleaving
-              for (int c_ind=0; c_ind<channels; c_ind++) {
-                const int c = mux[c_ind]; // does bitmuxing in advance
-                vt = tempv+c;
-                // twisted bits first
-                if (c_ind >= full_columns)
-                  ut = tempu + rows*(c_ind-full_columns);
-                else
-                  ut = const_cast<unsigned char*>(in + rows*c_ind);
-                const int twist = twist256n[c_ind];
-                for (int r=rows-twist; r<rows; r++) {
-                  *vt = ut[r];
-                  vt += channels;
+              for (int row = 0; row < rows; row+=8) {
+                union { unsigned char c[16]; __m128i i; } a; // contains a 16 column and 8 row(bits) block
+                // populate s (fetch 8 bit (from 8 bytes) for each column and assemble)
+                for (int c_ind=0; c_ind<channels; c_ind++) {
+                  if (c_ind >= full_columns)
+                    ut = tempu + rows*(c_ind-full_columns);
+                  else
+                    ut = const_cast<unsigned char*>(in + rows*c_ind);
+                  // TOOD: convert to full byte-wise input instead of single-bit-per-byte
+                  const int twist = twist256n[c_ind];
+                  uint8_t temp;
+                  if (row<twist-8) {
+                    temp = bits_to_byte_msb_twist(ut+rows-twist+row, 0, 0);
+                  } else if (row<twist) {
+                    temp = bits_to_byte_msb_twist(ut, ut+rows-twist+row, twist-row);
+                  } else {
+                    temp = bits_to_byte_msb_twist(ut+row-twist, 0, 0);
+                  }
+                  const int c = mux256_35[c_ind]; // does bitmuxing in advance
+                  a.c[c] = temp;
                 }
-                // untwisted bits
-                for (int r=0; r<rows-twist; r++) {
-                  *vt = *ut++;
-                  vt += channels;
+                // slice the column block and store in output buffer
+                __m128i result;
+                for (int s=0; s<8; s++) {
+                  const uint16_t temp = _mm_movemask_epi8(a.i); // maybe need to reverse bit order
+                  a.i = _mm_slli_epi64(a.i, 1);
+                  result = _mm_bsrli_si128(result, 2);
+                  result = _mm_insert_epi16(result, temp, 7);
                 }
-              }
-              // bit muxing
-              vt = tempv;
-              for (int r=0; r<rows*2; r++) {
-                uint8_t temp = 0;
-                for (int i=7; i>=0; i--)
-                  temp |= *vt++ << i;
-                *out++ = temp;
+                // store slices (with workaround for buffers which are not aligned to 8 bytes)
+                const int slice_cnt = rows-row>8 ? 8 : rows-row;
+                if (slice_cnt==8)
+                  _mm_storeu_si128((__m128i*)out, result);
+                else {
+                  memcpy(out, &result, slice_cnt*2);
+                }
+                out += slice_cnt*2;
               }
               consumed += frame_size;
               in += consumed;
-              //DEBUG: write out test output
-              // if (!debug_wrote_output) {
-              //   FILE* f = fopen("/home/fabian/interleave-new-out.bin", "wb");
-              //   fwrite(output_items[0], rows*2, 1, f);
-              //   fclose(f);
-              //   debug_wrote_output = true;
-              // }
-              #else // old implementation
-              //DEBUG: write out test input
-              //if (!debug_wrote_input) {
-              //  FILE* f = fopen("/home/fabian/interleave-in.bin", "wb");
-              //  fwrite(in, ninput_items[0], 1, f);
-              //  fclose(f);
-              //  debug_wrote_input = true;
-              //}
-              rows = frame_size / (mod * 2); // 4050
-              // 16 columns input data (4050 rows *16columns)
-              const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-              const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
-              c1 = &tempv[rows * 0];
-              c2 = &tempv[rows * 1];
-              c3 = &tempv[rows * 2];
-              c4 = &tempv[rows * 3];
-              c5 = &tempv[rows * 4];
-              c6 = &tempv[rows * 5];
-              c7 = &tempv[rows * 6];
-              c8 = &tempv[rows * 7];
-              c9 = &tempv[rows * 8];
-              c10 = &tempv[rows * 9];
-              c11 = &tempv[rows * 10];
-              c12 = &tempv[rows * 11];
-              c13 = &tempv[rows * 12];
-              c14 = &tempv[rows * 13];
-              c15 = &tempv[rows * 14];
-              c16 = &tempv[rows * 15];
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
-              }
-              for (int t = 0; t < q_val; t++) {
-                for (int s = 0; s < 360; s++) {
-                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
-                }
-              }
-              in = in + (q_val * 360);
-              index = 0;
-              for (int col = 0; col < (mod * 2); col++) {
-                offset = twist256n[col];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
-                }
-              }
-              index = 0;
-              for (int j = 0; j < rows; j++) {
-                tempu[index++] = c1[j];
-                tempu[index++] = c2[j];
-                tempu[index++] = c3[j];
-                tempu[index++] = c4[j];
-                tempu[index++] = c5[j];
-                tempu[index++] = c6[j];
-                tempu[index++] = c7[j];
-                tempu[index++] = c8[j];
-                tempu[index++] = c9[j];
-                tempu[index++] = c10[j];
-                tempu[index++] = c11[j];
-                tempu[index++] = c12[j];
-                tempu[index++] = c13[j];
-                tempu[index++] = c14[j];
-                tempu[index++] = c15[j];
-                tempu[index++] = c16[j];
-              }
-              index = 0;
-              for (int d = 0; d < frame_size / (mod * 2); d++) {
-                pack = 0;
-                for (int e = 0; e < (mod * 2); e++) {
-                  offset = mux[e];
-                  pack |= tempu[index++] << (((mod * 2) - 1) - offset); // tempu[0] is msb, tempu[15] is lsb (after twist)
-                }
-                out[produced++] = pack >> 8;
-                out[produced++] = pack & 0xff;
-                consumed += (mod * 2);
-              }
-              //DEBUG: write out test output
-              // if (!debug_wrote_output) {
-              //   FILE* f = fopen("/home/fabian/interleave-out.bin", "wb");
-              //   fwrite(out, produced, 1, f);
-              //   fclose(f);
-              //   debug_wrote_output = true;
-              // }
-              #endif
             }
           }
           else { // -> FRAME_SIZE_SHORT (unused)
@@ -673,9 +609,11 @@ namespace gr {
       4, 0, 1, 6, 2, 3, 5, 8, 7, 10, 9, 11
     };
 
+    // warning: this table has been modified (inverted and byteswapped)
+    // to improve the performance of the sse implementation
     const int dvbt2_interleaver_bb_impl::mux256_35[16] =
     {
-      2, 11, 3, 4, 0, 9, 1, 8, 10, 13, 7, 14, 6, 15, 5, 12
+      5, 12, 4, 3, 7, 14, 6, 15, 13, 10, 0, 9, 1, 8, 2, 11
     };
 
     const int dvbt2_interleaver_bb_impl::mux256_23[16] =
