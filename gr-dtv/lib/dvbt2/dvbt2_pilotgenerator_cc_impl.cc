@@ -1138,6 +1138,11 @@ namespace gr {
       }
       num_symbols = numdatasyms + N_P2;
       set_output_multiple(num_symbols);
+
+      symbol_look_up = (int*)malloc(sizeof(int)*num_symbols);
+      for(int i = 0; i < num_symbols; i++) {
+          symbol_look_up[i] = dx * (i % dy);
+      }
     }
 
     /*
@@ -1146,6 +1151,7 @@ namespace gr {
     dvbt2_pilotgenerator_cc_impl::~dvbt2_pilotgenerator_cc_impl()
     {
       delete ofdm_fft;
+      free(symbol_look_up);
     }
 
     void
@@ -2608,7 +2614,7 @@ namespace gr {
         if (remainder < 0) {
           remainder += (dx * dy);
         }
-        if (remainder == (dx * (symbol % dy))) {
+        if (remainder == symbol_look_up[symbol]) {
           if (miso == TRUE && miso_group == MISO_TX2) {
             if ((i / dx) % 2) {
               data_carrier_map[i] = SCATTERED_CARRIER_INVERTED;

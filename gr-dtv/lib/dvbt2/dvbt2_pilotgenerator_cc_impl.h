@@ -81,6 +81,8 @@ namespace gr {
       int dy;
       int miso;
       int miso_group;
+      int *symbol_look_up;
+
       void init_prbs(void);
       void init_pilots_preset(); // added
       void init_pilots(int);
