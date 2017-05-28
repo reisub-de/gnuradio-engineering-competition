@@ -119,6 +119,7 @@ namespace gr {
         modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> 4) & 0x1;
         modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> 3) & 0x1;
         modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> 2) & 0x1;
+        modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> 1) & 0x1;
         modulation_sequence[index++] = s2_modulation_patterns[s2][i] & 0x1;
       }
       for (int i = 0; i < 8; i++) {
@@ -168,7 +169,6 @@ namespace gr {
       memcpy(&dst[0], &in[p1_fft_size / 2], sizeof(gr_complex) * p1_fft_size / 2);
       p1_fft->execute();
       memcpy(out, p1_fft->get_outbuf(), sizeof(gr_complex) * p1_fft_size);
-      sqrt_calc = std::sqrt(384.0);
       for (int i = 0; i < 1024; i++) {
         p1_timeshft[i] /= sqrt_calc;
       }
