@@ -27,6 +27,21 @@
 #include <gnuradio/io_signature.h>
 #include "dvbt2_encoder_comp_impl.h"
 
+#include <gnuradio/dtv/dvbt2_pilotgenerator_cc.h>
+#include <gnuradio/dtv/dvbt2_p1insertion_cc.h>
+#include <gnuradio/dtv/dvbt2_modulator_bc.h>
+#include <gnuradio/dtv/dvbt2_interleaver_bb.h>
+#include <gnuradio/dtv/dvbt2_freqinterleaver_cc.h>
+#include <gnuradio/dtv/dvbt2_framemapper_cc.h>
+#include <gnuradio/dtv/dvbt2_cellinterleaver_cc.h>
+#include <gnuradio/dtv/dvb_ldpc_bb.h>
+#include <gnuradio/dtv/dvb_bch_bb.h>
+#include <gnuradio/dtv/dvb_bbscrambler_bb.h>
+#include <gnuradio/dtv/dvb_bbheader_bb.h>
+#include <gnuradio/digital/ofdm_cyclic_prefixer.h>
+#include <gnuradio/blocks/file_source.h>
+#include <gnuradio/blocks/file_sink.h>
+
 namespace gr {
   namespace dtv {
 
@@ -48,21 +63,21 @@ namespace gr {
       /*************************************************
       * Blocks
       *************************************************/
-      dtv::dvbt2_pilotgenerator_cc::sptr         dvbt2_pilotgenerator_cc_0(dtv::CARRIERS_EXTENDED, dtv::FFTSIZE_32K_T2GI, dtv::PILOT_PP7, dtv::GI_1_128, 59, dtv::PAPR_OFF, dtv::VERSION_111, dtv::PREAMBLE_T2_SISO, dtv::MISO_TX1, dtv::EQUALIZATION_OFF, dtv::BANDWIDTH_8_0_MHZ, 32768);
-      dtv::dvbt2_p1insertion_cc::sptr            dvbt2_p1insertion_cc_0(dtv::CARRIERS_EXTENDED, dtv::FFTSIZE_32K_T2GI, dtv::GI_1_128, 59, dtv::PREAMBLE_T2_SISO, dtv::SHOWLEVELS_OFF, 3.3);
-      dtv::dvbt2_modulator_bc::sptr              dvbt2_modulator_bc_0(dtv::FECFRAME_NORMAL, dtv::MOD_256QAM, dtv::ROTATION_ON);
-      dtv::dvbt2_interleaver_bb::sptr            dvbt2_interleaver_bb_0(dtv::FECFRAME_NORMAL, dtv::C3_5, dtv::MOD_256QAM);
-      dtv::dvbt2_freqinterleaver_cc::sptr        dvbt2_freqinterleaver_cc_0(dtv::CARRIERS_EXTENDED, dtv::FFTSIZE_32K_T2GI, dtv::PILOT_PP7, dtv::GI_1_128, 59, dtv::PAPR_OFF, dtv::VERSION_111, dtv::PREAMBLE_T2_SISO);
-      dtv::dvbt2_framemapper_cc::sptr            dvbt2_framemapper_cc_0(dtv::FECFRAME_NORMAL, dtv::C3_5, dtv::MOD_256QAM, dtv::ROTATION_ON, 202, 3, dtv::CARRIERS_EXTENDED, dtv::FFTSIZE_32K_T2GI, dtv::GI_1_128, dtv::L1_MOD_64QAM, dtv::PILOT_PP7, 2, 59, dtv::PAPR_OFF, dtv::VERSION_111, dtv::PREAMBLE_T2_SISO, dtv::INPUTMODE_NORMAL, dtv::RESERVED_OFF, dtv::L1_SCRAMBLED_OFF, dtv::INBAND_OFF);
-      dtv::dvbt2_cellinterleaver_cc::sptr        dvbt2_cellinterleaver_cc_0(dtv::FECFRAME_NORMAL, dtv::MOD_256QAM, 202, 3);
-      dtv::dvb_ldpc_bb::sptr                     dvb_ldpc_bb_0(dtv::STANDARD_DVBT2, dtv::FECFRAME_NORMAL, dtv::C3_5, dtv::MOD_OTHER);
-      dtv::dvb_bch_bb::sptr                      dvb_bch_bb_0(dtv::STANDARD_DVBT2, dtv::FECFRAME_NORMAL, dtv::C3_5);
-      dtv::dvb_bbscrambler_bb::sptr              dvb_bbscrambler_bb_0(dtv::STANDARD_DVBT2, dtv::FECFRAME_NORMAL, dtv::C3_5);
-      dtv::dvb_bbheader_bb::sptr                 dvb_bbheader_bb_0(dtv::STANDARD_DVBT2, dtv::FECFRAME_NORMAL, dtv::C3_5, dtv::RO_0_35, dtv::INPUTMODE_HIEFF, dtv::INBAND_OFF, 168, 4000000);
-      digital::ofdm_cyclic_prefixer::sptr        ofdm_cyclic_prefixer_0(32768, 32768+32768/128, 0);
-      //blocks::file_source::sptr                  file_source_0(sizeof(char)*1, input_file, false);
-      //blocks::file_sink::sptr                    file_sink_1(sizeof(gr_complex)*1, output_file, false);
-      //file_sink_1.set_unbuffered(false);
+      dtv::dvbt2_pilotgenerator_cc::sptr         dvbt2_pilotgenerator_cc_0(dtv::dvbt2_pilotgenerator_cc::make(dtv::CARRIERS_EXTENDED, dtv::FFTSIZE_32K_T2GI, dtv::PILOT_PP7, dtv::GI_1_128, 59, dtv::PAPR_OFF, dtv::VERSION_111, dtv::PREAMBLE_T2_SISO, dtv::MISO_TX1, dtv::EQUALIZATION_OFF, dtv::BANDWIDTH_8_0_MHZ, 32768));
+      dtv::dvbt2_p1insertion_cc::sptr            dvbt2_p1insertion_cc_0(dtv::dvbt2_p1insertion_cc::make(dtv::CARRIERS_EXTENDED, dtv::FFTSIZE_32K_T2GI, dtv::GI_1_128, 59, dtv::PREAMBLE_T2_SISO, dtv::SHOWLEVELS_OFF, 3.3));
+      dtv::dvbt2_modulator_bc::sptr              dvbt2_modulator_bc_0(dtv::dvbt2_modulator_bc::make(dtv::FECFRAME_NORMAL, dtv::MOD_256QAM, dtv::ROTATION_ON));
+      dtv::dvbt2_interleaver_bb::sptr            dvbt2_interleaver_bb_0(dtv::dvbt2_interleaver_bb::make(dtv::FECFRAME_NORMAL, dtv::C3_5, dtv::MOD_256QAM));
+      dtv::dvbt2_freqinterleaver_cc::sptr        dvbt2_freqinterleaver_cc_0(dtv::dvbt2_freqinterleaver_cc::make(dtv::CARRIERS_EXTENDED, dtv::FFTSIZE_32K_T2GI, dtv::PILOT_PP7, dtv::GI_1_128, 59, dtv::PAPR_OFF, dtv::VERSION_111, dtv::PREAMBLE_T2_SISO));
+      dtv::dvbt2_framemapper_cc::sptr            dvbt2_framemapper_cc_0(dtv::dvbt2_framemapper_cc::make(dtv::FECFRAME_NORMAL, dtv::C3_5, dtv::MOD_256QAM, dtv::ROTATION_ON, 202, 3, dtv::CARRIERS_EXTENDED, dtv::FFTSIZE_32K_T2GI, dtv::GI_1_128, dtv::L1_MOD_64QAM, dtv::PILOT_PP7, 2, 59, dtv::PAPR_OFF, dtv::VERSION_111, dtv::PREAMBLE_T2_SISO, dtv::INPUTMODE_NORMAL, dtv::RESERVED_OFF, dtv::L1_SCRAMBLED_OFF, dtv::INBAND_OFF));
+      dtv::dvbt2_cellinterleaver_cc::sptr        dvbt2_cellinterleaver_cc_0(dtv::dvbt2_cellinterleaver_cc::make(dtv::FECFRAME_NORMAL, dtv::MOD_256QAM, 202, 3));
+      dtv::dvb_ldpc_bb::sptr                     dvb_ldpc_bb_0(dtv::dvb_ldpc_bb::make(dtv::STANDARD_DVBT2, dtv::FECFRAME_NORMAL, dtv::C3_5, dtv::MOD_OTHER));
+      dtv::dvb_bch_bb::sptr                      dvb_bch_bb_0(dtv::dvb_bch_bb::make(dtv::STANDARD_DVBT2, dtv::FECFRAME_NORMAL, dtv::C3_5));
+      dtv::dvb_bbscrambler_bb::sptr              dvb_bbscrambler_bb_0(dtv::dvb_bbscrambler_bb::make(dtv::STANDARD_DVBT2, dtv::FECFRAME_NORMAL, dtv::C3_5));
+      dtv::dvb_bbheader_bb::sptr                 dvb_bbheader_bb_0(dtv::dvb_bbheader_bb::make(dtv::STANDARD_DVBT2, dtv::FECFRAME_NORMAL, dtv::C3_5, dtv::RO_0_35, dtv::INPUTMODE_HIEFF, dtv::INBAND_OFF, 168, 4000000));
+      digital::ofdm_cyclic_prefixer::sptr        ofdm_cyclic_prefixer_0(digital::ofdm_cyclic_prefixer::make(32768, 32768+32768/128, 0));
+      //blocks::file_source::sptr                  file_source_0(blocks::file_source::make(sizeof(char)*1, input_file, false));
+      //blocks::file_sink::sptr                    file_sink_1(blocks::file_sink::make(sizeof(gr_complex)*1, output_file, false));
+      //file_sink_1->set_unbuffered(false);
 
       /*************************************************
       * Connections
