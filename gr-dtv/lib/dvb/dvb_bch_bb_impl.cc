@@ -596,87 +596,48 @@ namespace gr {
 
       switch (bch_code) {
         case BCH_CODE_N12:
-          register unsigned int s0, s1, s2, s3, s4, s5;
           for (int i = 0; i < noutput_items; i += nbch) {
             //Zero the shift register
-        	s0 = s1 = s2 = s3 = s4 = s5 = 0;
-            //memset(shift, 0, sizeof(unsigned int) * 6);
+            memset(shift, 0, sizeof(unsigned int) * 6);
+
             // simplify things in the first step
-            /*temp = *in++;
+            temp = *in++;
             *out++ = temp;
             if (temp) {
           	  memcpy(&shift, m_poly_n_12, sizeof(m_poly_n_12));
-            }*/
+            }
             // MSB of the codeword first	(start loop from j=1)
-        	register unsigned char temp, b;
-            for (register unsigned int j = kbch; j != 0; j--) {
+            for (unsigned int j = kbch - 1; j != 0; j--) {
               temp = *in++;
               *out++ = temp;
-              //b = (temp ^ (shift[5] & 1));
-              b = (temp ^ (s5 & 1));
+              b = (temp ^ (shift[5] & 1));
 
               // shift 192 bits
-              /*shift[5] = (shift[5] >> 1) | (shift[4] << 31);
+              shift[5] = (shift[5] >> 1) | (shift[4] << 31);
               shift[4] = (shift[4] >> 1) | (shift[3] << 31);
               shift[3] = (shift[3] >> 1) | (shift[2] << 31);
               shift[2] = (shift[2] >> 1) | (shift[1] << 31);
               shift[1] = (shift[1] >> 1) | (shift[0] << 31);
-              shift[0] >>= 1;*/
-              s5 = (s5 >> 1) | (s4 << 31);
-              s4 = (s4 >> 1) | (s3 << 31);
-              s3 = (s3 >> 1) | (s2 << 31);
-              s2 = (s2 >> 1) | (s1 << 31);
-              s1 = (s1 >> 1) | (s0 << 31);
-              s0 >>= 1; 
+              shift[0] >>= 1;
 
               if (b) {
-                /*shift[0] ^= m_poly_n_12[0];
+                shift[0] ^= m_poly_n_12[0];
                 shift[1] ^= m_poly_n_12[1];
                 shift[2] ^= m_poly_n_12[2];
                 shift[3] ^= m_poly_n_12[3];
                 shift[4] ^= m_poly_n_12[4];
-                shift[5] ^= m_poly_n_12[5];*/
-            	s0 ^= m_poly_n_12[0];
-            	s1 ^= m_poly_n_12[1];
-            	s2 ^= m_poly_n_12[2];
-            	s3 ^= m_poly_n_12[3];
-            	s4 ^= m_poly_n_12[4];
-            	s5 ^= m_poly_n_12[5];
+                shift[5] ^= m_poly_n_12[5];
               }
             }
             consumed += kbch;
             // Now add the parity bits to the output ( 5 x 32 Bit)
             // (it's not necessary to shift the whole register again)
-            /*for (int m=5; m>=0; m--)
+            for (int m=5; m>=0; m--)
               for (int n=32; n != 0; n--) {
        			*out++ = (shift[m] & 1);
        			shift[m] >>= 1;
-       		  }*/
-       		  for (int n=32; n != 0; n--) {
-				*out++ = (s5 & 1);
-				s5 >>= 1;
        		  }
-			  for (int n=32; n != 0; n--) {
-				*out++ = (s4 & 1);
-				s4 >>= 1;
-			  }
-			  for (int n=32; n != 0; n--) {
-				*out++ = (s3 & 1);
-				s3 >>= 1;
-		 	  }
-			  for (int n=32; n != 0; n--) {
-				*out++ = (s2 & 1);
-				s2 >>= 1;
-			  }
-			  for (int n=32; n != 0; n--) {
-				*out++ = (s1 & 1);
-			 	s1 >>= 1;
-			  }
-			  for (int n=32; n != 0; n--) {
-				*out++ = (s0 & 1);
-				s0 >>= 1;
-			  }
-          }
+            }
           break;
         case BCH_CODE_N10:
           for (int i = 0; i < noutput_items; i += nbch) {
