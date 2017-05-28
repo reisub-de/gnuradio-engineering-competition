@@ -49,6 +49,11 @@ namespace gr {
       gr_complex *out = (gr_complex *) p1_time;
       s1 = preamble;
       switch (fftsize) {
+        case FFTSIZE_32K:
+        case FFTSIZE_32K_T2GI:
+          fft_size = 32768;
+          N_P2 = 1;
+          break;
         case FFTSIZE_1K:
           fft_size = 1024;
           N_P2 = 16;
@@ -71,13 +76,11 @@ namespace gr {
           fft_size = 16384;
           N_P2 = 1;
           break;
-        case FFTSIZE_32K:
-        case FFTSIZE_32K_T2GI:
-          fft_size = 32768;
-          N_P2 = 1;
-          break;
       }
       switch (guardinterval) {
+        case GI_1_128:
+          guard_interval = fft_size / 128;
+          break;
         case GI_1_32:
           guard_interval = fft_size / 32;
           break;
@@ -90,9 +93,6 @@ namespace gr {
         case GI_1_4:
           guard_interval = fft_size / 4;
           break;
-        case GI_1_128:
-          guard_interval = fft_size / 128;
-          break;
         case GI_19_128:
           guard_interval = (fft_size * 19) / 128;
           break;
@@ -103,26 +103,38 @@ namespace gr {
       init_p1_randomizer();
       s2 = (fftsize & 0x7) << 1;
       for (int i = 0; i < 8; i++) {
-        for (int j = 7; j >= 0; j--) {
-          modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
-        }
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 7) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 6) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 5) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 4) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 3) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 2) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 1) & 0x1;
+        modulation_sequence[index++] = s1_modulation_patterns[s1][i] & 0x1;
       }
       for (int i = 0; i < 32; i++) {
-        for (int j = 7; j >= 0; j--) {
-          modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> j) & 0x1;
-        }
+        modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> 7) & 0x1;
+        modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> 6) & 0x1;
+        modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> 5) & 0x1;
+        modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> 4) & 0x1;
+        modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> 3) & 0x1;
+        modulation_sequence[index++] = (s2_modulation_patterns[s2][i] >> 2) & 0x1;
+        modulation_sequence[index++] = s2_modulation_patterns[s2][i] & 0x1;
       }
       for (int i = 0; i < 8; i++) {
-        for (int j = 7; j >= 0; j--) {
-          modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> j) & 0x1;
-        }
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 7) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 6) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 5) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 4) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 3) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 2) & 0x1;
+        modulation_sequence[index++] = (s1_modulation_patterns[s1][i] >> 1) & 0x1;
+        modulation_sequence[index++] = s1_modulation_patterns[s1][i] & 0x1;
       }
       dbpsk_modulation_sequence[0] = 1;
+      memset(&dbpsk_modulation_sequence[1], 0, 384 * sizeof(int));
       for (int i = 1; i < 385; i++) {
-        dbpsk_modulation_sequence[i] = 0;
-      }
-      for (int i = 1; i < 385; i++) {
-        if (modulation_sequence[i - 1] == 1) {
+        if (modulation_sequence[i - 1]) {
           dbpsk_modulation_sequence[i] = -dbpsk_modulation_sequence[i - 1];
         }
         else {
@@ -143,12 +155,11 @@ namespace gr {
       memcpy(&dst[0], &in[p1_fft_size / 2], sizeof(gr_complex) * p1_fft_size / 2);
       p1_fft->execute();
       memcpy(out, p1_fft->get_outbuf(), sizeof(gr_complex) * p1_fft_size);
+      float sqrt_calc = std::sqrt(384.0);
       for (int i = 0; i < 1024; i++) {
-        p1_time[i] /= std::sqrt(384.0);
+        p1_time[i] /= sqrt_calc;
       }
-      for (int i = 0; i < 1023; i++) {
-        p1_freqshft[i + 1] = p1_freq[i];
-      }
+      memcpy(&p1_freqshft[1], &p1_freq[0], 1023 * sizeof(gr_complex));
       p1_freqshft[0] = p1_freq[1023];
       in = (const gr_complex *) p1_freqshft;
       out = (gr_complex *) p1_timeshft;
@@ -157,8 +168,9 @@ namespace gr {
       memcpy(&dst[0], &in[p1_fft_size / 2], sizeof(gr_complex) * p1_fft_size / 2);
       p1_fft->execute();
       memcpy(out, p1_fft->get_outbuf(), sizeof(gr_complex) * p1_fft_size);
+      sqrt_calc = std::sqrt(384.0);
       for (int i = 0; i < 1024; i++) {
-        p1_timeshft[i] /= std::sqrt(384.0);
+        p1_timeshft[i] /= sqrt_calc;
       }
       frame_items = ((numdatasyms + N_P2) * fft_size) + ((numdatasyms + N_P2) * guard_interval);
       insertion_items = frame_items + 2048;
@@ -183,15 +195,15 @@ namespace gr {
     {
       int sr = 0x4e46;
       for (int i = 0; i < 384; i++) {
-        int b = ((sr) ^ (sr >> 1)) & 1;
-        if (b == 0) {
-          p1_randomize[i] = 1;
+        char b = ((char)sr ^ ((char)sr >> 1)) & 1;
+        if (b) {
+          p1_randomize[i] = -1;
+          sr |= 0x4000;
         }
         else {
-          p1_randomize[i] = -1;
+          p1_randomize[i] = 1;
         }
         sr >>= 1;
-        if(b) sr |= 0x4000;
       }
     }
 
@@ -223,19 +235,35 @@ namespace gr {
       const int memcpy_out_p = 1024 * size_gr_complex;
       const int memcpy_out_pshift_two = 482 * size_gr_complex;
 
-      for (int i = 0; i < noutput_items; i += insertion_items) {
-        level = out;
-        // replace for-loops with memcpy()s
-        memcpy(out, &p1_timeshft[0], memcpy_out_pshift_one);
-        out += 542;
-        memcpy(out, &p1_time[0], memcpy_out_p);
-        out += 1024;
-        memcpy(out, &p1_timeshft[542], memcpy_out_pshift_two);
-        out += 482;
-        memcpy(out, in, size_gr_complex * frame_items);
-        out += frame_items;
-        in += frame_items;
-        if (show_levels == TRUE) {
+      if (show_levels == FALSE) {
+        for (int i = 0; i < noutput_items; i += insertion_items) {
+          level = out;
+          // replace for-loops with memcpy()s
+          memcpy(out, &p1_timeshft[0], memcpy_out_pshift_one);
+          out += 542;
+          memcpy(out, &p1_time[0], memcpy_out_p);
+          out += 1024;
+          memcpy(out, &p1_timeshft[542], memcpy_out_pshift_two);
+          out += 482;
+          memcpy(out, in, size_gr_complex * frame_items);
+          out += frame_items;
+          in += frame_items;
+        }
+      }
+      else {
+        for (int i = 0; i < noutput_items; i += insertion_items) {
+          level = out;
+          // replace for-loops with memcpy()s
+          memcpy(out, &p1_timeshft[0], memcpy_out_pshift_one);
+          out += 542;
+          memcpy(out, &p1_time[0], memcpy_out_p);
+          out += 1024;
+          memcpy(out, &p1_timeshft[542], memcpy_out_pshift_two);
+          out += 482;
+          memcpy(out, in, size_gr_complex * frame_items);
+          out += frame_items;
+          in += frame_items;
+          // show_levels == TRUE
           for (int j = 0; j < frame_items + 2048; j++) {
             if (level[j].real() > real_positive) {
               real_positive = level[j].real();
@@ -264,8 +292,8 @@ namespace gr {
           }
           printf("peak real = %+e, %+e, %d, %d\n", real_positive, real_negative, real_positive_threshold_count, real_negative_threshold_count);
           printf("peak imag = %+e, %+e, %d, %d\n", imag_positive, imag_negative, imag_positive_threshold_count, imag_negative_threshold_count);
-        }
-      }
+        } // end for
+      } // end else
 
       // Tell runtime system how many input items we consumed on
       // each input stream.
