@@ -52,6 +52,9 @@ namespace gr {
       P(0),
       Xp(0)
     {
+    
+        set_thread_priority(99);
+       
       frame_size_type = framesize;
       if (framesize == FECFRAME_NORMAL) {
         frame_size = FRAME_SIZE_NORMAL;
@@ -73,9 +76,6 @@ namespace gr {
             nbch = 32400;
             q_val = 90;
             break;
-          case C3_5:
-            nbch = 38880;
-            q_val = 72;
             break;
           case C2_3:
             nbch = 43200;
@@ -85,6 +85,9 @@ namespace gr {
             nbch = 48600;
             q_val = 45;
             break;
+          case C3_5:
+            nbch = 38880;
+            q_val = 72;
           case C4_5:
             nbch = 51840;
             q_val = 36;
@@ -421,9 +424,6 @@ for (int row = 0; row < ROWS; row++) { \
         if (code_rate == C1_2) {
           LDPC_BF(ldpc_tab_1_2N,  90);
         }
-        if (code_rate == C3_5) {
-          LDPC_BF(ldpc_tab_3_5N,  108);
-        }
         if (code_rate == C2_3) {
           if (dvb_standard == STANDARD_DVBT2) {
             LDPC_BF(ldpc_tab_2_3N_DVBT2, 120);
@@ -434,6 +434,9 @@ for (int row = 0; row < ROWS; row++) { \
         }
         if (code_rate == C3_4) {
           LDPC_BF(ldpc_tab_3_4N,  135);
+        }
+                if (code_rate == C3_5) {
+          LDPC_BF(ldpc_tab_3_5N,  108);
         }
         if (code_rate == C4_5) {
           LDPC_BF(ldpc_tab_4_5N,  144);
@@ -615,6 +618,7 @@ for (int row = 0; row < ROWS; row++) { \
         ldpc_encode.p[i] = ldpc_encode.sorted_p_d[i].first;
         ldpc_encode.d[i] = ldpc_encode.sorted_p_d[i].second;
       }
+      
       /*std::ofstream write;
       write.open("ldpc_sorted.txt");
       for(std::vector<std::pair<int, int> >::iterator it = ldpc_encode.sorted_p_d.begin(); it != ldpc_encode.sorted_p_d.end(); it++)
@@ -663,10 +667,7 @@ for (int row = 0; row < ROWS; row++) { \
         consumed = nbch;
         
         // now do the parity checking
-        // Each thread gets the half of the array for parityCheck
-        //threads[0] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 4, 0);
         doParityCheck(p, d, ldpc_encode.table_length, 0);
-        //threads[0].join();
     
         
         if (P != 0) {
@@ -709,16 +710,16 @@ for (int row = 0; row < ROWS; row++) { \
       return noutput_items;
     }
 
-    void dvb_ldpc_bb_impl::doParityCheck(unsigned char* p, const unsigned char* d, int counter, int start)
+
+    inline void dvb_ldpc_bb_impl::doParityCheck(unsigned char* p, const unsigned char* d, int counter, int start)
     {
-         _Cilk_for (int j = start; j < counter; j+=9) {
+         for (int j = start; j < counter; j+=9) {
             // For faster check, enroll the For Loop
             // The table is always a multiple of 360
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]] ^ d[ldpc_encode.d[j+1]] ^ d[ldpc_encode.d[j+2]]
                                 ^ d[ldpc_encode.d[j+3]] ^ d[ldpc_encode.d[j+4]] ^ d[ldpc_encode.d[j+5]]
                                 ^ d[ldpc_encode.d[j+6]] ^ d[ldpc_encode.d[j+7]] ^ d[ldpc_encode.d[j+8]];
-        }      
-        
+        }  
     }
     
     const int dvb_ldpc_bb_impl::ldpc_tab_1_4N[45][13]=

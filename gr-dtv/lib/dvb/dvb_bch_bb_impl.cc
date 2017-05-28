@@ -43,6 +43,8 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(1, 1, sizeof(unsigned char)))
     {
+        set_thread_priority(99);
+        
       if (framesize == FECFRAME_NORMAL) {
         switch (rate) {
           case C1_4:
@@ -599,8 +601,7 @@ namespace gr {
             //printf("kbch: %d\n", kbch);
             //printf("nbch: %d\n", nbch);
           //printf("ninput_items: %d\n", ninput_items.size());
-          //printf("input_items: %d\n", input_items.size());
-          
+          //printf("input_items: %d\n", input_items.size());    
           for (int i = 0; i < noutput_items; i += nbch) {
             unsigned int shift[6] = {0};
             //Zero the shift register
@@ -612,6 +613,7 @@ namespace gr {
               consumed++;
               b = (temp ^ (shift[5] & 1));
               reg_6_shift(shift);
+
               if (b) {
                 shift[0] ^= m_poly_n_12[0];
                 shift[1] ^= m_poly_n_12[1];
@@ -621,11 +623,15 @@ namespace gr {
                 shift[5] ^= m_poly_n_12[5];
               }
             }
+            
             // Now add the parity bits to the output
-            for (int n = 0; n < 192; n++) {
-              *out++ = (shift[5] & 1);
-              reg_6_shift(shift);
+            for(int n = 0; n < 192; n++) {
+              //*out++ = (shift[5] & 1);
+                out[n] = (shift[5] & 1);
+                reg_6_shift(shift);
             }
+
+            out += 192;
           }
           break;
         case BCH_CODE_N10:
