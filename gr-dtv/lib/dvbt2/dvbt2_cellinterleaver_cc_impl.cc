@@ -242,8 +242,10 @@ namespace gr {
               }
               n++;
             }
+            //get the pointer to the value from the offset position->no additional add required
+            gr_complex* start = &time_interleave[index];
             for (int w = 0; w < cell_size; w++) {
-              time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
+              start[((permutations[w] + shift) % cell_size)] = *in++;
             }
             index += cell_size;
           }
@@ -263,8 +265,10 @@ namespace gr {
               }
               n++;
             }
+            //get the pointer to the value from the offset position->no additional add required
+            gr_complex* start = &time_interleave[index];
             for (int w = 0; w < cell_size; w++) {
-              time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
+              start[((permutations[w] + shift) % cell_size)] = *in++;
             }
             index += cell_size;
           }
@@ -277,12 +281,11 @@ namespace gr {
           rows = cell_size / 5;
           int ti_index_offset = rows * numCols;
           while (s < numSmallTIBlocks) {
-            /*for (int j = 0; j < numCols; j++) {
-              cols[j] = &time_interleave[(rows * j) + ti_index];
-            }*/
+            //get the pointer to the value from the offset position->no additional add required
+            gr_complex* start = &time_interleave[ti_index];
             for (int k = 0; k < rows; k++) {
               for (int w = 0; w < numCols; w++) {
-                *out++ = *((&time_interleave[(rows * w) + ti_index]) + k);
+                *out++ = *((&start[(rows * w)]) + k);
               }
             }
             ti_index += ti_index_offset;
@@ -291,12 +294,11 @@ namespace gr {
           numCols = 5 * FECBlocksPerBigTIBlock;
           ti_index_offset = rows * numCols;
           while (s < iter_limit) {
-            /*for (int j = 0; j < numCols; j++) {
-              cols[j] = &time_interleave[(rows * j) + ti_index];
-            }*/
+            //get the pointer to the value from the offset position->no additional add required
+            gr_complex* start = &time_interleave[ti_index];
             for (int k = 0; k < rows; k++) {
               for (int w = 0; w < numCols; w++) {
-                *out++ = *((&time_interleave[(rows * w) + ti_index]) + k);
+                *out++ = *((&start[(rows * w)]) + k);
               }
             }
             ti_index += ti_index_offset;
