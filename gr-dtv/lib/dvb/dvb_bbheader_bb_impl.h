@@ -42,10 +42,6 @@ typedef struct{
    BBHeader bb_header;
 }FrameFormat;
 
-struct FuncHandlerDataStruct {
-  
-};
-
 namespace gr {
   namespace dtv {
 

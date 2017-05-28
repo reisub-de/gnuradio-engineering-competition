@@ -89,7 +89,7 @@ def main(top_block_cls=vv002_cr35l, options=None):
     print "modulator runtime is: ", tb.dtv_dvbt2_modulator_bc_0.pc_work_time_total()
     print "interleaver runtime is: ", tb.dtv_dvbt2_interleaver_bb_0.pc_work_time_total()
     print "freqinterleaver runtime is: ", tb.dtv_dvbt2_freqinterleaver_cc_0.pc_work_time_total()
-    print "framemapper runtime is: ", tb.dtv_dvbt2_framemapper_cc_0.pc_work_time_total()
+    print "cellinterleaver runtime is: ", tb.dtv_dvbt2_framemapper_cc_0.pc_work_time_total()
     print "cellinterleaver runtime is: ", tb.dtv_dvbt2_cellinterleaver_cc_0.pc_work_time_total()
     print "ldpc runtime is: ", tb.dtv_dvb_ldpc_bb_0.pc_work_time_total()
     print "bch runtime is: ", tb.dtv_dvb_bch_bb_0.pc_work_time_total()
