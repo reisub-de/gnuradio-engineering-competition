@@ -198,6 +198,83 @@ namespace gr {
       free(time_interleave);
     }
 
+    void
+    dvbt2_cellinterleaver_cc_impl::func_handler(FuncHandlerDataStruct data) {
+      const gr_complex *in = data.in;
+      gr_complex *out = data.out;
+      const int val_numSmallTIBlocks = data.val_numSmallTIBlocks;
+      const int val_numBigTIBlocks = data.val_numBigTIBlocks;
+      const int val_FECBlocksPerSmallTIBlock = data.val_FECBlocksPerSmallTIBlock;
+      const int val_FECBlocksPerBigTIBlock = data.val_FECBlocksPerBigTIBlock;
+      const int val_fecblocks = data.val_fecblocks;
+      const int val_cell_size = data.val_cell_size;
+      const int val_pn_degree = data.val_pn_degree;
+      const int *val_permutations = data.val_permutations;
+
+      int index;
+      int n;
+      int FECBlocksPerTIBlock;
+      int shift;
+      int temp;
+      int rows, numCols;
+      int ti_index;
+
+      gr_complex *val_time_interleave = (gr_complex *) malloc(sizeof(gr_complex) * val_cell_size * val_fecblocks);
+      gr_complex **val_cols = (gr_complex **) malloc(sizeof(gr_complex *) * val_FECBlocksPerBigTIBlock * 5);
+
+      index = 0; 
+      for (int s = 0; s < val_numSmallTIBlocks + val_numBigTIBlocks; s++) {
+        n = 0;
+        if (s < val_numSmallTIBlocks) {
+          FECBlocksPerTIBlock = val_FECBlocksPerSmallTIBlock;
+        }
+        else {
+          FECBlocksPerTIBlock = val_FECBlocksPerBigTIBlock;
+        }
+        for (int r = 0; r < FECBlocksPerTIBlock; r++) {
+          shift = val_cell_size;
+          while (shift >= val_cell_size) {
+            temp = n;
+            shift = 0;
+            for (int p = 0; p < val_pn_degree; p++) {
+              shift |= temp & 1;
+              shift <<= 1;
+              temp >>= 1;
+            }
+            n++;
+          }
+          for (int w = 0; w < val_cell_size; w++) {
+            val_time_interleave[((val_permutations[w] + shift) % val_cell_size) + index] = *in++;
+          }
+          index += val_cell_size;
+        }
+      }
+      ti_index = 0;
+      for (int s = 0; s < val_numSmallTIBlocks + val_numBigTIBlocks; s++) {
+            if (s < val_numSmallTIBlocks) {
+              FECBlocksPerTIBlock = val_FECBlocksPerSmallTIBlock;
+            }
+            else {
+              FECBlocksPerTIBlock = val_FECBlocksPerBigTIBlock;
+            }
+            numCols = 5 * FECBlocksPerTIBlock;
+            rows = val_cell_size / 5;
+            for (int j = 0; j < numCols; j++) {
+              val_cols[j] = &val_time_interleave[(rows * j) + ti_index];
+            }
+            index = 0;
+            for (int k = 0; k < rows; k++) {
+              for (int w = 0; w < numCols; w++) {
+                *out++ = *(val_cols[w] + index);
+              }
+              index++;
+            }
+            ti_index += rows * numCols;
+      }
+      free(val_cols);
+      free(val_time_interleave);
+    }
+
     int
     dvbt2_cellinterleaver_cc_impl::work(int noutput_items,
                           gr_vector_const_void_star &input_items,
@@ -207,59 +284,115 @@ namespace gr {
       gr_complex *out = (gr_complex *) output_items[0];
       int FECBlocksPerTIBlock, n, shift, temp, index, rows, numCols, ti_index;
 
-      for (int i = 0; i < noutput_items; i += interleaved_items) {
-        index = 0;
-        for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; s++) {
-          n = 0;
-          if (s < numSmallTIBlocks) {
-            FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
-          }
-          else {
-            FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
-          }
-          for (int r = 0; r < FECBlocksPerTIBlock; r++) {
-            shift = cell_size;
-            while (shift >= cell_size) {
-              temp = n;
-              shift = 0;
-              for (int p = 0; p < pn_degree; p++) {
-                shift |= temp & 1;
-                shift <<= 1;
-                temp >>= 1;
-              }
-              n++;
-            }
-            for (int w = 0; w < cell_size; w++) {
-              time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
-            }
-            index += cell_size;
-          }
+      if (ti_blocks != 0) {
+        unsigned int max_thread_num = boost::thread::hardware_concurrency();
+        unsigned int thread_needed;
+        unsigned int num_loop = noutput_items / interleaved_items;
+        if (num_loop >= max_thread_num) thread_needed = max_thread_num;
+        else thread_needed = num_loop;
+        gr_thread_pool thread_pool(thread_needed);
+
+        for (int i = 0; i < noutput_items; i += interleaved_items) {
+          FuncHandlerDataStruct func_data(
+            in,
+            out,
+            numSmallTIBlocks,
+            numBigTIBlocks,
+            FECBlocksPerSmallTIBlock,
+            FECBlocksPerBigTIBlock,
+            fec_blocks,
+            cell_size,
+            pn_degree,
+            permutations
+          );
+          thread_pool.enqueue(boost::bind(func_handler, func_data));
+
+          in +=   (numSmallTIBlocks *  FECBlocksPerSmallTIBlock + numBigTIBlocks * FECBlocksPerBigTIBlock) 
+                  * cell_size;
+          out += (numSmallTIBlocks *  FECBlocksPerSmallTIBlock + numBigTIBlocks * FECBlocksPerBigTIBlock)
+                  * 5 * (cell_size / 5);
         }
-        if (ti_blocks != 0) {
-          ti_index = 0;
+        // for (int i = 0; i < noutput_items; i += interleaved_items) {
+        //   index = 0;
+        //   for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; s++) {
+        //     n = 0;
+        //     if (s < numSmallTIBlocks) {
+        //       FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
+        //     }
+        //     else {
+        //       FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
+        //     }
+        //     for (int r = 0; r < FECBlocksPerTIBlock; r++) {
+        //       shift = cell_size;
+        //       while (shift >= cell_size) {
+        //         temp = n;
+        //         shift = 0;
+        //         for (int p = 0; p < pn_degree; p++) {
+        //           shift |= temp & 1;
+        //           shift <<= 1;
+        //           temp >>= 1;
+        //         }
+        //         n++;
+        //       }
+        //       for (int w = 0; w < cell_size; w++) {
+        //         time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
+        //       }
+        //       index += cell_size;
+        //     }
+        //   }
+        //   ti_index = 0;
+        //   for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; s++) {
+        //     if (s < numSmallTIBlocks) {
+        //       FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
+        //     }
+        //     else {
+        //       FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
+        //     }
+        //     numCols = 5 * FECBlocksPerTIBlock;
+        //     rows = cell_size / 5;
+        //     for (int j = 0; j < numCols; j++) {
+        //       cols[j] = &time_interleave[(rows * j) + ti_index];
+        //     }
+        //     index = 0;
+        //     for (int k = 0; k < rows; k++) {
+        //       for (int w = 0; w < numCols; w++) {
+        //         *out++ = *(cols[w] + index);
+        //       }
+        //       index++;
+        //     }
+        //     ti_index += rows * numCols;
+        //   }
+        // }
+      }
+      else {
+        for (int i = 0; i < noutput_items; i += interleaved_items) {
+          index = 0;
           for (int s = 0; s < numSmallTIBlocks + numBigTIBlocks; s++) {
+            n = 0;
             if (s < numSmallTIBlocks) {
               FECBlocksPerTIBlock = FECBlocksPerSmallTIBlock;
             }
             else {
               FECBlocksPerTIBlock = FECBlocksPerBigTIBlock;
             }
-            numCols = 5 * FECBlocksPerTIBlock;
-            rows = cell_size / 5;
-            for (int j = 0; j < numCols; j++) {
-              cols[j] = &time_interleave[(rows * j) + ti_index];
-            }
-            index = 0;
-            for (int k = 0; k < rows; k++) {
-              for (int w = 0; w < numCols; w++) {
-                *out++ = *(cols[w] + index);
+            for (int r = 0; r < FECBlocksPerTIBlock; r++) {
+              shift = cell_size;
+              while (shift >= cell_size) {
+                temp = n;
+                shift = 0;
+                for (int p = 0; p < pn_degree; p++) {
+                  shift |= temp & 1;
+                  shift <<= 1;
+                  temp >>= 1;
+                }
+                n++;
               }
-              index++;
+              for (int w = 0; w < cell_size; w++) {
+                time_interleave[((permutations[w] + shift) % cell_size) + index] = *in++;
+              }
+              index += cell_size;
             }
-            ti_index += rows * numCols;
           }
-        }
-        else {
           index = 0;
           for (int w = 0; w < fec_blocks * cell_size; w++) {
             *out++ = time_interleave[index++];
