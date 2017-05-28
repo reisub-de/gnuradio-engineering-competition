@@ -648,7 +648,7 @@ im++; \
         // now do the parity checking
         int *idx_p = ldpc_encode.p;
         int *idx_d = ldpc_encode.d;
-        for (int j = 0; j < ldpc_encode.table_length; j++) {
+        for (register unsigned int j = 0; j < ldpc_encode.table_length; j++) {
         	p[*idx_p++] ^= d[*idx_d++]; // accelerate calculation with pointers
         }
         if (P != 0) {
