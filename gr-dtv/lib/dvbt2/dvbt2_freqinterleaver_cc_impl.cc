@@ -62,6 +62,11 @@ namespace gr {
       int pn_degree, even, odd;
       if ((preamble == PREAMBLE_T2_SISO) || (preamble == PREAMBLE_T2_LITE_SISO)) {
         switch (fftsize) {
+          case FFTSIZE_32K:
+          case FFTSIZE_32K_T2GI:
+            N_P2 = 1;
+            C_P2 = 22432;
+            break;
           case FFTSIZE_1K:
             N_P2 = 16;
             C_P2 = 558;
@@ -83,11 +88,6 @@ namespace gr {
           case FFTSIZE_16K_T2GI:
             N_P2 = 1;
             C_P2 = 8944;
-            break;
-          case FFTSIZE_32K:
-          case FFTSIZE_32K_T2GI:
-            N_P2 = 1;
-            C_P2 = 22432;
             break;
         }
       }
@@ -123,6 +123,16 @@ namespace gr {
         }
       }
       switch (fftsize) {
+        case FFTSIZE_32K:
+        case FFTSIZE_32K_T2GI:
+          pn_degree = 14;
+          pn_mask = 0x3fff;
+          max_states = 32768;
+          logic = &logic32k[0];
+          xor_size = 4;
+          bitpermeven = &bitperm32k[0];
+          bitpermodd = &bitperm32k[0];
+          break;
         case FFTSIZE_1K:
           pn_degree = 9;
           pn_mask = 0x1ff;
@@ -170,16 +180,6 @@ namespace gr {
           bitpermeven = &bitperm16keven[0];
           bitpermodd = &bitperm16kodd[0];
           break;
-        case FFTSIZE_32K:
-        case FFTSIZE_32K_T2GI:
-          pn_degree = 14;
-          pn_mask = 0x3fff;
-          max_states = 32768;
-          logic = &logic32k[0];
-          xor_size = 4;
-          bitpermeven = &bitperm32k[0];
-          bitpermodd = &bitperm32k[0];
-          break;
         default:
           pn_degree = 0;
           pn_mask = 0;
@@ -191,6 +191,108 @@ namespace gr {
           break;
       }
       switch (fftsize) {
+        case FFTSIZE_32K:
+        case FFTSIZE_32K_T2GI:
+          if (carriermode == CARRIERS_NORMAL) {
+            switch (pilotpattern) {
+              case PILOT_PP1:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP2:
+                C_DATA = 24886;
+                N_FC = 22720;
+                C_FC = 20952;
+                break;
+              case PILOT_PP3:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP4:
+                C_DATA = 26022;
+                N_FC = 24992;
+                C_FC = 22649;
+                break;
+              case PILOT_PP5:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP6:
+                C_DATA = 26592;
+                N_FC = 26128;
+                C_FC = 23603;
+                break;
+              case PILOT_PP7:
+                C_DATA = 26836;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP8:
+                C_DATA = 26812;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+            }
+          }
+          else {
+            switch (pilotpattern) {
+              case PILOT_PP7:
+                C_DATA = 27404;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP1:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP2:
+                C_DATA = 25412;
+                N_FC = 23200;
+                C_FC = 21395;
+                break;
+              case PILOT_PP3:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP4:
+                C_DATA = 26572;
+                N_FC = 25520;
+                C_FC = 23127;
+                break;
+              case PILOT_PP5:
+                C_DATA = 0;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+              case PILOT_PP6:
+                C_DATA = 27152;
+                N_FC = 26680;
+                C_FC = 24102;
+                break;
+              case PILOT_PP8:
+                C_DATA = 27376;
+                N_FC = 0;
+                C_FC = 0;
+                break;
+            }
+          }
+          if (paprmode == PAPR_TR || paprmode == PAPR_BOTH) {
+            if (C_DATA != 0) {
+              C_DATA -= 288;
+            }
+            if (N_FC != 0) {
+              N_FC -= 288;
+            }
+            if (C_FC != 0) {
+              C_FC -= 288;
+            }
+          }
+          break;
         case FFTSIZE_1K:
           switch (pilotpattern) {
             case PILOT_PP1:
@@ -560,143 +662,92 @@ namespace gr {
             }
           }
           break;
-        case FFTSIZE_32K:
-        case FFTSIZE_32K_T2GI:
-          if (carriermode == CARRIERS_NORMAL) {
-            switch (pilotpattern) {
-              case PILOT_PP1:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP2:
-                C_DATA = 24886;
-                N_FC = 22720;
-                C_FC = 20952;
-                break;
-              case PILOT_PP3:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP4:
-                C_DATA = 26022;
-                N_FC = 24992;
-                C_FC = 22649;
-                break;
-              case PILOT_PP5:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP6:
-                C_DATA = 26592;
-                N_FC = 26128;
-                C_FC = 23603;
-                break;
-              case PILOT_PP7:
-                C_DATA = 26836;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP8:
-                C_DATA = 26812;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-            }
-          }
-          else {
-            switch (pilotpattern) {
-              case PILOT_PP1:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP2:
-                C_DATA = 25412;
-                N_FC = 23200;
-                C_FC = 21395;
-                break;
-              case PILOT_PP3:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP4:
-                C_DATA = 26572;
-                N_FC = 25520;
-                C_FC = 23127;
-                break;
-              case PILOT_PP5:
-                C_DATA = 0;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP6:
-                C_DATA = 27152;
-                N_FC = 26680;
-                C_FC = 24102;
-                break;
-              case PILOT_PP7:
-                C_DATA = 27404;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-              case PILOT_PP8:
-                C_DATA = 27376;
-                N_FC = 0;
-                C_FC = 0;
-                break;
-            }
-          }
-          if (paprmode == PAPR_TR || paprmode == PAPR_BOTH) {
-            if (C_DATA != 0) {
-              C_DATA -= 288;
-            }
-            if (N_FC != 0) {
-              N_FC -= 288;
-            }
-            if (C_FC != 0) {
-              C_FC -= 288;
-            }
-          }
-          break;
+        
       }
       if ((preamble == PREAMBLE_T2_SISO) || (preamble == PREAMBLE_T2_LITE_SISO)) {
         if (guardinterval == GI_1_128 && pilotpattern == PILOT_PP7) {
           N_FC = 0;
           C_FC = 0;
         }
-        if (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) {
+        else if (guardinterval == GI_1_32 && pilotpattern == PILOT_PP4) {
           N_FC = 0;
           C_FC = 0;
         }
-        if (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2) {
+        else if (guardinterval == GI_1_16 && pilotpattern == PILOT_PP2) {
           N_FC = 0;
           C_FC = 0;
         }
-        if (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2) {
+        else if (guardinterval == GI_19_256 && pilotpattern == PILOT_PP2) {
           N_FC = 0;
           C_FC = 0;
         }
       }
-      for (int i = 0; i < max_states; i++) {
-        if (i == 0 || i == 1) {
-          lfsr = 0;
+      for (int i = 0; i < 2; i++) {
+        lfsr = 0;
+        even = 0;
+        odd = 0;
+        for (int n = 0; n < pn_degree; n++) {
+          even |= ((lfsr >> n) & 0x1) << bitpermeven[n];
         }
-        else if (i == 2) {
-          lfsr = 1;
+        for (int n = 0; n < pn_degree; n++) {
+          odd |= ((lfsr >> n) & 0x1) << bitpermodd[n];
         }
-        else {
-          result = 0;
-          for (int k = 0; k < xor_size; k++) {
-            result ^= (lfsr >> logic[k]) & 1;
-          }
-          lfsr &= pn_mask;
-          lfsr >>= 1;
-          lfsr |= result << (pn_degree - 1);
+        even = even + ((i % 2) * (max_states / 2));
+        odd = odd + ((i % 2) * (max_states / 2));
+        if (even < C_DATA) {
+          Heven[q_even++] = even;
         }
+        if (odd < C_DATA) {
+          Hodd[q_odd++] = odd;
+        }
+        if (even < C_P2) {
+          HevenP2[q_evenP2++] = even;
+        }
+        if (odd < C_P2) {
+          HoddP2[q_oddP2++] = odd;
+        }
+        if (even < N_FC) {
+          HevenFC[q_evenFC++] = even;
+        }
+        if (odd < N_FC) {
+          HoddFC[q_oddFC++] = odd;
+        }
+      }
+      lfsr = 1;
+      even = 0;
+      odd = 0;
+      for (int n = 0; n < pn_degree; n++) {
+        even |= ((lfsr >> n) & 0x1) << bitpermeven[n];
+      }
+      for (int n = 0; n < pn_degree; n++) {
+        odd |= ((lfsr >> n) & 0x1) << bitpermodd[n];
+      }
+      if (even < C_DATA) {
+        Heven[q_even++] = even;
+      }
+      if (odd < C_DATA) {
+        Hodd[q_odd++] = odd;
+      }
+      if (even < C_P2) {
+        HevenP2[q_evenP2++] = even;
+      }
+      if (odd < C_P2) {
+        HoddP2[q_oddP2++] = odd;
+      }
+      if (even < N_FC) {
+        HevenFC[q_evenFC++] = even;
+      }
+      if (odd < N_FC) {
+        HoddFC[q_oddFC++] = odd;
+      }
+      for (int i = 3; i < max_states; i++) {
+        result = 0;
+        for (int k = 0; k < xor_size; k++) {
+          result ^= (lfsr >> logic[k]) & 1;
+        }
+        lfsr &= pn_mask;
+        lfsr >>= 1;
+        lfsr |= result << (pn_degree - 1);
         even = 0;
         odd = 0;
         for (int n = 0; n < pn_degree; n++) {
@@ -728,29 +779,25 @@ namespace gr {
       }
       if (fftsize == FFTSIZE_32K || fftsize == FFTSIZE_32K_T2GI) {
         for (int j = 0; j < q_odd; j++) {
-          int a;
-          a = Hodd[j];
-          Heven[a] = j;
+          Heven[Hodd[j]] = j;
         }
         for (int j = 0; j < q_oddP2; j++) {
-          int a;
-          a = HoddP2[j];
-          HevenP2[a] = j;
+          HevenP2[HoddP2[j]] = j;
         }
         for (int j = 0; j < q_oddFC; j++) {
-          int a;
-          a = HoddFC[j];
-          HevenFC[a] = j;
+          HevenFC[HoddFC[j]] = j;
         }
       }
       if (N_FC == 0) {
-        set_output_multiple((N_P2 * C_P2) + (numdatasyms * C_DATA));
-        interleaved_items = (N_P2 * C_P2) + (numdatasyms * C_DATA);
+        int number = (N_P2 * C_P2) + (numdatasyms * C_DATA);
+        set_output_multiple(number);
+        interleaved_items = number;
         num_data_symbols = numdatasyms;
       }
       else {
-        set_output_multiple((N_P2 * C_P2) + ((numdatasyms - 1) * C_DATA) + N_FC);
-        interleaved_items = (N_P2 * C_P2) + ((numdatasyms - 1) * C_DATA) + N_FC;
+        int number = (N_P2 * C_P2) + ((numdatasyms - 1) * C_DATA) + N_FC;
+        set_output_multiple(number);
+        interleaved_items = number;
         num_data_symbols = numdatasyms - 1;
       }
     }
