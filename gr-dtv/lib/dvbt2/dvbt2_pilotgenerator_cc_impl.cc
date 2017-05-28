@@ -23,7 +23,7 @@
 #endif
 
 #include <gnuradio/io_signature.h>
-#include "dvbt2_pilotgenerator_cc_impl.h" 
+#include "dvbt2_pilotgenerator_cc_impl.h"
 #include <volk/volk.h>
 
 namespace gr {
