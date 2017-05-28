@@ -186,6 +186,8 @@ namespace gr {
       ninput_items_required[0] = noutput_items;
     }
 
+#pragma GCC push_options
+#pragma GCC optimize ("unroll-loops")
     int
     dvbt2_modulator_bc_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
@@ -290,7 +292,7 @@ namespace gr {
       // Tell runtime system how many output items we produced.
       return noutput_items;
     }
-
+#pragma GCC pop_options
   } /* namespace dtv */
 } /* namespace gr */
 
