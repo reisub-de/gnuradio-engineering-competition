@@ -41,7 +41,9 @@ namespace gr {
      * The private constructor
      */
     dvbt2_encoder_comp_impl::dvbt2_encoder_comp_impl(const char *input_file, const char *output_file)
-      : gr::top_block("dvbt2_encoder_comp")
+      : gr::hier_block2("dvbt2_encoder_comp",
+              gr::io_signature::make(1, 1, sizeof(char)),
+              gr::io_signature::make(1, 1, sizeof(gr_complex)))
     {
       /*************************************************
       * Blocks
@@ -58,14 +60,15 @@ namespace gr {
       dtv::dvb_bbscrambler_bb::sptr              dvb_bbscrambler_bb_0(dtv::STANDARD_DVBT2, dtv::FECFRAME_NORMAL, dtv::C3_5);
       dtv::dvb_bbheader_bb::sptr                 dvb_bbheader_bb_0(dtv::STANDARD_DVBT2, dtv::FECFRAME_NORMAL, dtv::C3_5, dtv::RO_0_35, dtv::INPUTMODE_HIEFF, dtv::INBAND_OFF, 168, 4000000);
       digital::ofdm_cyclic_prefixer::sptr        ofdm_cyclic_prefixer_0(32768, 32768+32768/128, 0);
-      blocks::file_source::sptr                  file_source_0(sizeof(char)*1, input_file, false);
-      blocks::file_sink::sptr                    file_sink_1(sizeof(gr_complex)*1, output_file, false);
-      file_sink_1.set_unbuffered(false);
+      //blocks::file_source::sptr                  file_source_0(sizeof(char)*1, input_file, false);
+      //blocks::file_sink::sptr                    file_sink_1(sizeof(gr_complex)*1, output_file, false);
+      //file_sink_1.set_unbuffered(false);
 
       /*************************************************
       * Connections
       *************************************************/
-      connect(file_source_0, 0, dvb_bbheader_bb_0, 0);
+      //connect(file_source_0, 0, dvb_bbheader_bb_0, 0);
+      connect(self(), 0, dvb_bbheader_bb_0, 0);
       connect(ofdm_cyclic_prefixer_0, 0, dvbt2_p1insertion_cc_0, 0);
       connect(dvb_bbheader_bb_0, 0, dvb_bbscrambler_bb_0, 0);
       connect(dvb_bbscrambler_bb_0, 0, dvb_bch_bb_0, 0);
@@ -76,7 +79,8 @@ namespace gr {
       connect(dvbt2_freqinterleaver_cc_0, 0, dvbt2_pilotgenerator_cc_0, 0);
       connect(dvbt2_interleaver_bb_0, 0, dvbt2_modulator_bc_0, 0);
       connect(dvbt2_modulator_bc_0, 0, dvbt2_cellinterleaver_cc_0, 0);
-      connect(dvbt2_p1insertion_cc_0, 0, file_sink_1, 0);
+      //connect(dvbt2_p1insertion_cc_0, 0, file_sink_1, 0);
+      connect(dvbt2_p1insertion_cc_0, 0, self(), 0);
       connect(dvbt2_pilotgenerator_cc_0, 0, ofdm_cyclic_prefixer_0, 0);
     }
 

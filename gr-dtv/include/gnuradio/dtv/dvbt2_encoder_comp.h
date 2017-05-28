@@ -25,7 +25,7 @@
 #define INCLUDED_DTV_DVBT2_ENCODER_COMP_H
 
 #include <gnuradio/dtv/api.h>
-#include <gnuradio/top_block.h>
+#include <gnuradio/hier_block2.h>
 
 namespace gr {
   namespace dtv {
@@ -35,7 +35,7 @@ namespace gr {
      * \ingroup dtv
      *
      */
-    class DTV_API dvbt2_encoder_comp : virtual public gr::top_block
+    class DTV_API dvbt2_encoder_comp : virtual public gr::hier_block2
     {
      public:
       typedef boost::shared_ptr<dvbt2_encoder_comp> sptr;
