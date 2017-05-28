@@ -195,9 +195,22 @@ namespace gr {
         throw std::bad_alloc();
       }
 
+      build_ti_index_lut();
+    }
 
+    /*
+     * Our virtual destructor.
+     */
+    dvbt2_cellinterleaver_cc_impl::~dvbt2_cellinterleaver_cc_impl()
+    {
+      free(cols);
+      free(time_interleave);
+      free(tab_i_ti);
+    }
 
-
+    void
+    dvbt2_cellinterleaver_cc_impl::build_ti_index_lut()
+    {
       int FECBlocksPerTIBlock, n, shift, temp, index;
 
       index = 0;
@@ -228,18 +241,6 @@ namespace gr {
           index += cell_size;
         }
       }
-
-
-    }
-
-    /*
-     * Our virtual destructor.
-     */
-    dvbt2_cellinterleaver_cc_impl::~dvbt2_cellinterleaver_cc_impl()
-    {
-      free(cols);
-      free(time_interleave);
-      free(tab_i_ti);
     }
 
     int
@@ -249,7 +250,7 @@ namespace gr {
     {
       const gr_complex *in = (const gr_complex *) input_items[0];
       gr_complex *out = (gr_complex *) output_items[0];
-      int FECBlocksPerTIBlock, n, shift, temp, index, rows, numCols, ti_index;
+      int FECBlocksPerTIBlock, index, rows, numCols, ti_index;
 
       for (int i = 0; i < noutput_items; i += interleaved_items) {
         index = 0;

@@ -44,6 +44,8 @@ namespace gr {
       gr_complex **cols;
       int *tab_i_ti;
 
+      void build_ti_index_lut();
+
      public:
       dvbt2_cellinterleaver_cc_impl(dvb_framesize_t framesize, dvb_constellation_t constellation, int fecblocks, int tiblocks);
       ~dvbt2_cellinterleaver_cc_impl();
