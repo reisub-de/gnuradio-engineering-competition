@@ -47,6 +47,11 @@ namespace gr {
         
       if (framesize == FECFRAME_NORMAL) {
         switch (rate) {
+          case C3_5:
+            kbch = 38688;
+            nbch = 38880;
+            bch_code = BCH_CODE_N12;
+            break;
           case C1_4:
             kbch = 16008;
             nbch = 16200;
@@ -65,11 +70,6 @@ namespace gr {
           case C1_2:
             kbch = 32208;
             nbch = 32400;
-            bch_code = BCH_CODE_N12;
-            break;
-          case C3_5:
-            kbch = 38688;
-            nbch = 38880;
             bch_code = BCH_CODE_N12;
             break;
           case C2_3:
@@ -446,8 +446,7 @@ namespace gr {
     void
     dvb_bch_bb_impl::poly_reverse(int *pin, int *pout, int len)
     {
-      int c;
-      c = len - 1;
+      int c = len - 1;
 
       for (int i = 0; i < len; i++) {
         pout[c--] = pin[i];
@@ -611,12 +610,7 @@ namespace gr {
       int consumed = 0;
 
       switch (bch_code) {
-        case BCH_CODE_N12:
-          //printf("noutput_items: %d\n", noutput_items);
-            //printf("kbch: %d\n", kbch);
-            //printf("nbch: %d\n", nbch);
-          //printf("ninput_items: %d\n", ninput_items.size());
-          //printf("input_items: %d\n", input_items.size());    
+        case BCH_CODE_N12:    
           for (int i = 0; i < noutput_items; i += nbch) {
             unsigned int shift[6] = {0};
             //Zero the shift register
