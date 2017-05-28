@@ -372,7 +372,7 @@ namespace gr {
       ninput_items_required[0] = (noutput_items / frame_size) * nbch;
     }
 
-#define LDPC_BF(TABLE_NAME, ROWS) \
+/*#define LDPC_BF(TABLE_NAME, ROWS) \
 for (int row = 0; row < ROWS; row++) { \
   for (int n = 0; n < 360; n++) { \
     for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
@@ -382,6 +382,19 @@ for (int row = 0; row < ROWS; row++) { \
     } \
     im++; \
   } \
+} */
+#define LDPC_BF(TABLE_NAME, ROWS) \
+int *idx_p = ldpc_encode.p; \
+int *idx_d = ldpc_encode.d; \
+for (int row = 0; row < ROWS; row++) { \
+for (int n = 0; n < 360; n++) { \
+for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
+	*idx_p++ = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+	*idx_d++ = im; \
+  index++; \
+} \
+im++; \
+} \
 }
 
     void
@@ -628,13 +641,15 @@ for (int row = 0; row < ROWS; row++) { \
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
-        for (int j = 0; j < (int)nbch; j++) {
-          out[i + j] = in[consumed];
-          consumed++;
-        }
+
+        memcpy(&out[i], &in[consumed], nbch);
+        consumed += nbch;
+
         // now do the parity checking
+        int *idx_p = ldpc_encode.p;
+        int *idx_d = ldpc_encode.d;
         for (int j = 0; j < ldpc_encode.table_length; j++) {
-          p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
+        	p[*idx_p++] ^= d[*idx_d++]; // accelerate calculation with pointers
         }
         if (P != 0) {
           puncture = 0;
@@ -653,8 +668,11 @@ for (int row = 0; row < ROWS; row++) { \
           }
           p = &out[nbch];
         }
-        for (int j = 1; j < (plen - Xp); j++) {
-          p[j] ^= p[j-1];
+
+        unsigned char *iter_p = p+1;
+        unsigned char *iter_p_2 = p;
+        for (int j = (plen - Xp); j != 0; j--) {
+          *iter_p++ ^= *iter_p_2++;
         }
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
