@@ -39,6 +39,7 @@ namespace gr {
       int packed_items;
       unsigned char tempu[FRAME_SIZE_NORMAL];
       unsigned char tempv[FRAME_SIZE_NORMAL];
+      int parity_interl_lut[FRAME_SIZE_NORMAL];
 
       const static int twist16n[8];
       const static int twist64n[12];

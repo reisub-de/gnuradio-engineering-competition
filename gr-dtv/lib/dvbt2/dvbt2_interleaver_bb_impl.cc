@@ -146,6 +146,14 @@ namespace gr {
           packed_items = frame_size / mod;
           break;
       }
+      for (int s = 0; s < nbch; s++){
+        parity_interl_lut = s;
+        
+      for (int s = 0; s < 360; s++) {
+        for (int t = 0; t < q_val; t++) {
+          parity_interl_lut[nbch + (360 * t) + s] = (q_val * s) + t;
+        }
+      }
     }
 
     /*
@@ -176,7 +184,8 @@ namespace gr {
       const int *twist;
       const int *mux;
       const unsigned char* c[16];
-
+      int shift_vals[mod * 2];
+              
       switch (signal_constellation) {
         case MOD_QPSK:
           rows = frame_size / 2;
@@ -263,7 +272,6 @@ namespace gr {
                 tempv[row + (rows * col)] = tempu[index++];
               }
             }
-            int shift_vals[mod * 2];
             for(int i = 0; i < mod * 2; i++)
               shift_vals[i] = ((mod * 2) - 1) - mux[i];
             for (int j = 0; j < rows; j++) {
@@ -342,7 +350,6 @@ namespace gr {
                 tempv[row + (rows * col)] = tempu[index++];
               }
             }
-            int shift_vals[mod * 2];
             for(int i = 0; i < mod * 2; i++)
               shift_vals[i] = ((mod * 2) - 1) - mux[i];
             for (int j = 0; j < rows; j++) {
@@ -394,7 +401,7 @@ namespace gr {
             c[14] = &tempv[rows * 14];
             c[15] = &tempv[rows * 15];
             for (int i = 0; i < noutput_items; i += packed_items) {
-              for (int k = 0; k < nbch; k+=8) {
+              /*for (int k = 0; k < nbch; k+=8) {
                 //copy in long words to improve throughput, nbch always multiple of 8
                 tempu[k] = *in++;
                 tempu[k+1] = *in++;
@@ -409,19 +416,20 @@ namespace gr {
                 for (int t = 0; t < q_val; t++) {
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
-              }
-              in = in + (q_val * 360);
+              }*/
               index = 0;
               for (int col = 0; col < (mod * 2); col++) {
                 offset = twist256n[col];
                 for (int row = offset; row < rows; row++) {
-                  tempv[row + (rows * col)] = tempu[index++];
+                  tempv[row + (rows * col)] = in[parity_interl_lut[index++]];
                 }
                 for (int row = 0; row < offset; row++) {
-                  tempv[row + (rows * col)] = tempu[index++];
+                  tempv[row + (rows * col)] = in[parity_interl_lut[index++]];
                 }
+                abcd
               }
-              int shift_vals[mod * 2];
+              in = in + (q_val * 360);
+              
               for(int i = 0; i < mod * 2; i++)
                 shift_vals[i] = ((mod * 2) - 1) - mux[i];
 
@@ -496,7 +504,6 @@ namespace gr {
                   tempv[row + (rows * col)] = tempu[index++];
                 }
               }
-              int shift_vals[mod];
               for(int i = 0; i < mod; i++)
                 shift_vals[i] = ((mod) - 1) - mux[i];
               for (int j = 0; j < rows; j++) {
