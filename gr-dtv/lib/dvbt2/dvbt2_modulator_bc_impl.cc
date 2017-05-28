@@ -91,66 +91,113 @@ namespace gr {
       }
       switch (constellation) {
         case MOD_256QAM:
-          {
-            normalization = std::sqrt((float)170.0);
-            int counter = 0;
-            const int start[16] = {0, 0, 4, 4, 0, 0, 4, 4, 8, 8, 12, 12, 8, 8, 12, 12};
-            const float real_0 = m_256qam_lookup[0] / normalization;
-            const float real_1 = m_256qam_lookup[1] / normalization;
-            const float real_2 = m_256qam_lookup[2] / normalization;
-            const float real_3 = m_256qam_lookup[3] / normalization;
-            const float real_4 = m_256qam_lookup[4] / normalization;
-            const float real_5 = m_256qam_lookup[5] / normalization;
-            const float real_6 = m_256qam_lookup[6] / normalization;
-            const float real_7 = m_256qam_lookup[7] / normalization;
-            for (int j = 0; j < 16; j++) {
-              imag_index = start[j];
-              float imag_0 = m_256qam_lookup[imag_index] / normalization;
-              float imag_1 = m_256qam_lookup[imag_index + 1] / normalization;
-              float imag_2 = m_256qam_lookup[imag_index + 2] / normalization;
-              float imag_3 = m_256qam_lookup[imag_index + 3] / normalization;
-              m_256qam[counter++] = gr_complex(real_0, imag_0);
-              m_256qam[counter++] = gr_complex(real_1, imag_1);
-              m_256qam[counter++] = gr_complex(real_2, imag_0);
-              m_256qam[counter++] = gr_complex(real_3, imag_1);
-              m_256qam[counter++] = gr_complex(real_4, imag_2);
-              m_256qam[counter++] = gr_complex(real_5, imag_3);
-              m_256qam[counter++] = gr_complex(real_6, imag_2);
-              m_256qam[counter++] = gr_complex(real_7, imag_3);
-            }
-            const float real_8 = m_256qam_lookup[8] / normalization;
-            const float real_9 = m_256qam_lookup[9] / normalization;
-            const float real_10 = m_256qam_lookup[10] / normalization;
-            const float real_11 = m_256qam_lookup[11] / normalization;
-            const float real_12 = m_256qam_lookup[12] / normalization;
-            const float real_13 = m_256qam_lookup[13] / normalization;
-            const float real_14 = m_256qam_lookup[14] / normalization;
-            const float real_15 = m_256qam_lookup[15] / normalization;
-            for (int j = 0; j < 16; j++) {
-              imag_index = start[j];
-              float imag_0 = m_256qam_lookup[imag_index] / normalization;
-              float imag_1 = m_256qam_lookup[imag_index + 1] / normalization;
-              float imag_2 = m_256qam_lookup[imag_index + 2] / normalization;
-              float imag_3 = m_256qam_lookup[imag_index + 3] / normalization;
-              m_256qam[counter++] = gr_complex(real_8, imag_0);
-              m_256qam[counter++] = gr_complex(real_9, imag_1);
-              m_256qam[counter++] = gr_complex(real_10, imag_0);
-              m_256qam[counter++] = gr_complex(real_11, imag_1);
-              m_256qam[counter++] = gr_complex(real_12, imag_2);
-              m_256qam[counter++] = gr_complex(real_13, imag_3);
-              m_256qam[counter++] = gr_complex(real_14, imag_2);
-              m_256qam[counter++] = gr_complex(real_15, imag_3);
-            }
-            if (rotation == ROTATION_ON) {
-              cyclic_delay = TRUE;
-              rotation_angle = (2.0 * M_PI * 3.576334375) / 360.0;
-              temp = std::exp(gr_complexd(0.0, rotation_angle));
-              for (int i = 0; i < 256; i++) {
-                m_256qam[i] *= temp;
-              }
-            }
-            break;
+          normalization = std::sqrt((float)170.0);
+          int counter = 0;
+          const int start[8] = {0, 4, 0, 4, 8, 12, 8, 12};
+          const float real_0 = m_256qam_lookup[0] / normalization;
+          const float real_1 = m_256qam_lookup[1] / normalization;
+          const float real_2 = m_256qam_lookup[2] / normalization;
+          const float real_3 = m_256qam_lookup[3] / normalization;
+          const float real_4 = m_256qam_lookup[4] / normalization;
+          const float real_5 = m_256qam_lookup[5] / normalization;
+          const float real_6 = m_256qam_lookup[6] / normalization;
+          const float real_7 = m_256qam_lookup[7] / normalization;
+          float imag_0, imag_1, imag_2, imag_3;
+          for (int j = 0; j < 8; j++) {
+            imag_0 = m_256qam_lookup[start[j]] / normalization;
+            imag_1 = m_256qam_lookup[start[j] + 1] / normalization;
+            imag_2 = m_256qam_lookup[start[j] + 2] / normalization;
+            imag_3 = m_256qam_lookup[start[j] + 3] / normalization;
+            m_256qam[counter] = gr_complex(real_0, imag_0);
+            counter++;
+            m_256qam[counter] = gr_complex(real_1, imag_1);
+            counter++;
+            m_256qam[counter] = gr_complex(real_2, imag_0);
+            counter++;
+            m_256qam[counter] = gr_complex(real_3, imag_1);
+            counter++;
+            m_256qam[counter] = gr_complex(real_4, imag_2);
+            counter++;
+            m_256qam[counter] = gr_complex(real_5, imag_3);
+            counter++;
+            m_256qam[counter] = gr_complex(real_6, imag_2);
+            counter++;
+            m_256qam[counter] = gr_complex(real_7, imag_3);
+            counter++;
+
+            m_256qam[counter] = gr_complex(real_0, imag_0);
+            counter++;
+            m_256qam[counter] = gr_complex(real_1, imag_1);
+            counter++;
+            m_256qam[counter] = gr_complex(real_2, imag_0);
+            counter++;
+            m_256qam[counter] = gr_complex(real_3, imag_1);
+            counter++;
+            m_256qam[counter] = gr_complex(real_4, imag_2);
+            counter++;
+            m_256qam[counter] = gr_complex(real_5, imag_3);
+            counter++;
+            m_256qam[counter] = gr_complex(real_6, imag_2);
+            counter++;
+            m_256qam[counter] = gr_complex(real_7, imag_3);
+            counter++;
           }
+          const float real_8 = m_256qam_lookup[8] / normalization;
+          const float real_9 = m_256qam_lookup[9] / normalization;
+          const float real_10 = m_256qam_lookup[10] / normalization;
+          const float real_11 = m_256qam_lookup[11] / normalization;
+          const float real_12 = m_256qam_lookup[12] / normalization;
+          const float real_13 = m_256qam_lookup[13] / normalization;
+          const float real_14 = m_256qam_lookup[14] / normalization;
+          const float real_15 = m_256qam_lookup[15] / normalization;
+          for (int j = 0; j < 8; j++) {
+            imag_0 = m_256qam_lookup[start[j]] / normalization;
+            imag_1 = m_256qam_lookup[start[j] + 1] / normalization;
+            imag_2 = m_256qam_lookup[start[j] + 2] / normalization;
+            imag_3 = m_256qam_lookup[start[j] + 3] / normalization;
+            m_256qam[counter] = gr_complex(real_8, imag_0);
+            counter++;
+            m_256qam[counter] = gr_complex(real_9, imag_1);
+            counter++;
+            m_256qam[counter] = gr_complex(real_10, imag_0);
+            counter++;
+            m_256qam[counter] = gr_complex(real_11, imag_1);
+            counter++;
+            m_256qam[counter] = gr_complex(real_12, imag_2);
+            counter++;
+            m_256qam[counter] = gr_complex(real_13, imag_3);
+            counter++;
+            m_256qam[counter] = gr_complex(real_14, imag_2);
+            counter++;
+            m_256qam[counter] = gr_complex(real_15, imag_3);
+            counter++;
+
+            m_256qam[counter] = gr_complex(real_8, imag_0);
+            counter++;
+            m_256qam[counter] = gr_complex(real_9, imag_1);
+            counter++;
+            m_256qam[counter] = gr_complex(real_10, imag_0);
+            counter++;
+            m_256qam[counter] = gr_complex(real_11, imag_1);
+            counter++;
+            m_256qam[counter] = gr_complex(real_12, imag_2);
+            counter++;
+            m_256qam[counter] = gr_complex(real_13, imag_3);
+            counter++;
+            m_256qam[counter] = gr_complex(real_14, imag_2);
+            counter++;
+            m_256qam[counter] = gr_complex(real_15, imag_3);
+            counter++;
+          }
+          if (rotation == ROTATION_ON) {
+            cyclic_delay = TRUE;
+            rotation_angle = (2.0 * M_PI * 3.576334375) / 360.0;
+            temp = std::exp(gr_complexd(0.0, rotation_angle));
+            for (int i = 0; i < 256; i++) {
+              m_256qam[i] *= temp;
+            }
+          }
+          break;
         case MOD_QPSK:
           normalization = std::sqrt(2.0);
           m_qpsk[0] = gr_complex( 1.0 / normalization,  1.0 / normalization);
