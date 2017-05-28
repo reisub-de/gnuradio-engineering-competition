@@ -1,0 +1,95 @@
+**********************************************************************************
+*                                                                                *
+*              Dokumentation durchgeführter Optimierungen                        *
+*                                                                                *
+*                                                                                *
+*                                                                                *
+* v1.0 Barkhausens Army                                                          *
+**********************************************************************************
+
+*********************************LDPC Encoder*************************************
+
+Algorithmusbeschreibung:
+Der LDCP Encoder führt Kanalcodierung durch. Dabei wird über XOR-Berechnungen der
+Infomrationsbits Redundanz erzeugt. Jedes Informationsbit hat einen Beitrag auf 
+mehrere Paritätsbits. Der implementierte Algorithmus muss diese Zurodnung von 
+Informationsbits auf verschieden viele Paritätsbits bewerkstelligen. 
+
+Ursprügnliche Implementierung: 
+Bewerkstelligt wurde dies Problematik über zwei Arrays. Ein Array enthält die
+vorberechneten Stellen an denen Redundanz angefügt wird. Ein weiteres Array enthält an
+den gleichen Stellen die jeweiligen zu nutzenden Informationsbits.
+Ein Beispiel: 
+Paritätsstellen:  1 2 5 8 9 112.. 
+Informationsbits: 1 1 1 2 2 3  ..
+
+Hierbei würde Bit 1 mit Paritätsstelle 1, 2 und 5 XOR-verrechnet werden. Bit 2 wird 
+dann mit Bit 8 und Bit 9 verrechnet werden. 
+Die kritische Schleife liest iterativ beide Arrays aus und führt die XOR-Berechnung 
+durch bis das vorberechnete Array vollständig bearbeitet wurde. 
+
+Verbesserte Implementierung: 
+Im Hinblick auf Caching ist diese Implementierung nicht optimal. Wie zu erkennen 
+ist im Array mit den Informationsbits viel Redundanz vorhanden. Durch Minimierung
+der Arrayzugriffe kann die Anzahl an Operationen verringert werden und der Prozessor 
+muss den Cache nicht sooft umladen. 
+
+Die verbesserte Implementierung sieht immernoch zwei Arrays vor. Ein Array enthält
+wie schon vorher alle vorberechneten Paritätstellen. Das zweite Array enthält aber 
+nun die Anzahl an Stellen für die sich die Paritätsberechnung nicht ändert. 
+Ein Beispiel: 
+Paritätsstellen: 1 2 5 8 9 112
+Informationsbits:    3   2   1
+
+Hierbei würde Bit 1 mit den ersten 3 Stellen aus dem Array verrechnet werden. Bit 2
+wird nur mit den darauffolgenden 2 Stellen aus dem Array verrechnet. 
+
+*********************************BCH Encoder************************************* 
+Alogrithmusbeschreibung: 
+Der BCH Encoder fürht ebenfalls Kanalcodierung durch. Genauer gesagt wird eine CRC
+Berechnungen durchgeführt. Die Herausforderung an den Algorithmus ist die 
+ungewöhnliche Länge der Checksumme. Im Gegensatz zu üblichen Implementerungen beträgt
+sie nicht 32 bit oder 16 bit, sondern 192 bit im gegebenen Fall. 192 Bit passen nicht
+mehr in einen gewöhnlichen Datentyp, was den Algorithmus verkompliziert.
+
+Urpsrüngliche Implementierung: 
+Die CRC - Berechung wurde Bitweise durchgeführt. Die Problematik mit zu kleinen 
+Datentypen wurde umgeangen indem die 192 Bit lange Checksumme auf 6x32 Bit aufgeteilt 
+wurde. 
+
+Verbesserte Implementierung: 
+Zunächst wurden die Art des zu nutzenden Datentyps verändert. Statt 6x32 Bit
+konnten 3x64 Bit Speicherstellen genutzt werden. Weitere Tests zeigen dass der für 
+diese Problematik nutzbare nicht primitive Datentyp "bitset" keinen Geschwindigkeitsnachteil
+gegenüber mehreren 64 Bit Speicherstellen aufweißt. Mit bitsets sind die durchgeführten
+shift und xor operationen deutlich einfacher implementierbar und dazu auch schneller. 
+
+Weiterhin wurde der zugrunde liegende Algorithmus geändert. CRC - Algorithmen finden
+sich im Internet viele. Statt einer Bitweise Abarbeitung der Information kann man auch
+byteweise vorgehen und die Ergebnisse der XOR-Berechung vorberechnen. 
+Umgesetzt wurde ein auf 192 angepasster Algorithmus mit byteweise Abarbeitung 
+von der Website: 
+http://www.sunshine2k.de/articles/coding/crc/understanding_crc.html
+Dieser Algorithmus ist deutlich effizienter, da er mehrere Informationsbits gleichzeit
+verarbeitet und damit die aufwändigen Shift und Xor Operationen minimiert. Hinzu 
+kommt allerdings Overhad für das Auslesen der Look Up Tabelle. 
+
+*********************************Bit Interleaver*************************************
+Algorithmusbeschreibung: 
+Der Bit Interleaver kombiniert mehrere Blöcke aus dem DVBT2 Standard die Bits umpositionieren. 
+
+Ursprüngliche Implementierung:
+Während der Blocklaufzeit wurde die zu tauschenden Stellen berechnet und die 
+Informationsbits mehrmals kopiert. 
+
+Verbesserte Implementierung: 
+Da der eigenltiche Wert der Informationen keinen Einfluss hat, können die Stellen an 
+denen die Bits positioniert werden vorberechnet werden. Die Berechnung dieser Stellen 
+erfolgt im Konstruktor. Zur Laufzeit muss dann nurnoch die Lookup Tabelle ausgelesen werden
+und die Bits am Ausgang entsprechend positioniert werden. 
+ 
+Noch dazu müssen die Bits für den nächsten Block vorbereitet werden. Genauer gesagt 
+muss der Input, indem pro byte ein bit gespeichert ist, zu einem Ausgang gewandelt 
+werden, indem jedes Eingangsbitauch nur ein bit Speicher nutzt. Dies war aber auch schon
+in der vorherigen Implementierung nötig. 
+
