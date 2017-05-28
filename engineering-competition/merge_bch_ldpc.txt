@@ -1,0 +1,42 @@
+bch operates on multiples of nbch output items at once.
+ldpc operates on multiples of framesize output items at once.
+
+framesize_normal: 64800
+nbch our case: C3_5: kbch = 38688;
+                     nbch = 38880;
+-->192 Bit BCH
+
+
+Gnuradio performance counter of:
+merged block, no optimization: around 500.000.000
+
+single blocks:
+bch: 230.000.000
+ldpc: 290.000.000
+sum: 520.000.000
+
+total all blocks (single):
+blocks_file_source_0:                   2.743.198
+digital_ofdm_cyclic_prefixer_0:         18.253.384
+dtv_dvb_bbheader_bb_0:                  37.930.324
+dtv_dvb_bbscrambler_bb_0:               28.365.280
+dtv_dvb_bch_bb_0:                       235.085.184
+dtv_dvb_ldpc_bb_0:                      294.421.184
+dtv_dvbt2_cellinterleaver_cc_0:         57.988.296
+dtv_dvbt2_framemapper_cc_0:             17.602.042
+dtv_dvbt2_freqinterleaver_cc_0:         28.810.162
+dtv_dvbt2_interleaver_bb_0:             141.190.624
+dtv_dvbt2_modulator_bc_0:               35.289.372
+dtv_dvbt2_p1insertion_cc_0:             17.623.052
+dtv_dvbt2_pilotgenerator_cc_0:          96.021.472
+
+sum: 1.011.323.574
+     0.005
+     0.530
+     0.430
+
+
+
+464...
+530
+423...

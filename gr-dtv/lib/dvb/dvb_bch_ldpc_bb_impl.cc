@@ -23,32 +23,368 @@
 #endif
 
 #include <immintrin.h>
+#include <iostream>
 
 #include <gnuradio/io_signature.h>
-#include "dvb_ldpc_bb_impl.h"
-#include <future>
+#include "dvb_bch_ldpc_bb_impl.h"
+#include "dvb_bch_ldpc_bb_impl.h"
+#include <boost/math/common_factor.hpp>
+
 
 namespace gr {
   namespace dtv {
 
-    dvb_ldpc_bb::sptr
-    dvb_ldpc_bb::make(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate, dvb_constellation_t constellation)
+    dvb_bch_ldpc_bb::sptr
+    dvb_bch_ldpc_bb::make(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate, dvb_constellation_t constellation)
     {
       return gnuradio::get_initial_sptr
-        (new dvb_ldpc_bb_impl(standard, framesize, rate, constellation));
+        (new dvb_bch_ldpc_bb_impl(standard, framesize, rate, constellation));
     }
 
     /*
      * The private constructor
      */
-    dvb_ldpc_bb_impl::dvb_ldpc_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate, dvb_constellation_t constellation)
-      : gr::block("dvb_ldpc_bb",
+    dvb_bch_ldpc_bb_impl::dvb_bch_ldpc_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate, dvb_constellation_t constellation)
+      : gr::block("dvb_bch_ldpc_bb",
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(1, 1, sizeof(unsigned char))),
       Xs(0),
       P(0),
       Xp(0)
     {
+      if (framesize == FECFRAME_NORMAL) {
+        switch (rate) {
+          case C1_4:
+            kbch = 16008;
+            nbch = 16200;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C1_3:
+            kbch = 21408;
+            nbch = 21600;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C2_5:
+            kbch = 25728;
+            nbch = 25920;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C1_2:
+            kbch = 32208;
+            nbch = 32400;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C3_5:
+            kbch = 38688;
+            nbch = 38880;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C2_3:
+            kbch = 43040;
+            nbch = 43200;
+            bch_code = BCH_CODE_N10;
+            break;
+          case C3_4:
+            kbch = 48408;
+            nbch = 48600;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C4_5:
+            kbch = 51648;
+            nbch = 51840;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C5_6:
+            kbch = 53840;
+            nbch = 54000;
+            bch_code = BCH_CODE_N10;
+            break;
+          case C8_9:
+            kbch = 57472;
+            nbch = 57600;
+            bch_code = BCH_CODE_N8;
+            break;
+          case C9_10:
+            kbch = 58192;
+            nbch = 58320;
+            bch_code = BCH_CODE_N8;
+            break;
+          case C2_9_VLSNR:
+            kbch = 14208;
+            nbch = 14400;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C13_45:
+            kbch = 18528;
+            nbch = 18720;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C9_20:
+            kbch = 28968;
+            nbch = 29160;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C90_180:
+            kbch = 32208;
+            nbch = 32400;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C96_180:
+            kbch = 34368;
+            nbch = 34560;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C11_20:
+            kbch = 35448;
+            nbch = 35640;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C100_180:
+            kbch = 35808;
+            nbch = 36000;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C104_180:
+            kbch = 37248;
+            nbch = 37440;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C26_45:
+            kbch = 37248;
+            nbch = 37440;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C18_30:
+            kbch = 38688;
+            nbch = 38880;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C28_45:
+            kbch = 40128;
+            nbch = 40320;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C23_36:
+            kbch = 41208;
+            nbch = 41400;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C116_180:
+            kbch = 41568;
+            nbch = 41760;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C20_30:
+            kbch = 43008;
+            nbch = 43200;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C124_180:
+            kbch = 44448;
+            nbch = 44640;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C25_36:
+            kbch = 44808;
+            nbch = 45000;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C128_180:
+            kbch = 45888;
+            nbch = 46080;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C13_18:
+            kbch = 46608;
+            nbch = 46800;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C132_180:
+            kbch = 47328;
+            nbch = 47520;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C22_30:
+            kbch = 47328;
+            nbch = 47520;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C135_180:
+            kbch = 48408;
+            nbch = 48600;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C140_180:
+            kbch = 50208;
+            nbch = 50400;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C7_9:
+            kbch = 50208;
+            nbch = 50400;
+            bch_code = BCH_CODE_N12;
+            break;
+          case C154_180:
+            kbch = 55248;
+            nbch = 55440;
+            bch_code = BCH_CODE_N12;
+            break;
+          default:
+            kbch = 0;
+            nbch = 0;
+            bch_code = 0;
+            break;
+        }
+      }
+      else if (framesize == FECFRAME_SHORT) {
+        switch (rate) {
+          case C1_4:
+            kbch = 3072;
+            nbch = 3240;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C1_3:
+            kbch = 5232;
+            nbch = 5400;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C2_5:
+            kbch = 6312;
+            nbch = 6480;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C1_2:
+            kbch = 7032;
+            nbch = 7200;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C3_5:
+            kbch = 9552;
+            nbch = 9720;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C2_3:
+            kbch = 10632;
+            nbch = 10800;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C3_4:
+            kbch = 11712;
+            nbch = 11880;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C4_5:
+            kbch = 12432;
+            nbch = 12600;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C5_6:
+            kbch = 13152;
+            nbch = 13320;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C8_9:
+            kbch = 14232;
+            nbch = 14400;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C11_45:
+            kbch = 3792;
+            nbch = 3960;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C4_15:
+            kbch = 4152;
+            nbch = 4320;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C14_45:
+            kbch = 4872;
+            nbch = 5040;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C7_15:
+            kbch = 7392;
+            nbch = 7560;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C8_15:
+            kbch = 8472;
+            nbch = 8640;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C26_45:
+            kbch = 9192;
+            nbch = 9360;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C32_45:
+            kbch = 11352;
+            nbch = 11520;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C1_5_VLSNR_SF2:
+            kbch = 2512;
+            nbch = 2680;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C11_45_VLSNR_SF2:
+            kbch = 3792;
+            nbch = 3960;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C1_5_VLSNR:
+            kbch = 3072;
+            nbch = 3240;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C4_15_VLSNR:
+            kbch = 4152;
+            nbch = 4320;
+            bch_code = BCH_CODE_S12;
+            break;
+          case C1_3_VLSNR:
+            kbch = 5232;
+            nbch = 5400;
+            bch_code = BCH_CODE_S12;
+            break;
+          default:
+            kbch = 0;
+            nbch = 0;
+            bch_code = 0;
+            break;
+        }
+      }
+      else {
+        switch (rate) {
+          case C1_5_MEDIUM:
+            kbch = 5660;
+            nbch = 5840;
+            bch_code = BCH_CODE_M12;
+            break;
+          case C11_45_MEDIUM:
+            kbch = 7740;
+            nbch = 7920;
+            bch_code = BCH_CODE_M12;
+            break;
+          case C1_3_MEDIUM:
+            kbch = 10620;
+            nbch = 10800;
+            bch_code = BCH_CODE_M12;
+            break;
+          default:
+            kbch = 0;
+            nbch = 0;
+            bch_code = 0;
+            break;
+        }
+      }
+
+      bch_poly_build_tables();
+      //set_output_multiple(nbch);
+
+
+
       frame_size_type = framesize;
       if (framesize == FECFRAME_NORMAL) {
         frame_size = FRAME_SIZE_NORMAL;
@@ -365,36 +701,71 @@ namespace gr {
     /*
      * Our virtual destructor.
      */
-    dvb_ldpc_bb_impl::~dvb_ldpc_bb_impl()
+    dvb_bch_ldpc_bb_impl::~dvb_bch_ldpc_bb_impl()
     {
     }
 
     void
-    dvb_ldpc_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
+    dvb_bch_ldpc_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
-      ninput_items_required[0] = (noutput_items / frame_size) * nbch;
+      ninput_items_required[0] = (noutput_items / frame_size * kbch); //kbch input items per frame_size output items
+      // ninput_items_required[0] = (noutput_items / nbch) * kbch;
+      // ninput_items_required[0] = (noutput_items / frame_size) * nbch;
     }
 
-#define LDPC_BF(TABLE_NAME, ROWS) \
-for (int row = 0; row < ROWS; row++) { \
-  for (int n = 0; n < 360; n++) { \
-    for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
-      ldpc_encode.p[index] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
-      ldpc_encode.d[index] = im; \
-      index++; \
-    } \
-    im++; \
-  } \
-}
+    //Every 'im' needs to be bch'd only once!
+    #define LDPC_BF(TABLE_NAME, ROWS) \
+    for (int row = 0; row < ROWS; row++) { \
+      for (int n = 0; n < 360; n++) { \
+        bchd = false; \
+        for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
+          ldpc_encode.item[index].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+          ldpc_encode.item[index].d = im; \
+          index++; \
+        } \
+        im++; \
+      } \
+    }
+
+    //Every 'im' needs to be bch'd only once!
+    #define LDPC_BF_our_case(TABLE_NAME, ROWS) \
+    for (int row = 0; row < ROWS; row++) { \
+      for (int n = 0; n < 360; n++) { \
+        bchd = false; \
+        for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
+          ldpc_encode.item[index].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+          ldpc_encode.item[index].d = im; \
+          if(!bchd && (ldpc_encode.item[index].p < (int)kbch && ldpc_encode.item[index].d < (int)kbch)) { \
+            bchd = true; \
+            ldpc_encode.item_bch[index_bch] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+            index_bch++; \
+          } else { \
+            if (TABLE_NAME[row][0] == 12) { \
+              ldpc_encode.item_nobch_1[index_nobch_1] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+              index_nobch_1++; \
+            } else { \
+              ldpc_encode.item_nobch_2[index_nobch_2] = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+              index_nobch_2++; \
+          }}\
+          index++; \
+        } \
+        im++; \
+      } \
+    }
+
 
     void
-    dvb_ldpc_bb_impl::ldpc_lookup_generate(void)
+    dvb_bch_ldpc_bb_impl::ldpc_lookup_generate(void)
     {
       int im;
-      int index;
+      int index, index_bch, index_nobch, index_nobch_1, index_nobch_2;
       int pbits;
       int q;
+      bool bchd;
       index = 0;
+      index_bch = 0;
+      index_nobch_1 = 0;
+      index_nobch_2 = 0;
       im = 0;
 
       pbits = (frame_size_real + Xp) - nbch;    //number of parity bits
@@ -414,7 +785,7 @@ for (int row = 0; row < ROWS; row++) { \
           LDPC_BF(ldpc_tab_1_2N,  90);
         }
         if (code_rate == C3_5) {
-          LDPC_BF(ldpc_tab_3_5N,  108);
+          LDPC_BF_our_case(ldpc_tab_3_5N,  108);
         }
         if (code_rate == C2_3) {
           if (dvb_standard == STANDARD_DVBT2) {
@@ -597,32 +968,27 @@ for (int row = 0; row < ROWS; row++) { \
         }
       }
       ldpc_encode.table_length = index;
+      ldpc_encode.table_length_nobch_1 = index_nobch_1;
+      ldpc_encode.table_length_nobch_2 = index_nobch_2;
+      ldpc_encode.table_length_nobch = index_nobch;
+      ldpc_encode.table_length_bch = index_bch;
     }
-	
-	void parallel_parity(int from, int to, unsigned char *p, unsigned char *d)
-		{
-			for (int j = from; j < to;  j++)
-			{
-				p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
-			}
-		}
 
     int
-    dvb_ldpc_bb_impl::general_work (int noutput_items,
+    dvb_bch_ldpc_bb_impl::general_work_ldpc (int noutput_items,
                        gr_vector_int &ninput_items,
-                       gr_vector_const_void_star &input_items,
+                       unsigned char *in_ldpc,
                        gr_vector_void_star &output_items)
     {
-      const unsigned char *in = (const unsigned char *) input_items[0];
-      unsigned char *out = (unsigned char *) output_items[0];
+      unsigned char *out_ldpc = (unsigned char *) output_items[0];
       const unsigned char *d;
       unsigned char *p;
       unsigned char *b = (unsigned char *) output_items[0];
       unsigned char *s;
       // Calculate the number of parity bits
       int plen = (frame_size_real + Xp) - nbch;
-      d = in;
-      p = &out[nbch];
+      d = in_ldpc;
+      p = &out_ldpc[nbch];
       int consumed = 0;
       int puncture, index;
 
@@ -630,52 +996,27 @@ for (int row = 0; row < ROWS; row++) { \
         if (Xs != 0) {
           s = &shortening_buffer[0];
           memset(s, 0, sizeof(unsigned char) * Xs);
-          memcpy(&s[Xs], &in[consumed], sizeof(unsigned char) * nbch);
+          memcpy(&s[Xs], &in_ldpc[consumed], sizeof(unsigned char) * nbch);
           d = s;
         }
         if (P != 0) {
           p = &puncturing_buffer[nbch];
-          b = &out[i + nbch];
+          b = &out_ldpc[i + nbch];
         }
         // First zero all the parity bits
         memset(p, 0, sizeof(unsigned char) * plen);
 
-		//use memcpy instead of the for loop
-		//memcpy(&out[i],&in[consumed],sizeof(unsigned char) * (int)nbch);
-		//consumed += (int)nbch;
+        //use memcpy instead of the for loop
+        memcpy(&out_ldpc[i],&in_ldpc[consumed],sizeof(unsigned char) * (int)nbch);
+        consumed += (int)nbch;
 
-
-
-
-		//__m256i in_m256i = _mm256_set_epi64(&in[consumed],&in[consumed + 16]);
-		//__m256i out_m256i = _mm256_set_epi64(&out[i], &out[i+16]);
-
-		//nbch = 38880;
-		// frame_size = 64800;
-
-		/*__m256i *in_m256i;
-		for (unsigned int loop_i = 0; loop_i< nbch / 32; loop_i++) {//1215
-			in_m256i = (__m256i*)&in[consumed];
-			_mm256_store_si256((__m256i*)&out[i+32*loop_i], *in_m256i);
-			consumed += (int)32;
-		}*/
-
-        for (int j = 0; j < (int)nbch; j++) {
-          out[i + j] = in[consumed];
-          consumed++;
-        }
-
-
+        //nbch = 38880;
+        // frame_size = 64800;
 
         // now do the parity checking
-		
-		std::future<void> res1 = std::async(parallel_parity, 0, ldpc_encode_table.table_length/2, p, d);
-		std::future<void> res2 = std::async(parallel_parity, ldpc_encode_table.table_length/2, ldpc_encode_table.table_length, p, d);
-		res1.get();
-		res2.get();
-        //for (int j = 0; j < ldpc_encode.table_length; j++) {
-         // p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]];
-        //}
+        for (int j = 0; j < ldpc_encode.table_length; j++) {
+          p[ldpc_encode.item[j].p] ^= d[ldpc_encode.item[j].d];
+        }
         if (P != 0) {
           puncture = 0;
           for (int j = 0; j < plen; j += P) {
@@ -691,13 +1032,14 @@ for (int row = 0; row < ROWS; row++) { \
               b[index++] = p[j];
             }
           }
-          p = &out[nbch];
+          p = &out_ldpc[nbch];
         }
 
 
-		for (int j = 1; j < (plen - Xp); j++) {
-			p[j] ^= p[j - 1];
+        for (int j = 1; j < (plen - Xp); j++) {
+          p[j] ^= p[j - 1];
         }
+
         if (signal_constellation == MOD_128APSK) {
           for (int j = 0; j < 6; j++) {
             p[j + plen] = 0;
@@ -707,15 +1049,839 @@ for (int row = 0; row < ROWS; row++) { \
         p += frame_size;
       }
 
+      // Tell runtime system how many output items we produced.
+      return noutput_items;
+    }
+
+
+    /*
+     * Polynomial calculation routines
+     * multiply polynomials
+     */
+    int
+    dvb_bch_ldpc_bb_impl::poly_mult(const int *ina, int lena, const int *inb, int lenb, int *out)
+    {
+
+
+      memset(out, 0, sizeof(int) * (lena + lenb));
+
+      for (int i = 0; i < lena; i++) {
+        for (int j = 0; j < lenb; j++) {
+          if (ina[i] * inb[j] > 0 ) {
+            out[i + j]++;    // count number of terms for this pwr of x
+          }
+        }
+      }
+      int max = 0;
+      for (int i = 0; i < lena + lenb; i++) {
+        out[i] = out[i] & 1;    // If even ignore the term
+        if(out[i]) {
+          max = i;
+        }
+      }
+      // return the size of array to house the result.
+      return max + 1;
+    }
+
+    /*
+     * Pack the polynomial into a 32 bit array
+     */
+    void
+    dvb_bch_ldpc_bb_impl::poly_pack(const int *pin, unsigned int* pout, int len)
+    {
+      int lw = len / 32;
+      int ptr = 0;
+      unsigned int temp;
+      if (len % 32) {
+        lw++;
+      }
+
+      for (int i = 0; i < lw; i++) {
+        temp = 0x80000000;
+        pout[i] = 0;
+        for (int j = 0; j < 32; j++) {
+          if (pin[ptr++]) {
+            pout[i] |= temp;
+          }
+          temp >>= 1;
+        }
+      }
+    }
+
+    void
+    dvb_bch_ldpc_bb_impl::poly_reverse(int *pin, int *pout, int len)
+    {
+      int c;
+      c = len - 1;
+
+      for (int i = 0; i < len; i++) {
+        pout[c--] = pin[i];
+      }
+    }
+
+    /*
+     *Shift a 128 bit register
+     */
+    inline void
+    dvb_bch_ldpc_bb_impl::reg_4_shift(unsigned int *sr)
+    {
+      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
+      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
+      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
+      sr[0] = (sr[0] >> 1);
+    }
+
+    /*
+     * Shift 160 bits
+     */
+    inline void
+    dvb_bch_ldpc_bb_impl::reg_5_shift(unsigned int *sr)
+    {
+      sr[4] = (sr[4] >> 1) | (sr[3] << 31);
+      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
+      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
+      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
+      sr[0] = (sr[0] >> 1);
+    }
+
+    /*
+     * Shift 192 bits
+     */
+    inline void
+    dvb_bch_ldpc_bb_impl::reg_6_shift(unsigned int *sr)
+    {
+      sr[5] = (sr[5] >> 1) | (sr[4] << 31);
+      sr[4] = (sr[4] >> 1) | (sr[3] << 31);
+      sr[3] = (sr[3] >> 1) | (sr[2] << 31);
+      sr[2] = (sr[2] >> 1) | (sr[1] << 31);
+      sr[1] = (sr[1] >> 1) | (sr[0] << 31);
+      sr[0] = (sr[0] >> 1);
+    }
+
+    #if defined(__AVX2__)
+        //Modified from http://stackoverflow.com/questions/25248766/emulating-shifts-on-32-bytes-with-avx
+        //----------------------------------------------------------------------------
+        // bit shift right a 256-bit value using ymm registers
+        //          __m256i *data - data to shift
+        //          int count     - number of bits to shift
+        // return:  __m256i       - carry out bit(s)
+        inline bool dvb_bch_ldpc_bb_impl::bitShiftRight256ymm (__m256i *data, int count)
+           {
+           __m256i innerCarry, carryOut, rotate;
+
+           //innerCarry = _mm256_set_epi32(0,1,2,4,8,16,64,128);
+
+           innerCarry = _mm256_slli_epi64 (*data, 64 - count);                        // carry outs in bit (64-count) of each qword
+           rotate     = _mm256_permute4x64_epi64 (innerCarry, 0b00111001);            // rotate ymm RIGHT 64 bits (left was 0x93=0b10 01 00 11). Crosslane operation, may be slow
+           //innerCarry = _mm256_blend_epi32 (_mm256_setzero_si256 (), rotate, 0xFC); // clear highest qword
+           //blend chooses from either first or second operand, depending on third.
+           //0xFC is 0b11111100 (left) --> modify to 0b00111111 (right)
+           innerCarry = _mm256_blend_epi32 (_mm256_setzero_si256 (), rotate, 0b00111111);
+           *data      = _mm256_srli_epi64 (*data, count);                             // shift all qwords left
+           *data      = _mm256_or_si256 (*data, innerCarry);                          // propagate carrys
+           carryOut   = _mm256_xor_si256 (innerCarry, rotate);                        // clear all except highest qword
+           return !_mm256_testz_si256(carryOut,carryOut); //p1 & p2 == 0
+           }
+
+        //----------------------------------------------------------------------------
+
+        //http://stackoverflow.com/questions/746171/best-algorithm-for-bit-reversal-from-msb-lsb-to-lsb-msb-in-c
+        //not needed
+        inline unsigned int
+        dvb_bch_ldpc_bb_impl::reverse(register unsigned int x)
+        {
+            x = (((x & 0xaaaaaaaa) >> 1) | ((x & 0x55555555) << 1));
+            x = (((x & 0xcccccccc) >> 2) | ((x & 0x33333333) << 2));
+            x = (((x & 0xf0f0f0f0) >> 4) | ((x & 0x0f0f0f0f) << 4));
+            x = (((x & 0xff00ff00) >> 8) | ((x & 0x00ff00ff) << 8));
+            return((x >> 16) | (x << 16));
+        }
+    #endif
+
+    int
+    dvb_bch_ldpc_bb_impl::general_work_bch (int noutput_items,
+                       gr_vector_int &ninput_items,
+                       gr_vector_const_void_star &input_items,
+                       unsigned char *out_bch)
+    {
+      const unsigned char *in_bch = (const unsigned char *) input_items[0];
+      unsigned char b, temp;
+      unsigned int shift[6];
+      int consumed = 0;
+
+      #if defined(__AVX2__)
+      //Should do this only once, but causes segfault..
+      __m256i m_256_poly_n_12 = _mm256_set_epi32(0,
+                                                0,
+                                                m_poly_n_12[0],
+                                                m_poly_n_12[1],
+                                                m_poly_n_12[2],
+                                                m_poly_n_12[3],
+                                                m_poly_n_12[4],
+                                                m_poly_n_12[5]);
+      #endif
+
+      switch (bch_code) {
+        case BCH_CODE_N12:
+          //TODO: Make this pretty, use VOLK
+          #if defined(__AVX2__)
+          //#if false
+            #warning "USING AVX2"
+            {
+            for (int i = 0; i < noutput_items; i += nbch) {
+              //Zero the shift register
+              __m256i shift_vector = _mm256_setzero_si256();
+              // MSB of the codeword first
+              for (int j = 0; j < (int)kbch; j++) {
+                temp = *in_bch++;
+                *out_bch++ = temp;
+                bool carry = bitShiftRight256ymm(&shift_vector,1);
+                b = temp ^ carry; //(((int*) &carry)[7] != 0);
+                if (b) {
+                  shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
+                }
+              }
+              // Now add the parity bits to the output
+
+              //for (int n = 0; n < 192; n++) {
+              //  __m256i carry = bitShiftRight256ymm(&shift_vector,1);
+              //  *out_bch++ = (((int*) &carry)[7] != 0);
+              //}
+              //More efficient:
+              for(int n = 0; n < 6; n++) {
+                unsigned int shift_int = (((unsigned int*)&shift_vector)[n]);
+                for(int m = 0; m < 32; m++) {
+                  *out_bch++ = (char)(shift_int & 1);
+                  shift_int >>= 1;
+                }
+              }
+            }
+            consumed += (int)kbch;
+          }
+          #else
+            #warning "NOT USING AVX2"
+            for (int i = 0; i < noutput_items; i += nbch) {
+              //Zero the shift register
+              memset(shift, 0, sizeof(unsigned int) * 6);
+              // MSB of the codeword first
+              for (int j = 0; j < (int)kbch; j++) {
+                temp = *in_bch++;
+                *out_bch++ = temp;
+                consumed++;
+                b = (temp ^ (shift[5] & 1));
+                reg_6_shift(shift);
+                if (b) {
+                  shift[0] ^= m_poly_n_12[0];
+                  shift[1] ^= m_poly_n_12[1];
+                  shift[2] ^= m_poly_n_12[2];
+                  shift[3] ^= m_poly_n_12[3];
+                  shift[4] ^= m_poly_n_12[4];
+                  shift[5] ^= m_poly_n_12[5];
+                }
+              }
+              // Now add the parity bits to the output
+              /*for (int n = 0; n < 192; n++) {
+                *out_bch++ = (shift[5] & 1);
+                reg_6_shift(shift);
+              }*/
+              for(int n = 0; n < 6; n++) {
+                unsigned int shift_int = shift[5-n];
+                for(int m = 0; m < 32; m++) {
+                  *out_bch++ = (char)(shift_int & 1);
+                  shift_int >>= 1;
+                }
+              }
+            }
+          #endif
+
+          break;
+        case BCH_CODE_N10:
+          for (int i = 0; i < noutput_items; i += nbch) {
+            //Zero the shift register
+            memset(shift, 0, sizeof(unsigned int) * 5);
+            // MSB of the codeword first
+            for (int j = 0; j < (int)kbch; j++) {
+              temp = *in_bch++;
+              *out_bch++ = temp;
+              consumed++;
+              b = (temp ^ (shift[4] & 1));
+              reg_5_shift(shift);
+              if (b) {
+                shift[0] ^= m_poly_n_10[0];
+                shift[1] ^= m_poly_n_10[1];
+                shift[2] ^= m_poly_n_10[2];
+                shift[3] ^= m_poly_n_10[3];
+                shift[4] ^= m_poly_n_10[4];
+              }
+            }
+            // Now add the parity bits to the output
+            for( int n = 0; n < 160; n++ ) {
+              *out_bch++ = (shift[4] & 1);
+              reg_5_shift(shift);
+            }
+          }
+          break;
+        case BCH_CODE_N8:
+          for (int i = 0; i < noutput_items; i += nbch) {
+            //Zero the shift register
+            memset(shift, 0, sizeof(unsigned int) * 4);
+            // MSB of the codeword first
+            for (int j = 0; j < (int)kbch; j++) {
+              temp = *in_bch++;
+              *out_bch++ = temp;
+              consumed++;
+              b = temp ^ (shift[3] & 1);
+              reg_4_shift(shift);
+              if (b) {
+                shift[0] ^= m_poly_n_8[0];
+                shift[1] ^= m_poly_n_8[1];
+                shift[2] ^= m_poly_n_8[2];
+                shift[3] ^= m_poly_n_8[3];
+              }
+            }
+            // Now add the parity bits to the output
+            for (int n = 0; n < 128; n++) {
+              *out_bch++ = shift[3] & 1;
+              reg_4_shift(shift);
+            }
+          }
+          break;
+        case BCH_CODE_S12:
+          for (int i = 0; i < noutput_items; i += nbch) {
+            //Zero the shift register
+            memset(shift, 0, sizeof(unsigned int) * 6);
+            // MSB of the codeword first
+            for (int j = 0; j < (int)kbch; j++) {
+              temp = *in_bch++;
+              *out_bch++ = temp;
+              consumed++;
+              b = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
+              reg_6_shift(shift);
+              if (b) {
+                shift[0] ^= m_poly_s_12[0];
+                shift[1] ^= m_poly_s_12[1];
+                shift[2] ^= m_poly_s_12[2];
+                shift[3] ^= m_poly_s_12[3];
+                shift[4] ^= m_poly_s_12[4];
+                shift[5] ^= m_poly_s_12[5];
+              }
+            }
+            // Now add the parity bits to the output
+            for (int n = 0; n < 168; n++) {
+              *out_bch++ = (shift[5] & 0x01000000) ? 1 : 0;
+              reg_6_shift(shift);
+            }
+          }
+          break;
+        case BCH_CODE_M12:
+          for (int i = 0; i < noutput_items; i += nbch) {
+            //Zero the shift register
+            memset(shift, 0, sizeof(unsigned int) * 6);
+            // MSB of the codeword first
+            for (int j = 0; j < (int)kbch; j++) {
+              temp = *in_bch++;
+              *out_bch++ = temp;
+              consumed++;
+              b = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
+              reg_6_shift(shift);
+              if (b) {
+                shift[0] ^= m_poly_m_12[0];
+                shift[1] ^= m_poly_m_12[1];
+                shift[2] ^= m_poly_m_12[2];
+                shift[3] ^= m_poly_m_12[3];
+                shift[4] ^= m_poly_m_12[4];
+                shift[5] ^= m_poly_m_12[5];
+              }
+            }
+            // Now add the parity bits to the output
+            for (int n = 0; n < 180; n++) {
+              *out_bch++ = (shift[5] & 0x00001000) ? 1 : 0;
+              reg_6_shift(shift);
+            }
+          }
+          break;
+      }
+
       // Tell runtime system how many input items we consumed on
       // each input stream.
-      consume_each (consumed);
+      // consume_each ((int) kbch);
 
       // Tell runtime system how many output items we produced.
       return noutput_items;
     }
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_1_4N[45][13]=
+
+    int
+    dvb_bch_ldpc_bb_impl::general_work (int noutput_items,
+                       gr_vector_int &ninput_items,
+                       gr_vector_const_void_star &input_items,
+                       gr_vector_void_star &output_items)
+    {
+        //(noutput_items / nbch) * kbch
+        //noutput_items == multiple of frame_size
+        //frame_size = Nldpc = kldpc + parity bits
+        //ldpc input = kldpc = nbch
+        //nbch = kbch + parity bits
+        //gr_vector_void_star temp_items = (gr_vector_void_star)malloc(sizeof(char)*);
+        //gr_vector_void_star temp_items(noutput_items);
+        //temp_items.reserve(noutput_items/frame_size*nbch);
+
+
+
+        //general_work_bch(noutput_items/frame_size*kbch, ninput_items, input_items, temp_items);
+
+        const unsigned char *in_bch = (const unsigned char *) input_items[0];
+        unsigned char b_bch, temp;
+        unsigned int shift[6];
+        int consumed = 0;
+        int noutput_items_bch = noutput_items/frame_size*nbch; //TODO: ==??
+
+        unsigned char *out_ldpc = (unsigned char *) output_items[0];
+        const unsigned char *d;
+        unsigned char *p;
+        unsigned char *b = (unsigned char *) output_items[0];
+        unsigned char *s;
+        // Calculate the number of ldpc parity bits
+        int plen = (frame_size_real + Xp) - nbch;
+
+        #if defined(__AVX2__)
+        //Should do this only once, but causes segfault..
+        __m256i m_256_poly_n_12 = _mm256_set_epi32(0,
+                                                  0,
+                                                  m_poly_n_12[0],
+                                                  m_poly_n_12[1],
+                                                  m_poly_n_12[2],
+                                                  m_poly_n_12[3],
+                                                  m_poly_n_12[4],
+                                                  m_poly_n_12[5]);
+        #endif
+
+
+
+
+        //Fallback for 'other' cases (not the competition case)
+        if(bch_code == BCH_CODE_N12) {
+          //TODO: Make this pretty, use VOLK
+          #if defined(__AVX2__)
+          //#if false
+            #warning "USING AVX2"
+            {
+              d = out_ldpc;
+              p = &out_ldpc[nbch];
+              int puncture, index;
+
+              for (int i = 0; i < noutput_items; i += frame_size) {
+                if (Xs != 0) {
+                  s = &shortening_buffer[0];
+                  memset(s, 0, sizeof(unsigned char) * Xs);
+                  memcpy(&s[Xs], &out_ldpc[consumed], sizeof(unsigned char) * nbch);
+                  d = s;
+                }
+                if (P != 0) {
+                  p = &puncturing_buffer[nbch];
+                  b = &out_ldpc[i + nbch];
+                }
+
+                //Zero all the LDPC parity bits
+                memset(p, 0, sizeof(unsigned char) * plen);
+
+                //Zero the shift register for BCH Code
+                __m256i shift_vector = _mm256_setzero_si256();
+
+                //copy input samples to output
+                memcpy(&out_ldpc[i],&in_bch[consumed],sizeof(unsigned char) * (int)kbch); //Missing last nbch - kbch bits, but not available yet!
+
+                // now do the parity checking of first kbch bits and generate ldpc parity
+                bool carry;
+                index = 0;
+                for (int j = 0; j < ldpc_encode.table_length_bch; j++) {
+                  temp = d[index];
+                  index++;
+                  p[ldpc_encode.item_bch[j]] ^= temp;
+                  carry = bitShiftRight256ymm(&shift_vector,1);
+                  b_bch = temp ^ carry; //(((int*) &carry)[7] != 0);
+                  if (b_bch) {
+                    shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
+                  }
+                }
+
+                // Now add the bch parity bits to the output (add the missing nbch - kbch bits)
+                unsigned char *bch_parity = &out_ldpc[i]+kbch;
+                for(int n = 0; n < 6; n++) {
+                  unsigned int shift_int = (((unsigned int*)&shift_vector)[n]);
+                  for(int m = 0; m < 32; m++) {
+                    *bch_parity++ = (char)(shift_int & 1);
+                    shift_int >>= 1;
+                  }
+                }
+                // continue the ldpc parity checking
+                index = 0;
+                for (int j = 0; j < ldpc_encode.table_length_nobch_1; j+=11) {
+                  p[ldpc_encode.item_nobch_1[j]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+1]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+2]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+3]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+4]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+5]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+6]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+7]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+8]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+9]] ^= d[index];
+                  p[ldpc_encode.item_nobch_1[j+10]] ^= d[index];
+                  index++;
+                }
+
+                int j = 0;
+                for (; index < (int)kbch; j+=2) {
+                  p[ldpc_encode.item_nobch_2[j]] ^= d[index];
+                  p[ldpc_encode.item_nobch_2[j+1]] ^= d[index];
+                  index++;
+                }
+                for (; j < ldpc_encode.table_length_nobch_2; j+=3) {
+                  p[ldpc_encode.item_nobch_2[j]] ^= d[index];
+                  p[ldpc_encode.item_nobch_2[j+1]] ^= d[index];
+                  p[ldpc_encode.item_nobch_2[j+2]] ^= d[index];
+                  index++;
+                }
+
+                if (P != 0) {
+                  puncture = 0;
+                  for (int j = 0; j < plen; j += P) {
+                    p[j] = 0x55;
+                    puncture++;
+                    if (puncture == Xp) {
+                      break;
+                    }
+                  }
+                  index = 0;
+                  for (int j = 0; j < plen; j++) {
+                    if (p[j] != 0x55) {
+                      b[index++] = p[j];
+                    }
+                  }
+                  p = &out_ldpc[nbch];
+                }
+
+                for (int j = 1; j < (plen - Xp); j++) {
+                  p[j] ^= p[j - 1];
+                }
+
+                if (signal_constellation == MOD_128APSK) {
+                  for (int j = 0; j < 6; j++) {
+                    p[j + plen] = 0;
+                  }
+                }
+                d += nbch;
+                p += frame_size;
+                consumed += (int)kbch;
+            }
+          }
+          #else
+            #warning "NOT USING AVX2"
+            d = out_ldpc;
+            p = &out_ldpc[nbch];
+            int puncture, index;
+
+            for (int i = 0; i < noutput_items; i += frame_size) {
+              if (Xs != 0) {
+                s = &shortening_buffer[0];
+                memset(s, 0, sizeof(unsigned char) * Xs);
+                memcpy(&s[Xs], &out_ldpc[consumed], sizeof(unsigned char) * nbch);
+                d = s;
+              }
+              if (P != 0) {
+                p = &puncturing_buffer[nbch];
+                b = &out_ldpc[i + nbch];
+              }
+
+              //Zero all the LDPC parity bits
+              memset(p, 0, sizeof(unsigned char) * plen);
+
+              //Zero the shift register for BCH Code
+              memset(shift, 0, sizeof(unsigned int) * 6);
+
+              //copy input samples to output
+              memcpy(&out_ldpc[i],&in_bch[consumed],sizeof(unsigned char) * (int)kbch); //Missing last nbch - kbch bits, but not available yet!
+
+              // now do the parity checking of first kbch bits
+              index = 0;
+              for (int j = 0; j < ldpc_encode.table_length_bch; j++) {
+                temp = d[index];
+                index++;
+                p[ldpc_encode.item_bch[j]] ^= temp;
+                b_bch = (temp ^ (shift[5] & 1));
+                reg_6_shift(shift);
+                if (b_bch) {
+                  shift[0] ^= m_poly_n_12[0];
+                  shift[1] ^= m_poly_n_12[1];
+                  shift[2] ^= m_poly_n_12[2];
+                  shift[3] ^= m_poly_n_12[3];
+                  shift[4] ^= m_poly_n_12[4];
+                  shift[5] ^= m_poly_n_12[5];
+                }
+              }
+
+              // Now add the bch parity bits to the output (add the missing nbch - kbch bits)
+              unsigned char *bch_parity = &out_ldpc[i]+kbch;
+              for(int n = 0; n < 6; n++) {
+                unsigned int shift_int = shift[5-n];
+                for(int m = 0; m < 32; m++) {
+                  *bch_parity++ = (char)(shift_int & 1);
+                  shift_int >>= 1;
+                }
+              }
+
+//jumpdest
+              // continue the parity checking
+              index = 0;
+              for (int j = 0; j < ldpc_encode.table_length_nobch_1; j+=11) {
+                p[ldpc_encode.item_nobch_1[j]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+1]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+2]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+3]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+4]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+5]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+6]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+7]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+8]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+9]] ^= d[index];
+                p[ldpc_encode.item_nobch_1[j+10]] ^= d[index];
+                index++;
+              }
+
+              int j = 0;
+              for (; index < (int)kbch; j+=2) {
+                p[ldpc_encode.item_nobch_2[j]] ^= d[index];
+                p[ldpc_encode.item_nobch_2[j+1]] ^= d[index];
+                index++;
+              }
+              for (; j < ldpc_encode.table_length_nobch_2; j+=3) {
+                p[ldpc_encode.item_nobch_2[j]] ^= d[index];
+                p[ldpc_encode.item_nobch_2[j+1]] ^= d[index];
+                p[ldpc_encode.item_nobch_2[j+2]] ^= d[index];
+                index++;
+              }
+
+              if (P != 0) {
+                puncture = 0;
+                for (int j = 0; j < plen; j += P) {
+                  p[j] = 0x55;
+                  puncture++;
+                  if (puncture == Xp) {
+                    break;
+                  }
+                }
+                index = 0;
+                for (int j = 0; j < plen; j++) {
+                  if (p[j] != 0x55) {
+                    b[index++] = p[j];
+                  }
+                }
+                p = &out_ldpc[nbch];
+              }
+
+              for (int j = 1; j < (plen - Xp); j++) {
+                p[j] ^= p[j - 1];
+              }
+
+              if (signal_constellation == MOD_128APSK) {
+                for (int j = 0; j < 6; j++) {
+                  p[j + plen] = 0;
+                }
+              }
+              d += nbch;
+              p += frame_size;
+              consumed += (int)kbch;
+            }
+          #endif
+        }
+        else
+        {
+          unsigned char *out_bch = (unsigned char*) malloc(sizeof(unsigned char)*noutput_items);
+          unsigned char *in_ldpc = out_bch;
+
+          switch (bch_code) {
+            case BCH_CODE_N12:
+                //implemented above
+              break;
+            case BCH_CODE_N10:
+              for (int i = 0; i < noutput_items_bch; i += nbch) {
+                //Zero the shift register
+                memset(shift, 0, sizeof(unsigned int) * 5);
+                // MSB of the codeword first
+                for (int j = 0; j < (int)kbch; j++) {
+                  temp = *in_bch++;
+                  *out_bch++ = temp;
+                  consumed++;
+                  b_bch = (temp ^ (shift[4] & 1));
+                  reg_5_shift(shift);
+                  if (b_bch) {
+                    shift[0] ^= m_poly_n_10[0];
+                    shift[1] ^= m_poly_n_10[1];
+                    shift[2] ^= m_poly_n_10[2];
+                    shift[3] ^= m_poly_n_10[3];
+                    shift[4] ^= m_poly_n_10[4];
+                  }
+                }
+                // Now add the parity bits to the output
+                for( int n = 0; n < 160; n++ ) {
+                  *out_bch++ = (shift[4] & 1);
+                  reg_5_shift(shift);
+                }
+              }
+              break;
+            case BCH_CODE_N8:
+              for (int i = 0; i < noutput_items_bch; i += nbch) {
+                //Zero the shift register
+                memset(shift, 0, sizeof(unsigned int) * 4);
+                // MSB of the codeword first
+                for (int j = 0; j < (int)kbch; j++) {
+                  temp = *in_bch++;
+                  *out_bch++ = temp;
+                  consumed++;
+                  b_bch = temp ^ (shift[3] & 1);
+                  reg_4_shift(shift);
+                  if (b_bch) {
+                    shift[0] ^= m_poly_n_8[0];
+                    shift[1] ^= m_poly_n_8[1];
+                    shift[2] ^= m_poly_n_8[2];
+                    shift[3] ^= m_poly_n_8[3];
+                  }
+                }
+                // Now add the parity bits to the output
+                for (int n = 0; n < 128; n++) {
+                  *out_bch++ = shift[3] & 1;
+                  reg_4_shift(shift);
+                }
+              }
+              break;
+            case BCH_CODE_S12:
+              for (int i = 0; i < noutput_items_bch; i += nbch) {
+                //Zero the shift register
+                memset(shift, 0, sizeof(unsigned int) * 6);
+                // MSB of the codeword first
+                for (int j = 0; j < (int)kbch; j++) {
+                  temp = *in_bch++;
+                  *out_bch++ = temp;
+                  consumed++;
+                  b_bch = (temp ^ ((shift[5] & 0x01000000) ? 1 : 0));
+                  reg_6_shift(shift);
+                  if (b_bch) {
+                    shift[0] ^= m_poly_s_12[0];
+                    shift[1] ^= m_poly_s_12[1];
+                    shift[2] ^= m_poly_s_12[2];
+                    shift[3] ^= m_poly_s_12[3];
+                    shift[4] ^= m_poly_s_12[4];
+                    shift[5] ^= m_poly_s_12[5];
+                  }
+                }
+                // Now add the parity bits to the output
+                for (int n = 0; n < 168; n++) {
+                  *out_bch++ = (shift[5] & 0x01000000) ? 1 : 0;
+                  reg_6_shift(shift);
+                }
+              }
+              break;
+            case BCH_CODE_M12:
+              for (int i = 0; i < noutput_items_bch; i += nbch) {
+                //Zero the shift register
+                memset(shift, 0, sizeof(unsigned int) * 6);
+                // MSB of the codeword first
+                for (int j = 0; j < (int)kbch; j++) {
+                  temp = *in_bch++;
+                  *out_bch++ = temp;
+                  consumed++;
+                  b_bch = (temp ^ ((shift[5] & 0x00001000) ? 1 : 0));
+                  reg_6_shift(shift);
+                  if (b_bch) {
+                    shift[0] ^= m_poly_m_12[0];
+                    shift[1] ^= m_poly_m_12[1];
+                    shift[2] ^= m_poly_m_12[2];
+                    shift[3] ^= m_poly_m_12[3];
+                    shift[4] ^= m_poly_m_12[4];
+                    shift[5] ^= m_poly_m_12[5];
+                  }
+                }
+                // Now add the parity bits to the output
+                for (int n = 0; n < 180; n++) {
+                  *out_bch++ = (shift[5] & 0x00001000) ? 1 : 0;
+                  reg_6_shift(shift);
+                }
+              }
+              break;
+          }
+
+          d = in_ldpc;
+          p = &out_ldpc[nbch];
+          int puncture, index;
+          consumed = 0;
+          for (int i = 0; i < noutput_items; i += frame_size) {
+            if (Xs != 0) {
+              s = &shortening_buffer[0];
+              memset(s, 0, sizeof(unsigned char) * Xs);
+              memcpy(&s[Xs], &in_ldpc[consumed], sizeof(unsigned char) * nbch);
+              d = s;
+            }
+            if (P != 0) {
+              p = &puncturing_buffer[nbch];
+              b = &out_ldpc[i + nbch];
+            }
+
+            // First zero all the parity bits
+            memset(p, 0, sizeof(unsigned char) * plen);
+
+            //use memcpy instead of the for loop
+            memcpy(&out_ldpc[i],&in_ldpc[consumed],sizeof(unsigned char) * (int)nbch);
+            consumed += (int)nbch;
+
+            // nbch = 38880;
+            // frame_size = 64800;
+
+            // now do the parity checking
+            for (int j = 0; j < ldpc_encode.table_length; j++) {
+              p[ldpc_encode.item[j].p] ^= d[ldpc_encode.item[j].d];
+            }
+            if (P != 0) {
+              puncture = 0;
+              for (int j = 0; j < plen; j += P) {
+                p[j] = 0x55;
+                puncture++;
+                if (puncture == Xp) {
+                  break;
+                }
+              }
+              index = 0;
+              for (int j = 0; j < plen; j++) {
+                if (p[j] != 0x55) {
+                  b[index++] = p[j];
+                }
+              }
+              p = &out_ldpc[nbch];
+            }
+
+
+            for (int j = 1; j < (plen - Xp); j++) {
+              p[j] ^= p[j - 1];
+            }
+
+            if (signal_constellation == MOD_128APSK) {
+              for (int j = 0; j < 6; j++) {
+                p[j + plen] = 0;
+              }
+            }
+            d += nbch;
+            p += frame_size;
+          }
+
+          free(in_ldpc);
+        }
+
+        consume_each ((int) noutput_items/frame_size*kbch);
+        return noutput_items;
+    }
+
+
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_1_4N[45][13]=
     {
       {12,23606,36098,1140,28859,18148,18510,6226,540,42014,20879,23802,47088},
       {12,16419,24928,16609,17248,7693,24997,42587,16858,34921,21042,37024,20692},
@@ -764,7 +1930,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,46685,20622,32806,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_1_3N[60][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_1_3N[60][13]=
     {
       {12,34903,20927,32093,1052,25611,16093,16454,5520,506,37399,18518,21120},
       {12,11636,14594,22158,14763,15333,6838,22222,37856,14985,31041,18704,32910},
@@ -828,7 +1994,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,25353,4122,39751,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_2_5N[72][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_2_5N[72][13]=
     {
       {12,31413,18834,28884,947,23050,14484,14809,4968,455,33659,16666,19008},
       {12,13172,19939,13354,13719,6132,20086,34040,13442,27958,16813,29619,16553},
@@ -904,7 +2070,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,30672,16927,14800,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_1_2N[90][9]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_1_2N[90][9]=
     {
       {8,54,9318,14392,27561,26909,10219,2534,8597},
       {8,55,7263,4635,2530,28130,3033,23830,3651},
@@ -998,7 +2164,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,53,19267,20113,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_3_5N[108][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_3_5N[108][13]=
     {
       {12,22422,10282,11626,19997,11161,2922,3122,99,5625,17064,8270,179},
       {12,25087,16218,17015,828,20041,25656,4186,11629,22599,17305,22515,6463},
@@ -1110,7 +2276,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,71,3434,7769,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_2_3N_DVBT2[120][14]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_2_3N_DVBT2[120][14]=
     {
       {13,317,2255,2324,2723,3538,3576,6194,6700,9101,10057,12739,17407,21039},
       {13,1958,2007,3294,4394,12762,14505,14593,14692,16522,17737,19245,21272,21379},
@@ -1234,7 +2400,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,13115,17259,17332,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_2_3N_DVBS2[120][14]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_2_3N_DVBS2[120][14]=
     {
       {13,0,10491,16043,506,12826,8065,8226,2767,240,18673,9279,10579,20928},
       {13,1,17819,8313,6433,6224,5120,5824,12812,17187,9940,13447,13825,18483},
@@ -1358,7 +2524,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,59,3589,14630,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_3_4N[135][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_3_4N[135][13]=
     {
       {12,0,6385,7901,14611,13389,11200,3252,5243,2504,2722,821,7374},
       {12,1,11359,2698,357,13824,12772,7244,6752,15310,852,2001,11417},
@@ -1497,7 +2663,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,44,2883,14521,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_4_5N[144][12]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_4_5N[144][12]=
     {
       {11,0,149,11212,5575,6360,12559,8108,8505,408,10026,12828},
       {11,1,5237,490,10677,4998,3869,3734,3092,3509,7703,10305},
@@ -1645,7 +2811,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,35,7108,5553,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_5_6N[150][14]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_5_6N[150][14]=
     {
       {13,0,4362,416,8909,4156,3216,3112,2560,2912,6405,8593,4969,6723},
       {13,1,2479,1786,8978,3011,4339,9313,6397,2957,7288,5484,6031,10217},
@@ -1799,7 +2965,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,29,7347,8027,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_8_9N[160][5]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_8_9N[160][5]=
     {
       {4,0,6235,2848,3222},
       {4,1,5800,3492,5348},
@@ -1963,7 +3129,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,19,1696,1459,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_9_10N[162][5]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_9_10N[162][5]=
     {
       {4,0,5611,2563,2900},
       {4,1,5220,3143,4813},
@@ -2129,7 +3295,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,17,3392,1991,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_2_9N[40][12]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_2_9N[40][12]=
     {
       {11,5332,8018,35444,13098,9655,41945,44273,22741,9371,8727,43219},
       {11,41410,43593,14611,46707,16041,1459,29246,12748,32996,676,46909},
@@ -2173,7 +3339,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,41497,32023,28688,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_13_45N[52][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_13_45N[52][13]=
     {
       {12,15210,4519,18217,34427,18474,16813,28246,17687,44527,31465,13004,43601},
       {12,28576,13611,24294,15041,503,11393,26290,9278,19484,20742,13226,28322},
@@ -2229,7 +3395,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,30362,35769,42608,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_9_20N[81][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_9_20N[81][13]=
     {
       {12,30649,35117,23181,15492,2367,31230,9368,13541,6608,23384,18300,5905},
       {12,1961,8950,20589,17688,9641,1877,4937,15293,24864,14876,6516,10165},
@@ -2314,7 +3480,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,30507,33307,30783,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_11_20N[99][14]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_11_20N[99][14]=
     {
       {13,20834,22335,21330,11913,6036,15830,11069,10539,4244,15068,7113,2704,16224},
       {13,2010,5628,27960,11690,22545,24432,4986,21083,17529,4104,11941,21239,9602},
@@ -2417,7 +3583,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,3821,18349,13846,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_26_45N[104][14]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_26_45N[104][14]=
     {
       {13,12918,15296,894,10855,350,453,11966,1667,18720,12943,24437,8135,2834},
       {13,11861,3827,15431,8827,8253,23393,15048,5554,16297,2994,6727,19453,2371},
@@ -2525,7 +3691,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,5794,1239,9934,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_28_45N[112][12]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_28_45N[112][12]=
     {
       {11,24402,4786,12678,6376,23965,10003,15376,15164,21366,24252,3353},
       {11,8189,3297,18493,17994,16296,11970,16168,15911,20683,11930,3119},
@@ -2641,7 +3807,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,1253,12068,18813,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_23_36N[115][12]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_23_36N[115][12]=
     {
       {11,2475,3722,16456,6081,4483,19474,20555,10558,4351,4052,20066},
       {11,1547,5612,22269,11685,23297,19891,18996,21694,7927,19412,15951},
@@ -2760,7 +3926,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,18539,26,21487,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_25_36N[125][12]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_25_36N[125][12]=
     {
       {11,11863,9493,4143,12695,8706,170,4967,798,9856,6015,5125},
       {11,12288,19567,18233,15430,1671,3787,10133,15709,7883,14260,17039},
@@ -2889,7 +4055,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,15963,6733,11048,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_13_18N[130][11]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_13_18N[130][11]=
     {
       {10,2510,12817,11890,13009,5343,1775,10496,13302,13348,17880},
       {10,6766,16330,2412,7944,2483,7602,12482,6942,3070,9231},
@@ -3023,7 +4189,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,8814,7277,2678,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_7_9N[140][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_7_9N[140][13]=
     {
       {12,13057,12620,2789,3553,6763,8329,3333,7822,10490,13943,4101,2556},
       {12,658,11386,2242,7249,5935,2148,5291,11992,3222,2957,6454,3343},
@@ -3167,7 +4333,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,7220,1062,6871,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_90_180N[90][19]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_90_180N[90][19]=
     {
       {18,708,1132,2120,3208,3879,8320,11948,14185,15214,16594,17849,19766,23814,26175,27579,28052,31512,32029},
       {18,2720,2753,3716,6133,8020,8305,9429,10337,15503,19905,20127,21963,25624,27221,27907,27945,29833,30270},
@@ -3261,7 +4427,7 @@ for (int row = 0; row < ROWS; row++) { \
       {6,1597,1691,10499,13815,18943,27396,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_96_180N[96][21]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_96_180N[96][21]=
     {
       {20,551,1039,1564,1910,3126,4986,5636,5661,7079,9384,9971,10460,11259,14150,14389,14568,14681,21772,27818,28671},
       {20,384,1734,1993,3890,4594,6655,7483,8508,8573,8720,10388,15541,17306,18411,18606,19048,19273,21492,21970,29495},
@@ -3361,7 +4527,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,9046,16513,22243,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_100_180N[100][17]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_100_180N[100][17]=
     {
       {16,690,1366,2591,2859,4224,5842,7310,8181,12432,15667,15717,16935,17583,19696,20573,21269},
       {16,2488,2890,6630,6892,11563,12518,15560,16798,18355,18746,19165,19295,21567,23505,23617,23629},
@@ -3465,7 +4631,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,6605,12623,26774,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_104_180N[104][19]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_104_180N[104][19]=
     {
       {18,2087,6318,7314,8327,9453,12989,13156,13763,13819,16963,18495,19352,20510,20651,23379,23847,23953,26469},
       {18,2680,5652,6816,7854,10673,11431,12379,14570,17081,19341,20749,21056,22990,23012,24902,25547,26718,27284},
@@ -3573,7 +4739,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,4120,19101,23719,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_116_180N[116][19]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_116_180N[116][19]=
     {
       {18,3880,4377,6147,6219,7873,8180,9157,10311,10862,15393,16522,17318,17609,18398,19290,19293,20296,22244},
       {18,1056,1647,5119,5201,6991,10038,10843,11614,11901,12026,14631,16749,16772,16915,17331,19235,19877,22763},
@@ -3693,7 +4859,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,710,4696,18127,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_124_180N[124][17]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_124_180N[124][17]=
     {
       {16,1083,2862,3815,4075,5519,8003,9308,10029,12476,12949,13759,13918,14303,15028,19737,19953},
       {16,392,3781,6086,8378,9952,10531,11369,11954,14808,14948,16585,16682,18445,18960,19085,19423},
@@ -3821,7 +4987,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,7791,7800,7809,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_128_180N[128][16]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_128_180N[128][16]=
     {
       {15,790,1010,1064,2157,2569,3499,4637,4951,6789,8177,9888,10800,13254,13829,17946},
       {15,597,693,862,900,4750,4897,5410,5441,6491,8815,11894,13411,13696,14103,18413},
@@ -3953,7 +5119,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,1476,8123,8946,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_132_180N[132][16]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_132_180N[132][16]=
     {
       {15,214,632,923,3251,6036,6570,8258,9462,10399,11781,12778,14807,15369,16105,17153},
       {15,652,1565,3710,3720,4603,7139,7817,9076,11532,13729,14362,15379,15488,15541,15777},
@@ -4089,7 +5255,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,1174,8836,13549,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_135_180N[135][15]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_135_180N[135][15]=
     {
       {14,15,865,1308,2887,6202,6440,7201,9014,10015,10041,11780,13602,14265,15506},
       {14,1054,1416,2903,3746,3753,7608,9121,11097,11761,12334,14304,15284,15489,15860},
@@ -4228,7 +5394,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,9407,12341,16040,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_140_180N[140][16]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_140_180N[140][16]=
     {
       {15,66,862,939,3380,4920,5225,5330,6218,7204,7532,7689,9135,9363,10504,10694},
       {15,1993,2656,4602,6079,7569,7724,9038,9647,9979,11845,12641,12783,13451,13661,14166},
@@ -4372,7 +5538,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,6409,9498,10387,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_154_180N[154][14]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_154_180N[154][14]=
     {
       {13,726,794,1587,2475,3114,3917,4471,6207,7451,8203,8218,8583,8941},
       {13,418,480,1320,1357,1481,2323,3677,5112,7038,7198,8066,9260,9282},
@@ -4530,7 +5696,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,6523,6531,9063,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_18_30N[108][20]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_18_30N[108][20]=
     {
       {19,113,1557,3316,5680,6241,10407,13404,13947,14040,14353,15522,15698,16079,17363,19374,19543,20530,22833,24339},
       {19,271,1361,6236,7006,7307,7333,12768,15441,15568,17923,18341,20321,21502,22023,23938,25351,25590,25876,25910},
@@ -4642,7 +5808,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,19202,22406,24609,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_20_30N[120][17]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_20_30N[120][17]=
     {
       {16,692,1779,1973,2726,5151,6088,7921,9618,11804,13043,15975,16214,16889,16980,18585,18648},
       {16,13,4090,4319,5288,8102,10110,10481,10527,10953,11185,12069,13177,14217,15963,17661,20959},
@@ -4766,7 +5932,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,9689,15537,19733,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_22_30N[132][16]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_22_30N[132][16]=
     {
       {15,696,989,1238,3091,3116,3738,4269,6406,7033,8048,9157,10254,12033,16456,16912},
       {15,444,1488,6541,8626,10735,12447,13111,13706,14135,15195,15947,16453,16916,17137,17268},
@@ -4902,7 +6068,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,11514,16605,17255,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_1_4S[9][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_1_4S[9][13]=
     {
       {12,6295,9626,304,7695,4839,4936,1660,144,11203,5567,6347,12557},
       {12,10691,4988,3859,3734,3071,3494,7687,10313,5964,8069,8296,11090},
@@ -4915,7 +6081,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,9840,12726,4977,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_1_3S[15][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_1_3S[15][13]=
     {
       {12,416,8909,4156,3216,3112,2560,2912,6405,8593,4969,6723,6912},
       {12,8978,3011,4339,9312,6396,2957,7288,5485,6031,10218,2226,3575},
@@ -4934,7 +6100,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,10127,3334,8267,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_2_5S[18][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_2_5S[18][13]=
     {
       {12,5650,4143,8750,583,6720,8071,635,1767,1344,6922,738,6658},
       {12,5696,1685,3207,415,7019,5023,5608,2605,857,6915,1770,8016},
@@ -4956,7 +6122,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,1387,8910,2660,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_1_2S[20][9]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_1_2S[20][9]=
     {
       {8,20,712,2386,6354,4061,1062,5045,5158},
       {8,21,2543,5748,4822,2348,3089,6328,5876},
@@ -4980,7 +6146,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,14,7411,3450,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_3_5S_DVBT2[27][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_3_5S_DVBT2[27][13]=
     {
       {12,71,1478,1901,2240,2649,2725,3592,3708,3965,4080,5733,6198},
       {12,393,1384,1435,1878,2773,3182,3586,5465,6091,6110,6114,6327},
@@ -5011,7 +6177,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,1005,1675,2062,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_3_5S_DVBS2[27][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_3_5S_DVBS2[27][13]=
     {
       {12,2765,5713,6426,3596,1374,4811,2182,544,3394,2840,4310,771},
       {12,4951,211,2208,723,1246,2928,398,5739,265,5601,5993,2615},
@@ -5042,7 +6208,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,17,4908,4177,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_2_3S[30][14]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_2_3S[30][14]=
     {
       {13,0,2084,1613,1548,1286,1460,3196,4297,2481,3369,3451,4620,2622},
       {13,1,122,1516,3448,2880,1407,1847,3799,3529,373,971,4358,3108},
@@ -5076,7 +6242,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,14,1129,3894,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_3_4S[33][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_3_4S[33][13]=
     {
       {12,3,3198,478,4207,1481,1009,2616,1924,3437,554,683,1801},
       {3,4,2681,2135,0,0,0,0,0,0,0,0,0},
@@ -5113,7 +6279,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,11,1415,2808,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_4_5S[35][4]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_4_5S[35][4]=
     {
       {3,5,896,1565},
       {3,6,2493,184},
@@ -5152,7 +6318,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,9,3545,1168}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_5_6S[37][14]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_5_6S[37][14]=
     {
       {13,3,2409,499,1481,908,559,716,1270,333,2508,2264,1702,2805},
       {3,4,2447,1926,0,0,0,0,0,0,0,0,0,0},
@@ -5193,7 +6359,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,7,2644,1704,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_8_9S[40][5]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_8_9S[40][5]=
     {
       {4,0,1558,712,805},
       {4,1,1450,873,1337},
@@ -5237,7 +6403,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,4,1104,1172,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_11_45S[11][11]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_11_45S[11][11]=
     {
       {10,9054,9186,12155,1000,7383,6459,2992,4723,8135,11250},
       {10,2624,9237,7139,12238,11962,4361,5292,10967,11036,8105},
@@ -5252,7 +6418,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,1873,5634,6383,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_4_15S[12][22]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_4_15S[12][22]=
     {
       {21,1953,2331,2545,2623,4653,5012,5700,6458,6875,7605,7694,7881,8416,8758,9181,9555,9578,9932,10068,11479,11699},
       {21,514,784,2059,2129,2386,2454,3396,5184,6624,6825,7533,7861,9116,9473,9601,10432,11011,11159,11378,11528,11598},
@@ -5268,7 +6434,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,3131,9964,10480,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_14_45S[14][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_14_45S[14][13]=
     {
       {12,1606,3617,7973,6737,9495,4209,9209,4565,4250,7823,9384,400},
       {12,4105,991,923,3562,3892,10993,5640,8196,6652,4653,9116,7677},
@@ -5286,7 +6452,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,3260,7897,3809,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_7_15S[21][25]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_7_15S[21][25]=
     {
       {24,3,137,314,327,983,1597,2028,3043,3217,4109,6020,6178,6535,6560,7146,7180,7408,7790,7893,8123,8313,8526,8616,8638},
       {24,356,1197,1208,1839,1903,2712,3088,3537,4091,4301,4919,5068,6025,6195,6324,6378,6686,6829,7558,7745,8042,8382,8587,8602},
@@ -5311,7 +6477,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,976,2001,5005,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_8_15S[24][22]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_8_15S[24][22]=
     {
       {21,32,384,430,591,1296,1976,1999,2137,2175,3638,4214,4304,4486,4662,4999,5174,5700,6969,7115,7138,7189},
       {21,1788,1881,1910,2724,4504,4928,4973,5616,5686,5718,5846,6523,6893,6994,7074,7100,7277,7399,7476,7480,7537},
@@ -5339,7 +6505,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,272,1015,7464,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_26_45S[26][14]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_26_45S[26][14]=
     {
       {13,6106,5389,698,6749,6294,1653,1984,2167,6139,6095,3832,2468,6115},
       {13,4202,2362,1852,1264,3564,6345,498,6137,3908,3302,527,2767,6667},
@@ -5369,7 +6535,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,959,5337,2735,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_32_45S[32][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_32_45S[32][13]=
     {
       {12,2686,655,2308,1603,336,1743,2778,1263,3555,185,4212,621},
       {12,286,2994,2599,2265,126,314,3992,4560,2845,2764,2540,1476},
@@ -5405,7 +6571,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,1523,3311,389,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_1_5M[18][14]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_1_5M[18][14]=
     {
       {13,18222,6715,4908,21568,22821,11708,4769,4495,22243,25872,9051,19072,13956},
       {13,2038,5205,21215,21009,9584,2403,23652,20866,20130,677,9509,6136,773},
@@ -5427,7 +6593,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,22623,8408,17849,0,0,0,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_11_45M[22][11]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_11_45M[22][11]=
     {
       {10,20617,6867,14845,11974,22563,190,17207,4052,7406,16007},
       {10,21448,14846,2543,23380,16633,20365,16869,13411,19853,795},
@@ -5453,7 +6619,7 @@ for (int row = 0; row < ROWS; row++) { \
       {3,3944,13063,5656,0,0,0,0,0,0,0}
     };
 
-    const int dvb_ldpc_bb_impl::ldpc_tab_1_3M[30][13]=
+    const int dvb_bch_ldpc_bb_impl::ldpc_tab_1_3M[30][13]=
     {
       {12,7416,4093,16722,1023,20586,12219,9175,16284,1554,10113,19849,17545},
       {12,13140,3257,2110,13888,3023,1537,1598,15018,18931,13905,10617,1014},
@@ -5486,6 +6652,103 @@ for (int row = 0; row < ROWS; row++) { \
       {3,1432,5674,2224,0,0,0,0,0,0,0,0,0},
       {3,11257,1312,8453,0,0,0,0,0,0,0,0,0}
     };
+
+
+    void
+    dvb_bch_ldpc_bb_impl::bch_poly_build_tables(void)
+    {
+      // Normal polynomials
+      const int polyn01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1};
+      const int polyn02[]={1,1,0,0,1,1,1,0,1,0,0,0,0,0,0,0,1};
+      const int polyn03[]={1,0,1,1,1,1,0,1,1,1,1,1,0,0,0,0,1};
+      const int polyn04[]={1,0,1,0,1,0,1,0,0,1,0,1,1,0,1,0,1};
+      const int polyn05[]={1,1,1,1,0,1,0,0,1,1,1,1,1,0,0,0,1};
+      const int polyn06[]={1,0,1,0,1,1,0,1,1,1,1,0,1,1,1,1,1};
+      const int polyn07[]={1,0,1,0,0,1,1,0,1,1,1,1,0,1,0,1,1};
+      const int polyn08[]={1,1,1,0,0,1,1,0,1,1,0,0,1,1,1,0,1};
+      const int polyn09[]={1,0,0,0,0,1,0,1,0,1,1,1,0,0,0,0,1};
+      const int polyn10[]={1,1,1,0,0,1,0,1,1,0,1,0,1,1,1,0,1};
+      const int polyn11[]={1,0,1,1,0,1,0,0,0,1,0,1,1,1,0,0,1};
+      const int polyn12[]={1,1,0,0,0,1,1,1,0,1,0,1,1,0,0,0,1};
+
+      // Medium polynomials
+      const int polym01[]={1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,1};
+      const int polym02[]={1,1,0,0,1,0,0,1,0,0,1,1,0,0,0,1};
+      const int polym03[]={1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,1};
+      const int polym04[]={1,0,1,1,0,1,1,0,1,0,1,1,0,0,0,1};
+      const int polym05[]={1,1,1,0,1,0,1,1,0,0,1,0,1,0,0,1};
+      const int polym06[]={1,0,0,0,1,0,1,1,0,0,0,0,1,1,0,1};
+      const int polym07[]={1,0,1,0,1,1,0,1,0,0,0,1,1,0,1,1};
+      const int polym08[]={1,0,1,0,1,0,1,0,1,1,0,1,0,0,1,1};
+      const int polym09[]={1,1,1,0,1,1,0,1,0,1,0,1,1,1,0,1};
+      const int polym10[]={1,1,1,1,1,0,0,1,0,0,1,1,1,1,0,1};
+      const int polym11[]={1,1,1,0,1,0,0,0,0,1,0,1,0,0,0,1};
+      const int polym12[]={1,0,1,0,1,0,0,0,1,0,1,1,0,1,1,1};
+
+      // Short polynomials
+      const int polys01[]={1,1,0,1,0,1,0,0,0,0,0,0,0,0,1};
+      const int polys02[]={1,0,0,0,0,0,1,0,1,0,0,1,0,0,1};
+      const int polys03[]={1,1,1,0,0,0,1,0,0,1,1,0,0,0,1};
+      const int polys04[]={1,0,0,0,1,0,0,1,1,0,1,0,1,0,1};
+      const int polys05[]={1,0,1,0,1,0,1,0,1,1,0,1,0,1,1};
+      const int polys06[]={1,0,0,1,0,0,0,1,1,1,0,0,0,1,1};
+      const int polys07[]={1,0,1,0,0,1,1,1,0,0,1,1,0,1,1};
+      const int polys08[]={1,0,0,0,0,1,0,0,1,1,1,1,0,0,1};
+      const int polys09[]={1,1,1,1,0,0,0,0,0,1,1,0,0,0,1};
+      const int polys10[]={1,0,0,1,0,0,1,0,0,1,0,1,1,0,1};
+      const int polys11[]={1,0,0,0,1,0,0,0,0,0,0,1,1,0,1};
+      const int polys12[]={1,1,1,1,0,1,1,1,1,0,1,0,0,1,1};
+
+      int len;
+      int polyout[2][200];
+
+      len = poly_mult(polyn01, 17, polyn02,    17,  polyout[0]);
+      len = poly_mult(polyn03, 17, polyout[0], len, polyout[1]);
+      len = poly_mult(polyn04, 17, polyout[1], len, polyout[0]);
+      len = poly_mult(polyn05, 17, polyout[0], len, polyout[1]);
+      len = poly_mult(polyn06, 17, polyout[1], len, polyout[0]);
+      len = poly_mult(polyn07, 17, polyout[0], len, polyout[1]);
+      len = poly_mult(polyn08, 17, polyout[1], len, polyout[0]);
+      poly_pack(polyout[0], m_poly_n_8, 128);
+
+      len = poly_mult(polyn09, 17, polyout[0], len, polyout[1]);
+      len = poly_mult(polyn10, 17, polyout[1], len, polyout[0]);
+      poly_pack(polyout[0], m_poly_n_10, 160);
+
+      len = poly_mult(polyn11, 17, polyout[0], len, polyout[1]);
+      len = poly_mult(polyn12, 17, polyout[1], len, polyout[0]);
+      poly_pack(polyout[0], m_poly_n_12, 192);
+
+      len = poly_mult(polys01, 15, polys02,    15,  polyout[0]);
+      len = poly_mult(polys03, 15, polyout[0], len, polyout[1]);
+      len = poly_mult(polys04, 15, polyout[1], len, polyout[0]);
+      len = poly_mult(polys05, 15, polyout[0], len, polyout[1]);
+      len = poly_mult(polys06, 15, polyout[1], len, polyout[0]);
+      len = poly_mult(polys07, 15, polyout[0], len, polyout[1]);
+      len = poly_mult(polys08, 15, polyout[1], len, polyout[0]);
+      len = poly_mult(polys09, 15, polyout[0], len, polyout[1]);
+      len = poly_mult(polys10, 15, polyout[1], len, polyout[0]);
+      len = poly_mult(polys11, 15, polyout[0], len, polyout[1]);
+      len = poly_mult(polys12, 15, polyout[1], len, polyout[0]);
+      poly_pack(polyout[0], m_poly_s_12, 168);
+
+      len = poly_mult(polym01, 16, polym02,    16,  polyout[0]);
+      len = poly_mult(polym03, 16, polyout[0], len, polyout[1]);
+      len = poly_mult(polym04, 16, polyout[1], len, polyout[0]);
+      len = poly_mult(polym05, 16, polyout[0], len, polyout[1]);
+      len = poly_mult(polym06, 16, polyout[1], len, polyout[0]);
+      len = poly_mult(polym07, 16, polyout[0], len, polyout[1]);
+      len = poly_mult(polym08, 16, polyout[1], len, polyout[0]);
+      len = poly_mult(polym09, 16, polyout[0], len, polyout[1]);
+      len = poly_mult(polym10, 16, polyout[1], len, polyout[0]);
+      len = poly_mult(polym11, 16, polyout[0], len, polyout[1]);
+      len = poly_mult(polym12, 16, polyout[1], len, polyout[0]);
+      poly_pack(polyout[0], m_poly_m_12, 180);
+    }
+
+
+
+
 
   } /* namespace dtv */
 } /* namespace gr */

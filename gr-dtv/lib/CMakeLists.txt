@@ -64,6 +64,7 @@ list(APPEND dtv_sources
   dvb/dvb_bbscrambler_bb_impl.cc
   dvb/dvb_bch_bb_impl.cc
   dvb/dvb_ldpc_bb_impl.cc
+  dvb/dvb_bch_ldpc_bb_impl.cc
   dvbt2/dvbt2_interleaver_bb_impl.cc
   dvbt2/dvbt2_modulator_bc_impl.cc
   dvbt2/dvbt2_cellinterleaver_cc_impl.cc
@@ -110,7 +111,7 @@ list(APPEND dtv_libs
 
 include (CheckCCompilerFlag)
 if (MSVC)
-	# 64-bit MSVC always supports SSE2 
+	# 64-bit MSVC always supports SSE2
 	if (CMAKE_SIZEOF_VOID_P EQUAL 8)
 		set(SSE2_SUPPORTED true)
 	else ()

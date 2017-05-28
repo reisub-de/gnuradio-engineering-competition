@@ -40,6 +40,7 @@ install(FILES
     dtv_dvb_bbscrambler_bb.xml
     dtv_dvb_bch_bb.xml
     dtv_dvb_ldpc_bb.xml
+    dtv_dvb_bch_ldpc_bb.xml
     dtv_dvbt2_interleaver_bb.xml
     dtv_dvbt2_modulator_bc.xml
     dtv_dvbt2_cellinterleaver_cc.xml
