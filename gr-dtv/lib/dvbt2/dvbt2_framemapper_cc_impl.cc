@@ -24,6 +24,8 @@
 
 #include <gnuradio/io_signature.h>
 #include "dvbt2_framemapper_cc_impl.h"
+#include <volk/volk.h>
+#include <algorithm>
 
 namespace gr {
   namespace dtv {
@@ -1053,7 +1055,8 @@ namespace gr {
       }
       l1post_ldpc_encode.table_length = index;
     }
-
+#pragma GCC push_options
+#pragma GCC optimize ("unroll-loops")
     void
     dvbt2_framemapper_cc_impl::add_l1pre(gr_complex *out)
     {
@@ -1601,7 +1604,7 @@ namespace gr {
           break;
       }
     }
-
+#pragma GCC pop_options
     void
     dvbt2_framemapper_cc_impl::init_dummy_randomizer(void)
     {
@@ -1647,6 +1650,7 @@ namespace gr {
       if (N_P2 == 1) {
         const int memcpy_size_l1precache = 1840 * sizeof(gr_complex);
         const int memcpy_size_out = stream_items * sizeof(gr_complex);
+        //printf("%d\n", memcpy_size_out);
         const int out_update = N_post / eta_mod;
         const int diff_N_FC_C_FC = N_FC - C_FC;
         const int memset_size = diff_N_FC_C_FC * sizeof(gr_complex);
@@ -1659,7 +1663,7 @@ namespace gr {
           add_l1post(out, t2_frame_num);
           t2_frame_num = (t2_frame_num + 1) % t2_frames;
           out += out_update;
-          memcpy(out, in, memcpy_size_out);
+          mempcpy(out, in, memcpy_size_out);
           out += stream_items;
           in += stream_items;
           index = 0;
@@ -1679,6 +1683,7 @@ namespace gr {
           for (int j = 0; j < 1840; j++) {
             *interleave++ = l1pre_cache[index++];
           }
+          interleave += 1840;
           add_l1post(interleave, t2_frame_num);
           t2_frame_num = (t2_frame_num + 1) % t2_frames;
           interleave += N_post / eta_mod;
