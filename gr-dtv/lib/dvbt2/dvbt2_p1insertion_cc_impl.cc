@@ -198,12 +198,13 @@ namespace gr {
         char b = ((char)sr ^ ((char)sr >> 1)) & 1;
         if (b) {
           p1_randomize[i] = -1;
+          sr >>= 1;
           sr |= 0x4000;
         }
         else {
           p1_randomize[i] = 1;
+          sr >>= 1;
         }
-        sr >>= 1;
       }
     }
 
