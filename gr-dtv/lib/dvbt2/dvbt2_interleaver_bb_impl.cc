@@ -197,7 +197,7 @@ namespace gr {
       const unsigned char *in = (const unsigned char *) input_items[0];
       unsigned char *out = (unsigned char *) output_items[0];
       int consumed = 0;
-      int produced = 0;
+      register unsigned int produced = 0;
       int rows, offset, index;
       unsigned int pack;
       const int *twist;
@@ -401,8 +401,8 @@ namespace gr {
             }
 
             int mod2 = 2*mod;
-            const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
-		    const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
+            const register unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+		    const register unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
 
 		    rows = frame_size / mod2;
 		    c1 = &tempv[0];
@@ -427,19 +427,20 @@ namespace gr {
 			  in += nbch;
 
 			  // access in[] via in_idx[] array
-			  int *idx = in_idx;
-			  for (int t = 0; t < 25920; t++) {
-				  tempu[nbch + t] = in[*idx++];
+			  register int *idx = in_idx;
+			  register unsigned char *data_idx = &tempu[nbch];
+			  for (register unsigned int t = 0; t < 25920; t++) {
+				  *data_idx++ = in[*idx++];
 			  }
               in += (q_val * 360);
 
               // acces tmpv[] via tmpv_idx[] array
               idx = tempv_idx;
-			  for(int t = 0; t< FRAME_SIZE_NORMAL; t++) {
+			  for(register unsigned int t = 0; t< FRAME_SIZE_NORMAL; t++) {
 				tempv[*idx++] = tempu[t];
 			  }
 
-              index = 0;
+              register unsigned int index = 0;
               for (int j = 0; j < rows; j++) {
 
                 tempu[index++] = c1[j];
@@ -468,7 +469,7 @@ namespace gr {
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
               }
-              consumed += rows*mod2;
+              consumed += rows * mod2;
             }
           }
           else {
