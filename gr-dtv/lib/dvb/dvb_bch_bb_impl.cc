@@ -447,8 +447,8 @@ namespace gr {
       int c;
       c = len - 1;
 
-      for (int i = c; i == 0; i--) {
-        pout[i] = pin[c--];
+      for (int i = 0; i < len; i++) {
+        pout[c--] = pin[i];
       }
     }
 
