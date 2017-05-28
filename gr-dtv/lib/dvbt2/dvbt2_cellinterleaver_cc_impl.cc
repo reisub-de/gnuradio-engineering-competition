@@ -277,12 +277,12 @@ namespace gr {
           rows = cell_size / 5;
           int ti_index_offset = rows * numCols;
           while (s < numSmallTIBlocks) {
-            for (int j = 0; j < numCols; j++) {
+            /*for (int j = 0; j < numCols; j++) {
               cols[j] = &time_interleave[(rows * j) + ti_index];
-            }
+            }*/
             for (int k = 0; k < rows; k++) {
               for (int w = 0; w < numCols; w++) {
-                *out++ = *(cols[w] + k);
+                *out++ = *((&time_interleave[(rows * w) + ti_index]) + k);
               }
             }
             ti_index += ti_index_offset;
@@ -291,12 +291,12 @@ namespace gr {
           numCols = 5 * FECBlocksPerBigTIBlock;
           ti_index_offset = rows * numCols;
           while (s < iter_limit) {
-            for (int j = 0; j < numCols; j++) {
+            /*for (int j = 0; j < numCols; j++) {
               cols[j] = &time_interleave[(rows * j) + ti_index];
-            }
+            }*/
             for (int k = 0; k < rows; k++) {
               for (int w = 0; w < numCols; w++) {
-                *out++ = *(cols[w] + k);
+                *out++ = *((&time_interleave[(rows * w) + ti_index]) + k);
               }
             }
             ti_index += ti_index_offset;
