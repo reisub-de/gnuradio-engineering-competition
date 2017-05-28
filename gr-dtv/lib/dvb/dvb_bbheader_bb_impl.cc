@@ -515,6 +515,9 @@ namespace gr {
               consumed++;
             }
 
+            if(inband_type_b == FALSE)
+            	continue;
+
             if (fec_block == 0 && inband_type_b == TRUE) {
               add_inband_type_b(&out[offset], ts_rate);
               offset += 104;
