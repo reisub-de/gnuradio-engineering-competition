@@ -721,6 +721,20 @@ namespace gr {
         for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
           ldpc_encode.item[index].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
           ldpc_encode.item[index].d = im; \
+          index++; \
+        } \
+        im++; \
+      } \
+    }
+
+    //Every 'im' needs to be bch'd only once!
+    #define LDPC_BF_our_case(TABLE_NAME, ROWS) \
+    for (int row = 0; row < ROWS; row++) { \
+      for (int n = 0; n < 360; n++) { \
+        bchd = false; \
+        for (int col = 1; col <= TABLE_NAME[row][0]; col++) { \
+          ldpc_encode.item[index].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
+          ldpc_encode.item[index].d = im; \
           if(!bchd && (ldpc_encode.item[index].p < (int)kbch && ldpc_encode.item[index].d < (int)kbch)) { \
             bchd = true; \
             ldpc_encode.item_bch[index_bch].p = (TABLE_NAME[row][col] + (n * q)) % pbits; \
@@ -768,7 +782,7 @@ namespace gr {
           LDPC_BF(ldpc_tab_1_2N,  90);
         }
         if (code_rate == C3_5) {
-          LDPC_BF(ldpc_tab_3_5N,  108);
+          LDPC_BF_our_case(ldpc_tab_3_5N,  108);
         }
         if (code_rate == C2_3) {
           if (dvb_standard == STANDARD_DVBT2) {

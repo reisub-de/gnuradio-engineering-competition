@@ -1,17 +1,17 @@
 /* -*- c++ -*- */
-/* 
+/*
  * Copyright 2015,2016 Free Software Foundation, Inc.
- * 
+ *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 3, or (at your option)
  * any later version.
- * 
+ *
  * This software is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this software; see the file COPYING.  If not, write to
  * the Free Software Foundation, Inc., 51 Franklin Street,
@@ -310,8 +310,8 @@ namespace gr {
                 }
               }
             }
-			
-			
+
+
 			//Not verified, if there is any benefit, but maybe now better to optimize.
 			// the c s are not necessary
 			for (int j = 0; j < rows; j++) {
@@ -319,7 +319,7 @@ namespace gr {
 					tempu[index++] = tempv[i*rows+j];
 				}
 			}
-			
+
             // index = 0;
             // for (int j = 0; j < rows; j++) {
               // tempu[index++] = c1[j];
@@ -365,8 +365,8 @@ namespace gr {
           else {
             mux = &mux64[0];
           }
-		  
-		  
+
+
           for (int i = 0; i < noutput_items; i += packed_items) {
             rows = frame_size / (mod * 2);
             // const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8, *c9, *c10, *c11, *c12;
@@ -402,7 +402,7 @@ namespace gr {
                 }
               }
             }
-			
+
 			//Not verified, if there is any benefit, but maybe now better to optimize.
 			// the c s are not necessary
 			//for (int j = 0; j < rows; j++) {
@@ -425,9 +425,9 @@ namespace gr {
               // tempu[index++] = c11[j];
               // tempu[index++] = c12[j];
             // }
-			
-			
-			
+
+
+
             index = 0;
             for (int d = 0; d < frame_size / (mod * 2); d++) {
               pack = 0;
@@ -454,7 +454,7 @@ namespace gr {
             }
             for (int i = 0; i < noutput_items; i += packed_items) {
               rows = frame_size / (mod * 2);
-			  // const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
+			        // const unsigned char *c1, *c2, *c3, *c4, *c5, *c6, *c7, *c8;
               // const unsigned char *c9, *c10, *c11, *c12, *c13, *c14, *c15, *c16;
               // c1 = &tempv[0];
               // c2 = &tempv[rows];
@@ -473,116 +473,67 @@ namespace gr {
               // c15 = &tempv[rows * 14];
               // c16 = &tempv[rows * 15];
 
-			  //Should be faster, based on http://nadeausoftware.com/articles/2012/05/c_c_tip_how_copy_memory_quickly .
-      /*         for (int k = 0; k < nbch; k++) {
-                 tempu[k] = *in++;
-               }*/
+      			  //Should be faster, based on http://nadeausoftware.com/articles/2012/05/c_c_tip_how_copy_memory_quickly .
+              /*       for (int k = 0; k < nbch; k++) {
+                       tempu[k] = *in++;
+                     }*/
 
 
 
 
 
 
-			  //__m256i *in_m256i;
-			  //for (unsigned int loop_i = 0; loop_i< nbch / 32; loop_i++) {//1215
-				 // in_m256i = (__m256i*)in;
-				 // _mm256_store_si256((__m256i*)&tempu[32 * loop_i], *in_m256i);
-				 // in += 32;
-			  //}
+      			  //__m256i *in_m256i;
+      			  //for (unsigned int loop_i = 0; loop_i< nbch / 32; loop_i++) {//1215
+      				 // in_m256i = (__m256i*)in;
+      				 // _mm256_store_si256((__m256i*)&tempu[32 * loop_i], *in_m256i);
+      				 // in += 32;
+      			  //}
+
+
+      			  memcpy(tempu,in,sizeof(unsigned char)*nbch);
+      			  in += nbch;
 
 
 
-			  memcpy(tempu,in,sizeof(unsigned char)*nbch);
-			  in += nbch;
-			  
-			  
-
-
-
-
-
-
-
-
-
-
-
-
-
-			  //Not sure if there is any benefit, but maybe the loop can be better optimized.
-			  // for(unsigned long int a = 0; a < q_val*360; a++){
-				  // tempu[nbch+a] = in[  (a%360)*q_val + (a/360)  ];
-			  // }
+      			  //Not sure if there is any benefit, but maybe the loop can be better optimized.
+      			  // for(unsigned long int a = 0; a < q_val*360; a++){
+      				  // tempu[nbch+a] = in[  (a%360)*q_val + (a/360)  ];
+      			  // }
               for (int t = 0; t < q_val; t++) {
                 for (int s = 0; s < 360; s++) {
-				  
                   tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
                 }
               }
-			  
-			  
-			  
-			  
+
               in = in + (q_val * 360);
-              index = 0;
-              for (int col = 0; col < (mod * 2); col++) {
-                offset = twist256n[col];
-                for (int row = 0; row < rows; row++) {
-                  tempv[offset + (rows * col)] = tempu[index++];
-                  offset++;
-                  if (offset == rows) {
-                    offset = 0;
-                  }
+
+              //index = 0;
+              /*for (int row = 0; row < rows; row++) {
+                for (int col = 0; col < (mod * 2); col++) {
+                  offset = twist256n[col];
+                  tempv[(offset+row)%rows + (rows * col)] = tempu[col*rows+row];
                 }
-              }
+              }*/
 
 
-
-
-
-
-
-              // for (int j = 0; j < rows; j++) {
-                // tempu[index++] = c1[j];
-                // tempu[index++] = c2[j];
-                // tempu[index++] = c3[j];
-                // tempu[index++] = c4[j];
-                // tempu[index++] = c5[j];
-                // tempu[index++] = c6[j];
-                // tempu[index++] = c7[j];
-                // tempu[index++] = c8[j];
-                // tempu[index++] = c9[j];
-                // tempu[index++] = c10[j];
-                // tempu[index++] = c11[j];
-                // tempu[index++] = c12[j];
-                // tempu[index++] = c13[j];
-                // tempu[index++] = c14[j];
-                // tempu[index++] = c15[j];
-                // tempu[index++] = c16[j];
-              // }
-			  
-
-
-			  //Not verified, if there is any benefit, but maybe now better to optimize.
-			  // the c s are not necessary
-			  //for (int j = 0; j < rows; j++) {
-				 // for (unsigned short int i = 0; i<(mod *2); i++) {
-					//  tempu[index++] = tempv[i*rows + j];
-				 // }
-			  //}
-
-			  
-              index = 0;
-              for (int d = 0; d < rows; d++) {
+              //Avoid copying to tempv, only use tempu! slightly faster
+              int offset_row;
+              int cols = mod*2;
+              for (int row = 0; row < rows; row++) {
                 pack = 0;
-                for (int e = 0; e < (mod * 2); e++) {
+                for (int col = 0; col < cols; col++) {
                   //offset = mux[e];
-                  pack |= tempv[e*rows + d] << (((mod * 2) - 1) - mux[e]);
+                  offset = twist256n[col];
+                  offset_row = (rows-offset+row);
+                  if(offset_row >= rows) offset_row = offset_row - rows;
+
+                  pack |= tempu[col*rows + offset_row] << ((cols - 1) - mux[col]);
                 }
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
-                consumed += (mod * 2);
               }
+              consumed += cols*rows;
             }
           }
           else {
@@ -627,8 +578,8 @@ namespace gr {
                 }
               }
               index = 0;
-			  
-			  
+
+
 			  //Not verified, if there is any benefit, but maybe now better to optimize.
 			  // the c s are not necessary
 			  for (int j = 0; j < rows; j++) {
@@ -660,7 +611,7 @@ namespace gr {
           }
 		}
       }
-	
+
 
       // Tell runtime system how many input items we consumed on
       // each input stream.
@@ -773,4 +724,3 @@ namespace gr {
 
   } /* namespace dtv */
 } /* namespace gr */
-
