@@ -366,7 +366,7 @@ namespace gr {
       }
 
       for (int n = 0; n < 8; n++) {
-        *in++ = (crc & (1 << n)) ? 1 : 0;
+        in[n] = (crc & (1 << n)) ? 1 : 0;
       }
       return 8;// Length of CRC
     }
@@ -514,6 +514,7 @@ namespace gr {
               count = (count + 1) % 188;
               consumed++;
             }
+
             if (fec_block == 0 && inband_type_b == TRUE) {
               add_inband_type_b(&out[offset], ts_rate);
               offset += 104;
