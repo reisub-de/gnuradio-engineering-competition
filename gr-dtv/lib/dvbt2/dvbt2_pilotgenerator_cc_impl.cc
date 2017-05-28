@@ -913,10 +913,10 @@ namespace gr {
               }
             }
           }
-          cp_bpsk[0] = gr_complex(8.0 / 3.0, 0.0);
-          cp_bpsk[1] = gr_complex(-8.0 / 3.0, 0.0);
-          cp_bpsk_inverted[0] = gr_complex(-8.0 / 3.0, 0.0);
-          cp_bpsk_inverted[1] = gr_complex(8.0 / 3.0, 0.0);
+          cp_bpsk[0] = gr_complex(2.667, 0.0);
+          cp_bpsk[1] = gr_complex(-2.667, 0.0);
+          cp_bpsk_inverted[0] = gr_complex(-2.667, 0.0);
+          cp_bpsk_inverted[1] = gr_complex(2.667, 0.0);
           break;
       }
       switch (pilotpattern) {
@@ -969,10 +969,10 @@ namespace gr {
           dy = 2;
           break;
         case PILOT_PP7:
-          sp_bpsk[0] = gr_complex(7.0 / 3.0, 0.0);
-          sp_bpsk[1] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[0] = gr_complex(-7.0 / 3.0, 0.0);
-          sp_bpsk_inverted[1] = gr_complex(7.0 / 3.0, 0.0);
+          sp_bpsk[0] = gr_complex(2.3333, 0.0);
+          sp_bpsk[1] = gr_complex(-2.3333, 0.0);
+          sp_bpsk_inverted[0] = gr_complex(-2.3333, 0.0);
+          sp_bpsk_inverted[1] = gr_complex(2.3333, 0.0);
           dx = 24;
           dy = 4;
           break;
@@ -1076,10 +1076,10 @@ namespace gr {
       left_nulls = ((vlength - C_PS) / 2) + 1;
       right_nulls = (vlength - C_PS) / 2;
       if ((fftsize == FFTSIZE_32K || fftsize == FFTSIZE_32K_T2GI) && (miso == FALSE)) {
-        p2_bpsk[0] = gr_complex(std::sqrt(37.0) / 5.0, 0.0);
-        p2_bpsk[1] = gr_complex(-(std::sqrt(37.0) / 5.0), 0.0);
-        p2_bpsk_inverted[0] = gr_complex(-(std::sqrt(37.0) / 5.0), 0.0);
-        p2_bpsk_inverted[1] = gr_complex(std::sqrt(37.0) / 5.0, 0.0);
+        p2_bpsk[0] = gr_complex(1.216552, 0.0);
+        p2_bpsk[1] = gr_complex(-1.216552, 0.0);
+        p2_bpsk_inverted[0] = gr_complex(-1.216552, 0.0);
+        p2_bpsk_inverted[1] = gr_complex(1.216552, 0.0);
       }
       else {
         p2_bpsk[0] = gr_complex(std::sqrt(31.0) / 5.0, 0.0);
@@ -1090,22 +1090,22 @@ namespace gr {
       normalization = 5.0 / std::sqrt(27.0 * C_PS);
       switch (bandwidth) {
         case BANDWIDTH_1_7_MHZ:
-          fs = 131.0 * 1000000.0 / 71.0;
+          fs = 1845070;
           break;
         case BANDWIDTH_5_0_MHZ:
-          fs = 5.0 * 8000000.0 / 7.0;
+          fs =  5714286;
           break;
         case BANDWIDTH_6_0_MHZ:
-          fs = 6.0 * 8000000.0 / 7.0;
+          fs = 6857143;
           break;
         case BANDWIDTH_7_0_MHZ:
-          fs = 7.0 * 8000000.0 / 7.0;
+          fs = 8000000;
           break;
         case BANDWIDTH_8_0_MHZ:
-          fs = 8.0 * 8000000.0 / 7.0;
+          fs = 9142857;
           break;
         case BANDWIDTH_10_0_MHZ:
-          fs = 10.0 * 8000000.0 / 7.0;
+          fs = 11428571;
           break;
         default:
           fs = 1.0;
