@@ -30,6 +30,7 @@
 #include <boost/thread.hpp>
 #include <algorithm>
 #include "immintrin.h"
+#include "dvb_ldpc_bb_lookup_table.h"
 
 namespace gr {
   namespace dtv {
@@ -52,6 +53,9 @@ namespace gr {
       P(0),
       Xp(0)
     {
+        
+      set_thread_priority(99);
+      
       frame_size_type = framesize;
       if (framesize == FECFRAME_NORMAL) {
         frame_size = FRAME_SIZE_NORMAL;
@@ -407,7 +411,7 @@ for (int row = 0; row < ROWS; row++) { \
 
       pbits = (frame_size_real + Xp) - nbch;    //number of parity bits
       q = q_val;
-
+      
       if (frame_size_type == FECFRAME_NORMAL) {
         if (code_rate == C1_4) {
           LDPC_BF(ldpc_tab_1_4N,  45);
@@ -422,7 +426,10 @@ for (int row = 0; row < ROWS; row++) { \
           LDPC_BF(ldpc_tab_1_2N,  90);
         }
         if (code_rate == C3_5) {
-          LDPC_BF(ldpc_tab_3_5N,  108);
+          //LDPC_BF(ldpc_tab_3_5N,  108);
+            index = 233280;
+            memcpy(ldpc_encode.p, ldpc_tab_3_5N_108R_p, 233280*sizeof(int));
+            memcpy(ldpc_encode.d, ldpc_tab_3_5N_108R_d, 233280*sizeof(int));
         }
         if (code_rate == C2_3) {
           if (dvb_standard == STANDARD_DVBT2) {
@@ -607,21 +614,37 @@ for (int row = 0; row < ROWS; row++) { \
       ldpc_encode.table_length = index;
       
       // Sort the ldpc_encode table, so all identical parity values will be consecutively
-      //c_threads_count = ldpc_encode.table_length / 8;
-      std::sort(ldpc_encode.sorted_p_d.begin(), ldpc_encode.sorted_p_d.end(), compare);
+      /*std::sort(ldpc_encode.sorted_p_d.begin(), ldpc_encode.sorted_p_d.end(), compare);
       
       for(int i = 0; i < ldpc_encode.table_length; i++)
       {
         ldpc_encode.p[i] = ldpc_encode.sorted_p_d[i].first;
         ldpc_encode.d[i] = ldpc_encode.sorted_p_d[i].second;
       }
-      /*std::ofstream write;
-      write.open("ldpc_sorted.txt");
-      for(std::vector<std::pair<int, int> >::iterator it = ldpc_encode.sorted_p_d.begin(); it != ldpc_encode.sorted_p_d.end(); it++)
+
+      std::ofstream write;
+      write.open("dvb_ldpc_bb_lookup_table.h");
+      write << "const int dvb_ldpc_bb_impl::ldpc_tab_3_5N_108R_p[233280]=" << std::endl;
+      write << "{" << std::endl;
+      for(int i=0; i< 233280; i++)
       {
-        write << "{" << (*it).first << "," << (*it).second << "}," << std::endl;
+        write << "\t" << ldpc_encode.p[i] << "," << std::endl;
         //printf("%d\t%d\n", it->first, it->second);
       }
+      
+      write << "};" << std::endl;
+      write << std::endl;
+      
+      write << "const int dvb_ldpc_bb_impl::ldpc_tab_3_5N_108R_d[233280]=" << std::endl;
+      write << "{" << std::endl;
+      for(int i=0; i<233280; i++)
+      {
+        write << "\t" << ldpc_encode.d[i] << "," << std::endl;
+        //printf("%d\t%d\n", it->first, it->second);
+      }
+      
+      write << "};" << std::endl;
+      
       write.close();*/
     }
 
@@ -663,10 +686,7 @@ for (int row = 0; row < ROWS; row++) { \
         consumed = nbch;
         
         // now do the parity checking
-        // Each thread gets the half of the array for parityCheck
-        //threads[0] = boost::thread(&dvb_ldpc_bb_impl::doParityCheck, this, p, d, c_threads_count * 4, 0);
         doParityCheck(p, d, ldpc_encode.table_length, 0);
-        //threads[0].join();
     
         
         if (P != 0) {
@@ -709,15 +729,18 @@ for (int row = 0; row < ROWS; row++) { \
       return noutput_items;
     }
 
-    void dvb_ldpc_bb_impl::doParityCheck(unsigned char* p, const unsigned char* d, int counter, int start)
+    inline void dvb_ldpc_bb_impl::doParityCheck(unsigned char* p, const unsigned char* d, int counter, int start)
     {
-         _Cilk_for (int j = start; j < counter; j+=9) {
+         for (int j = start; j < counter; j+=18) {
             // For faster check, enroll the For Loop
             // The table is always a multiple of 360
           p[ldpc_encode.p[j]] ^= d[ldpc_encode.d[j]] ^ d[ldpc_encode.d[j+1]] ^ d[ldpc_encode.d[j+2]]
                                 ^ d[ldpc_encode.d[j+3]] ^ d[ldpc_encode.d[j+4]] ^ d[ldpc_encode.d[j+5]]
                                 ^ d[ldpc_encode.d[j+6]] ^ d[ldpc_encode.d[j+7]] ^ d[ldpc_encode.d[j+8]];
-        }      
+          p[ldpc_encode.p[j+9]] ^= d[ldpc_encode.d[j+9]] ^ d[ldpc_encode.d[j+10]] ^ d[ldpc_encode.d[j+11]]     
+                                ^ d[ldpc_encode.d[j+12]] ^ d[ldpc_encode.d[j+13]] ^ d[ldpc_encode.d[j+14]]
+                                ^ d[ldpc_encode.d[j+15]] ^ d[ldpc_encode.d[j+16]] ^ d[ldpc_encode.d[j+17]];
+        }   
         
     }
     
