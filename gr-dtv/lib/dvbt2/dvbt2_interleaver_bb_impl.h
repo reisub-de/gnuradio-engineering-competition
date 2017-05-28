@@ -28,25 +28,16 @@ struct FuncHandlerDataStruct {
   FuncHandlerDataStruct(  
                           const unsigned char *d_in,
                           unsigned char *d_out,
-                          const int arg_idx,
-                          const int arg_num_core,
-                          const int arg_val_packed_items,
                           const int d_rows,
                           const int d_local_nbch,
                           const int d_local_q_val) :
         in(d_in),
         out(d_out),
-        idx(arg_idx),
-        num_core(arg_num_core),
-        val_packed_items(arg_val_packed_items),
         rows(d_rows),
         local_nbch(d_local_nbch),
         local_q_val(d_local_q_val) {}
   const unsigned char *in;
   unsigned char *out;
-  const int idx;
-  const int num_core;
-  const int val_packed_items;
   const int rows;
   const int local_nbch;
   const int local_q_val;

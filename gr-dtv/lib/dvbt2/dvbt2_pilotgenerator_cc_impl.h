@@ -44,26 +44,17 @@ struct FuncHandlerDataStruct {
   FuncHandlerDataStruct(
     const gr_complex *arg_in,
     gr_complex *arg_out,
-    const int arg_idx,
-    const int arg_num_core,
-    const int arg_val_num_symbols,
     const gr_complex *arg_m_inverse_sinc,
     const int *arg_local_p2_carrier_map,
     const int *arg_local_fc_carrier_map
   ) :
     in(arg_in),
     out(arg_out),
-    idx(arg_idx),
-    num_core(arg_num_core),
-    val_num_symbols(arg_val_num_symbols),
     m_inverse_sinc(arg_m_inverse_sinc),
     local_p2_carrier_map(arg_local_p2_carrier_map),
     local_fc_carrier_map(arg_local_fc_carrier_map) {}
   const gr_complex *in;
   gr_complex *out;  
-  const int idx;
-  const int num_core;
-  const int val_num_symbols;
   const gr_complex *m_inverse_sinc;
   const int *local_p2_carrier_map;
   const int *local_fc_carrier_map;

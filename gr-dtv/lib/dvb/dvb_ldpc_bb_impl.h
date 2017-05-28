@@ -35,7 +35,6 @@ struct FuncHandlerDataStruct {
     const unsigned char *arg_in,
     unsigned char *arg_out,
     const int arg_idx,
-    const int arg_num_core,
     const unsigned int arg_val_frame_size,
     const int arg_plen,
     const unsigned int arg_val_nbch,
@@ -48,7 +47,6 @@ struct FuncHandlerDataStruct {
     in(arg_in),
     out(arg_out),
     idx(arg_idx),
-    num_core(arg_num_core),
     val_frame_size(arg_val_frame_size),
     plen(arg_plen),
     val_nbch(arg_val_nbch),
@@ -61,7 +59,6 @@ struct FuncHandlerDataStruct {
     const unsigned char *in;
     unsigned char *out;
     const int idx;
-    const int num_core;
     const unsigned int val_frame_size;
     const int plen;
     const unsigned int val_nbch;

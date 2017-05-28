@@ -2171,14 +2171,10 @@ else { \
     dvbt2_pilotgenerator_cc_impl::func_handler(FuncHandlerDataStruct data) {
       const gr_complex *in = data.in;
       gr_complex *out = data.out;
-      const int idx = data.idx;
-      const int num_core = data.num_core;
-      const int val_num_symbols = data.val_num_symbols;
       const gr_complex *m_inverse_sinc = data.m_inverse_sinc;
       const int *local_p2_carrier_map = data.local_p2_carrier_map;
       const int *local_fc_carrier_map = data.local_fc_carrier_map;
 
-      gr::thread::thread_bind_to_processor((idx / val_num_symbols) % num_core);
       // const int local_active_items = 1639268;
       const int local_num_symbols = 60;
       // const int local_fft_size = 7;
@@ -2344,9 +2340,6 @@ else { \
         FuncHandlerDataStruct func_data(
           in,
           out,
-          i,
-          max_thread_num,
-          num_symbols,
           inverse_sinc,
           p2_carrier_map,
           fc_carrier_map

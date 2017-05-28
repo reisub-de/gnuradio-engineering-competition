@@ -25,6 +25,9 @@
 #define INCLUDED_DTV_COMPETITION_H
 
 #include <gnuradio/dtv/api.h>
+#include <gnuradio/dtv/dvb_config.h>
+#include <gnuradio/dtv/dvbt2_config.h>
+#include <gnuradio/dtv/dvbs2_config.h>
 #include <gnuradio/block.h>
 
 namespace gr {
@@ -48,7 +51,7 @@ namespace gr {
        * class. dtv::competition::make is the public interface for
        * creating new instances.
        */
-      static sptr make();
+      static sptr make(int placeholder);
     };
 
   } // namespace dtv

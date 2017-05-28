@@ -607,15 +607,12 @@ for (int row = 0; row < ROWS; row++) { \
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
       const int idx = data.idx;
-      const int num_core = data.num_core;
       const unsigned int val_frame_size = data.val_frame_size;
       const int plen = data.plen;
       const unsigned int val_nbch = data.val_nbch;
       const int val_Xp = data.val_Xp;
       const unsigned int val_signal_constellation = data.val_signal_constellation;
       const ldpc_encode_table *ldpc_encode_table_ptr = data.ldpc_encode_table_ptr;
-
-      gr::thread::thread_bind_to_processor((idx / val_frame_size) % num_core);
 
       unsigned char* p = &out[val_nbch] + idx * val_frame_size;
       const unsigned char* d = in + idx * val_nbch;
@@ -641,7 +638,6 @@ for (int row = 0; row < ROWS; row++) { \
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
       const int idx = data.idx;
-      const int num_core = data.num_core;
       const unsigned int val_frame_size = data.val_frame_size;
       const int plen = data.plen;
       const unsigned int val_nbch = data.val_nbch;
@@ -649,8 +645,6 @@ for (int row = 0; row < ROWS; row++) { \
       const int val_Xs = data.val_Xs;
       const unsigned int val_signal_constellation = data.val_signal_constellation;
       const ldpc_encode_table *ldpc_encode_table_ptr = data.ldpc_encode_table_ptr;
-
-      gr::thread::thread_bind_to_processor((idx / val_frame_size) % num_core);
 
       unsigned char local_shortening_buffer[FRAME_SIZE_NORMAL];
       unsigned char* p = &out[val_nbch] + idx * val_frame_size;
@@ -687,8 +681,6 @@ for (int row = 0; row < ROWS; row++) { \
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
       const int idx = data.idx;
-      const int num_core = data.num_core;
-      const unsigned int val_frame_size = data.val_frame_size;
       const int plen = data.plen;
       const unsigned int val_nbch = data.val_nbch;
       const int val_Xp = data.val_Xp;
@@ -696,8 +688,6 @@ for (int row = 0; row < ROWS; row++) { \
       const int val_P = data.val_P;
       const unsigned int val_signal_constellation = data.val_signal_constellation;
       const ldpc_encode_table *ldpc_encode_table_ptr = data.ldpc_encode_table_ptr;
-
-      gr::thread::thread_bind_to_processor((idx / val_frame_size) % num_core);
 
       unsigned char local_puncturing_buffer[FRAME_SIZE_NORMAL];
       unsigned char local_shortening_buffer[FRAME_SIZE_NORMAL];
@@ -757,16 +747,12 @@ for (int row = 0; row < ROWS; row++) { \
       const unsigned char *in = data.in;
       unsigned char *out = data.out;
       const int idx = data.idx;
-      const int num_core = data.num_core;
-      const unsigned int val_frame_size = data.val_frame_size;
       const int plen = data.plen;
       const unsigned int val_nbch = data.val_nbch;
       const int val_Xp = data.val_Xp;
       const int val_P = data.val_P;
       const unsigned int val_signal_constellation = data.val_signal_constellation;
       const ldpc_encode_table *ldpc_encode_table_ptr = data.ldpc_encode_table_ptr;
-
-      gr::thread::thread_bind_to_processor((idx / val_frame_size) % num_core);
 
       unsigned char local_puncturing_buffer[FRAME_SIZE_NORMAL];
 
@@ -847,7 +833,6 @@ for (int row = 0; row < ROWS; row++) { \
                                         in, 
                                         out, 
                                         i,
-                                        max_thread_num,
                                         frame_size,
                                         plen,
                                         nbch,
@@ -880,7 +865,6 @@ for (int row = 0; row < ROWS; row++) { \
                                         in, 
                                         out, 
                                         i,
-                                        max_thread_num,
                                         frame_size,
                                         plen,
                                         nbch,
@@ -913,7 +897,6 @@ for (int row = 0; row < ROWS; row++) { \
                                         in, 
                                         out, 
                                         i,
-                                        max_thread_num,
                                         frame_size,
                                         plen,
                                         nbch,
@@ -946,7 +929,6 @@ for (int row = 0; row < ROWS; row++) { \
                                         in, 
                                         out, 
                                         i,
-                                        max_thread_num,
                                         frame_size,
                                         plen,
                                         nbch,

@@ -28,6 +28,10 @@
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
 
+struct FuncHandlerDataStruct {
+  
+};
+
 namespace gr {
   namespace dtv {
 
@@ -444,11 +448,7 @@ namespace gr {
     void 
     dvb_bch_bb_impl::bch_code_n12_handler(  const unsigned char *in, 
                                             unsigned char *out,
-                                            unsigned int val_kbch,
-                                            const int idx,
-                                            const unsigned int num_core) 
-    {
-
+                                            unsigned int val_kbch) {
       unsigned char b, temp;
       unsigned int shift[6];
 
@@ -479,13 +479,7 @@ namespace gr {
     void 
     dvb_bch_bb_impl::bch_code_n10_handler(  const unsigned char *in, 
                                             unsigned char *out,
-                                            unsigned int val_kbch,
-                                            const int idx,
-                                            const unsigned int num_core) 
-    {
-      unsigned int core_idx = (idx / val_kbch) % num_core;
-      gr::thread::thread_bind_to_processor(core_idx);
-
+                                            unsigned int val_kbch) {
       unsigned char b, temp;
       unsigned int shift[5];
 
@@ -515,13 +509,7 @@ namespace gr {
     void 
     dvb_bch_bb_impl::bch_code_n8_handler(   const unsigned char *in, 
                                             unsigned char *out,
-                                            unsigned int val_kbch,
-                                            const int idx,
-                                            const unsigned int num_core) 
-    {
-      unsigned int core_idx = (idx / val_kbch) % num_core;
-      gr::thread::thread_bind_to_processor(core_idx);
-
+                                            unsigned int val_kbch) {
       unsigned char b, temp;
       unsigned int shift[4];
 
@@ -550,13 +538,7 @@ namespace gr {
     void 
     dvb_bch_bb_impl::bch_code_s12_handler(  const unsigned char *in, 
                                             unsigned char *out,
-                                            unsigned int val_kbch,
-                                            const int idx,
-                                            const unsigned int num_core) 
-    {
-      unsigned int core_idx = (idx / val_kbch) % num_core;
-      gr::thread::thread_bind_to_processor(core_idx);
-
+                                            unsigned int val_kbch) {
       unsigned char b, temp;
       unsigned int shift[6];
 
@@ -587,13 +569,7 @@ namespace gr {
     void 
     dvb_bch_bb_impl::bch_code_m12_handler(   const unsigned char *in, 
                                             unsigned char *out,
-                                            unsigned int val_kbch,
-                                            const int idx,
-                                            const unsigned int num_core) 
-    {
-      unsigned int core_idx = (idx / val_kbch) % num_core;
-      gr::thread::thread_bind_to_processor(core_idx);
-
+                                            unsigned int val_kbch) {
       unsigned char b, temp;
       unsigned int shift[6];
 
@@ -644,7 +620,7 @@ namespace gr {
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
-              thread_pool.enqueue(boost::bind(bch_code_n12_handler, in, out, val_kbch, i, max_thread_num));
+              thread_pool.enqueue(boost::bind(bch_code_n12_handler, in, out, val_kbch));
               in += (int)kbch;
               out += (int)kbch + 192;
               consumed += (int)kbch;
@@ -662,7 +638,7 @@ namespace gr {
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
-              thread_pool.enqueue(boost::bind(bch_code_n10_handler, in, out, val_kbch, i, max_thread_num));
+              thread_pool.enqueue(boost::bind(bch_code_n10_handler, in, out, val_kbch));
               in += (int)kbch;
               out += (int)kbch + 160;
               consumed += (int)kbch;
@@ -680,7 +656,7 @@ namespace gr {
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
-              thread_pool.enqueue(boost::bind(bch_code_n8_handler, in, out, val_kbch, i, max_thread_num));
+              thread_pool.enqueue(boost::bind(bch_code_n8_handler, in, out, val_kbch));
               in += (int)kbch;
               out += (int)kbch + 128;
               consumed += (int)kbch;
@@ -698,7 +674,7 @@ namespace gr {
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
-              thread_pool.enqueue(boost::bind(bch_code_s12_handler, in, out, val_kbch, i, max_thread_num));
+              thread_pool.enqueue(boost::bind(bch_code_s12_handler, in, out, val_kbch));
               in += (int)kbch;
               out += (int)kbch + 168;
               consumed += (int)kbch;
@@ -716,7 +692,7 @@ namespace gr {
 
             unsigned int val_kbch = kbch;
             for (int i = 0; i < noutput_items; i += nbch) {
-              thread_pool.enqueue(boost::bind(bch_code_m12_handler, in, out, val_kbch, i, max_thread_num));
+              thread_pool.enqueue(boost::bind(bch_code_m12_handler, in, out, val_kbch));
               in += (int)kbch;
               out += (int)kbch + 180;
               consumed += (int)kbch;

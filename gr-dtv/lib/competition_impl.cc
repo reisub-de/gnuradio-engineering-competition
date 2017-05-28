@@ -27,36 +27,50 @@
 #include <gnuradio/io_signature.h>
 #include "competition_impl.h"
 
+#include <stdio.h>  
+
 namespace gr {
   namespace dtv {
 
     competition::sptr
-    competition::make()
+    competition::make(int placeholder)
     {
       return gnuradio::get_initial_sptr
-        (new competition_impl());
+        (new competition_impl(placeholder));
     }
 
     /*
      * The private constructor
      */
-    competition_impl::competition_impl()
-      : gr::block("square_ff",
-                  gr::io_signature::make(1, 1, sizeof (float)), // input signature
-                  gr::io_signature::make(1, 1, sizeof (float))) // output signature
-    {}
+    competition_impl::competition_impl(int placeholder)
+      : gr::block("competition",
+                  gr::io_signature::make(1, 1, sizeof(unsigned char)), // input signature
+                  gr::io_signature::make(1, 1, sizeof(unsigned char))) // output signature
+    {
+      bbheader = new gr::dtv::dvb_bbheader_bb_impl(
+                                                STANDARD_DVBT2,
+                                                FECFRAME_NORMAL,
+                                                C3_5,
+                                                RO_0_35, 
+                                                INPUTMODE_HIEFF, 
+                                                INBAND_OFF, 
+                                                168, 
+                                                4000000
+                                                );
+    }
 
     /*
      * Our virtual destructor.
      */
     competition_impl::~competition_impl()
     {
+      delete bbheader;
     }
 
     void
     competition_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
-      ninput_items_required[0] = noutput_items;
+      bbheader->forecast(noutput_items, ninput_items_required);
     }
 
     int
@@ -65,21 +79,21 @@ namespace gr {
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
     {
-      const float *in = (const float *) input_items[0];
-      float *out = (float *) output_items[0];
+      int consumed = bbheader->general_work(
+        noutput_items,
+        ninput_items,
+        input_items,
+        output_items);
 
-      for(int i = 0; i < noutput_items; i++) {
-        out[i] = in[i] * in[i];
-      }
+      gr_vector_int test(1, 0);
+      forecast(noutput_items, test);
+      printf("%d\n", test[0]);
 
       // Tell runtime system how many input items we consumed on
       // each input stream.
-      consume_each (noutput_items);
-
-      // Tell runtime system how many output items we produced.
+      consume_each (consumed);
       return noutput_items;
     }
-
   } /* namespace dtv */
 } /* namespace gr */
 
