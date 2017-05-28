@@ -53,6 +53,9 @@ namespace gr {
       cyclic_delay = FALSE;
       if (framesize == FECFRAME_NORMAL) {
         switch (constellation) {
+          case MOD_256QAM:
+            cell_size = 8100;
+            break;
           case MOD_QPSK:
             cell_size = 32400;
             break;
@@ -61,9 +64,6 @@ namespace gr {
             break;
           case MOD_64QAM:
             cell_size = 10800;
-            break;
-          case MOD_256QAM:
-            cell_size = 8100;
             break;
           default:
             cell_size = 0;
@@ -90,6 +90,22 @@ namespace gr {
         }
       }
       switch (constellation) {
+        case MOD_256QAM:
+          normalization = std::sqrt(170.0);
+          for (int i = 0; i < 256; i++) {
+            real_index = ((i & 0x80) >> 4) | ((i & 0x20) >> 3) | ((i & 0x8) >> 2) | ((i & 0x2) >> 1);
+            imag_index = ((i & 0x40) >> 3) | ((i & 0x10) >> 2) | ((i & 0x4) >> 1) | ((i & 0x1) >> 0);
+            m_256qam[i] = gr_complex(m_256qam_lookup[real_index] / normalization, m_256qam_lookup[imag_index] / normalization);
+          }
+          if (rotation == ROTATION_ON) {
+            cyclic_delay = TRUE;
+            rotation_angle = (2.0 * M_PI * 3.576334375) / 360.0;
+            temp = std::exp(gr_complexd(0.0, rotation_angle));
+            for (int i = 0; i < 256; i++) {
+              m_256qam[i] *= temp;
+            }
+          }
+          break;
         case MOD_QPSK:
           normalization = std::sqrt(2.0);
           m_qpsk[0] = gr_complex( 1.0 / normalization,  1.0 / normalization);
@@ -134,22 +150,6 @@ namespace gr {
             temp = std::exp(gr_complexd(0.0, rotation_angle));
             for (int i = 0; i < 64; i++) {
               m_64qam[i] *= temp;
-            }
-          }
-          break;
-        case MOD_256QAM:
-          normalization = std::sqrt(170.0);
-          for (int i = 0; i < 256; i++) {
-            real_index = ((i & 0x80) >> 4) | ((i & 0x20) >> 3) | ((i & 0x8) >> 2) | ((i & 0x2) >> 1);
-            imag_index = ((i & 0x40) >> 3) | ((i & 0x10) >> 2) | ((i & 0x4) >> 1) | ((i & 0x1) >> 0);
-            m_256qam[i] = gr_complex(m_256qam_lookup[real_index] / normalization, m_256qam_lookup[imag_index] / normalization);
-          }
-          if (rotation == ROTATION_ON) {
-            cyclic_delay = TRUE;
-            rotation_angle = (2.0 * M_PI * 3.576334375) / 360.0;
-            temp = std::exp(gr_complexd(0.0, rotation_angle));
-            for (int i = 0; i < 256; i++) {
-              m_256qam[i] *= temp;
             }
           }
           break;
@@ -198,6 +198,32 @@ namespace gr {
       int index, index_delay;
 
       switch (signal_constellation) {
+        case MOD_256QAM:
+          if (cyclic_delay) {
+            // Our case: 256-QAM, rotation = on --> cyclic_delay = true
+            int j = cell_size - 1; 
+            for (int i = 0; i < noutput_items; i += cell_size) {
+              in_delay = in;
+              //first pick the last value by cellsize - 1 and then loop through all the others
+              *out++ = gr_complex(m_256qam[(int)*in++].real(), m_256qam[(int)in_delay[j]].imag());
+
+              //safe modulation operation here
+              for (int k = 0; k < cell_size - 1; ++k)
+              {
+                *out++ = gr_complex(m_256qam[(int)*in++].real(), m_256qam[(int)in_delay[k]].imag());
+              }
+            }
+            
+          }
+          else {
+            for (int i = 0; i < noutput_items; i += cell_size) {
+              for (int j = 0; j < cell_size; j++) {
+                index = *in++;
+                *out++ = m_256qam[index & 0xff];
+              }
+            }
+          }
+          break;
         case MOD_QPSK:
           for (int i = 0; i < noutput_items; i += cell_size) {
             if (cyclic_delay == FALSE) {
@@ -251,32 +277,6 @@ namespace gr {
                 index_delay = in_delay[(j + cell_size - 1) % cell_size];
                 *out++ = gr_complex(m_64qam[index & 0x3f].real(),
                                     m_64qam[index_delay & 0x3f].imag());
-              }
-            }
-          }
-          break;
-        case MOD_256QAM:
-          if (cyclic_delay) {
-            // Our case: 256-QAM, rotation = on --> cyclic_delay = true
-            int j = cell_size - 1; 
-            for (int i = 0; i < noutput_items; i += cell_size) {
-              in_delay = in;
-              //first pick the last value by cellsize - 1 and then loop through all the others
-              *out++ = gr_complex(m_256qam[(int)*in++].real(), m_256qam[(int)in_delay[j]].imag());
-
-              //safe modulation operation here
-              for (int k = 0; k < cell_size - 1; ++k)
-              {
-                *out++ = gr_complex(m_256qam[(int)*in++].real(), m_256qam[(int)in_delay[k]].imag());
-              }
-            }
-            
-          }
-          else {
-            for (int i = 0; i < noutput_items; i += cell_size) {
-              for (int j = 0; j < cell_size; j++) {
-                index = *in++;
-                *out++ = m_256qam[index & 0xff];
               }
             }
           }
