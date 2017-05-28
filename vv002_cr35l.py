@@ -9,11 +9,7 @@
 from gnuradio import blocks
 from gnuradio import digital
 from gnuradio import dtv
-from gnuradio import eng_notation
 from gnuradio import gr
-from gnuradio.eng_option import eng_option
-from gnuradio.filter import firdes
-from optparse import OptionParser
 
 
 class vv002_cr35l(gr.top_block):
