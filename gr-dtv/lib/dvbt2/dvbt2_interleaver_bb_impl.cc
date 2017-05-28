@@ -278,8 +278,8 @@ namespace gr {
               pack |= c[7][j] << shift_vals[7];
               out[produced++] = pack >> 4;
               out[produced++] = pack & 0xf;
-              consumed += (mod * 2);
             }
+            consumed += rows * (mod * 2);
           }
           break;
         case MOD_64QAM:
@@ -361,8 +361,8 @@ namespace gr {
               pack |= c[11][j] << shift_vals[11];
               out[produced++] = pack >> 6;
               out[produced++] = pack & 0x3f;
-              consumed += (mod * 2);
             }
+            consumed += rows * (mod * 2);
           }
           break;
         case MOD_256QAM:
@@ -445,8 +445,8 @@ namespace gr {
                 pack |= c[15][j] << shift_vals[15];
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
-                consumed += (mod * 2);
               }
+              consumed += rows * (mod * 2);
             }
           }
           else {
@@ -510,8 +510,9 @@ namespace gr {
                 pack |= c[6][j] << shift_vals[6];
                 pack |= c[7][j] << shift_vals[7];
                 out[produced++] = pack & 0xff;
-                consumed += mod;
+                
               }
+              consumed += rows * mod;
             }
           }
           break;
