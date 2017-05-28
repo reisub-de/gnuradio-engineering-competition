@@ -37,7 +37,6 @@ namespace gr {
       int q_val;
       int mod;
       int packed_items;
-      unsigned char tempu[FRAME_SIZE_NORMAL];
       unsigned char tempv[FRAME_SIZE_NORMAL];
       int parity_interl_lut[FRAME_SIZE_NORMAL];
 
