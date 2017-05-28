@@ -42,10 +42,6 @@ typedef struct{
    BBHeader bb_header;
 }FrameFormat;
 
-struct FuncHandlerDataStruct {
-  
-};
-
 namespace gr {
   namespace dtv {
 
@@ -71,6 +67,8 @@ namespace gr {
       void add_bbheader(unsigned char *, int, int, bool);
       int add_crc8_bits(unsigned char *, int);
       void add_inband_type_b(unsigned char *, int);
+
+      static void func_handler();
 
      public:
       dvb_bbheader_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate, dvbs2_rolloff_factor_t rolloff, dvbt2_inputmode_t mode, dvbt2_inband_t inband, int fecblocks, int tsrate);
