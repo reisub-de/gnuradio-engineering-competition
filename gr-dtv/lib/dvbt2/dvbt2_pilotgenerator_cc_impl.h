@@ -81,6 +81,7 @@ namespace gr {
       int dy;
       int miso;
       int miso_group;
+      int *remainder_look_up; // added
       void init_prbs(void);
       void init_pilots_preset(); // added
       void init_pilots(int);
