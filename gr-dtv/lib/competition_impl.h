@@ -24,7 +24,6 @@
 #define INCLUDED_DTV_COMPETITION_IMPL_H
 
 #include <gnuradio/dtv/competition.h>
-#include "dvb/dvb_bbheader_bb_impl.h"
 
 namespace gr {
   namespace dtv {
@@ -32,10 +31,10 @@ namespace gr {
     class competition_impl : public competition
     {
      private:
-      dtv::dvb_bbheader_bb_impl *bbheader;
+      // Nothing to declare in this block.
 
      public:
-      competition_impl(int placeholder);
+      competition_impl();
       ~competition_impl();
 
       // Where all the action really happens
