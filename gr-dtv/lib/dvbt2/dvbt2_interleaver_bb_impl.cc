@@ -191,21 +191,13 @@ namespace gr {
           rows = frame_size / 2;
           for (int i = 0; i < noutput_items; i += packed_items) {
             if (code_rate == C1_3 || code_rate == C2_5) {
-              for (int k = 0; k < nbch; k++) {
-                tempu[k] = *in++;
-              }
-              for (int s = 0; s < 360; s++) {
-                for (int t = 0; t < q_val; t++) {
-                  tempu[nbch + (360 * t) + s] = in[(q_val * s) + t];
-                }
-              }
-              in = in + (q_val * 360);
               index = 0;
               for (int j = 0; j < rows; j++) {
-                out[produced] = tempu[index++] << 1;
-                out[produced++] |= tempu[index++];
+                out[produced] = in[parity_interl_lut[index++]] << 1;
+                out[produced++] |= in[parity_interl_lut[index++]];
                 consumed += 2;
               }
+              in += nbch;
             }
             else {
               for (int j = 0; j < rows; j++) {
