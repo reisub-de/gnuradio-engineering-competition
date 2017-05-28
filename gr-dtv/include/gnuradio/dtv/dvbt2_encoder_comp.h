@@ -48,7 +48,7 @@ namespace gr {
        * class. dtv::dvbt2_encoder_comp::make is the public interface for
        * creating new instances.
        */
-      static sptr make(const char *input_file, const char *output_file);
+      static sptr make(size_t fft_len);
     };
 
   } // namespace dtv
