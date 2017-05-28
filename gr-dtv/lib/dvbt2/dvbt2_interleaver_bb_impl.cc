@@ -235,6 +235,8 @@ namespace gr {
           c[5] = &tempv[rows * 5];
           c[6] = &tempv[rows * 6];
           c[7] = &tempv[rows * 7];
+          for(int i = 0; i < mod * 2; i++)
+            shift_vals[i] = ((mod * 2) - 1) - mux[i];
           for (int i = 0; i < noutput_items; i += packed_items) {
             index = 0;
             for (int col = 0; col < (mod * 2); col++) {
@@ -247,8 +249,6 @@ namespace gr {
               }
             }
             in = in + nbch + (q_val * 360);
-            for(int i = 0; i < mod * 2; i++)
-              shift_vals[i] = ((mod * 2) - 1) - mux[i];
             for (int j = 0; j < rows; j++) {
               pack = 0;
               pack |= c[0][j] << shift_vals[0];
@@ -297,6 +297,8 @@ namespace gr {
           c[9] = &tempv[rows * 9];
           c[10] = &tempv[rows * 10];
           c[11] = &tempv[rows * 11];
+          for(int i = 0; i < mod * 2; i++)
+            shift_vals[i] = ((mod * 2) - 1) - mux[i];
           for (int i = 0; i < noutput_items; i += packed_items) {
             index = 0;
             for (int col = 0; col < (mod * 2); col++) {
@@ -309,8 +311,6 @@ namespace gr {
               }
             }
             in = in + nbch + (q_val * 360);
-            for(int i = 0; i < mod * 2; i++)
-              shift_vals[i] = ((mod * 2) - 1) - mux[i];
             for (int j = 0; j < rows; j++) {
               pack = 0;
               pack |= c[0][j] << shift_vals[0];
@@ -359,6 +359,8 @@ namespace gr {
             c[13] = &tempv[rows * 13];
             c[14] = &tempv[rows * 14];
             c[15] = &tempv[rows * 15];
+            for(int i = 0; i < mod * 2; i++)
+              shift_vals[i] = ((mod * 2) - 1) - mux[i];
             for (int i = 0; i < noutput_items; i += packed_items) {
               index = 0;
               for (int col = 0; col < (mod * 2); col++) {
@@ -372,9 +374,6 @@ namespace gr {
               }
               in = in + nbch + (q_val * 360);
               
-              for(int i = 0; i < mod * 2; i++)
-                shift_vals[i] = ((mod * 2) - 1) - mux[i];
-
               for (int j = 0; j < rows; j++) {
                 pack = 0;
                 pack |= c[0][j] << shift_vals[0];
@@ -418,6 +417,8 @@ namespace gr {
             c[5] = &tempv[rows * 5];
             c[6] = &tempv[rows * 6];
             c[7] = &tempv[rows * 7];
+            for(int i = 0; i < mod; i++)
+              shift_vals[i] = ((mod) - 1) - mux[i];
             for (int i = 0; i < noutput_items; i += packed_items) {
               index = 0;
               for (int col = 0; col < mod; col++) {
@@ -430,8 +431,6 @@ namespace gr {
                 }
               }
               in = in + nbch + (q_val * 360);
-              for(int i = 0; i < mod; i++)
-                shift_vals[i] = ((mod) - 1) - mux[i];
               for (int j = 0; j < rows; j++) {
                 pack = 0;
                 pack |= c[0][j] << shift_vals[0];
