@@ -373,7 +373,7 @@ namespace gr {
 
       bch_poly_build_tables();
       set_output_multiple(nbch);
-      output_lut_build();
+      //output_lut_build();
       bch_lut_build();
     }
 
@@ -746,12 +746,10 @@ namespace gr {
             in+=kbch;
 
             // Now add the parity bits to the output
-            out64 = (uint64_t*)out;
-            for (int n = 0; n < 192/8; n++) {
-              *out64++ = output_lookup_table.lw[shift[2] & 0xff];
-              reg_192b_shift8(shift);
+            for (int n = 0; n < 192; n++) {
+               *out++ = (shift[2] & 1);
+               reg_192b_shift(shift);
             }
-            out = (unsigned char*) out64;
             /*
             for (int n = 0; n < 192; n++) {
               *out++ = (shift[2] & 1);
