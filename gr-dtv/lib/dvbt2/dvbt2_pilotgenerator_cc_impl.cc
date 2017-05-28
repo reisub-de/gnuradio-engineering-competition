@@ -2792,7 +2792,12 @@ namespace gr {
                 *out++ = zero;
               }
               else {
-                *out++ = *in++;
+                  if((*(int*)(data_carrier_map+n)) == 0x01010101) {
+                      memcpy(out, in, sizeof(gr_complex) * 4);
+                      out+=4; in+=4; n+=3;
+                  }
+                  else
+                    *out++ = *in++;
               }
             }
             /*for (int n = 0; n < right_nulls; n++) {
