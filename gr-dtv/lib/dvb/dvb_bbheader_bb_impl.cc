@@ -25,6 +25,8 @@
 #include <gnuradio/io_signature.h>
 #include "dvb_bbheader_bb_impl.h"
 
+#include <stdio.h>
+
 namespace gr {
   namespace dtv {
 
@@ -43,6 +45,7 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(1, 1, sizeof(unsigned char)))
     {
+      printf("%d %d %d %d %d %d %d %d ", standard, framesize_t framesize, code_rate_t rate, 2_rolloff_factor_t rolloff, 2_inputmode_t mode, 2_inband_t inband, fecblocks, tsrate);
       count = 0;
       crc = 0x0;
       dvbs2x = FALSE;
