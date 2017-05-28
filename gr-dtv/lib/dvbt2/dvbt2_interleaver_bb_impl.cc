@@ -516,20 +516,39 @@ namespace gr {
                 }
               }*/
 
-
-              //Avoid copying to tempv, only use tempu! slightly faster
-              int offset_row;
               int cols = mod*2;
-              for (int row = 0; row < rows; row++) {
+              int mux_precalc[cols];
+              for (int col = 0; col < cols; col++) {
+                mux_precalc[col] = ((cols - 1) - mux[col]);
+              }
+              //Avoid copying to tempv, only use tempu! slightly faster
+              //Split into two, because we can guarantee offset_row to be >= 0 for row>max(twist256n)
+              int offset_row;
+              for (int row = 0; row < 32; row++) { //offset > max(twist256n) = 32
                 pack = 0;
                 for (int col = 0; col < cols; col++) {
                   //offset = mux[e];
                   offset = twist256n[col];
-                  offset_row = (rows-offset+row);
-                  if(offset_row >= rows) offset_row = offset_row - rows;
+                  offset_row = row-offset;
+                  if(offset_row < 0) offset_row = offset_row + rows;
 
-                  pack |= tempu[col*rows + offset_row] << ((cols - 1) - mux[col]);
+                  pack |= tempu[col*rows + offset_row] << mux_precalc[col];
                 }
+
+                out[produced++] = pack >> 8;
+                out[produced++] = pack & 0xff;
+              }
+              for (int row = 32; row < rows; row++) { //offset > max(twist256n) = 32
+                pack = 0;
+                for (int col = 0; col < cols; col++) {
+                  //offset = mux[e];
+                  offset = twist256n[col];
+                  //offset_row = row-offset; //always positive!
+                  //if(offset_row < 0) offset_row = offset_row + rows;
+
+                  pack |= tempu[col*rows + row-offset] << mux_precalc[col];
+                }
+
                 out[produced++] = pack >> 8;
                 out[produced++] = pack & 0xff;
               }

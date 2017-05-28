@@ -1165,19 +1165,19 @@ namespace gr {
         //          __m256i *data - data to shift
         //          int count     - number of bits to shift
         // return:  __m256i       - carry out bit(s)
-        inline bool dvb_bch_ldpc_bb_impl::bitShiftRight256ymm (__m256i *data, int count)
+        inline bool dvb_bch_ldpc_bb_impl::bitShiftRight256ymm (__m256i *data)
            {
            __m256i innerCarry, carryOut, rotate;
 
            //innerCarry = _mm256_set_epi32(0,1,2,4,8,16,64,128);
 
-           innerCarry = _mm256_slli_epi64 (*data, 64 - count);                        // carry outs in bit (64-count) of each qword
+           innerCarry = _mm256_slli_epi64 (*data, 63);                        // carry outs in bit (64-count) of each qword
            rotate     = _mm256_permute4x64_epi64 (innerCarry, 0b00111001);            // rotate ymm RIGHT 64 bits (left was 0x93=0b10 01 00 11). Crosslane operation, may be slow
            //innerCarry = _mm256_blend_epi32 (_mm256_setzero_si256 (), rotate, 0xFC); // clear highest qword
            //blend chooses from either first or second operand, depending on third.
            //0xFC is 0b11111100 (left) --> modify to 0b00111111 (right)
            innerCarry = _mm256_blend_epi32 (_mm256_setzero_si256 (), rotate, 0b00111111);
-           *data      = _mm256_srli_epi64 (*data, count);                             // shift all qwords left
+           *data      = _mm256_srli_epi64 (*data, 1);                             // shift all qwords left
            *data      = _mm256_or_si256 (*data, innerCarry);                          // propagate carrys
            carryOut   = _mm256_xor_si256 (innerCarry, rotate);                        // clear all except highest qword
            return !_mm256_testz_si256(carryOut,carryOut); //p1 & p2 == 0
@@ -1235,7 +1235,7 @@ namespace gr {
               for (int j = 0; j < (int)kbch; j++) {
                 temp = *in_bch++;
                 *out_bch++ = temp;
-                bool carry = bitShiftRight256ymm(&shift_vector,1);
+                bool carry = bitShiftRight256ymm(&shift_vector);
                 b = temp ^ carry; //(((int*) &carry)[7] != 0);
                 if (b) {
                   shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
@@ -1244,7 +1244,7 @@ namespace gr {
               // Now add the parity bits to the output
 
               //for (int n = 0; n < 192; n++) {
-              //  __m256i carry = bitShiftRight256ymm(&shift_vector,1);
+              //  __m256i carry = bitShiftRight256ymm(&shift_vector);
               //  *out_bch++ = (((int*) &carry)[7] != 0);
               //}
               //More efficient:
@@ -1492,13 +1492,12 @@ namespace gr {
                 memcpy(&out_ldpc[i],&in_bch[consumed],sizeof(unsigned char) * (int)kbch); //Missing last nbch - kbch bits, but not available yet!
 
                 // now do the parity checking of first kbch bits and generate ldpc parity
+                //combine first item of every ldpc operation with bch
                 bool carry;
-                index = 0;
                 for (int j = 0; j < ldpc_encode.table_length_bch; j++) {
-                  temp = d[index];
-                  index++;
+                  temp = d[j];
                   p[ldpc_encode.item_bch[j]] ^= temp;
-                  carry = bitShiftRight256ymm(&shift_vector,1);
+                  carry = bitShiftRight256ymm(&shift_vector);
                   b_bch = temp ^ carry; //(((int*) &carry)[7] != 0);
                   if (b_bch) {
                     shift_vector = _mm256_xor_si256(shift_vector, m_256_poly_n_12);
@@ -1517,30 +1516,33 @@ namespace gr {
                 // continue the ldpc parity checking
                 index = 0;
                 for (int j = 0; j < ldpc_encode.table_length_nobch_1; j+=11) {
-                  p[ldpc_encode.item_nobch_1[j]] ^= d[index];
-                  p[ldpc_encode.item_nobch_1[j+1]] ^= d[index];
-                  p[ldpc_encode.item_nobch_1[j+2]] ^= d[index];
-                  p[ldpc_encode.item_nobch_1[j+3]] ^= d[index];
-                  p[ldpc_encode.item_nobch_1[j+4]] ^= d[index];
-                  p[ldpc_encode.item_nobch_1[j+5]] ^= d[index];
-                  p[ldpc_encode.item_nobch_1[j+6]] ^= d[index];
-                  p[ldpc_encode.item_nobch_1[j+7]] ^= d[index];
-                  p[ldpc_encode.item_nobch_1[j+8]] ^= d[index];
-                  p[ldpc_encode.item_nobch_1[j+9]] ^= d[index];
-                  p[ldpc_encode.item_nobch_1[j+10]] ^= d[index];
+                  temp = d[index];
+                  p[ldpc_encode.item_nobch_1[j]] ^= temp;
+                  p[ldpc_encode.item_nobch_1[j+1]] ^= temp;
+                  p[ldpc_encode.item_nobch_1[j+2]] ^= temp;
+                  p[ldpc_encode.item_nobch_1[j+3]] ^= temp;
+                  p[ldpc_encode.item_nobch_1[j+4]] ^= temp;
+                  p[ldpc_encode.item_nobch_1[j+5]] ^= temp;
+                  p[ldpc_encode.item_nobch_1[j+6]] ^= temp;
+                  p[ldpc_encode.item_nobch_1[j+7]] ^= temp;
+                  p[ldpc_encode.item_nobch_1[j+8]] ^= temp;
+                  p[ldpc_encode.item_nobch_1[j+9]] ^= temp;
+                  p[ldpc_encode.item_nobch_1[j+10]] ^= temp;
                   index++;
                 }
 
                 int j = 0;
                 for (; index < (int)kbch; j+=2) {
-                  p[ldpc_encode.item_nobch_2[j]] ^= d[index];
-                  p[ldpc_encode.item_nobch_2[j+1]] ^= d[index];
+                  temp = d[index];
+                  p[ldpc_encode.item_nobch_2[j]] ^= temp;
+                  p[ldpc_encode.item_nobch_2[j+1]] ^= temp;
                   index++;
                 }
                 for (; j < ldpc_encode.table_length_nobch_2; j+=3) {
-                  p[ldpc_encode.item_nobch_2[j]] ^= d[index];
-                  p[ldpc_encode.item_nobch_2[j+1]] ^= d[index];
-                  p[ldpc_encode.item_nobch_2[j+2]] ^= d[index];
+                  temp = d[index];
+                  p[ldpc_encode.item_nobch_2[j]] ^= temp;
+                  p[ldpc_encode.item_nobch_2[j+1]] ^= temp;
+                  p[ldpc_encode.item_nobch_2[j+2]] ^= temp;
                   index++;
                 }
 
