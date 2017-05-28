@@ -646,8 +646,8 @@ im++; \
         consumed += nbch;
 
         // now do the parity checking
-        int *idx_p = ldpc_encode.p;
-        int *idx_d = ldpc_encode.d;
+        register int *idx_p = ldpc_encode.p;
+        register int *idx_d = ldpc_encode.d;
         for (register unsigned int j = 0; j < ldpc_encode.table_length; j++) {
         	p[*idx_p++] ^= d[*idx_d++]; // accelerate calculation with pointers
         }
@@ -671,7 +671,7 @@ im++; \
 
         unsigned char *iter_p = p+1;
         unsigned char *iter_p_2 = p;
-        for (int j = (plen - Xp); j != 0; j--) {
+        for (register unsigned int j = (plen - Xp); j != 0; j--) {
           *iter_p++ ^= *iter_p_2++;
         }
         if (signal_constellation == MOD_128APSK) {
