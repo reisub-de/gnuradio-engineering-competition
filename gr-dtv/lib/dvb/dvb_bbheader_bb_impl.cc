@@ -52,6 +52,9 @@ namespace gr {
       BBHeader *f = &m_format[0].bb_header;
       if (framesize == FECFRAME_NORMAL) {
         switch (rate) {
+          case C3_5:
+            kbch = 38688;
+            break;
           case C1_4:
             kbch = 16008;
             break;
@@ -63,9 +66,6 @@ namespace gr {
             break;
           case C1_2:
             kbch = 32208;
-            break;
-          case C3_5:
-            kbch = 38688;
             break;
           case C2_3:
             kbch = 43040;
@@ -255,6 +255,13 @@ namespace gr {
       if (standard == STANDARD_DVBS2) {
         mode = INPUTMODE_NORMAL;
         inband_type_b = FALSE;
+        if (rolloff & 0x4) {
+          dvbs2x = TRUE;
+        }
+        f->ro = rolloff & 0x3;
+      }
+      else {
+        f->ro = 0;
       }
       f->ts_gs   = TS_GS_TRANSPORT;
       f->sis_mis = SIS_MIS_SINGLE;
@@ -270,15 +277,6 @@ namespace gr {
         f->upl  = 0;
         f->dfl  = kbch - 80;
         f->sync = 0;
-      }
-      if (standard == STANDARD_DVBS2) {
-        if (rolloff & 0x4) {
-          dvbs2x = TRUE;
-        }
-        f->ro = rolloff & 0x3;
-      }
-      else {
-        f->ro = 0;
       }
 
       build_crc8_table();
