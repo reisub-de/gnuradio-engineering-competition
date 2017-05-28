@@ -651,7 +651,7 @@ namespace gr {
               b = (temp ^ (shift[4] & 1));
               reg_5_shift(shift);
               if (b) {
-                shift[0] ^= m_poly_n_10[0];
+                shift[0] ^= m_poly_n_10[0]; 
                 shift[1] ^= m_poly_n_10[1];
                 shift[2] ^= m_poly_n_10[2];
                 shift[3] ^= m_poly_n_10[3];
