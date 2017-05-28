@@ -774,40 +774,40 @@ namespace gr {
 
       for (int i = 0; i < noutput_items; i += interleaved_items) {
         for (int j = 0; j < N_P2; j++) {
-          if ((symbol & 1) == 0) {
+          if ((symbol % 2) == 0) {
             H = HevenP2;
           }
           else {
             H = HoddP2;
           }
           for (int j = 0; j < C_P2; j++) {
-            *out++ = in[H[j]];
+            *out++ = in[*H++];
           }
           symbol++;
           in += C_P2;
         }
         for (int j = 0; j < num_data_symbols; j++) {
-          if ((symbol & 1) == 0) {
+          if ((symbol % 2) == 0) {
             H = Heven;
           }
           else {
             H = Hodd;
           }
           for (int j = 0; j < C_DATA; j++) {
-            *out++ = in[H[j]];
+            *out++ = in[*H++];
           }
           symbol++;
           in += C_DATA;
         }
         if (N_FC != 0) {
-          if ((symbol & 1) == 0) {
+          if ((symbol % 2) == 0) {
             H = HevenFC;
           }
           else {
             H = HoddFC;
           }
           for (int j = 0; j < N_FC; j++) {
-            *out++ = in[H[j]];
+            *out++ = in[*H++];
           }
           symbol++;
           in += N_FC;
