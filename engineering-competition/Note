@@ -1,0 +1,24 @@
+Dear Rohde & Schwarz Engineering Competition Team 2017,
+
+We have optimized the following C++:
+
+	modified:   gr-dtv/lib/dvb/dvb_bbheader_bb_impl.cc
+	modified:   gr-dtv/lib/dvb/dvb_bbheader_bb_impl.h
+	modified:   gr-dtv/lib/dvb/dvb_bbscrambler_bb_impl.cc
+	modified:   gr-dtv/lib/dvb/dvb_bch_bb_impl.cc
+	modified:   gr-dtv/lib/dvb/dvb_ldpc_bb_impl.cc
+	modified:   gr-dtv/lib/dvb/dvb_ldpc_bb_impl.h
+	modified:   gr-dtv/lib/dvbt2/dvbt2_framemapper_cc_impl.cc
+	modified:   gr-dtv/lib/dvbt2/dvbt2_modulator_bc_impl.cc
+	modified:   gr-dtv/lib/dvbt2/dvbt2_pilotgenerator_cc_impl.cc
+
+Two main solutions have been proposed:
+
+1. Rather than computing the complex value of QAM 256 during execution, we replace with the pre-calculated value which faciliates the process. Similarly, all relevant codes which can be streamlined with precalculated value have been optimized. Surprisingly, we found out that the runtime using this approach actually may become bigger.
+
+2. We remove those "additional" code rate options which are not supported by DVB-T2 standard.
+
+We highly appreciate your assistance during the competition, especially during the source code build.
+
+Best Regards,
+ViCom
