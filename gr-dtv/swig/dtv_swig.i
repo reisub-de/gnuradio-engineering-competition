@@ -84,6 +84,7 @@
 #include "gnuradio/dtv/catv_randomizer_bb.h"
 #include "gnuradio/dtv/catv_frame_sync_enc_bb.h"
 #include "gnuradio/dtv/catv_trellis_enc_bb.h"
+#include "gnuradio/dtv/dvbt2_encoder_comp.h"
 %}
 
 %include "gnuradio/dtv/atsc_deinterleaver.h"
@@ -142,6 +143,7 @@
 %include "gnuradio/dtv/catv_randomizer_bb.h"
 %include "gnuradio/dtv/catv_frame_sync_enc_bb.h"
 %include "gnuradio/dtv/catv_trellis_enc_bb.h"
+%include "gnuradio/dtv/dvbt2_encoder_comp.h"
 
 GR_SWIG_BLOCK_MAGIC2(dtv, atsc_deinterleaver);
 GR_SWIG_BLOCK_MAGIC2(dtv, atsc_depad);
@@ -195,3 +197,4 @@ GR_SWIG_BLOCK_MAGIC2(dtv, catv_reed_solomon_enc_bb);
 GR_SWIG_BLOCK_MAGIC2(dtv, catv_randomizer_bb);
 GR_SWIG_BLOCK_MAGIC2(dtv, catv_frame_sync_enc_bb);
 GR_SWIG_BLOCK_MAGIC2(dtv, catv_trellis_enc_bb);
+GR_SWIG_BLOCK_MAGIC2(dtv, dvbt2_encoder_comp);
