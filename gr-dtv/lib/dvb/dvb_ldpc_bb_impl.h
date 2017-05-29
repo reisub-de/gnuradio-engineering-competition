@@ -114,25 +114,6 @@ namespace gr {
       const static int ldpc_tab_11_45M[22][11];
       const static int ldpc_tab_1_3M[30][13];
 
-      unsigned int kbch;
-      unsigned int nbch;
-      unsigned int bch_code;
-      unsigned int m_poly_n_8[4];
-      unsigned int m_poly_n_10[5];
-      unsigned int m_poly_n_12[6];
-      unsigned int m_poly_s_12[6];
-      unsigned int m_poly_m_12[6];
-      int poly_mult(const int*, int, const int*, int, int*);
-      void poly_pack(const int*, unsigned int*, int);
-      void poly_reverse(int*, int*, int);
-      inline void reg_4_shift(unsigned int*);
-      inline void reg_5_shift(unsigned int*);
-      inline void reg_6_shift(unsigned int*);
-      void bch_poly_build_tables(void);
-
-      void dvb_bch_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate);
-      void forecast (int noutput_items, gr_vector_int &ninput_items_required);
-
      public:
       dvb_ldpc_bb_impl(dvb_standard_t standard, dvb_framesize_t framesize, dvb_code_rate_t rate, dvb_constellation_t constellation);
       ~dvb_ldpc_bb_impl();
