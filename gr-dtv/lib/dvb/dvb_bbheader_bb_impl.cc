@@ -514,7 +514,7 @@ namespace gr {
               count = (count + 1) % 188;
               consumed++;
             }
-            if (fec_block == 0 && inband_type_b == TRUE) {
+            if (fec_block == 0 && inband_type_b == TRUE) { 
               add_inband_type_b(&out[offset], ts_rate);
               offset += 104;
             }
