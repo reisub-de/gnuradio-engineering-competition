@@ -459,77 +459,6 @@
     </param>
   </block>
   <block>
-    <key>dtv_dvb_bch_bb</key>
-    <param>
-      <key>alias</key>
-      <value></value>
-    </param>
-    <param>
-      <key>rate1</key>
-      <value>C3_5</value>
-    </param>
-    <param>
-      <key>rate2</key>
-      <value>C1_3</value>
-    </param>
-    <param>
-      <key>rate3</key>
-      <value>C1_4</value>
-    </param>
-    <param>
-      <key>rate4</key>
-      <value>C1_5_MEDIUM</value>
-    </param>
-    <param>
-      <key>rate5</key>
-      <value>C1_4</value>
-    </param>
-    <param>
-      <key>comment</key>
-      <value></value>
-    </param>
-    <param>
-      <key>affinity</key>
-      <value></value>
-    </param>
-    <param>
-      <key>_enabled</key>
-      <value>True</value>
-    </param>
-    <param>
-      <key>framesize1</key>
-      <value>FECFRAME_NORMAL</value>
-    </param>
-    <param>
-      <key>framesize2</key>
-      <value>FECFRAME_NORMAL</value>
-    </param>
-    <param>
-      <key>_coordinate</key>
-      <value>(1000, 108)</value>
-    </param>
-    <param>
-      <key>_rotation</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>id</key>
-      <value>dtv_dvb_bch_bb_0</value>
-    </param>
-    <param>
-      <key>maxoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>minoutbuf</key>
-      <value>0</value>
-    </param>
-    <param>
-      <key>standard</key>
-      <value>STANDARD_DVBT2</value>
-    </param>
-  </block>
-  <block>
     <key>dtv_dvb_ldpc_bb</key>
     <param>
       <key>alias</key>
@@ -636,7 +565,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(984, 272)</value>
+      <value>(984, 268)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -818,7 +747,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(560, 516)</value>
+      <value>(560, 524)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1082,7 +1011,7 @@
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(944, 508)</value>
+      <value>(944, 516)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -1161,12 +1090,6 @@
   </connection>
   <connection>
     <source_block_id>dtv_dvb_bbscrambler_bb_0</source_block_id>
-    <sink_block_id>dtv_dvb_bch_bb_0</sink_block_id>
-    <source_key>0</source_key>
-    <sink_key>0</sink_key>
-  </connection>
-  <connection>
-    <source_block_id>dtv_dvb_bch_bb_0</source_block_id>
     <sink_block_id>dtv_dvb_ldpc_bb_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
