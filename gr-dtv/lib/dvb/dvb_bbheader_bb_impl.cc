@@ -512,7 +512,7 @@ namespace gr {
             	in++;
               }
               count = (count + 1) % 188;
-              consumed++;
+              consumed++; 
             }
             if (fec_block == 0 && inband_type_b == TRUE) { 
               add_inband_type_b(&out[offset], ts_rate);
